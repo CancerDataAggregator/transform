@@ -18,6 +18,7 @@ setup(
     python_requires='>=3.6',
     install_requires=[
         "jsonlines",
+        "pyyaml",
     ],
     entry_points={
         'console_scripts': [

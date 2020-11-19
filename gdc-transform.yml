@@ -1,1023 +1,1025 @@
 case_id:
-  CDA-X: []
+  CDA-X: {}
 consent_type:
-  CDA-X: []
+  CDA-X: {}
 created_datetime:
-  CDA-X: []
+  CDA-X: {}
 days_to_consent:
-  CDA-X: []
+  CDA-X: {}
 days_to_lost_to_followup:
-  CDA-X: []
+  CDA-X: {}
 demographic:
-  CDA-X: []
+  CDA-X: {}
   CHILD:
     age_at_index:
-      CDA-X: []
+      CDA-X: {}
     age_is_obfuscated:
-      CDA-X: []
+      CDA-X: {}
     cause_of_death:
-      CDA-X: []
+      CDA-X: {}
     cause_of_death_source:
-      CDA-X: []
+      CDA-X: {}
     country_of_residence_at_enrollment:
-      CDA-X: []
+      CDA-X: {}
     created_datetime:
-      CDA-X: []
+      CDA-X: {}
     days_to_birth:
-      CDA-X: []
+      CDA-X: {}
     days_to_death:
-      CDA-X: []
+      CDA-X: {}
     demographic_id:
-      CDA-X: []
+      CDA-X: {}
     ethnicity:
-      CDA-X: []
+      CDA-X: {}
     gender:
-      CDA-X: []
+      CDA-X: {}
     occupation_duration_years:
-      CDA-X: []
+      CDA-X: {}
     premature_at_birth:
-      CDA-X: []
+      CDA-X: {}
     race:
-      CDA-X: []
+      CDA-X: {}
     state:
-      CDA-X: []
+      CDA-X: {}
     submitter_id:
-      CDA-X: []
+      CDA-X: {}
     updated_datetime:
-      CDA-X: []
+      CDA-X: {}
     vital_status:
-      CDA-X: []
+      CDA-X: {}
     weeks_gestation_at_birth:
-      CDA-X: []
+      CDA-X: {}
     year_of_birth:
-      CDA-X: []
+      CDA-X: {}
     year_of_death:
-      CDA-X: []
+      CDA-X: {}
 diagnoses:
-  CDA-X: []
+  CDA-X: {}
   CHILD:
     age_at_diagnosis:
-      CDA-X: []
+      CDA-X: {}
     ajcc_clinical_m:
-      CDA-X: []
+      CDA-X: {}
     ajcc_clinical_n:
-      CDA-X: []
+      CDA-X: {}
     ajcc_clinical_stage:
-      CDA-X: []
+      CDA-X: {}
     ajcc_clinical_t:
-      CDA-X: []
+      CDA-X: {}
     ajcc_pathologic_m:
-      CDA-X: []
+      CDA-X: {}
     ajcc_pathologic_n:
-      CDA-X: []
+      CDA-X: {}
     ajcc_pathologic_stage:
-      CDA-X: []
+      CDA-X: {}
     ajcc_pathologic_t:
-      CDA-X: []
+      CDA-X: {}
     ajcc_staging_system_edition:
-      CDA-X: []
+      CDA-X: {}
     anaplasia_present:
-      CDA-X: []
+      CDA-X: {}
     anaplasia_present_type:
-      CDA-X: []
+      CDA-X: {}
     ann_arbor_b_symptoms:
-      CDA-X: []
+      CDA-X: {}
     ann_arbor_clinical_stage:
-      CDA-X: []
+      CDA-X: {}
     ann_arbor_extranodal_involvement:
-      CDA-X: []
+      CDA-X: {}
     ann_arbor_pathologic_stage:
-      CDA-X: []
+      CDA-X: {}
     annotations:
-      CDA-X: []
+      CDA-X: {}
       CHILD:
         annotation_id:
-          CDA-X: []
+          CDA-X: {}
         case_id:
-          CDA-X: []
+          CDA-X: {}
         category:
-          CDA-X: []
+          CDA-X: {}
         classification:
-          CDA-X: []
+          CDA-X: {}
         created_datetime:
-          CDA-X: []
+          CDA-X: {}
         entity_id:
-          CDA-X: []
+          CDA-X: {}
         entity_submitter_id:
-          CDA-X: []
+          CDA-X: {}
         entity_type:
-          CDA-X: []
+          CDA-X: {}
         legacy_created_datetime:
-          CDA-X: []
+          CDA-X: {}
         legacy_updated_datetime:
-          CDA-X: []
+          CDA-X: {}
         notes:
-          CDA-X: []
+          CDA-X: {}
         state:
-          CDA-X: []
+          CDA-X: {}
         status:
-          CDA-X: []
+          CDA-X: {}
         submitter_id:
-          CDA-X: []
+          CDA-X: {}
         updated_datetime:
-          CDA-X: []
+          CDA-X: {}
     best_overall_response:
-      CDA-X: []
+      CDA-X: {}
     breslow_thickness:
-      CDA-X: []
+      CDA-X: {}
     burkitt_lymphoma_clinical_variant:
-      CDA-X: []
+      CDA-X: {}
     child_pugh_classification:
-      CDA-X: []
+      CDA-X: {}
     circumferential_resection_margin:
-      CDA-X: []
+      CDA-X: {}
     classification_of_tumor:
-      CDA-X: []
+      CDA-X: {}
     cog_liver_stage:
-      CDA-X: []
+      CDA-X: {}
     cog_neuroblastoma_risk_group:
-      CDA-X: []
+      CDA-X: {}
     cog_renal_stage:
-      CDA-X: []
+      CDA-X: {}
     cog_rhabdomyosarcoma_risk_group:
-      CDA-X: []
+      CDA-X: {}
     created_datetime:
-      CDA-X: []
+      CDA-X: {}
     days_to_best_overall_response:
-      CDA-X: []
+      CDA-X: {}
     days_to_diagnosis:
-      CDA-X: []
+      CDA-X: {}
     days_to_last_follow_up:
-      CDA-X: []
+      CDA-X: {}
     days_to_last_known_disease_status:
-      CDA-X: []
+      CDA-X: {}
     days_to_recurrence:
-      CDA-X: []
+      CDA-X: {}
     diagnosis_id:
-      CDA-X: []
+      CDA-X: {}
     eln_risk_classification:
-      CDA-X: []
+      CDA-X: {}
     enneking_msts_grade:
-      CDA-X: []
+      CDA-X: {}
     enneking_msts_metastasis:
-      CDA-X: []
+      CDA-X: {}
     enneking_msts_stage:
-      CDA-X: []
+      CDA-X: {}
     enneking_msts_tumor_site:
-      CDA-X: []
+      CDA-X: {}
     esophageal_columnar_dysplasia_degree:
-      CDA-X: []
+      CDA-X: {}
     esophageal_columnar_metaplasia_present:
-      CDA-X: []
+      CDA-X: {}
     figo_stage:
-      CDA-X: []
+      CDA-X: {}
     figo_staging_edition_year:
-      CDA-X: []
+      CDA-X: {}
     first_symptom_prior_to_diagnosis:
-      CDA-X: []
+      CDA-X: {}
     gastric_esophageal_junction_involvement:
-      CDA-X: []
+      CDA-X: {}
     gleason_grade_group:
-      CDA-X: []
+      CDA-X: {}
     gleason_grade_tertiary:
-      CDA-X: []
+      CDA-X: {}
     gleason_patterns_percent:
-      CDA-X: []
+      CDA-X: {}
     goblet_cells_columnar_mucosa_present:
-      CDA-X: []
+      CDA-X: {}
     greatest_tumor_dimension:
-      CDA-X: []
+      CDA-X: {}
     gross_tumor_weight:
-      CDA-X: []
+      CDA-X: {}
     icd_10_code:
-      CDA-X: []
+      CDA-X: {}
     igcccg_stage:
-      CDA-X: []
+      CDA-X: {}
     inpc_grade:
-      CDA-X: []
+      CDA-X: {}
     inpc_histologic_group:
-      CDA-X: []
+      CDA-X: {}
     inrg_stage:
-      CDA-X: []
+      CDA-X: {}
     inss_stage:
-      CDA-X: []
+      CDA-X: {}
     international_prognostic_index:
-      CDA-X: []
+      CDA-X: {}
     irs_group:
-      CDA-X: []
+      CDA-X: {}
     irs_stage:
-      CDA-X: []
+      CDA-X: {}
     ishak_fibrosis_score:
-      CDA-X: []
+      CDA-X: {}
     iss_stage:
-      CDA-X: []
+      CDA-X: {}
     largest_extrapelvic_peritoneal_focus:
-      CDA-X: []
+      CDA-X: {}
     last_known_disease_status:
-      CDA-X: []
+      CDA-X: {}
     laterality:
-      CDA-X: []
+      CDA-X: {}
     lymph_node_involved_site:
-      CDA-X: []
+      CDA-X: {}
     lymph_nodes_positive:
-      CDA-X: []
+      CDA-X: {}
     lymph_nodes_tested:
-      CDA-X: []
+      CDA-X: {}
     lymphatic_invasion_present:
-      CDA-X: []
+      CDA-X: {}
     margin_distance:
-      CDA-X: []
+      CDA-X: {}
     margins_involved_site:
-      CDA-X: []
+      CDA-X: {}
     masaoka_stage:
-      CDA-X: []
+      CDA-X: {}
     medulloblastoma_molecular_classification:
-      CDA-X: []
+      CDA-X: {}
     metastasis_at_diagnosis:
-      CDA-X: []
+      CDA-X: {}
     metastasis_at_diagnosis_site:
-      CDA-X: []
+      CDA-X: {}
     method_of_diagnosis:
-      CDA-X: []
+      CDA-X: {}
     micropapillary_features:
-      CDA-X: []
+      CDA-X: {}
     mitosis_karyorrhexis_index:
-      CDA-X: []
+      CDA-X: {}
     mitotic_count:
-      CDA-X: []
+      CDA-X: {}
     morphology:
-      CDA-X: []
+      CDA-X: {}
     non_nodal_regional_disease:
-      CDA-X: []
+      CDA-X: {}
     non_nodal_tumor_deposits:
-      CDA-X: []
+      CDA-X: {}
     ovarian_specimen_status:
-      CDA-X: []
+      CDA-X: {}
     ovarian_surface_involvement:
-      CDA-X: []
+      CDA-X: {}
     papillary_renal_cell_type:
-      CDA-X: []
+      CDA-X: {}
     percent_tumor_invasion:
-      CDA-X: []
+      CDA-X: {}
     perineural_invasion_present:
-      CDA-X: []
+      CDA-X: {}
     peripancreatic_lymph_nodes_positive:
-      CDA-X: []
+      CDA-X: {}
     peripancreatic_lymph_nodes_tested:
-      CDA-X: []
+      CDA-X: {}
     peritoneal_fluid_cytological_status:
-      CDA-X: []
+      CDA-X: {}
     pregnant_at_diagnosis:
-      CDA-X: []
+      CDA-X: {}
     primary_diagnosis:
-      CDA-X: []
+      CDA-X: {}
     primary_gleason_grade:
-      CDA-X: []
+      CDA-X: {}
     prior_malignancy:
-      CDA-X: []
+      CDA-X: {}
     prior_treatment:
-      CDA-X: []
+      CDA-X: {}
     progression_or_recurrence:
-      CDA-X: []
+      CDA-X: {}
     residual_disease:
-      CDA-X: []
+      CDA-X: {}
     satellite_nodule_present:
-      CDA-X: []
+      CDA-X: {}
     secondary_gleason_grade:
-      CDA-X: []
+      CDA-X: {}
     site_of_resection_or_biopsy:
-      CDA-X: []
+      CDA-X: {}
     sites_of_involvement:
-      CDA-X: []
+      CDA-X: {}
     state:
-      CDA-X: []
+      CDA-X: {}
     submitter_id:
-      CDA-X: []
+      CDA-X: {}
     supratentorial_localization:
-      CDA-X: []
+      CDA-X: {}
     synchronous_malignancy:
-      CDA-X: []
+      CDA-X: {}
     tissue_or_organ_of_origin:
-      CDA-X: []
+      CDA-X: {}
     transglottic_extension:
-      CDA-X: []
+      CDA-X: {}
     treatments:
-      CDA-X: []
+      CDA-X: {}
       CHILD:
         chemo_concurrent_to_radiation:
-          CDA-X: []
+          CDA-X: {}
         created_datetime:
-          CDA-X: []
+          CDA-X: {}
         days_to_treatment_end:
-          CDA-X: []
+          CDA-X: {}
         days_to_treatment_start:
-          CDA-X: []
+          CDA-X: {}
         initial_disease_status:
-          CDA-X: []
+          CDA-X: {}
         number_of_cycles:
-          CDA-X: []
+          CDA-X: {}
         reason_treatment_ended:
-          CDA-X: []
+          CDA-X: {}
         regimen_or_line_of_therapy:
-          CDA-X: []
+          CDA-X: {}
         state:
-          CDA-X: []
+          CDA-X: {}
         submitter_id:
-          CDA-X: []
+          CDA-X: {}
         therapeutic_agents:
-          CDA-X: []
+          CDA-X: {}
         treatment_anatomic_site:
-          CDA-X: []
+          CDA-X: {}
         treatment_arm:
-          CDA-X: []
+          CDA-X: {}
         treatment_dose:
-          CDA-X: []
+          CDA-X: {}
         treatment_dose_units:
-          CDA-X: []
+          CDA-X: {}
         treatment_effect:
-          CDA-X: []
+          CDA-X: {}
         treatment_effect_indicator:
-          CDA-X: []
+          CDA-X: {}
         treatment_frequency:
-          CDA-X: []
+          CDA-X: {}
         treatment_id:
-          CDA-X: []
+          CDA-X: {}
         treatment_intent_type:
-          CDA-X: []
+          CDA-X: {}
         treatment_or_therapy:
-          CDA-X: []
+          CDA-X: {}
         treatment_outcome:
-          CDA-X: []
+          CDA-X: {}
         treatment_type:
-          CDA-X: []
+          CDA-X: {}
         updated_datetime:
-          CDA-X: []
+          CDA-X: {}
     tumor_confined_to_organ_of_origin:
-      CDA-X: []
+      CDA-X: {}
     tumor_depth:
-      CDA-X: []
+      CDA-X: {}
     tumor_focality:
-      CDA-X: []
+      CDA-X: {}
     tumor_grade:
-      CDA-X: []
+      CDA-X: {}
     tumor_largest_dimension_diameter:
-      CDA-X: []
+      CDA-X: {}
     tumor_regression_grade:
-      CDA-X: []
+      CDA-X: {}
     tumor_stage:
-      CDA-X: []
+      CDA-X: {}
     updated_datetime:
-      CDA-X: []
+      CDA-X: {}
     vascular_invasion_present:
-      CDA-X: []
+      CDA-X: {}
     vascular_invasion_type:
-      CDA-X: []
+      CDA-X: {}
     weiss_assessment_score:
-      CDA-X: []
+      CDA-X: {}
     who_cns_grade:
-      CDA-X: []
+      CDA-X: {}
     who_nte_grade:
-      CDA-X: []
+      CDA-X: {}
     wilms_tumor_histologic_subtype:
-      CDA-X: []
+      CDA-X: {}
     year_of_diagnosis:
-      CDA-X: []
+      CDA-X: {}
 disease_type:
-  CDA-X: []
+  CDA-X: {}
 exposures:
-  CDA-X: []
+  CDA-X: {}
   CHILD:
     age_at_onset:
-      CDA-X: []
+      CDA-X: {}
     alcohol_days_per_week:
-      CDA-X: []
+      CDA-X: {}
     alcohol_drinks_per_day:
-      CDA-X: []
+      CDA-X: {}
     alcohol_history:
-      CDA-X: []
+      CDA-X: {}
     alcohol_intensity:
-      CDA-X: []
+      CDA-X: {}
     asbestos_exposure:
-      CDA-X: []
+      CDA-X: {}
     bmi:
-      CDA-X: []
+      CDA-X: {}
     cigarettes_per_day:
-      CDA-X: []
+      CDA-X: {}
     coal_dust_exposure:
-      CDA-X: []
+      CDA-X: {}
     created_datetime:
-      CDA-X: []
+      CDA-X: {}
     environmental_tobacco_smoke_exposure:
-      CDA-X: []
+      CDA-X: {}
     exposure_duration:
-      CDA-X: []
+      CDA-X: {}
     exposure_id:
-      CDA-X: []
+      CDA-X: {}
     exposure_type:
-      CDA-X: []
+      CDA-X: {}
     height:
-      CDA-X: []
+      CDA-X: {}
     marijuana_use_per_week:
-      CDA-X: []
+      CDA-X: {}
     pack_years_smoked:
-      CDA-X: []
+      CDA-X: {}
     radon_exposure:
-      CDA-X: []
+      CDA-X: {}
     respirable_crystalline_silica_exposure:
-      CDA-X: []
+      CDA-X: {}
     secondhand_smoke_as_child:
-      CDA-X: []
+      CDA-X: {}
     smoking_frequency:
-      CDA-X: []
+      CDA-X: {}
     state:
-      CDA-X: []
+      CDA-X: {}
     submitter_id:
-      CDA-X: []
+      CDA-X: {}
     time_between_waking_and_first_smoke:
-      CDA-X: []
+      CDA-X: {}
     tobacco_smoking_onset_year:
-      CDA-X: []
+      CDA-X: {}
     tobacco_smoking_quit_year:
-      CDA-X: []
+      CDA-X: {}
     tobacco_smoking_status:
-      CDA-X: []
+      CDA-X: {}
     tobacco_use_per_day:
-      CDA-X: []
+      CDA-X: {}
     type_of_smoke_exposure:
-      CDA-X: []
+      CDA-X: {}
     type_of_tobacco_used:
-      CDA-X: []
+      CDA-X: {}
     updated_datetime:
-      CDA-X: []
+      CDA-X: {}
     weight:
-      CDA-X: []
+      CDA-X: {}
     years_smoked:
-      CDA-X: []
+      CDA-X: {}
 family_histories:
-  CDA-X: []
+  CDA-X: {}
   CHILD:
     created_datetime:
-      CDA-X: []
+      CDA-X: {}
     family_history_id:
-      CDA-X: []
+      CDA-X: {}
     relationship_age_at_diagnosis:
-      CDA-X: []
+      CDA-X: {}
     relationship_gender:
-      CDA-X: []
+      CDA-X: {}
     relationship_primary_diagnosis:
-      CDA-X: []
+      CDA-X: {}
     relationship_type:
-      CDA-X: []
+      CDA-X: {}
     relative_with_cancer_history:
-      CDA-X: []
+      CDA-X: {}
     relatives_with_cancer_history_count:
-      CDA-X: []
+      CDA-X: {}
     state:
-      CDA-X: []
+      CDA-X: {}
     submitter_id:
-      CDA-X: []
+      CDA-X: {}
     updated_datetime:
-      CDA-X: []
+      CDA-X: {}
 files:
-  CDA-X: []
+  CDA-X: {}
   CHILD:
     access:
-      CDA-X: []
+      CDA-X: {}
     acl:
-      CDA-X: []
+      CDA-X: {}
     average_base_quality:
-      CDA-X: []
+      CDA-X: {}
     average_insert_size:
-      CDA-X: []
+      CDA-X: {}
     average_read_length:
-      CDA-X: []
+      CDA-X: {}
     contamination:
-      CDA-X: []
+      CDA-X: {}
     contamination_error:
-      CDA-X: []
+      CDA-X: {}
     created_datetime:
-      CDA-X: []
+      CDA-X: {}
     data_category:
-      CDA-X: []
+      CDA-X: {}
     data_format:
-      CDA-X: []
+      CDA-X: {}
     data_type:
-      CDA-X: []
+      CDA-X: {}
     error_type:
-      CDA-X: []
+      CDA-X: {}
     experimental_strategy:
-      CDA-X: []
+      CDA-X: {}
     file_id:
-      CDA-X: []
+      CDA-X: {}
     file_name:
-      CDA-X: []
+      CDA-X: {}
     file_size:
-      CDA-X: []
+      CDA-X: {}
     imaging_date:
-      CDA-X: []
+      CDA-X: {}
     magnification:
-      CDA-X: []
+      CDA-X: {}
     md5sum:
-      CDA-X: []
+      CDA-X: {}
     mean_coverage:
-      CDA-X: []
+      CDA-X: {}
     msi_score:
-      CDA-X: []
+      CDA-X: {}
     msi_status:
-      CDA-X: []
+      CDA-X: {}
     pairs_on_diff_chr:
-      CDA-X: []
+      CDA-X: {}
     platform:
-      CDA-X: []
+      CDA-X: {}
     proportion_base_mismatch:
-      CDA-X: []
+      CDA-X: {}
     proportion_reads_duplicated:
-      CDA-X: []
+      CDA-X: {}
     proportion_reads_mapped:
-      CDA-X: []
+      CDA-X: {}
     proportion_targets_no_coverage:
-      CDA-X: []
+      CDA-X: {}
     state:
-      CDA-X: []
+      CDA-X: {}
     state_comment:
-      CDA-X: []
+      CDA-X: {}
     submitter_id:
-      CDA-X: []
+      CDA-X: {}
     total_reads:
-      CDA-X: []
+      CDA-X: {}
     tumor_ploidy:
-      CDA-X: []
+      CDA-X: {}
     tumor_purity:
-      CDA-X: []
+      CDA-X: {}
     type:
-      CDA-X: []
+      CDA-X: {}
     updated_datetime:
-      CDA-X: []
+      CDA-X: {}
 follow_ups:
-  CDA-X: []
+  CDA-X: {}
   CHILD:
     adverse_event:
-      CDA-X: []
+      CDA-X: {}
     adverse_event_grade:
-      CDA-X: []
+      CDA-X: {}
     aids_risk_factors:
-      CDA-X: []
+      CDA-X: {}
     barretts_esophagus_goblet_cells_present:
-      CDA-X: []
+      CDA-X: {}
     bmi:
-      CDA-X: []
+      CDA-X: {}
     body_surface_area:
-      CDA-X: []
+      CDA-X: {}
     cause_of_response:
-      CDA-X: []
+      CDA-X: {}
     cd4_count:
-      CDA-X: []
+      CDA-X: {}
     cdc_hiv_risk_factors:
-      CDA-X: []
+      CDA-X: {}
     comorbidity:
-      CDA-X: []
+      CDA-X: {}
     comorbidity_method_of_diagnosis:
-      CDA-X: []
+      CDA-X: {}
     created_datetime:
-      CDA-X: []
+      CDA-X: {}
     days_to_adverse_event:
-      CDA-X: []
+      CDA-X: {}
     days_to_comorbidity:
-      CDA-X: []
+      CDA-X: {}
     days_to_follow_up:
-      CDA-X: []
+      CDA-X: {}
     days_to_imaging:
-      CDA-X: []
+      CDA-X: {}
     days_to_progression:
-      CDA-X: []
+      CDA-X: {}
     days_to_progression_free:
-      CDA-X: []
+      CDA-X: {}
     days_to_recurrence:
-      CDA-X: []
+      CDA-X: {}
     diabetes_treatment_type:
-      CDA-X: []
+      CDA-X: {}
     disease_response:
-      CDA-X: []
+      CDA-X: {}
     dlco_ref_predictive_percent:
-      CDA-X: []
+      CDA-X: {}
     ecog_performance_status:
-      CDA-X: []
+      CDA-X: {}
     evidence_of_recurrence_type:
-      CDA-X: []
+      CDA-X: {}
     fev1_fvc_post_bronch_percent:
-      CDA-X: []
+      CDA-X: {}
     fev1_fvc_pre_bronch_percent:
-      CDA-X: []
+      CDA-X: {}
     fev1_ref_post_bronch_percent:
-      CDA-X: []
+      CDA-X: {}
     fev1_ref_pre_bronch_percent:
-      CDA-X: []
+      CDA-X: {}
     follow_up_id:
-      CDA-X: []
+      CDA-X: {}
     haart_treatment_indicator:
-      CDA-X: []
+      CDA-X: {}
     height:
-      CDA-X: []
+      CDA-X: {}
     hepatitis_sustained_virological_response:
-      CDA-X: []
+      CDA-X: {}
     hiv_viral_load:
-      CDA-X: []
+      CDA-X: {}
     hormonal_contraceptive_use:
-      CDA-X: []
+      CDA-X: {}
     hpv_positive_type:
-      CDA-X: []
+      CDA-X: {}
     hysterectomy_margins_involved:
-      CDA-X: []
+      CDA-X: {}
     hysterectomy_type:
-      CDA-X: []
+      CDA-X: {}
     imaging_result:
-      CDA-X: []
+      CDA-X: {}
     imaging_type:
-      CDA-X: []
+      CDA-X: {}
     immunosuppressive_treatment_type:
-      CDA-X: []
+      CDA-X: {}
     karnofsky_performance_status:
-      CDA-X: []
+      CDA-X: {}
     menopause_status:
-      CDA-X: []
+      CDA-X: {}
     molecular_tests:
-      CDA-X: []
+      CDA-X: {}
       CHILD:
         aa_change:
-          CDA-X: []
+          CDA-X: {}
         antigen:
-          CDA-X: []
+          CDA-X: {}
         biospecimen_type:
-          CDA-X: []
+          CDA-X: {}
         blood_test_normal_range_lower:
-          CDA-X: []
+          CDA-X: {}
         blood_test_normal_range_upper:
-          CDA-X: []
+          CDA-X: {}
         cell_count:
-          CDA-X: []
+          CDA-X: {}
         chromosome:
-          CDA-X: []
+          CDA-X: {}
         clonality:
-          CDA-X: []
+          CDA-X: {}
         copy_number:
-          CDA-X: []
+          CDA-X: {}
         created_datetime:
-          CDA-X: []
+          CDA-X: {}
         cytoband:
-          CDA-X: []
+          CDA-X: {}
         exon:
-          CDA-X: []
+          CDA-X: {}
         gene_symbol:
-          CDA-X: []
+          CDA-X: {}
         histone_family:
-          CDA-X: []
+          CDA-X: {}
         histone_variant:
-          CDA-X: []
+          CDA-X: {}
         intron:
-          CDA-X: []
+          CDA-X: {}
         laboratory_test:
-          CDA-X: []
+          CDA-X: {}
         loci_abnormal_count:
-          CDA-X: []
+          CDA-X: {}
         loci_count:
-          CDA-X: []
+          CDA-X: {}
         locus:
-          CDA-X: []
+          CDA-X: {}
         mismatch_repair_mutation:
-          CDA-X: []
+          CDA-X: {}
         molecular_analysis_method:
-          CDA-X: []
+          CDA-X: {}
         molecular_consequence:
-          CDA-X: []
+          CDA-X: {}
         molecular_test_id:
-          CDA-X: []
+          CDA-X: {}
         pathogenicity:
-          CDA-X: []
+          CDA-X: {}
         ploidy:
-          CDA-X: []
+          CDA-X: {}
         second_exon:
-          CDA-X: []
+          CDA-X: {}
         second_gene_symbol:
-          CDA-X: []
+          CDA-X: {}
         specialized_molecular_test:
-          CDA-X: []
+          CDA-X: {}
         state:
-          CDA-X: []
+          CDA-X: {}
         submitter_id:
-          CDA-X: []
+          CDA-X: {}
         test_analyte_type:
-          CDA-X: []
+          CDA-X: {}
         test_result:
-          CDA-X: []
+          CDA-X: {}
         test_units:
-          CDA-X: []
+          CDA-X: {}
         test_value:
-          CDA-X: []
+          CDA-X: {}
         transcript:
-          CDA-X: []
+          CDA-X: {}
         updated_datetime:
-          CDA-X: []
+          CDA-X: {}
         variant_origin:
-          CDA-X: []
+          CDA-X: {}
         variant_type:
-          CDA-X: []
+          CDA-X: {}
         zygosity:
-          CDA-X: []
+          CDA-X: {}
     nadir_cd4_count:
-      CDA-X: []
+      CDA-X: {}
     pancreatitis_onset_year:
-      CDA-X: []
+      CDA-X: {}
     pregnancy_outcome:
-      CDA-X: []
+      CDA-X: {}
     progression_or_recurrence:
-      CDA-X: []
+      CDA-X: {}
     progression_or_recurrence_anatomic_site:
-      CDA-X: []
+      CDA-X: {}
     progression_or_recurrence_type:
-      CDA-X: []
+      CDA-X: {}
     recist_targeted_regions_number:
-      CDA-X: []
+      CDA-X: {}
     recist_targeted_regions_sum:
-      CDA-X: []
+      CDA-X: {}
     reflux_treatment_type:
-      CDA-X: []
+      CDA-X: {}
     risk_factor:
-      CDA-X: []
+      CDA-X: {}
     risk_factor_treatment:
-      CDA-X: []
+      CDA-X: {}
     scan_tracer_used:
-      CDA-X: []
+      CDA-X: {}
     state:
-      CDA-X: []
+      CDA-X: {}
     submitter_id:
-      CDA-X: []
+      CDA-X: {}
     updated_datetime:
-      CDA-X: []
+      CDA-X: {}
     viral_hepatitis_serologies:
-      CDA-X: []
+      CDA-X: {}
     weight:
-      CDA-X: []
+      CDA-X: {}
 index_date:
-  CDA-X: []
+  CDA-X: {}
 lost_to_followup:
-  CDA-X: []
+  CDA-X: {}
 primary_site:
-  CDA-X: []
+  CDA-X: {}
 project:
-  CDA-X: []
+  CDA-X: {}
   CHILD:
     dbgap_accession_number:
-      CDA-X: []
+      CDA-X: {}
     disease_type:
-      CDA-X: []
+      CDA-X: {}
     name:
-      CDA-X: []
+      CDA-X: {}
     primary_site:
-      CDA-X: []
+      CDA-X: {}
     project_id:
-      CDA-X: []
+      CDA-X: {}
     releasable:
-      CDA-X: []
+      CDA-X: {}
     released:
-      CDA-X: []
+      CDA-X: {}
     state:
-      CDA-X: []
+      CDA-X: {}
 sample_ids:
-  CDA-X: []
+  CDA-X: {}
 samples:
-  CDA-X: []
+  CDA-X: {}
   CHILD:
     biospecimen_anatomic_site:
-      CDA-X: []
+      CDA-X: {}
     biospecimen_laterality:
-      CDA-X: []
+      CDA-X: {}
     catalog_reference:
-      CDA-X: []
+      CDA-X: {}
     composition:
-      CDA-X: []
+      CDA-X: {}
     created_datetime:
-      CDA-X: []
+      CDA-X: {}
     current_weight:
-      CDA-X: []
+      CDA-X: {}
     days_to_collection:
-      CDA-X: []
+      CDA-X: {}
     days_to_sample_procurement:
-      CDA-X: []
+      CDA-X: {}
     diagnosis_pathologically_confirmed:
-      CDA-X: []
+      CDA-X: {}
     distance_normal_to_tumor:
-      CDA-X: []
+      CDA-X: {}
     distributor_reference:
-      CDA-X: []
+      CDA-X: {}
     freezing_method:
-      CDA-X: []
+      CDA-X: {}
     growth_rate:
-      CDA-X: []
+      CDA-X: {}
     initial_weight:
-      CDA-X: []
+      CDA-X: {}
     intermediate_dimension:
-      CDA-X: []
+      CDA-X: {}
     is_ffpe:
-      CDA-X: []
+      CDA-X: {}
     longest_dimension:
-      CDA-X: []
+      CDA-X: {}
     method_of_sample_procurement:
-      CDA-X: []
+      CDA-X: {}
     oct_embedded:
-      CDA-X: []
+      CDA-X: {}
     passage_count:
-      CDA-X: []
+      CDA-X: {}
     pathology_report_uuid:
-      CDA-X: []
+      CDA-X: {}
     portions:
-      CDA-X: []
+      CDA-X: {}
       CHILD:
         analytes:
-          CDA-X: []
+          CDA-X: {}
           CHILD:
             a260_a280_ratio:
-              CDA-X: []
+              CDA-X: {}
             aliquots:
-              CDA-X: []
+              CDA-X: {}
               CHILD:
                 aliquot_id:
-                  CDA-X: []
+                  CDA-X: {}
                 aliquot_quantity:
-                  CDA-X: []
+                  CDA-X: {}
                 aliquot_volume:
-                  CDA-X: []
+                  CDA-X: {}
                 amount:
-                  CDA-X: []
+                  CDA-X: {}
                 analyte_type:
-                  CDA-X: []
+                  CDA-X: {}
                 analyte_type_id:
-                  CDA-X: []
+                  CDA-X: {}
                 concentration:
-                  CDA-X: []
+                  CDA-X: {}
                 created_datetime:
-                  CDA-X: []
+                  CDA-X: {}
                 no_matched_normal_low_pass_wgs:
-                  CDA-X: []
+                  CDA-X: {}
                 no_matched_normal_targeted_sequencing:
-                  CDA-X: []
+                  CDA-X: {}
                 no_matched_normal_wgs:
-                  CDA-X: []
+                  CDA-X: {}
                 no_matched_normal_wxs:
-                  CDA-X: []
+                  CDA-X: {}
                 selected_normal_low_pass_wgs:
-                  CDA-X: []
+                  CDA-X: {}
                 selected_normal_targeted_sequencing:
-                  CDA-X: []
+                  CDA-X: {}
                 selected_normal_wgs:
-                  CDA-X: []
+                  CDA-X: {}
                 selected_normal_wxs:
-                  CDA-X: []
+                  CDA-X: {}
                 source_center:
-                  CDA-X: []
+                  CDA-X:
+                    value:
+                      - F: none_to_zero
                 state:
-                  CDA-X: []
+                  CDA-X: {}
                 submitter_id:
-                  CDA-X: []
+                  CDA-X: {}
                 updated_datetime:
-                  CDA-X: []
+                  CDA-X: {}
             amount:
-              CDA-X: []
+              CDA-X: {}
             analyte_id:
-              CDA-X: []
+              CDA-X: {}
             analyte_quantity:
-              CDA-X: []
+              CDA-X: {}
             analyte_type:
-              CDA-X: []
+              CDA-X: {}
             analyte_type_id:
-              CDA-X: []
+              CDA-X: {}
             analyte_volume:
-              CDA-X: []
+              CDA-X: {}
             concentration:
-              CDA-X: []
+              CDA-X: {}
             created_datetime:
-              CDA-X: []
+              CDA-X: {}
             normal_tumor_genotype_snp_match:
-              CDA-X: []
+              CDA-X: {}
             ribosomal_rna_28s_16s_ratio:
-              CDA-X: []
+              CDA-X: {}
             spectrophotometer_method:
-              CDA-X: []
+              CDA-X: {}
             state:
-              CDA-X: []
+              CDA-X: {}
             submitter_id:
-              CDA-X: []
+              CDA-X: {}
             updated_datetime:
-              CDA-X: []
+              CDA-X: {}
             well_number:
-              CDA-X: []
+              CDA-X: {}
         created_datetime:
-          CDA-X: []
+          CDA-X: {}
         creation_datetime:
-          CDA-X: []
+          CDA-X: {}
         is_ffpe:
-          CDA-X: []
+          CDA-X: {}
         portion_id:
-          CDA-X: []
+          CDA-X: {}
         portion_number:
-          CDA-X: []
+          CDA-X: {}
         slides:
-          CDA-X: []
+          CDA-X: {}
           CHILD:
             bone_marrow_malignant_cells:
-              CDA-X: []
+              CDA-X: {}
             created_datetime:
-              CDA-X: []
+              CDA-X: {}
             number_proliferating_cells:
-              CDA-X: []
+              CDA-X: {}
             percent_eosinophil_infiltration:
-              CDA-X: []
+              CDA-X: {}
             percent_follicular_component:
-              CDA-X: []
+              CDA-X: {}
             percent_granulocyte_infiltration:
-              CDA-X: []
+              CDA-X: {}
             percent_inflam_infiltration:
-              CDA-X: []
+              CDA-X: {}
             percent_lymphocyte_infiltration:
-              CDA-X: []
+              CDA-X: {}
             percent_monocyte_infiltration:
-              CDA-X: []
+              CDA-X: {}
             percent_necrosis:
-              CDA-X: []
+              CDA-X: {}
             percent_neutrophil_infiltration:
-              CDA-X: []
+              CDA-X: {}
             percent_normal_cells:
-              CDA-X: []
+              CDA-X: {}
             percent_rhabdoid_features:
-              CDA-X: []
+              CDA-X: {}
             percent_sarcomatoid_features:
-              CDA-X: []
+              CDA-X: {}
             percent_stromal_cells:
-              CDA-X: []
+              CDA-X: {}
             percent_tumor_cells:
-              CDA-X: []
+              CDA-X: {}
             percent_tumor_nuclei:
-              CDA-X: []
+              CDA-X: {}
             prostatic_chips_positive_count:
-              CDA-X: []
+              CDA-X: {}
             prostatic_chips_total_count:
-              CDA-X: []
+              CDA-X: {}
             prostatic_involvement_percent:
-              CDA-X: []
+              CDA-X: {}
             section_location:
-              CDA-X: []
+              CDA-X: {}
             slide_id:
-              CDA-X: []
+              CDA-X: {}
             state:
-              CDA-X: []
+              CDA-X: {}
             submitter_id:
-              CDA-X: []
+              CDA-X: {}
             tissue_microarray_coordinates:
-              CDA-X: []
+              CDA-X: {}
             updated_datetime:
-              CDA-X: []
+              CDA-X: {}
         state:
-          CDA-X: []
+          CDA-X: {}
         submitter_id:
-          CDA-X: []
+          CDA-X: {}
         updated_datetime:
-          CDA-X: []
+          CDA-X: {}
         weight:
-          CDA-X: []
+          CDA-X: {}
     preservation_method:
-      CDA-X: []
+      CDA-X: {}
     sample_id:
-      CDA-X: []
+      CDA-X: {}
     sample_type:
-      CDA-X: []
+      CDA-X: {}
     sample_type_id:
-      CDA-X: []
+      CDA-X: {}
     shortest_dimension:
-      CDA-X: []
+      CDA-X: {}
     state:
-      CDA-X: []
+      CDA-X: {}
     submitter_id:
-      CDA-X: []
+      CDA-X: {}
     time_between_clamping_and_freezing:
-      CDA-X: []
+      CDA-X: {}
     time_between_excision_and_freezing:
-      CDA-X: []
+      CDA-X: {}
     tissue_collection_type:
-      CDA-X: []
+      CDA-X: {}
     tissue_type:
-      CDA-X: []
+      CDA-X: {}
     tumor_code:
-      CDA-X: []
+      CDA-X: {}
     tumor_code_id:
-      CDA-X: []
+      CDA-X: {}
     tumor_descriptor:
-      CDA-X: []
+      CDA-X: {}
     updated_datetime:
-      CDA-X: []
+      CDA-X: {}
 state:
-  CDA-X: []
+  CDA-X: {}
 submitter_id:
-  CDA-X: []
+  CDA-X: {}
 submitter_sample_ids:
-  CDA-X: []
+  CDA-X: {}
 updated_datetime:
-  CDA-X: []
+  CDA-X: {}

@@ -14,7 +14,7 @@ result = query_job.result()
 schema = result.schema
 
 def parse_schema(_schema):
-    _transforms = {"CDA-X": []}
+    _transforms = {"CDA-X": {}}
     if len(_schema.fields):
         _transforms["CHILD"] = {
             _field.name: parse_schema(_field)
