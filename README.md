@@ -65,3 +65,22 @@ CDA-X:
 - A function in `field` changes the name of the field
 - A function in `value` changes the value
 - Any parameters are passed to the function as keyword arguments
+
+
+# Testing out local install
+
+```
+git clone git@github.com:CancerDataAggregator/transform.git
+cd transform
+pip install -e .
+```
+
+Working on your own branch
+
+```
+git branch <mine>
+git checkout <mine>
+```
+
+If you used the editable install (`pip install -e .`) Python will use your
+changes live.
