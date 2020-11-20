@@ -1,6 +1,25 @@
 # Transform
 Python code for implementing transforms on data extracted from DCs
 
+```
+$ cda-transform -h
+usage: cda-transform [-h] [--skipfile SKIPFILE] input output transforms
+
+positional arguments:
+  input                Input data file.
+  output               Output data file.
+  transforms           Transform definition file
+
+optional arguments:
+  -h, --help           show this help message and exit
+  --skipfile SKIPFILE  File describing transforms to skip
+```
+
+This code will ingest the `.jsonl` produced by the ISB-CGC E script, apply
+transforms to it and write it out back as another `.jsonl` file ready for ingest
+into BQ.
+
+
 ## Transform dictionary
 A transform dictionary expresses the transformations needed.
 
