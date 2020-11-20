@@ -19,6 +19,10 @@ This code will ingest the `.jsonl` produced by the ISB-CGC E script, apply
 transforms to it and write it out back as another `.jsonl` file ready for ingest
 into BQ.
 
+The library of transform functions should be added in [transformlib.py](cdatransform/transformlib.py)
+
+The transform dictionary for GDC is [here](gdc-transform.yml)
+
 
 ## Transform dictionary
 A transform dictionary expresses the transformations needed.
