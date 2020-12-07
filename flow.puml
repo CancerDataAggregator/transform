@@ -22,8 +22,20 @@ database PDC
 component "PDC API" as pdc_api
 file "RAW PDC\nJSON" as raw_pdc_json
 component "PDC Value\nTransforms" as pdc_val_xform
+note right
+Value transforms are on a 
+per column basis and are vocabulary
+harmonization transforms.
+end note
 file "PDC+\nJSON" as pdc_plus_json
 component "PDC Structural\nTransforms" as pdc_s_xform
+note right
+Transforms are created as a series of
+filters that can be applied to the
+data in sequence, changing particular
+source entities into destination
+entities.
+end note
 file "PDC in\nCCDH Model" as pdc_cda_model
 
 PDC -> pdc_api 
