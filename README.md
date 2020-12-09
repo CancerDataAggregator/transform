@@ -30,7 +30,7 @@ into BQ.
 - [transformlib.py](cdatransform/transformlib.py): The library of generalized
 transform functions.
 - [gdclib.py](cdatransform/gdclib.py): Library of transforms for GDC 
-- [pdclib.py](cdatransform/gdclib.py): Library of transforms for PDC 
+- [pdclib.py](cdatransform/pdclib.py): Library of transforms for PDC 
 
 
 # Testing out local install

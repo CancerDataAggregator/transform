@@ -1,8 +1,18 @@
 """
 Transforms specific to GDC data structures
 """
+from .transformlib import (XFunc, apply_on_column, )
 
-def demographics(transform_in_progress, original):
+
+def none_to_zero(transform_in_progress, columns):
+    """Change Nones to 0 in given columns."""
+    func = XFunc(func=lambda v, _: 0 if v == 'None' else v, params={})
+    for col in columns:
+        apply_on_column(transform_in_progress, col, func)
+    return transform_in_progress
+
+
+def demographics(transform_in_progress, original, **kwargs):
     """Transform the demographic data."""
     demographic = original.get("demographic")
     if isinstance(demographic, list):
@@ -17,7 +27,7 @@ def demographics(transform_in_progress, original):
     return transform_in_progress
 
 
-def entity_to_specimen(transform_in_progress, original):
+def entity_to_specimen(transform_in_progress, original, **kwargs):
     """Convert samples, portions and aliquots to specimens"""
     transform_in_progress["specimen"] = [
         specimen_from_entity(*s)
@@ -28,7 +38,7 @@ def entity_to_specimen(transform_in_progress, original):
 
 def get_entities(original):
     for sample in original.get("samples", []):
-        yield (sample, "sample", None)
+        yield (sample, "sample", "Initial specimen")
         for portion in sample.get("portions", []):
             yield (portion, "portion", sample.get("sample_id"))
             for aliquot in portion.get("aliquots", []):
