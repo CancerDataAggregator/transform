@@ -9,68 +9,28 @@ Python code for implementing transforms on data extracted from DCs
 
 ```
 $ cda-transform -h
-usage: cda-transform [-h] [--skipfile SKIPFILE] input output transforms
+usage: cda-transform [-h] [--limit LIMIT] input output transforms
 
 positional arguments:
-  input                Input data file.
-  output               Output data file.
-  transforms           Transform definition file
+  input          Input data file.
+  output         Output data file.
+  transforms     Transforms list file.
 
 optional arguments:
-  -h, --help           show this help message and exit
-  --skipfile SKIPFILE  File describing transforms to skip
+  -h, --help     show this help message and exit
+  --limit LIMIT  If present, will transform only the first N entries.
 ```
 
 This code will ingest the `.jsonl` produced by the ISB-CGC E script, apply
 transforms to it and write it out back as another `.jsonl` file ready for ingest
 into BQ.
 
-The library of transform functions should be added in [transformlib.py](cdatransform/transformlib.py)
+- [gdc-transform.yml](gdc-transform.yml): Sample transforms list file for GDC
 
-The transform dictionary for GDC is [here](gdc-transform.yml)
-
-
-## Transform dictionary
-A transform dictionary expresses the transformations needed.
-
-- Each level of the dictionary is a set of keys corresponding to the origin
-  field names.
-- A field that will be discarded in the destination is simply omitted from the
-  dictionary. 
-- Each field has at least one entry. This entry is called "CDA-X" and is
-  a list of transform functions that have to be applied to the field. It can be
-  an empty list. Each item in that list is a transform object, detailed below.
-- A field that has a struct as it's contents, contains a second entry called
-  "CHILD". The child is another dictionary defined as above.
-- No special notation is needed for a field that can contain a list of objects.
-
-**A template transforms dictionary can be constructed from a dataset by running
-the script `schema2transform.py` on the dataset. The generated YML can be then
-hand edited to add in transforms that are needed.**
-
-## Transform object
-
-Each transform object is a dictionary of the form
-
-```
-CDA-X:
-    field:
-        - F: function_name
-          P:
-            p1: param1
-            p2: param2
-        ...
-    value:
-        - F: function_name
-          P:
-            p1: ...
-            p2: ...
-    ...
-```
-
-- A function in `field` changes the name of the field
-- A function in `value` changes the value
-- Any parameters are passed to the function as keyword arguments
+- [transformlib.py](cdatransform/transformlib.py): The library of generalized
+transform functions.
+- [gdclib.py](cdatransform/gdclib.py): Library of transforms for GDC 
+- [pdclib.py](cdatransform/gdclib.py): Library of transforms for PDC 
 
 
 # Testing out local install
