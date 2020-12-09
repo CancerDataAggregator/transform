@@ -4,9 +4,15 @@ Transforms specific to GDC data structures
 
 def demographics(transform_in_progress, original):
     """Transform the demographic data."""
-    transform_in_progress["id"] = original["case_id"]
-    transform_in_progress["sex"] = original["demographics"][0]["gender"]
-    transform_in_progress["days_to_birth"] = original["demographics"][0]["days_to_birth"]
+    demographic = original.get("demographic")
+    if isinstance(demographic, list):
+        demographic = demographic[0]
+    elif demographic is None:
+        demographic = {}
+
+    transform_in_progress["id"] = original.get("case_id", "unknown")
+    transform_in_progress["sex"] = demographic.get("gender", "unknown")
+    transform_in_progress["days_to_birth"] = demographic.get("days_to_birth", "unknown")
 
     return transform_in_progress
 

@@ -4,10 +4,11 @@ import sys
 import yaml
 from yaml import Loader
 
-from .gdclib import (entity_to_specimen, )
+from .gdclib import (entity_to_specimen, demographics)
 
 t_lib = {
     "gdc.specimen": entity_to_specimen
+    , "gdc.demographics": demographics
 }
 
 
