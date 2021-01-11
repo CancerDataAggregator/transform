@@ -38,6 +38,18 @@ def query(case_id):
     )
 
 
+def retry_get(endpoint, params, base_retry_interval=10.0):
+    retry_interval = base_retry_interval
+    while True:
+        result = requests.get(endpoint, params=params)
+        if result.ok:
+            return result
+        else:
+            sys.stderr.write(f"API call failed. Retrying in {retry_interval}s ...\n")
+            time.sleep(retry_interval)
+            retry_interval *= 2
+
+
 class PDC:
     def __init__(self, endpoint="https://pdc.cancer.gov/graphql") -> None:
         self.endpoint = endpoint
@@ -51,19 +63,12 @@ class PDC:
             case_ids = self.get_case_id_list()
 
         for case_id in case_ids:
-            params = {
-                "query": query(case_id=case_id)
-            }            
-
-            # How to handle errors
-            result = requests.get(self.endpoint, params=params)
+            result = retry_get(self.endpoint, params={"query": query(case_id=case_id)})
             yield result.json()["data"]["case"][0]
 
     def get_case_id_list(self):
-        params = {
-            "query": "{allCases {case_id}}"
-        }
-        result = requests.get(self.endpoint, params=params)
+        params = {"query": "{allCases {case_id}}"}
+        result = retry_get(self.endpoint, params=params)
         for case in result.json()["data"]["allCases"]:
             yield case["case_id"]
 
@@ -80,4 +85,4 @@ class PDC:
 
 if __name__ == "__main__":
     pdc = PDC()
-    pdc.save_cases("test.jsonl")
+    pdc.save_cases("pdc.jsonl")
