@@ -1,3 +1,7 @@
+The goal of this repository is to provide standalone code that allows anybody to
+perform an end-to-end ETL, starting from the DCs and ending up with a `.jsonl`
+file they can upload to BQ.
+
 # Transform flow
 
 ![](overallflow.png)
