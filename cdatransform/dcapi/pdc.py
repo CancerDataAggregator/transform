@@ -3,8 +3,10 @@ import jsonlines
 import time
 import sys
 import gzip
+import argparse
 
-from .lib import retry_get
+from .lib import get_case_ids, retry_get
+
 
 def query(case_id):
     return (
@@ -39,18 +41,6 @@ def query(case_id):
     )
 
 
-# def retry_get(endpoint, params, base_retry_interval=10.0):
-#     retry_interval = base_retry_interval
-#     while True:
-#         result = requests.get(endpoint, params=params)
-#         if result.ok:
-#             return result
-#         else:
-#             sys.stderr.write(f"API call failed. Retrying in {retry_interval}s ...\n")
-#             time.sleep(retry_interval)
-#             retry_interval *= 2
-
-
 class PDC:
     def __init__(self, endpoint="https://pdc.cancer.gov/graphql") -> None:
         self.endpoint = endpoint
@@ -83,11 +73,17 @@ class PDC:
                 n += 1
                 if n % 100 == 0:
                     sys.stderr.write(f"Wrote {n} cases in {time.time() - t0}s\n")
+        sys.stderr.write(f"Wrote {n} cases in {time.time() - t0}s\n")
 
 
 def main():
+    parser = argparse.ArgumentParser(description='Pull case data from PDC API.')
+    parser.add_argument('out_file', help='Out file name. Should end with .gz')
+    parser.add_argument('--cases', help='Optional file with list of case ids (one to a line)')    
+    args = parser.parse_args()
+
     pdc = PDC()
-    pdc.save_cases("pdc.jsonl.gz")
+    pdc.save_cases(args.out_file, case_ids=get_case_ids(args.cases))
 
 
 if __name__ == "__main__":

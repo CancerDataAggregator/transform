@@ -3,7 +3,40 @@
 ![](overallflow.png)
 
 
-# Code
+# Install
+
+Clone repository and install
+```
+git clone git@github.com:CancerDataAggregator/transform.git
+pip install -e .
+```
+
+
+# Pull raw JSONL from DCs
+
+Pull all cases
+```
+get-gdc gdc.jsonl.gz
+get-pdc pdc.jsonl.gz
+```
+
+OR, pull specific list of cases
+```
+get-gdc gdc.jsonl.gz --cases gdc-case-list.txt
+```
+
+where `gdc-case-list.txt` looks like 
+
+```
+375436b3-66ac-4d5e-b495-18a96d812a69
+74543fa4-ce73-46e4-9c59-224e8242b4a2
+f8970455-bfb2-4b1d-ab71-3c5d619898ad
+```
+
+Examples are in `cdatransform/dcapi/*-case-list.txt`
+
+
+# Transform and harmonize data
 
 Python code for implementing transforms on data extracted from DCs
 

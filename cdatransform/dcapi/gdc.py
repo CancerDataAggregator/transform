@@ -4,8 +4,9 @@ import jsonlines
 import gzip
 import sys
 import time
+import argparse
 
-from .lib import retry_get
+from .lib import get_case_ids, retry_get
 
 
 default_fields = [
@@ -42,8 +43,8 @@ class GDC:
         page_size=100,
     ):
         fields = ",".join(self.fields)
+        # defining the GDC API query
         if case_ids is not None:
-            # defining the GDC API query
             filt = json.dumps(
                 {
                     "op": "and",
@@ -56,7 +57,6 @@ class GDC:
             filt = None
 
         offset = 0
-        n = 0
         t0 = time.time()
         while True:
             params = {
@@ -74,10 +74,9 @@ class GDC:
             p_no = page.get("page")
             p_tot = page.get("pages")
 
-            sys.stderr.write(f"Pulling page {p_no} / {p_tot}. {n} cases done in {time.time() - t0}s\n")
+            sys.stderr.write(f"Pulling page {p_no} / {p_tot}\n")
 
             for hit in hits:
-                n += 1
                 yield hit
 
             if p_no >= p_tot:
@@ -87,15 +86,26 @@ class GDC:
 
 
     def save_cases(self, out_file, case_ids=None, page_size=1000):
+        t0 = time.time()
+        n = 0
         with gzip.open(out_file, 'wb') as fp:
             writer = jsonlines.Writer(fp)
             for case in self.cases(case_ids, page_size):
                 writer.write(case)
+                n += 1
+                if n % 100 == 0:
+                    sys.stderr.write(f"Wrote {n} cases in {time.time() - t0}s\n")
+        sys.stderr.write(f"Wrote {n} cases in {time.time() - t0}s\n")
 
 
 def main():
+    parser = argparse.ArgumentParser(description='Pull case data from GDC API.')
+    parser.add_argument('out_file', help='Out file name. Should end with .gz')
+    parser.add_argument('--cases', help='Optional file with list of case ids (one to a line)')    
+    args = parser.parse_args()
+
     gdc = GDC()
-    gdc.save_cases("gdc.jsonl.gz")
+    gdc.save_cases(args.out_file, case_ids=get_case_ids(args.cases))
 
 
 if __name__ == "__main__":
