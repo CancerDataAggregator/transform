@@ -1,9 +1,10 @@
-import requests
 import json
 import jsonlines
 import time
 import sys
+import gzip
 
+from .lib import retry_get
 
 def query(case_id):
     return (
@@ -38,16 +39,16 @@ def query(case_id):
     )
 
 
-def retry_get(endpoint, params, base_retry_interval=10.0):
-    retry_interval = base_retry_interval
-    while True:
-        result = requests.get(endpoint, params=params)
-        if result.ok:
-            return result
-        else:
-            sys.stderr.write(f"API call failed. Retrying in {retry_interval}s ...\n")
-            time.sleep(retry_interval)
-            retry_interval *= 2
+# def retry_get(endpoint, params, base_retry_interval=10.0):
+#     retry_interval = base_retry_interval
+#     while True:
+#         result = requests.get(endpoint, params=params)
+#         if result.ok:
+#             return result
+#         else:
+#             sys.stderr.write(f"API call failed. Retrying in {retry_interval}s ...\n")
+#             time.sleep(retry_interval)
+#             retry_interval *= 2
 
 
 class PDC:
@@ -75,7 +76,8 @@ class PDC:
     def save_cases(self, out_file, case_ids=None):
         t0 = time.time()
         n = 0
-        with jsonlines.open(out_file, mode="w") as writer:
+        with gzip.open(out_file, 'wb') as fp:
+            writer = jsonlines.Writer(fp)
             for case in self.cases(case_ids):
                 writer.write(case)
                 n += 1
@@ -83,6 +85,10 @@ class PDC:
                     sys.stderr.write(f"Wrote {n} cases in {time.time() - t0}s\n")
 
 
-if __name__ == "__main__":
+def main():
     pdc = PDC()
-    pdc.save_cases("pdc.jsonl")
+    pdc.save_cases("pdc.jsonl.gz")
+
+
+if __name__ == "__main__":
+    main()

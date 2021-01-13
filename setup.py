@@ -17,11 +17,14 @@ setup(
     platforms=['POSIX', 'MacOS', 'Windows'],
     python_requires='>=3.6',
     install_requires=[
+        "requests",
         "jsonlines",
         "pyyaml",
     ],
     entry_points={
         'console_scripts': [
+            'get-gdc = cdatransform.dcapi.gdc:main',
+            'get-pdc = cdatransform.dcapi.pdc:main',
             'cda-transform = cdatransform.main:main'
         ],
     },
