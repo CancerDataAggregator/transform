@@ -32,8 +32,10 @@ def query(case_id):
         days_to_birth
     }
     diagnoses {
+        primary_diagnosis
         tumor_grade
         tumor_stage
+        morphology
     } 
 }
 """

@@ -21,8 +21,10 @@ default_fields = [
     "demographic.days_to_birth",
     "diagnoses.treatments.treatment_outcome",
     "diagnoses.treatments.treatment_type",
+    "diagnoses.primary_diagnosis",
     "diagnoses.tumor_grade",
     "diagnoses.tumor_stage",
+    "diagnoses.morphology",
     "samples.sample_id",
     "samples.submitter_id",
     "samples.sample_type",
@@ -93,7 +95,7 @@ class GDC:
             for case in self.cases(case_ids, page_size):
                 writer.write(case)
                 n += 1
-                if n % 100 == 0:
+                if n % page_size == 0:
                     sys.stderr.write(f"Wrote {n} cases in {time.time() - t0}s\n")
         sys.stderr.write(f"Wrote {n} cases in {time.time() - t0}s\n")
 
