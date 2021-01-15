@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 def main():
 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(prog="Transform", description="Transform source DC jsonl to Harmonized jsonl")
     parser.add_argument("input", help="Input data file.")
     parser.add_argument("output", help="Output data file.")
     parser.add_argument("transforms", help="Transforms list file.")
