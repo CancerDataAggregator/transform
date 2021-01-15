@@ -11,24 +11,26 @@ from .lib import get_case_ids, retry_get
 
 default_fields = [
     "case_id",
-    "consent_type",
+    "submitter_id",
     "disease_type",
     "primary_site",
-    "submitter_id",
+    "project.project_id",
     "demographic.ethnicity",
     "demographic.gender",
     "demographic.race",
     "demographic.days_to_birth",
-    "diagnoses.treatments.treatment_outcome",
-    "diagnoses.treatments.treatment_type",
-    "diagnoses.primary_diagnosis",
+    "diagnoses.diagnosis_id",
+    "diagnoses.age_at_diagnosis",
     "diagnoses.tumor_grade",
     "diagnoses.tumor_stage",
     "diagnoses.morphology",
+    "diagnoses.primary_diagnosis",
+    "diagnoses.treatments.treatment_outcome",
+    "diagnoses.treatments.treatment_type",
     "samples.sample_id",
     "samples.submitter_id",
     "samples.sample_type",
-    "samples.tissue_type",
+    "samples.biospecimen_anatomic_site",
 ]
 
 
