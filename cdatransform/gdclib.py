@@ -1,31 +1,31 @@
 """
 Transforms specific to GDC data structures
 """
-from .transformlib import (XFunc, apply_on_column, )
 
+# gdc.research_subject ---------------------------------------------
 
-def none_to_zero(transform_in_progress, columns):
-    """Change Nones to 0 in given columns."""
-    func = XFunc(func=lambda v, _: 0 if v == 'None' else v, params={})
-    for col in columns:
-        apply_on_column(transform_in_progress, col, func)
-    return transform_in_progress
+def research_subject(tip, orig, **kwargs):
+    """Convert fields needed for ResearchSubject"""
+    demog = orig.get("demographic")
+    if isinstance(demog, list):
+        demog = demog[0]
+    elif demog is None:
+        demog = {}
 
+    tip["id"] = orig.get("case_id")
+    tip["identifier"] = orig.get("submitter_id")
+    tip["ethnicity"] = demog.get("ethnicity")
+    tip["sex"] = demog.get("gender")
+    tip["race"] = demog.get("race")
+    tip["primary_disease_type"] = orig.get("disease_type")
+    tip["primary_disease_site"] = orig.get("primary_site")
+    tip["Project"] = {
+        "label": orig.get("project", {}).get("project_id")
+    }
 
-def demographics(transform_in_progress, original, **kwargs):
-    """Transform the demographic data."""
-    demographic = original.get("demographic")
-    if isinstance(demographic, list):
-        demographic = demographic[0]
-    elif demographic is None:
-        demographic = {}
+    return tip
 
-    transform_in_progress["id"] = original.get("case_id", "unknown")
-    transform_in_progress["sex"] = demographic.get("gender", "unknown")
-    transform_in_progress["days_to_birth"] = demographic.get("days_to_birth", "unknown")
-
-    return transform_in_progress
-
+# gdc.entity_to_specimen -----------------------------------------
 
 def entity_to_specimen(transform_in_progress, original, **kwargs):
     """Convert samples, portions and aliquots to specimens"""
@@ -38,39 +38,22 @@ def entity_to_specimen(transform_in_progress, original, **kwargs):
 
 def get_entities(original):
     for sample in original.get("samples", []):
-        yield (sample, "sample", "Initial specimen")
+        yield (sample, "sample", "Initial specimen", sample, original)
         for portion in sample.get("portions", []):
-            yield (portion, "portion", sample.get("sample_id"))
+            yield (portion, "portion", sample.get("sample_id"), sample, original)
             for aliquot in portion.get("aliquots", []):
-                yield (aliquot, "aliquot", portion.get("portion_id"))
+                yield (aliquot, "aliquot", portion.get("portion_id"), sample, original)
 
 
-def specimen_from_entity(entity, _type, parent_id):
+def specimen_from_entity(entity, _type, parent_id, sample, case):
+    id_key = f"{_type}_id"
     return {
-        "sample": specimen_from_sample,
-        "portion": specimen_from_portion,
-        "aliquot": specimen_from_aliqot
-    }.get(_type)(entity, parent_id)
-
-
-def specimen_from_sample(entity, parent_id=None):
-    return {
-        "id": entity["sample_id"],
-        "specimen_type": "sample",
-        "derived_from": parent_id
-    }
-
-
-def specimen_from_portion(entity, parent_id):
-    return {
-        "id": entity["portion_id"],
-        "specimen_type": "portion",
-        "derived_from": parent_id
-    }
-
-def specimen_from_aliqot(entity, parent_id):
-    return {
-        "id": entity["aliquot_id"],
-        "specimen_type": "aliquot",
-        "derived_from": parent_id
+        "derived_from_subject": entity.get("submitter_id"),
+        "identifier": entity.get(id_key),
+        "specimen_type": _type,
+        "primary_disease_type": case.get("disease_type"),
+        "anatomical_site": sample.get("biospecimen_anatomic_site"),
+        "days_to_birth": case.get("demographic", {}).get("days_to_birth"),
+        "associated_project": case.get("project", {}).get("project_id"),
+        "derived_from_specimen": parent_id
     }
