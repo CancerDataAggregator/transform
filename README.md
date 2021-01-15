@@ -46,7 +46,9 @@ Python code for implementing transforms on data extracted from DCs
 
 ```
 $ cda-transform -h
-usage: cda-transform [-h] [--limit LIMIT] input output transforms
+usage: Transform [-h] [--log LOG] [--case CASE] [--cases CASES] input output transforms
+
+Transform source DC jsonl to Harmonized jsonl
 
 positional arguments:
   input          Input data file.
@@ -55,12 +57,16 @@ positional arguments:
 
 optional arguments:
   -h, --help     show this help message and exit
-  --limit LIMIT  If present, will transform only the first N entries.
+  --log LOG      Name of log file.
+  --case CASE    Transform just this case
+  --cases CASES  Optional file with list of case ids (one to a line)
 ```
 
-This code will ingest the `.jsonl` produced by the ISB-CGC E script, apply
-transforms to it and write it out back as another `.jsonl` file ready for ingest
-into BQ.
+This code will ingest the raw data from the individual DCs (`.jsonl.gz` produced
+by the extract-gdc scripts), apply transforms to the cases and write them back
+out as another `.jsonl.gz` file ready for ingest into BQ or merging.
+
+By default the log file is named `transform.log`
 
 - [gdc-transform.yml](gdc-transform.yml): Sample transforms list file for GDC
 
