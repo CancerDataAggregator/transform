@@ -1,9 +1,2 @@
-value:
-- none_to_zero:
-    columns:
-      - samples.portions.analytes.aliquots.source_center
-
-structural:
-- this_does_no_exist
-- gdc.specimen
-- gdc.demographics
+- gdc.research_subject
+- gdc.entity_to_specimen
