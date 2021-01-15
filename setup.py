@@ -23,8 +23,8 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'get-gdc = cdatransform.dcapi.gdc:main',
-            'get-pdc = cdatransform.dcapi.pdc:main',
+            'extract-gdc = cdatransform.extract.gdc:main',
+            'extract-pdc = cdatransform.extract.pdc:main',
             'cda-transform = cdatransform.main:main'
         ],
     },

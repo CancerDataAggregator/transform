@@ -16,17 +16,17 @@ pip install -e .
 ```
 
 
-# Pull raw JSONL from DCs
+# Extract raw JSONL from DCs
 
 Pull all cases
 ```
-get-gdc gdc.jsonl.gz
-get-pdc pdc.jsonl.gz
+extract-gdc gdc.jsonl.gz
+extract-pdc pdc.jsonl.gz
 ```
 
 OR, pull specific list of cases
 ```
-get-gdc gdc.jsonl.gz --cases gdc-case-list.txt
+extract-gdc gdc.jsonl.gz --cases gdc-case-list.txt
 ```
 
 where `gdc-case-list.txt` looks like 
