@@ -1,0 +1,40 @@
+{
+    "id": "d90249dc-40e8-449e-a24a-6d461f29f632",
+    "primary_site": "Retroperitoneum and peritoneum",
+    "disease_type": "Cystic, Mucinous and Serous Neoplasms",
+    "case_id": "d90249dc-40e8-449e-a24a-6d461f29f632",
+    "project": {
+        "project_id": "CPTAC-2"
+    },
+    "submitter_id": "22OV001",
+    "diagnoses": [
+        {
+            "age_at_diagnosis": null,
+            "primary_diagnosis": "Serous adenocarcinoma, NOS",
+            "morphology": "8441/3",
+            "diagnosis_id": "9d587b59-8c48-4cf1-92be-4c433326c301",
+            "tumor_stage": "IIIC",
+            "tumor_grade": "Not Reported"
+        }
+    ],
+    "samples": [
+        {
+            "biospecimen_anatomic_site": null,
+            "sample_id": "d86f320b-4a81-45c5-a015-9ac7043ae5a8",
+            "submitter_id": "2b4ce90c-8036-4207-ac3e-54a76f",
+            "sample_type": "Primary Tumor"
+        },
+        {
+            "biospecimen_anatomic_site": null,
+            "sample_id": "562317b1-27eb-4790-8d2a-4151d44c51d2",
+            "submitter_id": "4b216777-ce44-45f7-9df1-9d873a",
+            "sample_type": "Blood Derived Normal"
+        }
+    ],
+    "demographic": {
+        "gender": "female",
+        "race": "white",
+        "ethnicity": "not hispanic or latino",
+        "days_to_birth": null
+    }
+}
