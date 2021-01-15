@@ -6,13 +6,14 @@ import yaml
 from yaml import Loader
 
 
-from .gdclib import (base, entity_to_specimen)
+from .gdclib import (research_subject, diagnosis, entity_to_specimen)
 
 logger = logging.getLogger(__name__)
 
 
 t_lib = {
-    "gdc.research_subject": base,
+    "gdc.research_subject": research_subject,
+    "gdc.diagnosis": diagnosis,
     "gdc.entity_to_specimen": entity_to_specimen
 }
 
