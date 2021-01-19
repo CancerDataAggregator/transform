@@ -1,4 +1,4 @@
-- gdc.research_subject
-- gdc.diagnosis
-- gdc.entity_to_specimen
 - gdc.files
+- gdc.entity_to_specimen
+- gdc.diagnosis
+- gdc.research_subject
