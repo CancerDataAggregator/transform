@@ -77,3 +77,12 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
         "derived_from_specimen": parent_id,
         "CDA_context": "GDC"
     }
+
+
+# gdc.files -------------------------------------------------------
+
+def add_files(transform_in_progress, original, **kwargs):
+    transform_in_progress["File"] = [
+        f for f in original.get("files")
+    ]
+    return transform_in_progress    

@@ -32,6 +32,19 @@ default_fields = [
     "samples.submitter_id",
     "samples.sample_type",
     "samples.biospecimen_anatomic_site",
+    "files.file_id",
+    "files.file_name",
+    "files.file_size",
+    "files.file_state",
+    "files.md5sum",
+    "files.origin",
+    "files.platform",
+    "files.revision",
+    "files.state",
+    "files.state_comment",
+    "files.submitter_id",
+    "files.tags",
+    "files.type",
 ]
 
 
