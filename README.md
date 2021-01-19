@@ -105,6 +105,8 @@ cda-transform gdc.jsonl.gz gdc.transf.jsonl.gz ../gdc-transform.yml
 bq load --autodetect --source_format NEWLINE_DELIMITED_JSON kg_expt.gdc gdc.transf.jsonl.gz
 ```
 
+# [Example of creating small data sets for testing](tests/small/Readme.md)
+
 # Testing out local install
 
 ```
