@@ -37,7 +37,7 @@ where `gdc-case-list.txt` looks like
 f8970455-bfb2-4b1d-ab71-3c5d619898ad
 ```
 
-Examples are in `cdatransform/dcapi/*-case-list.txt`
+Examples are in `cdatransform/extract/*-case-list.txt`
 
 
 # Transform and harmonize data
@@ -70,11 +70,40 @@ By default the log file is named `transform.log`
 
 - [gdc-transform.yml](gdc-transform.yml): Sample transforms list file for GDC
 
-- [transformlib.py](cdatransform/transformlib.py): The library of generalized
-transform functions.
 - [gdclib.py](cdatransform/gdclib.py): Library of transforms for GDC 
 - [pdclib.py](cdatransform/pdclib.py): Library of transforms for PDC 
 
+
+# Load data into BigQuery
+
+Install BQ command line tools as needed
+```
+brew install --cask google-cloud-sdk
+```
+
+Log into Google cloud
+
+```
+gcloud auth login
+```
+
+(This will let you set a default project, set this to `gdc-bq-sample`)
+
+
+In this project there is a dataset called `kg-expt`. You can use your own.
+
+```
+bq load --autodetect --source_format NEWLINE_DELIMITED_JSON kg_expt.gdc gdc.d90249dc-40e8-449e-a24a-6d461f29f632.transf.json
+```
+
+# Example of how to load transformed GDC data into BQ
+
+```
+cd data
+extract-gdc gdc.jsonl.gz 
+cda-transform gdc.jsonl.gz gdc.transf.jsonl.gz ../gdc-transform.yml
+bq load --autodetect --source_format NEWLINE_DELIMITED_JSON kg_expt.gdc gdc.transf.jsonl.gz
+```
 
 # Testing out local install
 
