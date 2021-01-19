@@ -83,6 +83,6 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
 
 def add_files(transform_in_progress, original, **kwargs):
     transform_in_progress["File"] = [
-        f for f in original.get("files")
+        f for f in original.get("files", [])
     ]
     return transform_in_progress    
