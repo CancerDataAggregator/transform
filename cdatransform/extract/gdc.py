@@ -6,7 +6,8 @@ import sys
 import time
 import argparse
 
-from .lib import get_case_ids, retry_get
+from cdatransform.lib import get_case_ids
+from cdatransform.extract.lib import retry_get
 
 
 default_fields = [
@@ -88,11 +89,10 @@ class GDC:
             else:
                 offset += page_size
 
-
     def save_cases(self, out_file, case_ids=None, page_size=1000):
         t0 = time.time()
         n = 0
-        with gzip.open(out_file, 'wb') as fp:
+        with gzip.open(out_file, "wb") as fp:
             writer = jsonlines.Writer(fp)
             for case in self.cases(case_ids, page_size):
                 writer.write(case)
@@ -103,13 +103,18 @@ class GDC:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Pull case data from GDC API.')
-    parser.add_argument('out_file', help='Out file name. Should end with .gz')
-    parser.add_argument('--cases', help='Optional file with list of case ids (one to a line)')    
+    parser = argparse.ArgumentParser(description="Pull case data from GDC API.")
+    parser.add_argument("out_file", help="Out file name. Should end with .gz")
+    parser.add_argument("--case", help="Extract just this case")
+    parser.add_argument(
+        "--cases", help="Optional file with list of case ids (one to a line)"
+    )
     args = parser.parse_args()
 
     gdc = GDC()
-    gdc.save_cases(args.out_file, case_ids=get_case_ids(args.cases))
+    gdc.save_cases(
+        args.out_file, case_ids=get_case_ids(case=args.case, case_list_file=args.cases)
+    )
 
 
 if __name__ == "__main__":

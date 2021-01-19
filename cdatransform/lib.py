@@ -1,7 +1,10 @@
 """Program wide utility functions and classes."""
 
 
-def get_case_ids(case_list_file):
+def get_case_ids(case=None, case_list_file=None):
+    if case is not None:
+        return [case]
+
     if case_list_file is None:
         return None
     else:

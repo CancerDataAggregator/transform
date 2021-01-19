@@ -5,7 +5,8 @@ import sys
 import gzip
 import argparse
 
-from .lib import get_case_ids, retry_get
+from cdatransform.lib import get_case_ids
+from .lib import retry_get
 
 
 def query(case_id):
@@ -68,7 +69,7 @@ class PDC:
     def save_cases(self, out_file, case_ids=None):
         t0 = time.time()
         n = 0
-        with gzip.open(out_file, 'wb') as fp:
+        with gzip.open(out_file, "wb") as fp:
             writer = jsonlines.Writer(fp)
             for case in self.cases(case_ids):
                 writer.write(case)
@@ -79,13 +80,18 @@ class PDC:
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Pull case data from PDC API.')
-    parser.add_argument('out_file', help='Out file name. Should end with .gz')
-    parser.add_argument('--cases', help='Optional file with list of case ids (one to a line)')    
+    parser = argparse.ArgumentParser(description="Pull case data from PDC API.")
+    parser.add_argument("out_file", help="Out file name. Should end with .gz")
+    parser.add_argument("--case", help="Extract just this case")
+    parser.add_argument(
+        "--cases", help="Optional file with list of case ids (one to a line)"
+    )
     args = parser.parse_args()
 
     pdc = PDC()
-    pdc.save_cases(args.out_file, case_ids=get_case_ids(args.cases))
+    pdc.save_cases(
+        args.out_file, case_ids=get_case_ids(case=args.case, case_list_file=args.cases)
+    )
 
 
 if __name__ == "__main__":
