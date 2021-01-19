@@ -42,6 +42,12 @@ default_fields = [
 ]
 
 
+def clean_fields(hit):
+    if hit.get("age_at_diagnosis") is not None:
+        hit["age_at_diagnosis"] = int(hit.get("age_at_diagnosis"))
+    return hit
+
+
 class GDC:
     def __init__(
         self, endpoint="https://api.gdc.cancer.gov/v0/cases", fields=default_fields
@@ -89,7 +95,7 @@ class GDC:
             sys.stderr.write(f"Pulling page {p_no} / {p_tot}\n")
 
             for hit in hits:
-                yield hit
+                yield clean_fields(hit)
 
             if p_no >= p_tot:
                 break
