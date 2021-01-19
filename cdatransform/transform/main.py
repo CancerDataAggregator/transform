@@ -22,7 +22,7 @@ def filter_cases(reader, case_list):
         cases = None
     else:
         cases = set(case_list)
-    
+
     for case in reader:
         if cases is None:
             yield case
@@ -36,40 +36,42 @@ def filter_cases(reader, case_list):
 
 def main():
 
-    parser = argparse.ArgumentParser(prog="Transform", description="Transform source DC jsonl to Harmonized jsonl")
+    parser = argparse.ArgumentParser(
+        prog="Transform", description="Transform source DC jsonl to Harmonized jsonl"
+    )
     parser.add_argument("input", help="Input data file.")
     parser.add_argument("output", help="Output data file.")
     parser.add_argument("transforms", help="Transforms list file.")
     parser.add_argument("--log", default="transform.log", help="Name of log file.")
-    parser.add_argument('--case', help='Transform just this case')
-    parser.add_argument('--cases', help='Optional file with list of case ids (one to a line)')
-
+    parser.add_argument("--case", help="Transform just this case")
+    parser.add_argument(
+        "--cases", help="Optional file with list of case ids (one to a line)"
+    )
     args = parser.parse_args()
 
-    in_file, out_file, t_file, log_file, case, case_f = \
-        args.input, args.output, args.transforms, args.log, args.case, args.cases
 
     logging.basicConfig(
-        filename=log_file, 
-        format='%(asctime)s %(levelname)-8s %(message)s',
-        level=logging.INFO)
+        filename=args.log,
+        format="%(asctime)s %(levelname)-8s %(message)s",
+        level=logging.INFO,
+    )
     logger.info("----------------------")
     logger.info("Starting transform run")
     logger.info("----------------------")
 
-    transform = Transform(t_file)
+    transform = Transform(args.transforms)
 
     t0 = time.time()
     count = 0
-    case_list = get_case_ids(case=args.case, case_list_file=case_f)
+    case_list = get_case_ids(case=args.case, case_list_file=args.cases)
 
-    with gzip.open(in_file, "r") as infp:
-        with gzip.open(out_file, "w") as outfp:
+    with gzip.open(args.input, "r") as infp:
+        with gzip.open(args.output, "w") as outfp:
             reader = jsonlines.Reader(infp)
             writer = jsonlines.Writer(outfp)
             for case in filter_cases(reader, case_list=case_list):
                 writer.write(transform(case))
-                count += 1                
+                count += 1
                 if count % 5000 == 0:
                     sys.stderr.write(f"Processed {count} cases ({time.time() - t0}).\n")
 
