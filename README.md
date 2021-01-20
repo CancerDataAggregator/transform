@@ -13,7 +13,9 @@ Clone repository and install
 ```
 git clone git@github.com:CancerDataAggregator/transform.git
 pip install -e .
+'''
 or
+'''
 git clone https://github.com/CancerDataAggregator/transform.git
 pip install -e
 ```
