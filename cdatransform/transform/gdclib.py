@@ -59,8 +59,12 @@ def get_entities(original):
         yield (sample, "sample", "Initial specimen", sample, original)
         for portion in sample.get("portions", []):
             yield (portion, "portion", sample.get("sample_id"), sample, original)
-            for aliquot in portion.get("aliquots", []):
-                yield (aliquot, "aliquot", portion.get("portion_id"), sample, original)
+            for slide in portion.get("slides", []):
+                yield (slide, "slide", portion.get("portion_id"), sample, original)
+            for analyte in portion.get("analytes", []):
+                yield (analyte, "analyte", portion.get("portion_id"), sample, original)
+                for aliquot in analyte.get("aliquots", []):
+                    yield (aliquot, "aliquot", analyte.get("analyte_id"), sample, original)
 
 
 def specimen_from_entity(entity, _type, parent_id, sample, case):
