@@ -53,7 +53,7 @@ The `cda-transform` program is used to transform the raw data from the DCs into
 the harmonized format. Do `cda-transform -h` to obtain usage.
 
 ```
-
+cda-transform gdc.jsonl.gz gdc.transf.jsonl.gz ../gdc-transform.yml
 ```
 
 This code will ingest the raw data from the individual DCs (`.jsonl.gz` produced
