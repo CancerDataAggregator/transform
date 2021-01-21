@@ -70,11 +70,11 @@ def get_entities(original):
 def specimen_from_entity(entity, _type, parent_id, sample, case):
     id_key = f"{_type}_id"
     return {
-        "derived_from_subject": entity.get("submitter_id"),
+        "derived_from_subject": case.get("submitter_id"),
         "identifier": entity.get(id_key),
         "specimen_type": _type,
         "primary_disease_type": case.get("disease_type"),
-        "source_material_type": entity.get("sample_type"),
+        "source_material_type": sample.get("sample_type"),
         "anatomical_site": sample.get("biospecimen_anatomic_site"),
         "days_to_birth": case.get("demographic", {}).get("days_to_birth"),
         "associated_project": case.get("project", {}).get("project_id"),
