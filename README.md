@@ -2,6 +2,9 @@ The goal of this repository is to provide standalone code that allows anybody to
 perform an end-to-end ETL, starting from the DCs and ending up with a `.jsonl`
 file they can upload to BQ.
 
+The transform and merge code also produces logs of issues with the data that can
+then be conveyed to the DCs.
+
 # Transform flow
 
 ![](overallflow.png)
@@ -17,6 +20,10 @@ pip install -e .
 
 
 # Extract raw JSONL from DCs
+The `extract-*` program is used to pull data from the DCs. For example
+`extract-gdc` is used to extract data from GDC. Use `extract-gdc -h` to obtain
+usage information.
+
 
 Pull all cases
 ```
@@ -42,24 +49,11 @@ Examples are in `cdatransform/extract/*-case-list.txt`
 
 # Transform and harmonize data
 
-Python code for implementing transforms on data extracted from DCs
+The `cda-transform` program is used to transform the raw data from the DCs into
+the harmonized format. Do `cda-transform -h` to obtain usage.
 
 ```
-$ cda-transform -h
-usage: Transform [-h] [--log LOG] [--case CASE] [--cases CASES] input output transforms
 
-Transform source DC jsonl to Harmonized jsonl
-
-positional arguments:
-  input          Input data file.
-  output         Output data file.
-  transforms     Transforms list file.
-
-optional arguments:
-  -h, --help     show this help message and exit
-  --log LOG      Name of log file.
-  --case CASE    Transform just this case
-  --cases CASES  Optional file with list of case ids (one to a line)
 ```
 
 This code will ingest the raw data from the individual DCs (`.jsonl.gz` produced
@@ -93,10 +87,10 @@ gcloud auth login
 In this project there is a dataset called `kg-expt`. You can use your own.
 
 ```
-bq load --autodetect --source_format NEWLINE_DELIMITED_JSON kg_expt.gdc gdc.d90249dc-40e8-449e-a24a-6d461f29f632.transf.json
+bq load --autodetect --source_format NEWLINE_DELIMITED_JSON kg_expt.gdc gdc.transf.jsonl.gz
 ```
 
-# Example of how to load transformed GDC data into BQ
+# End-to-end example
 
 ```
 cd data
@@ -106,6 +100,13 @@ bq load --autodetect --source_format NEWLINE_DELIMITED_JSON kg_expt.gdc gdc.tran
 ```
 
 # [Example of creating small data sets for testing](tests/small/Readme.md)
+
+# Some tips for working with ETL
+1. Use the `--case` or `--cases` options to run tests on small subsets of the data.
+1. You can extract one case from a larger file for inspection by doing `zcat <
+   gdc.jsonl.gz| sed -n '1p' > test.json`. Change `1p` to what ever line you
+   need. 
+
 
 # Testing out local install
 
