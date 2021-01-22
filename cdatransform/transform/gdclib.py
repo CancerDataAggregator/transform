@@ -71,7 +71,7 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
     id_key = f"{_type}_id"
     return {
         "derived_from_subject": case.get("submitter_id"),
-        "identifier": entity.get(id_key),
+        "identifier": [{"value": entity.get(id_key), "system": "GDC"}],
         "specimen_type": _type,
         "primary_disease_type": case.get("disease_type"),
         "source_material_type": sample.get("sample_type"),
