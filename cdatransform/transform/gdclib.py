@@ -59,18 +59,22 @@ def get_entities(original):
         yield (sample, "sample", "Initial specimen", sample, original)
         for portion in sample.get("portions", []):
             yield (portion, "portion", sample.get("sample_id"), sample, original)
-            for aliquot in portion.get("aliquots", []):
-                yield (aliquot, "aliquot", portion.get("portion_id"), sample, original)
+            for slide in portion.get("slides", []):
+                yield (slide, "slide", portion.get("portion_id"), sample, original)
+            for analyte in portion.get("analytes", []):
+                yield (analyte, "analyte", portion.get("portion_id"), sample, original)
+                for aliquot in analyte.get("aliquots", []):
+                    yield (aliquot, "aliquot", analyte.get("analyte_id"), sample, original)
 
 
 def specimen_from_entity(entity, _type, parent_id, sample, case):
     id_key = f"{_type}_id"
     return {
-        "derived_from_subject": entity.get("submitter_id"),
-        "identifier": entity.get(id_key),
+        "derived_from_subject": case.get("submitter_id"),
+        "identifier": [{"value": entity.get(id_key), "system": "GDC"}],
         "specimen_type": _type,
         "primary_disease_type": case.get("disease_type"),
-        "source_material_type": entity.get("sample_type"),
+        "source_material_type": sample.get("sample_type"),
         "anatomical_site": sample.get("biospecimen_anatomic_site"),
         "days_to_birth": case.get("demographic", {}).get("days_to_birth"),
         "associated_project": case.get("project", {}).get("project_id"),
