@@ -33,6 +33,7 @@ def query(case_id):
         days_to_birth
     }
     diagnoses {
+        diagnosis_id
         primary_diagnosis
         tumor_grade
         tumor_stage

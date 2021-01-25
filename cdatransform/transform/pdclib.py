@@ -1,5 +1,5 @@
 """
-Transforms specific to GDC data structures
+Transforms specific to PDC data structures
 """
 from copy import deepcopy
 
@@ -8,7 +8,7 @@ from copy import deepcopy
 
 def research_subject(tip, orig, **kwargs):
     """Convert fields needed for ResearchSubject"""
-    demog = orig.get("demographic")
+    demog = orig.get("demographics")
     if isinstance(demog, list):
         demog = demog[0]
     elif demog is None:
@@ -16,14 +16,14 @@ def research_subject(tip, orig, **kwargs):
 
     res_subj = {
         "id": orig.get("case_id"),
-        "identifier": [{"value": orig.get("case_id"), "system": "GDC"}],
+        "identifier": [{"value": orig.get("case_id"), "system": "PDC"}],
         "ethnicity": demog.get("ethnicity"),
         "sex": demog.get("gender"),
         "race": demog.get("race"),
         "primary_disease_type": orig.get("disease_type"),
         "primary_disease_site": orig.get("primary_site"),
         "Project": {
-            "label": orig.get("project", {}).get("project_id")
+            "label": orig.get("project", {}).get("project_submitter_id")
         }
     }
     tip.update(res_subj)
@@ -37,7 +37,8 @@ def diagnosis(tip, orig, **kwargs):
     """Convert fields needed for Diagnosis"""
     tip["Diagnosis"] = deepcopy(orig.get("diagnoses", []))
     for d in tip["Diagnosis"]:
-        d["id"] = d.pop("diagnosis_id")
+        if "diagnosis_id" in d:
+            d["id"] = d.pop("diagnosis_id")
         d["Treatment"] = []
 
     return tip
@@ -57,26 +58,29 @@ def entity_to_specimen(transform_in_progress, original, **kwargs):
 def get_entities(original):
     for sample in original.get("samples", []):
         yield (sample, "sample", "Initial specimen", sample, original)
-        for portion in sample.get("portions", []):
-            yield (portion, "portion", sample.get("sample_id"), sample, original)
-            for aliquot in portion.get("aliquots", []):
-                yield (aliquot, "aliquot", portion.get("portion_id"), sample, original)
+        for aliquot in sample.get("aliquots", []):
+            yield (aliquot, "aliquot", sample.get("sample_id"), sample, original)
 
 
 def specimen_from_entity(entity, _type, parent_id, sample, case):
     id_key = f"{_type}_id"
+    demog = case.get("demographics")
+    if isinstance(demog, list):
+        demog = demog[0]
+    elif demog is None:
+        demog = {}
     return {
         "derived_from_subject": entity.get("submitter_id"),
         "id": entity.get(id_key),
-        "identifier": [{"value": entity.get(id_key), "system": "GDC"}],
+        "identifier": [{"value": entity.get(id_key), "system": "PDC"}],
         "specimen_type": _type,
         "primary_disease_type": case.get("disease_type"),
         "source_material_type": entity.get("sample_type"),
         "anatomical_site": sample.get("biospecimen_anatomic_site"),
-        "days_to_birth": case.get("demographic", {}).get("days_to_birth"),
+        "days_to_birth": demog.get("days_to_birth"),
         "associated_project": case.get("project", {}).get("project_id"),
         "derived_from_specimen": parent_id,
-        "CDA_context": "GDC"
+        "CDA_context": "PDC"
     }
 
 
