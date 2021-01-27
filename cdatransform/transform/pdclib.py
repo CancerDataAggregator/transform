@@ -3,40 +3,49 @@ Transforms specific to PDC data structures
 """
 from copy import deepcopy
 
-
-# gdc.research_subject ------------------------------------------
-
-def research_subject(tip, orig, **kwargs):
+# pdc.research_subject ------------------------------------------
+def patient(tip, orig, **kwargs):
     """Convert fields needed for ResearchSubject"""
     demog = orig.get("demographics")
     if isinstance(demog, list):
         demog = demog[0]
     elif demog is None:
         demog = {}
-
-    res_subj = {
+    patient = {
         "id": orig.get("case_id"),
-        "identifier": [{"value": orig.get("case_id"), "system": "PDC"}],
         "ethnicity": demog.get("ethnicity"),
         "sex": demog.get("gender"),
         "race": demog.get("race"),
+        "created_datetime": deomg.get("created_datetime"),
+        "Research_Subject": dict({})
+    }
+    tip.update(patient)
+    return tip
+# pdc.research_subject ------------------------------------------
+
+def research_subject(tip, orig, **kwargs):
+
+    res_subj = {
+        "id": orig.get("case_id"),
+        "patient_id": orig.get("case_submitter_id"),
+        "identifier": [{"value": orig.get("case_id"), "system": "PDC"}],
         "primary_disease_type": orig.get("disease_type"),
         "primary_disease_site": orig.get("primary_site"),
+        "externalReferences": orig.get("externalReferences"),
         "Project": {
             "label": orig.get("project", {}).get("project_submitter_id")
         }
     }
-    tip.update(res_subj)
+    tip["Research_Subject"] = res_subj
 
     return tip
 
-
-# gdc.diagnosis --------------------------------------------------
+# pdc.diagnosis --------------------------------------------------
 
 def diagnosis(tip, orig, **kwargs):
     """Convert fields needed for Diagnosis"""
-    tip["Diagnosis"] = deepcopy(orig.get("diagnoses", []))
-    for d in tip["Diagnosis"]:
+    tip["Research_Subject"]["Diagnosis"] = deepcopy(orig.get("diagnoses", []))
+    for d in tip["Research_Subject"]["Diagnosis"]:
         if "diagnosis_id" in d:
             d["id"] = d.pop("diagnosis_id")
         d["Treatment"] = []
@@ -44,11 +53,11 @@ def diagnosis(tip, orig, **kwargs):
     return tip
 
 
-# gdc.entity_to_specimen -----------------------------------------
+# pdc.entity_to_specimen -----------------------------------------
 
 def entity_to_specimen(transform_in_progress, original, **kwargs):
     """Convert samples, portions and aliquots to specimens"""
-    transform_in_progress["Specimen"] = [
+    transform_in_progress["Research_Subject"]["Specimen"] = [
         specimen_from_entity(*s)
         for s in get_entities(original)
     ]
@@ -84,10 +93,12 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
     }
 
 
-# gdc.files -------------------------------------------------------
+# pdc.files -------------------------------------------------------
 
 def add_files(transform_in_progress, original, **kwargs):
-    transform_in_progress["File"] = [
+    transform_in_progress["Research_Subject"]["File"] = [
         f for f in original.get("files", [])
     ]
     return transform_in_progress    
+
+# pdc.aggregate_to_patient

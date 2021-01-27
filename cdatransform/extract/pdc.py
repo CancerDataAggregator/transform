@@ -31,6 +31,7 @@ def query(case_id):
         gender 
         race 
         days_to_birth
+        created_datetime
     }
     diagnoses {
         diagnosis_id
@@ -38,7 +39,13 @@ def query(case_id):
         tumor_grade
         tumor_stage
         morphology
-    } 
+    }
+    externalReferences {
+        external_reference_id
+        reference_resource_shortname
+        reference_resource_name
+        reference_entity_location
+    }
 }
 """
         "}"
