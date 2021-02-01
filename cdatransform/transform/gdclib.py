@@ -5,8 +5,10 @@ from copy import deepcopy
 
 
 # gdc.research_subject ------------------------------------------
+from cdatransform.transform.validate import LogValidation
 
-def research_subject(tip, orig, **kwargs):
+
+def research_subject(tip, orig, log: LogValidation, **kwargs: object) -> object:
     """Convert fields needed for ResearchSubject"""
     demog = orig.get("demographic")
     if isinstance(demog, list):
@@ -17,15 +19,16 @@ def research_subject(tip, orig, **kwargs):
     res_subj = {
         "id": orig.get("case_id"),
         "identifier": orig.get("submitter_id"),
-        "ethnicity": demog.get("ethnicity"),
-        "sex": demog.get("gender"),
-        "race": demog.get("race"),
-        "primary_disease_type": orig.get("disease_type"),
-        "primary_disease_site": orig.get("primary_site"),
+        "ethnicity": log.distinct(demog, "ethnicity"),
+        "sex": log.distinct(demog, "gender"),
+        "race": log.distinct(demog, "race"),
+        "primary_disease_type": log.distinct(orig, "disease_type"),
+        "primary_disease_site": log.distinct(orig, "primary_site"),
         "Project": {
             "label": orig.get("project", {}).get("project_id")
         }
     }
+    log.agree(res_subj, res_subj["id"], ["ethnicity", "sex", "race"])
     tip.update(res_subj)
 
     return tip
@@ -33,7 +36,7 @@ def research_subject(tip, orig, **kwargs):
 
 # gdc.diagnosis --------------------------------------------------
 
-def diagnosis(tip, orig, **kwargs):
+def diagnosis(tip, orig, log: LogValidation, **kwargs):
     """Convert fields needed for Diagnosis"""
     tip["Diagnosis"] = deepcopy(orig.get("diagnoses", []))
     for d in tip["Diagnosis"]:
@@ -45,7 +48,7 @@ def diagnosis(tip, orig, **kwargs):
 
 # gdc.entity_to_specimen -----------------------------------------
 
-def entity_to_specimen(transform_in_progress, original, **kwargs):
+def entity_to_specimen(transform_in_progress, original, log: LogValidation, **kwargs):
     """Convert samples, portions and aliquots to specimens"""
     transform_in_progress["Specimen"] = [
         specimen_from_entity(*s)
@@ -85,7 +88,7 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
 
 # gdc.files -------------------------------------------------------
 
-def add_files(transform_in_progress, original, **kwargs):
+def add_files(transform_in_progress, original, log: LogValidation, **kwargs):
     transform_in_progress["File"] = [
         f for f in original.get("files", [])
     ]
