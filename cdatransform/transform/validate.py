@@ -4,11 +4,11 @@ from typing import Dict, Set
 
 class LogValidation:
 
-    # map of field name -> set of values
-    _distinct_fields: Dict[str, Set] = defaultdict(set)
-
-    # map of ID -> (map of field name -> set of values)
-    _matching_fields: Dict[str, Dict[str, Set[str]]] = {}
+    def __init__(self) -> None:
+        # map of field name -> set of values
+        self._distinct_fields: Dict[str, Set] = defaultdict(set)
+        # map of ID -> (map of field name -> set of values)
+        self._matching_fields: Dict[str, Dict[str, Set[str]]] = {}
 
     def distinct(self, table, field_name: str) -> str:
         """
@@ -50,4 +50,3 @@ class LogValidation:
             for field, values in fields.items():
                 if len(values) > 1:
                     logger.warning(f"Conflicting Field: ID:{id} FIELD:{field} VALUES:{':'.join(sorted(values, key=lambda x: (x is None, x)))}")
-
