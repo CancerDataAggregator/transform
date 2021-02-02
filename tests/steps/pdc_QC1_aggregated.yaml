@@ -1,0 +1,59 @@
+###################################################
+###                     QC1                     ###
+###################################################
+
+# No conflicts for the demographic info
+id: "QC1"
+ethnicity: "Not Reported"
+sex: "Not Reported"
+race: "Not Reported"
+
+"ResearchSubject":
+  - id: "0809987b-1fba-11e9-b7f8-0a80fada099c"
+    identifier: "QC1"
+    primary_disease_type: "Other"
+    primary_disease_site: "Not Reported"
+    Diagnosis:
+      - id: "7bf87559-3040-11e9-8379-0a80fada099c"
+        age_at_diagnosis: "0"
+        primary_diagnosis: "Not Reported"
+        tumor_grade: "Not Reported"
+        tumor_stage: "Not Reported"
+        morphology: "Not Reported"
+    Project:
+      label: "CPTAC3-Discovery"
+    Specimen:
+      - id: "03394f84-204e-11e9-b7f8-0a80fada099c"
+        identifier: "QC1"
+        derived_from_subject: "QC1"
+        source_material_type: "Not Reported"
+        anatomical_site: "Not Reported"
+        days_to_birth: "0"
+        primary_disease_type: "Other"
+        specimen_type: "sample"
+        derived_from: "None"
+        CDA_context: "PDC"
+  - id: "df4f2aaf-8f98-11ea-b1fd-0aad30af8a83"
+    identifier: "QC1"
+    primary_disease_type: "Other"
+    primary_disease_site: "Not Reported"
+    Diagnosis:
+      - id: "df522558-8f98-11ea-b1fd-0aad30af8a83"
+        age_at_diagnosis:
+        primary_diagnosis: "Not Reported"
+        tumor_grade: "Not Reported"
+        tumor_stage: "Not Reported"
+        morphology: "Not Reported"
+    Project:
+      label: "CPTAC3-Discovery"
+    Specimen:
+      - id: "df50514e-8f98-11ea-b1fd-0aad30af8a83"
+        identifier: "QC1"
+        derived_from_subject: "QC1"
+        source_material_type: "Cell Lines"
+        anatomical_site:
+        days_to_birth:
+        primary_disease_type: "Other"
+        specimen_type: "sample"
+        derived_from: "None"
+        CDA_context: "PDC"
