@@ -1,14 +1,10 @@
 import argparse
-import json
-import jsonlines
-import sys
-import time
 import gzip
 import logging
-from typing import Union
+import sys
+import time
 
-import yaml
-from yaml import Loader
+import jsonlines
 
 from cdatransform.lib import get_case_ids
 from cdatransform.transform.lib import Transform
@@ -30,7 +26,7 @@ def filter_cases(reader, case_list):
             break
         else:
             if case.get("id") in cases:
-                cases.pop(case.get("id"))
+                cases.remove(case.get("id"))
             yield case
 
 
@@ -79,7 +75,7 @@ def main():
 
     sys.stderr.write(f"Processed {count} cases ({time.time() - t0}).\n")
 
-    validate.generate_report()
+    validate.generate_report(logger)
 
 
 if __name__ == "__main__":

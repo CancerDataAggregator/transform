@@ -1,13 +1,14 @@
-import logging
 from collections import defaultdict
+from typing import Dict, Set
 
 
 class LogValidation:
-    logger = logging.getLogger(__name__)
 
-    def __init__(self) -> None:
-        self._distinct_fields = defaultdict(set)
-        self._matching_fields = {}
+    # map of field name -> set of values
+    _distinct_fields: Dict[str, Set] = defaultdict(set)
+
+    # map of ID -> (map of field name -> set of values)
+    _matching_fields: Dict[str, Dict[str, Set[str]]] = {}
 
     def distinct(self, table, field_name: str) -> str:
         """
@@ -29,14 +30,24 @@ class LogValidation:
         """
         other = self._matching_fields.get(record_id)
         if other:
-            for index, field in enumerate(fields):
-                if table.get(field) == other[index]:
-                    self.logger.warning(f"Conflicting Field ID :{record_id}:{field}:{table.get(field)}:{other[index]}")
+            for field in fields:
+                other[field].add(table.get(field))
         else:
-            self._matching_fields[record_id] = [table.get(field) for field in fields]
+            self._matching_fields[record_id] = {}
+            for field in fields:
+                self._matching_fields[record_id][field] = {table.get(field)}
 
-    def generate_report(self) -> None:
-        self.logger.info("==== Validation Report ====")
+    def generate_report(self, logger) -> None:
+
+        # Note that set output is sorted for legibility and to get consistent results for testing.
+
+        logger.info("==== Validation Report ====")
         for name, values in self._distinct_fields.items():
             if len(values) != 0:
-                self.logger.info(f"Distinct Field :{name}: {sorted(values, key=lambda x: (x is None, x))}")
+                logger.info(f"Distinct Field :{name}: {sorted(values, key=lambda x: (x is None, x))}")
+
+        for id, fields in self._matching_fields.items():
+            for field, values in fields.items():
+                if len(values) > 1:
+                    logger.warning(f"Conflicting Field: ID:{id} FIELD:{field} VALUES:{':'.join(sorted(values, key=lambda x: (x is None, x)))}")
+
