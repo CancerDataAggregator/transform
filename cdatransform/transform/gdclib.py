@@ -19,15 +19,17 @@ def research_subject(tip, orig, log: LogValidation, **kwargs: object) -> object:
     res_subj = {
         "id": orig.get("case_id"),
         "identifier": orig.get("submitter_id"),
-        "ethnicity": log.distinct(demog, "ethnicity"),
-        "sex": log.distinct(demog, "gender"),
-        "race": log.distinct(demog, "race"),
-        "primary_disease_type": log.distinct(orig, "disease_type"),
-        "primary_disease_site": log.distinct(orig, "primary_site"),
+        "ethnicity": demog.get("ethnicity"),
+        "sex": demog.get("gender"),
+        "race": demog.get("race"),
+        "primary_disease_type": orig.get("disease_type"),
+        "primary_disease_site": orig.get("primary_site"),
         "Project": {
             "label": orig.get("project", {}).get("project_id")
         }
     }
+    for field in ["ethnicity", "sex", "race", "primary_disease_type", "primary_disease_site"]:
+        log.distinct(res_subj, field)
     log.agree(res_subj, res_subj["id"], ["ethnicity", "sex", "race"])
     tip.update(res_subj)
 
@@ -42,6 +44,8 @@ def diagnosis(tip, orig, log: LogValidation, **kwargs):
     for d in tip["Diagnosis"]:
         d["id"] = d.pop("diagnosis_id")
         d["Treatment"] = []
+        for field in ["primary_diagnosis", "tumor_grade", "tumor_stage", "morphology"]:
+            log.distinct(d, field)
 
     return tip
 
@@ -54,6 +58,12 @@ def entity_to_specimen(transform_in_progress, original, log: LogValidation, **kw
         specimen_from_entity(*s)
         for s in get_entities(original)
     ]
+    for specimen in transform_in_progress["Specimen"]:
+        for field in ["primary_disease_type", "source_material_type", "anatomical_site"]:
+            log.distinct(specimen, field)
+        # days to birth is negative days from birth until diagnosis. 7300 days is 200 years.
+        log.validate(specimen, "days_to_birth", lambda x: not x or -73000 < x < 0)
+
     return transform_in_progress
 
 

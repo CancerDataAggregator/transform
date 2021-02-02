@@ -9,6 +9,8 @@ class LogValidation:
         self._distinct_fields: Dict[str, Set] = defaultdict(set)
         # map of ID -> (map of field name -> set of values)
         self._matching_fields: Dict[str, Dict[str, Set[str]]] = {}
+        # map of field name -> invalid value
+        self._invalid_fields: Dict[str, str] = {}
 
     def distinct(self, table, field_name: str) -> str:
         """
@@ -18,7 +20,8 @@ class LogValidation:
         :return: the value of the field in the table
         """
         value = table.get(field_name)
-        self._distinct_fields[field_name].add(value)
+        if value:
+            self._distinct_fields[field_name].add(value)
         return value
 
     def agree(self, table, record_id: str, fields: list) -> None:
@@ -31,22 +34,35 @@ class LogValidation:
         other = self._matching_fields.get(record_id)
         if other:
             for field in fields:
-                other[field].add(table.get(field))
+                value = table.get(field)
+                if value:
+                    other[field].add(value)
         else:
             self._matching_fields[record_id] = {}
             for field in fields:
-                self._matching_fields[record_id][field] = {table.get(field)}
+                value = table.get(field)
+                if value:
+                    self._matching_fields[record_id][field] = {value}
+
+    def validate(self, table, field_name, f):
+        value = table.get(field_name)
+        if not f(value):
+            self._invalid_fields[field_name] = value
 
     def generate_report(self, logger) -> None:
 
         # Note that set output is sorted for legibility and to get consistent results for testing.
 
         logger.info("==== Validation Report ====")
+
         for name, values in self._distinct_fields.items():
             if len(values) != 0:
-                logger.info(f"Distinct Field :{name}: {sorted(values, key=lambda x: (x is None, x))}")
+                logger.info(f"Distinct FIELD:{name} VALUES:{':'.join(sorted(values))}")
 
         for id, fields in self._matching_fields.items():
             for field, values in fields.items():
                 if len(values) > 1:
-                    logger.warning(f"Conflicting Field: ID:{id} FIELD:{field} VALUES:{':'.join(sorted(values, key=lambda x: (x is None, x)))}")
+                    logger.warning(f"Conflict ID:{id} FIELD:{field} VALUES:{':'.join(sorted(values))}")
+
+        for field, value in self._invalid_fields.items():
+            logger.warning(f"Invalid FIELD:{field} VALUE:{value}")
