@@ -12,7 +12,7 @@ from .lib import retry_get
 def query(case_id):
     return (
         "{"
-        f'case(case_id: "{case_id}")'
+        f'case( case_id: "{case_id}")'
         """
 {
     case_submitter_id
@@ -31,7 +31,6 @@ def query(case_id):
         gender 
         race 
         days_to_birth
-        created_datetime
     }
     diagnoses {
         diagnosis_id
