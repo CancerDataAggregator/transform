@@ -3,40 +3,45 @@ Transforms specific to GDC data structures
 """
 from copy import deepcopy
 
-
-# gdc.research_subject ------------------------------------------
-
-def research_subject(tip, orig, **kwargs):
+# gdc.patient ------------------------------------------
+def patient(tip, orig, **kwargs):
     """Convert fields needed for ResearchSubject"""
     demog = orig.get("demographic")
     if isinstance(demog, list):
         demog = demog[0]
     elif demog is None:
         demog = {}
-
-    res_subj = {
-        "id": orig.get("case_id"),
-        "identifier": [{"value": orig.get("case_id"), "system": "GDC"}],
+    patient = {
+        "id": orig.get("submitter_id"),
         "ethnicity": demog.get("ethnicity"),
         "sex": demog.get("gender"),
         "race": demog.get("race"),
+    }
+    tip.update(patient)
+    return tip
+# gdc.research_subject ------------------------------------------
+
+def research_subject(tip, orig, **kwargs):
+    
+    res_subj = [{
+        "id": orig.get("case_id"),
+        "identifier": [{"value": orig.get("case_id"), "system": "GDC"}],
         "primary_disease_type": orig.get("disease_type"),
         "primary_disease_site": orig.get("primary_site"),
         "Project": {
             "label": orig.get("project", {}).get("project_id")
         }
-    }
-    tip.update(res_subj)
+    }]
+    tip["Research_Subject"] = res_subj
 
     return tip
-
 
 # gdc.diagnosis --------------------------------------------------
 
 def diagnosis(tip, orig, **kwargs):
     """Convert fields needed for Diagnosis"""
-    tip["Diagnosis"] = deepcopy(orig.get("diagnoses", []))
-    for d in tip["Diagnosis"]:
+    tip["Research_Subject"][0]["Diagnosis"] = deepcopy(orig.get("diagnoses", []))
+    for d in tip["Research_Subject"][0]["Diagnosis"]:
         d["id"] = d.pop("diagnosis_id")
         d["Treatment"] = []
 
@@ -47,7 +52,7 @@ def diagnosis(tip, orig, **kwargs):
 
 def entity_to_specimen(transform_in_progress, original, **kwargs):
     """Convert samples, portions and aliquots to specimens"""
-    transform_in_progress["Specimen"] = [
+    transform_in_progress["Research_Subject"][0]["Specimen"] = [
         specimen_from_entity(*s)
         for s in get_entities(original)
     ]
@@ -83,7 +88,7 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
 # gdc.files -------------------------------------------------------
 
 def add_files(transform_in_progress, original, **kwargs):
-    transform_in_progress["File"] = [
+    transform_in_progress["Research_Subject"][0]["File"] = [
         f for f in original.get("files", [])
     ]
     return transform_in_progress    
