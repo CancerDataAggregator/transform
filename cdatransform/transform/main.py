@@ -24,9 +24,8 @@ def filter_cases(reader, case_list):
             yield case
         elif len(cases) == 0:
             break
-        else:
-            if case.get("id") in cases:
-                cases.remove(case.get("id"))
+        elif case.get("id") in cases:
+            cases.remove(case.get("id"))
             yield case
 
 
