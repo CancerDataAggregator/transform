@@ -1,0 +1,86 @@
+####################################################
+###                 TCGA-E2-A10A                 ###
+####################################################
+
+# No conflicts in the demographic info
+id: "TCGA-E2-A10A"
+ethnicity: "Not Hispanic or Latino"
+sex: "Female"
+race: "White"
+
+# Research subjects were simply appended
+"ResearchSubject":
+  - id: "4da7abaf-ac7a-41c0-8033-5780a398545c"
+    identifier: "TCGA-E2-A10A"
+    primary_disease_type: "Ductal and Lobular Neoplasms"
+    primary_disease_site: "Breast"
+    Diagnosis:
+      - id: "a84accf0-2294-550d-9825-22625f09f989"
+        age_at_diagnosis: "15085"
+        primary_diagnosis: "Infiltrating duct carcinoma, NOS"
+        tumor_grade: "not reported"
+        tumor_stage: "stage iib"
+        morphology: "8500/3"
+        Treatment:
+          - outcome:
+            type: "Pharmaceutical Therapy, NOS"
+          - outcome:
+            type: "Radiation Therapy, NOS"
+    Project:
+      label: "TCGA-BRCA"
+    Specimen:
+      - id: "d2900212-b6bd-423a-9968-6b35df0e98aa"
+        identifier: "TCGA-E2-A10A-01Z"
+        derived_from_subject: "TCGA-E2-A10A"
+        source_material_type: "Primary Tumor"
+        anatomical_site:
+        days_to_birth: "-15085"
+        primary_disease_type: "Ductal and Lobular Neoplasms"
+        specimen_type: "sample"
+        derived_from: "None"
+        CDA_context: "GDC"
+      - id: "fcf94c6e-0840-4ad1-9fdf-bf1b4dcb28cb"
+        identifier: "TCGA-E2-A10A-10A"
+        derived_from_subject: "TCGA-E2-A10A"
+        source_material_type: "Blood Derived Normal"
+        anatomical_site:
+        days_to_birth: "-15085"
+        primary_disease_type: "Ductal and Lobular Neoplasms"
+        specimen_type: "sample"
+        derived_from: "None"
+        CDA_context: "GDC"
+      - id: "0c8615d8-e7a2-465a-8de3-961734941c16"
+        identifier: "TCGA-E2-A10A-01A"
+        derived_from_subject: "TCGA-E2-A10A"
+        source_material_type: "Primary Tumor"
+        anatomical_site:
+        days_to_birth: "-15085"
+        primary_disease_type: "Ductal and Lobular Neoplasms"
+        specimen_type: "sample"
+        derived_from: "None"
+        CDA_context: "GDC"
+  - id: "010df72d-63d9-11e8-bcf1-0a2705229b82"
+    identifier: "TCGA-E2-A10A"
+    primary_disease_type: "Breast Invasive Carcinoma"
+    primary_disease_site: "Breast"
+    Diagnosis:
+      - id: "ff312994-70ca-11e8-bcf1-0a2705229b82"
+        age_at_diagnosis: "15085"
+        primary_diagnosis: "Infiltrating duct carcinoma, NOS"
+        tumor_grade: "Not Reported"
+        tumor_stage: "Stage IIB"
+        morphology: "8500/3"
+        Treatment: []
+    Project:
+      label: "CPTAC-TCGA"
+    Specimen:
+      - id: "9532a8b4-6420-11e8-bcf1-0a2705229b82"
+        identifier: "TCGA-E2-A10A-01A"
+        derived_from_subject: "TCGA-E2-A10A"
+        source_material_type: "Primary Tumor"
+        anatomical_site: "Not Reported"
+        days_to_birth: "-15085"
+        primary_disease_type: "Breast Invasive Carcinoma"
+        specimen_type: "sample"
+        derived_from: "None"
+        CDA_context: "PDC"
