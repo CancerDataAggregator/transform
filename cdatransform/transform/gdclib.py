@@ -61,7 +61,7 @@ def entity_to_specimen(transform_in_progress, original, log: LogValidation, **kw
     for specimen in transform_in_progress["Specimen"]:
         for field in ["primary_disease_type", "source_material_type", "anatomical_site"]:
             log.distinct(specimen, field)
-        # days to birth is negative days from birth until diagnosis. 7300 days is 200 years.
+        # days to birth is negative days from birth until diagnosis. 73000 days is 200 years.
         log.validate(specimen, "days_to_birth", lambda x: not x or -73000 < x < 0)
 
     return transform_in_progress

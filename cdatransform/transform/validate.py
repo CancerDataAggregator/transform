@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Dict, Set
+from typing import Dict, Set, Callable, Any, Mapping
 
 
 class LogValidation:
@@ -12,7 +12,7 @@ class LogValidation:
         # map of field name -> invalid value
         self._invalid_fields: Dict[str, str] = {}
 
-    def distinct(self, table, field_name: str) -> str:
+    def distinct(self, table: Mapping[str, Any], field_name: str) -> str:
         """
         For every use of a field in a table, track all distinct values.
         :param table: the table to find the field in
@@ -24,7 +24,7 @@ class LogValidation:
             self._distinct_fields[field_name].add(value)
         return value
 
-    def agree(self, table, record_id: str, fields: list) -> None:
+    def agree(self, table: Mapping[str, Any], record_id: str, fields: list) -> None:
         """
         Given an ID and a list of field names, track all values seen. For the same ID, the field values should match.
         :param table: the table to find the fields in
@@ -44,7 +44,13 @@ class LogValidation:
                 if value:
                     self._matching_fields[record_id][field] = {value}
 
-    def validate(self, table, field_name, f):
+    def validate(self, table: Mapping[str, Any], field_name: str, f: Callable[[Any], bool]) -> None:
+        """
+        Validate a field in table using function f. Invalid values are collected for reporting.
+        :param table: the table that contains the field
+        :param field_name: the field name
+        :param f: called with the field value; if true, the value is valid
+        """
         value = table.get(field_name)
         if not f(value):
             self._invalid_fields[field_name] = value
