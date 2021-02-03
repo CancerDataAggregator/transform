@@ -3,7 +3,7 @@ Transforms specific to PDC data structures
 """
 from copy import deepcopy
 
-# pdc.research_subject ------------------------------------------
+# pdc.patient ------------------------------------------
 def patient(tip, orig, **kwargs):
     """Convert fields needed for ResearchSubject"""
     demog = orig.get("demographics")
@@ -12,12 +12,10 @@ def patient(tip, orig, **kwargs):
     elif demog is None:
         demog = {}
     patient = {
-        "id": orig.get("case_id"),
+        "id": orig.get("case_submitter_id"),
         "ethnicity": demog.get("ethnicity"),
         "sex": demog.get("gender"),
         "race": demog.get("race"),
-        "created_datetime": deomg.get("created_datetime"),
-        "Research_Subject": dict({})
     }
     tip.update(patient)
     return tip
@@ -25,9 +23,8 @@ def patient(tip, orig, **kwargs):
 
 def research_subject(tip, orig, **kwargs):
 
-    res_subj = {
+    res_subj = [{
         "id": orig.get("case_id"),
-        "patient_id": orig.get("case_submitter_id"),
         "identifier": [{"value": orig.get("case_id"), "system": "PDC"}],
         "primary_disease_type": orig.get("disease_type"),
         "primary_disease_site": orig.get("primary_site"),
@@ -35,7 +32,7 @@ def research_subject(tip, orig, **kwargs):
         "Project": {
             "label": orig.get("project", {}).get("project_submitter_id")
         }
-    }
+    }]
     tip["Research_Subject"] = res_subj
 
     return tip
@@ -44,8 +41,8 @@ def research_subject(tip, orig, **kwargs):
 
 def diagnosis(tip, orig, **kwargs):
     """Convert fields needed for Diagnosis"""
-    tip["Research_Subject"]["Diagnosis"] = deepcopy(orig.get("diagnoses", []))
-    for d in tip["Research_Subject"]["Diagnosis"]:
+    tip["Research_Subject"][0]["Diagnosis"] = deepcopy(orig.get("diagnoses", []))
+    for d in tip["Research_Subject"][0]["Diagnosis"]:
         if "diagnosis_id" in d:
             d["id"] = d.pop("diagnosis_id")
         d["Treatment"] = []
@@ -57,7 +54,7 @@ def diagnosis(tip, orig, **kwargs):
 
 def entity_to_specimen(transform_in_progress, original, **kwargs):
     """Convert samples, portions and aliquots to specimens"""
-    transform_in_progress["Research_Subject"]["Specimen"] = [
+    transform_in_progress["Research_Subject"][0]["Specimen"] = [
         specimen_from_entity(*s)
         for s in get_entities(original)
     ]
@@ -96,7 +93,7 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
 # pdc.files -------------------------------------------------------
 
 def add_files(transform_in_progress, original, **kwargs):
-    transform_in_progress["Research_Subject"]["File"] = [
+    transform_in_progress["Research_Subject"][0]["File"] = [
         f for f in original.get("files", [])
     ]
     return transform_in_progress    
