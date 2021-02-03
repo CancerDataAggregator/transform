@@ -1,18 +1,14 @@
 import argparse
-import json
-import jsonlines
-import sys
-import time
 import gzip
 import logging
-from typing import Union
+import sys
+import time
 
-import yaml
-from yaml import Loader
+import jsonlines
 
 from cdatransform.lib import get_case_ids
 from cdatransform.transform.lib import Transform
-
+from cdatransform.transform.validate import LogValidation
 
 logger = logging.getLogger(__name__)
 
@@ -28,10 +24,9 @@ def filter_cases(reader, case_list):
             yield case
         elif len(cases) == 0:
             break
-        else:
-            if case.get("id") in cases:
-                cases.pop(case.get("id"))
-                yield case
+        elif case.get("id") in cases:
+            cases.remove(case.get("id"))
+            yield case
 
 
 def main():
@@ -59,7 +54,9 @@ def main():
     logger.info("Starting transform run")
     logger.info("----------------------")
 
-    transform = Transform(args.transforms)
+    validate = LogValidation()
+
+    transform = Transform(args.transforms, validate)
 
     t0 = time.time()
     count = 0
@@ -76,3 +73,10 @@ def main():
                     sys.stderr.write(f"Processed {count} cases ({time.time() - t0}).\n")
 
     sys.stderr.write(f"Processed {count} cases ({time.time() - t0}).\n")
+
+    validate.generate_report(logger)
+
+
+if __name__ == "__main__":
+    # execute only if run as a script
+    main()

@@ -5,8 +5,10 @@ from copy import deepcopy
 
 
 # gdc.research_subject ------------------------------------------
+from cdatransform.transform.validate import LogValidation
 
-def research_subject(tip, orig, **kwargs):
+
+def research_subject(tip, orig, log: LogValidation, **kwargs: object) -> object:
     """Convert fields needed for ResearchSubject"""
     demog = orig.get("demographic")
     if isinstance(demog, list):
@@ -26,6 +28,9 @@ def research_subject(tip, orig, **kwargs):
             "label": orig.get("project", {}).get("project_id")
         }
     }
+    for field in ["ethnicity", "sex", "race", "primary_disease_type", "primary_disease_site"]:
+        log.distinct(res_subj, field)
+    log.agree(res_subj, res_subj["id"], ["ethnicity", "sex", "race"])
     tip.update(res_subj)
 
     return tip
@@ -33,24 +38,32 @@ def research_subject(tip, orig, **kwargs):
 
 # gdc.diagnosis --------------------------------------------------
 
-def diagnosis(tip, orig, **kwargs):
+def diagnosis(tip, orig, log: LogValidation, **kwargs):
     """Convert fields needed for Diagnosis"""
     tip["Diagnosis"] = deepcopy(orig.get("diagnoses", []))
     for d in tip["Diagnosis"]:
         d["id"] = d.pop("diagnosis_id")
         d["Treatment"] = []
+        for field in ["primary_diagnosis", "tumor_grade", "tumor_stage", "morphology"]:
+            log.distinct(d, field)
 
     return tip
 
 
 # gdc.entity_to_specimen -----------------------------------------
 
-def entity_to_specimen(transform_in_progress, original, **kwargs):
+def entity_to_specimen(transform_in_progress, original, log: LogValidation, **kwargs):
     """Convert samples, portions and aliquots to specimens"""
     transform_in_progress["Specimen"] = [
         specimen_from_entity(*s)
         for s in get_entities(original)
     ]
+    for specimen in transform_in_progress["Specimen"]:
+        for field in ["primary_disease_type", "source_material_type", "anatomical_site"]:
+            log.distinct(specimen, field)
+        # days to birth is negative days from birth until diagnosis. 73000 days is 200 years.
+        log.validate(specimen, "days_to_birth", lambda x: not x or -73000 < x < 0)
+
     return transform_in_progress
 
 
@@ -85,7 +98,7 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
 
 # gdc.files -------------------------------------------------------
 
-def add_files(transform_in_progress, original, **kwargs):
+def add_files(transform_in_progress, original, log: LogValidation, **kwargs):
     transform_in_progress["File"] = [
         f for f in original.get("files", [])
     ]
