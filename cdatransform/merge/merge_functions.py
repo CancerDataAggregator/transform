@@ -20,7 +20,7 @@ def source_hierarchy_by_time(records_dict):
 def merge_demo_records_time_hierarchy(records_dict,how_to_merge):
     time_hier,dat_dict = source_hierarchy_by_time(records_dict)
     return merge_fields_level(dat_dict,how_to_merge,source_hierarchy =time_hier)
-def merge_fields_level(data_commons_fields_dict,how_to_merge,source_hierarchy =['gdc','pdc']):
+def merge_fields_level(data_commons_fields_dict,how_to_merge,source_hierarchy):
     dat = dict()
     for field in how_to_merge:
         dat[field] = how_to_merge[field]['default_value']
@@ -36,18 +36,16 @@ def merge_fields_level(data_commons_fields_dict,how_to_merge,source_hierarchy =[
         elif how_to_merge[field]['merge_type'] == 'coalesce': #Needs a data dictionary, not list
             dat_dict = make_dat_dict_for_transforms(data_commons_fields_dict,field,hierarchy)
             dat[field] = coalesce_field_values(dat_dict,
-                                                   how_to_merge[field]['default_value'],
-                                                   source_hierarchy = hierarchy)
+                                                   how_to_merge[field]['default_value'],hierarchy)
         else: #merge_codeable_concept
             dat_dict = make_dat_dict_for_transforms(data_commons_fields_dict,field,hierarchy)
             dat[field] = merge_codeable_concept(dat_dict,
-                                                   how_to_merge[field]['default_value'],
-                                                   source_hierarchy = hierarchy)
+                                                   how_to_merge[field]['default_value'],hierarchy)
     return dat
         #for source in data_commons_fields_dict:
             #if field in data_commons_fields_dict[source]:
                 
-def merge_codeable_concept(data_commons_fields_dict,default_value,source_hierarchy =['gdc','pdc']):
+def merge_codeable_concept(data_commons_fields_dict,default_value,source_hierarchy):
     #Need to coalesce the text field, and append others
     dat = dict()
     #make dictionary of only 'text' from all data commons entries
@@ -55,7 +53,7 @@ def merge_codeable_concept(data_commons_fields_dict,default_value,source_hierarc
     for source in data_commons_fields_dict:
         for rec in data_commons_fields_dict[source]:
             txt_dat_dict[source]=rec['text']
-    dat['text'] = coalesce_field_values(txt_dat_dict,default_value,source_hierarchy=source_hierarchy)
+    dat['text'] = coalesce_field_values(txt_dat_dict,default_value,source_hierarchy)
     #make list of only 'coding' from all data commons entries
     coding_dat_dict = dict({'coding':[]})
     for source in data_commons_fields_dict:
@@ -77,7 +75,7 @@ def append_field_vals_to_single_list(field_vals_list_of_lists):
                     dat.append(i)
     return dat
         
-def coalesce_field_values(data_dictionary,default_value,source_hierarchy =['gdc','pdc']):
+def coalesce_field_values(data_dictionary,default_value,source_hierarchy):
     dat_return = default_value
     for source in source_hierarchy:
         if source in data_dictionary and data_dictionary[source] is not None:
