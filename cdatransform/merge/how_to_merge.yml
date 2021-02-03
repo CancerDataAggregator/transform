@@ -1,0 +1,36 @@
+Research_Subject_merge:
+    case_id:
+        merge_type: 'coalesce'
+        default_value: ''
+    prim_disease_site: 
+        merge_type: 'codeable_concept'
+        default_value: ''
+    Specimen:
+        merge_type: 'append_field_vals'
+        default_value: []
+Demographic_merge: 
+    race: 
+        merge_type: 'coalesce'
+        default_value: ''
+    ethnicity: 
+        merge_type: 'coalesce'
+        default_value: ''
+    sex:
+        merge_type: 'coalesce'
+        default_value: ''
+Patient_merge:
+    id:
+        merge_type: 'coalesce'
+        default_value: ''
+    race: 
+        merge_type: 'coalesce'
+        default_value: ''
+    ethnicity: 
+        merge_type: 'coalesce'
+        default_value: ''
+    sex:
+        merge_type: 'coalesce'
+        default_value: ''
+    Research_Subject:
+        merge_type: 'append_field_vals'
+        default_value: []
