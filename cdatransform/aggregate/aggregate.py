@@ -46,3 +46,5 @@ def main():
                 merged_entry = mf.merge_fields_level(entities,how_to_merge['Patient_merge'],
                                                      lines_cases)
                 writeDC.write(merged_entry)
+if __name__ == "__main__":
+    main()
