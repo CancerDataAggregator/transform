@@ -12,6 +12,7 @@ t_lib = {
     "gdc.diagnosis": gdclib.diagnosis,
     "gdc.entity_to_specimen": gdclib.entity_to_specimen,
     "gdc.files": gdclib.add_files,
+    "gdc.patient": gdclib.patient,
     "pdc.diagnosis": pdclib.diagnosis,
     "pdc.entity_to_specimen": pdclib.entity_to_specimen,
     "pdc.files": pdclib.add_files,
