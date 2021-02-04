@@ -4,15 +4,17 @@
 ###               TARGET-10-PATCNI               ###
 ####################################################
 
-id: "7eeced68-1717-4116-bcee-328ac70a9682"
-identifier: "TARGET-10-PATCNI"
+id: "TARGET-10-PATCNI"
 ethnicity:
 sex:
 race:
 
 ResearchSubject:
-  - id: "" # This needs to be fixed.
-    identifier: "" # This needs to be fixed.
+
+  # A ResearchSubject is unqiue to a DC and a study
+  - id: "7eeced68-1717-4116-bcee-328ac70a9682"
+    identifier: TARGET-10-PATCNI
+    CDA_context: "GDC"
     primary_disease_type: "Lymphoid Leukemias"
     primary_disease_site: "Hematopoietic and reticuloendothelial systems"
 
@@ -30,6 +32,6 @@ ResearchSubject:
         specimen_type: "sample"
         derived_from: "None"
         CDA_context: "GDC"
-        File: []
+        File: []  # TODO: Add in file data if available
 
     Diagnosis: []
