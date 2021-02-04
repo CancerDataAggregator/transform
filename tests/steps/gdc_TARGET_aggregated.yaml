@@ -6,30 +6,30 @@
 # belong to the same patient and concatenate them
 # together under the same Patient.
 
-# Demographic info was missing in
-# gdc_harmonized_TARGET_case1.yaml
-# Because there were no conflicts,
-# the values were taken from
-# gdc_harmonized_TARGET_case2.yaml
+# Demographic info was missing in gdc_TARGET_case1_harmonized.yaml
+# Because there were no conflicts, the values were taken from
+# gdc_TARGET_case2_harmonized.yaml
 
 # Logging:
 # 1. Conflicting demographic information
 # 2. Missing demographic information
 
 id: "TARGET-10-PATCNI"
-ethnicity: "Not Hispanic or Latino"
-sex: "Female"
-race: "Black or African American"
+ethnicity: "not hispanic or latino"
+sex: "female"
+race: "black or african american"
 
 # ResearchSubject entities are just concatenated for the same Patient
 ResearchSubject:
   - id: "7eeced68-1717-4116-bcee-328ac70a9682"
     identifier: "TARGET-10-PATCNI"
+    CDA_context: "GDC"
     primary_disease_type: "Lymphoid Leukemias"
     primary_disease_site: "Hematopoietic and reticuloendothelial systems"
-    Diagnosis: []
+
     Project:
       label: "TARGET-ALL-P3"
+
     Specimen:
       - id: "37789082-b4bb-4f18-9a3d-aca1a65c2ced"
         identifier: "TARGET-10-PATCNI-09A"
@@ -41,21 +41,19 @@ ResearchSubject:
         specimen_type: "sample"
         derived_from: "None"
         CDA_context: "GDC"
+        Files: []
+
+    Diagnosis: []
 
   - id: "9e229e56-f7e1-58f9-984b-a9453be5dc9a"
     identifier: "TARGET-10-PATCNI"
+    CDA_context: "GDC"
     primary_disease_type: "Lymphoid Leukemias"
     primary_disease_site: "Hematopoietic and reticuloendothelial systems"
-    Diagnosis:
-      - id: "63c6c7a2-c3e6-5e2b-9dd6-03bfabef5178"
-        age_at_diagnosis: "1682"
-        primary_diagnosis: "T lymphoblastic leukemia/lymphoma"
-        tumor_grade: "Not Reported"
-        tumor_stage: "unknown"
-        morphology: "9837/3"
-        Treatment: []
+
     Project:
       label: "TARGET-ALL-P2"
+
     Specimen:
       - id: "3d5bcc5c-dca3-5253-b25b-3351c9ef95f6"
         identifier: "TARGET-10-PATCNI-10A"
@@ -67,6 +65,8 @@ ResearchSubject:
         specimen_type: "sample"
         derived_from: "None"
         CDA_context: "GDC"
+        Files: []
+
       - id: "96666e88-de93-5416-8694-75ae5e9dec7e"
         identifier: "TARGET-10-PATCNI-09A"
         derived_from_subject: "TARGET-10-PATCNI"
@@ -77,3 +77,13 @@ ResearchSubject:
         specimen_type: "sample"
         derived_from: "None"
         CDA_context: "GDC"
+        File: []
+
+    Diagnosis:
+      - id: "63c6c7a2-c3e6-5e2b-9dd6-03bfabef5178"
+        age_at_diagnosis: "1682"
+        primary_diagnosis: "T lymphoblastic leukemia/lymphoma"
+        tumor_grade: "Not Reported"
+        tumor_stage: "unknown"
+        morphology: "9837/3"
+        Treatment: []
