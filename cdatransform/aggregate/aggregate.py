@@ -1,3 +1,4 @@
+import argparse
 import json
 import sys
 import jsonlines
@@ -5,7 +6,7 @@ import yaml
 import datetime
 import gzip
 
-import cdatransform.merge.merge_functions.py as mf
+import cdatransform.merge.merge_functions as mf
 def main():
     parser = argparse.ArgumentParser(description="Aggregate cases data from DC to Patient level.")
     parser.add_argument("merge_file", help="file name for how to merge fields. Should end with .yml")
@@ -48,3 +49,4 @@ def main():
                 writeDC.write(merged_entry)
 if __name__ == "__main__":
     main()
+    
