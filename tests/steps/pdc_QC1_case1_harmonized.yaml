@@ -1,3 +1,7 @@
+# extract-pdc pdc_QC1_case1.json.gz --case 0809987b-1fba-11e9-b7f8-0a80fada099c
+
+# See gdc_TARGET_case2_harmonized.yaml for detailed annotations
+
 ###################################################
 ###                     QC1                     ###
 ###################################################
