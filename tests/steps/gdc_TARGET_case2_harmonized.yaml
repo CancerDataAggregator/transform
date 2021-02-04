@@ -1,11 +1,22 @@
 # extract-gdc gdc_TARGET_case2.json.gz --case 9e229e56-f7e1-58f9-984b-a9453be5dc9a
 
+# See gdc_TARGET_case1_harmonized.yaml for detailed annotations
+
 ####################################################
 ###               TARGET-10-PATCNI               ###
 ####################################################
 
-# Before aggregation – still a single research subject
-# Patient hasn't been created yet
+# A Patient entity is created from each case.
+
+# These demographic data are copied over from a case
+# Logging:
+# 1. Conflicting demographic information
+# 2. Missing demographic information
+# 3. Track unique values for
+#  1. ethnicity
+#  2. sex
+#  3. race
+
 id: "9e229e56-f7e1-58f9-984b-a9453be5dc9a"
 identifier: "TARGET-10-PATCNI"
 # Note that the upper-case harmonization was applied
@@ -13,36 +24,71 @@ identifier: "TARGET-10-PATCNI"
 ethnicity: "Not Hispanic or Latino"
 sex: "Female"
 race: "Black or African American"
-primary_disease_type: "Lymphoid Leukemias"
-primary_disease_site: "Hematopoietic and reticuloendothelial systems"
-Diagnosis:
-  - id: "63c6c7a2-c3e6-5e2b-9dd6-03bfabef5178"
-    age_at_diagnosis: "1682"
-    primary_diagnosis: "T lymphoblastic leukemia/lymphoma"
-    tumor_grade: "Not Reported"
-    tumor_stage: "unknown"
-    morphology: "9837/3"
-    Treatment: []
-Project:
-  label: "TARGET-ALL-P2"
-Specimen:
-  - id: "3d5bcc5c-dca3-5253-b25b-3351c9ef95f6"
-    identifier: "TARGET-10-PATCNI-10A"
-    derived_from_subject: "TARGET-10-PATCNI"
-    source_material_type: "Blood Derived Normal"
-    anatomical_site:
-    days_to_birth:
+
+# The rest of a case is converted to ResearchSubject
+# Logging:
+# 1. Keep track of number of distinct values of
+#    1. primary_disease_type
+#    2. primary_disease_site
+ResearchSubject:
+  - id: "9e229e56-f7e1-58f9-984b-a9453be5dc9a"
+    identifier: "TARGET-10-PATCNI"
     primary_disease_type: "Lymphoid Leukemias"
-    specimen_type: "sample"
-    derived_from: "None"
-    CDA_context: "GDC"
-  - id: "96666e88-de93-5416-8694-75ae5e9dec7e"
-    identifier: "TARGET-10-PATCNI-09A"
-    derived_from_subject: "TARGET-10-PATCNI"
-    source_material_type: "Primary Blood Derived Cancer - Bone Marrow"
-    anatomical_site:
-    days_to_birth:
-    primary_disease_type: "Lymphoid Leukemias"
-    specimen_type: "sample"
-    derived_from: "None"
-    CDA_context: "GDC"
+    primary_disease_site: "Hematopoietic and reticuloendothelial systems"
+    Project:
+      label: "TARGET-ALL-P2"
+
+    # Samples, portions, slides and aliquots are collapsed into Specimen
+    #
+    # Q. Specimens can be shared across studies, but will belong to separate
+    # ResearchSubjects. How do we resolve this?
+    #
+    # Logging:
+    # 1. Keep track of number of distinct values of
+    #    1. primary_disease_type
+    #    2. source_material_type
+    #    3. anatomical_site
+    # 2. Flag invalid values of days_to_birth
+    # 3. Log if duplicated specimen id is found (also see after merge)
+    Specimen:
+      - id: "3d5bcc5c-dca3-5253-b25b-3351c9ef95f6"
+        identifier: "TARGET-10-PATCNI-10A"
+        derived_from_subject: "TARGET-10-PATCNI"
+        source_material_type: "Blood Derived Normal"
+        anatomical_site:
+        days_to_birth:
+        primary_disease_type: "Lymphoid Leukemias"
+        specimen_type: "sample"
+        derived_from: "None"
+        CDA_context: "GDC"
+        File: []
+
+      - id: "96666e88-de93-5416-8694-75ae5e9dec7e"
+        identifier: "TARGET-10-PATCNI-09A"
+        derived_from_subject: "TARGET-10-PATCNI"
+        source_material_type: "Primary Blood Derived Cancer - Bone Marrow"
+        anatomical_site:
+        days_to_birth:
+        primary_disease_type: "Lymphoid Leukemias"
+        specimen_type: "sample"
+        derived_from: "None"
+        CDA_context: "GDC"
+        File: []
+
+    # Logging
+    # 1. Keep track of distinct values of 
+    #    1. primary_diagnosis
+    #    2. tumor_grade
+    #    3. tumor_stage
+    #    4. morphology
+    # 2. Keep track of ResearchSubjects with multiple Diagnoses
+    # 3. Log if there are non-unique diagnosis ids.
+    # In rare cases there can me multiple diagnoses related to a case
+    Diagnosis:
+      - id: "63c6c7a2-c3e6-5e2b-9dd6-03bfabef5178"
+        age_at_diagnosis: "1682"
+        primary_diagnosis: "T lymphoblastic leukemia/lymphoma"
+        tumor_grade: "Not Reported"
+        tumor_stage: "unknown"
+        morphology: "9837/3"
+        Treatment: []
