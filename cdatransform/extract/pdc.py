@@ -4,44 +4,11 @@ import time
 import sys
 import gzip
 import argparse
+from itertools import groupby
 
 from cdatransform.lib import get_case_ids
 from .lib import retry_get
-
-
-def query(case_id):
-    return (
-        "{"
-        f'case(case_id: "{case_id}")'
-        """
-{
-    case_submitter_id
-    case_id
-    project_submitter_id
-    disease_type
-    primary_site
-    samples {
-        sample_id 
-        sample_type 
-        sample_submitter_id 
-        biospecimen_anatomic_site
-    }
-    demographics {
-        ethnicity 
-        gender 
-        race 
-        days_to_birth
-    }
-    diagnoses {
-        primary_diagnosis
-        tumor_grade
-        tumor_stage
-        morphology
-    } 
-}
-"""
-        "}"
-    )
+from .pdc_query_lib import query_all_cases, query_single_case, query_all_files, query_single_file
 
 
 class PDC:
@@ -57,26 +24,81 @@ class PDC:
             case_ids = self.get_case_id_list()
 
         for case_id in case_ids:
-            result = retry_get(self.endpoint, params={"query": query(case_id=case_id)})
+            result = retry_get(self.endpoint, params={"query": query_single_case(case_id=case_id)})
             yield result.json()["data"]["case"][0]
 
     def get_case_id_list(self):
-        params = {"query": "{allCases {case_id}}"}
-        result = retry_get(self.endpoint, params=params)
+        result = retry_get(self.endpoint, params={"query": query_all_cases()})
         for case in result.json()["data"]["allCases"]:
             yield case["case_id"]
+
+    def files(self):
+        file_ids = self.get_file_id_list()
+        for file_id in file_ids:
+            result = retry_get(self.endpoint, params={"query": query_single_file(file_id)})
+            yield result.json()["data"]["fileMetadata"][0]
+
+    def get_file_id_list(self):
+        result = retry_get(self.endpoint, params={"query": query_all_files(0, 100000)})
+        for f in result.json()["data"]["getPaginatedUIFile"]["uiFiles"]:
+            yield f["file_id"]
+
+    def get_files_per_sample(self) -> dict:
+        t0 = time.time()
+        n = 0
+        sample_file_pairs = []
+        files_per_sample = dict()
+
+        for f in self.files():
+            aliquots = f.get("aliquots")
+            file_metadata = get_file_metadata(f)
+            if aliquots:
+                for aliquot in aliquots:
+                    sample_id = aliquot["sample_id"]
+                    sample_file_pairs.append({"sample_id": sample_id, "file_metadata": file_metadata})
+                    n += 1
+                    if n % 100 == 0:
+                        sys.stderr.write(f"Wrote {n} sample-file pairs in {time.time() - t0}s\n")
+        sys.stderr.write(f"Wrote {n} sample-file pairs in {time.time() - t0}s\n")
+
+        t1 = time.time()
+        sample_file_pairs.sort(key=lambda x: x["sample_id"])
+        for sample_id, all_sample_pairs in groupby(sample_file_pairs, key=lambda x: x["sample_id"]):
+            all_files_per_sample = [pair["file_metadata"] for pair in all_sample_pairs]
+            files_per_sample[sample_id] = all_files_per_sample
+        sys.stderr.write(f"Created {len(files_per_sample)} in {time.time() - t1}s\n")
+        sys.stderr.write(f"Entire files preparation completed in {time.time() - t0}s\n")
+        return files_per_sample
 
     def save_cases(self, out_file, case_ids=None):
         t0 = time.time()
         n = 0
+        files_per_sample = self.get_files_per_sample()
         with gzip.open(out_file, "wb") as fp:
             writer = jsonlines.Writer(fp)
             for case in self.cases(case_ids):
+                for index, sample in enumerate(case["samples"]):
+                    case["samples"][index]["File"] = files_per_sample.get(sample["sample_id"])
                 writer.write(case)
                 n += 1
                 if n % 100 == 0:
                     sys.stderr.write(f"Wrote {n} cases in {time.time() - t0}s\n")
         sys.stderr.write(f"Wrote {n} cases in {time.time() - t0}s\n")
+
+
+def get_file_metadata(file_metadata_record) -> dict:
+    file_metadata = dict()
+    file_metadata["file_id"] = file_metadata_record.get("file_id")
+    file_metadata["file_name"] = file_metadata_record.get("file_name")
+    file_metadata["file_location"] = file_metadata_record.get("file_location")
+    file_metadata["file_submitter_id"] = file_metadata_record.get("file_submitter_id")
+    file_metadata["file_type"] = file_metadata_record.get("file_type")
+    file_metadata["file_format"] = file_metadata_record.get("file_format")
+    file_metadata["file_size"] = file_metadata_record.get("file_size")
+    file_metadata["data_category"] = file_metadata_record.get("data_category")
+    file_metadata["experiment_type"] = file_metadata_record.get("experiment_type")
+    file_metadata["md5sum"] = file_metadata_record.get("md5sum")
+    return file_metadata
 
 
 def main():
