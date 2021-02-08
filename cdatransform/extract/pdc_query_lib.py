@@ -48,25 +48,10 @@ def query_single_case(case_id):
     return query
 
 
-def query_all_files(offset, limit):
+def query_files_bulk(offset, limit):
     template = Template(
         """{
-  getPaginatedUIFile(offset: $offset, limit: $limit) {
-    uiFiles {
-      file_id
-    }
-  }
-}"""
-    )
-
-    query = template.substitute(offset=offset, limit=limit)
-    return query
-
-
-def query_single_file(file_id):
-    template = Template(
-        """{
-  fileMetadata(file_id: "$file_id") {
+  fileMetadata(offset: $offset, limit: $limit) {
     file_id
     file_name
     file_location
@@ -83,5 +68,5 @@ def query_single_file(file_id):
   }
 }"""
     )
-    query = template.substitute(file_id=file_id)
+    query = template.substitute(offset=offset, limit=limit)
     return query

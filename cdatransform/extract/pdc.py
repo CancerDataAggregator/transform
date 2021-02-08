@@ -8,7 +8,7 @@ from itertools import groupby
 
 from cdatransform.lib import get_case_ids
 from .lib import retry_get
-from .pdc_query_lib import query_all_cases, query_single_case, query_all_files, query_single_file
+from .pdc_query_lib import query_all_cases, query_single_case, query_files_bulk
 
 
 class PDC:
@@ -32,33 +32,29 @@ class PDC:
         for case in result.json()["data"]["allCases"]:
             yield case["case_id"]
 
-    def files(self):
-        file_ids = self.get_file_id_list()
-        for file_id in file_ids:
-            result = retry_get(self.endpoint, params={"query": query_single_file(file_id)})
-            yield result.json()["data"]["fileMetadata"][0]
-
-    def get_file_id_list(self):
-        result = retry_get(self.endpoint, params={"query": query_all_files(0, 100000)})
-        for f in result.json()["data"]["getPaginatedUIFile"]["uiFiles"]:
-            yield f["file_id"]
+    def files_chunk(self):
+        for page in range(0, 90000, 1000):
+            sys.stderr.write(f"<< Processing page {int(page/1000) + 1}/90 >>\n")
+            result = retry_get(self.endpoint, params={"query": query_files_bulk(page, 1000)})
+            yield result.json()["data"]["fileMetadata"]
 
     def get_files_per_sample(self) -> dict:
         t0 = time.time()
         n = 0
         sample_file_pairs = []
         files_per_sample = dict()
+        sys.stderr.write(f"Started collecting files.\n")
 
-        for f in self.files():
-            aliquots = f.get("aliquots")
-            file_metadata = get_file_metadata(f)
-            if aliquots:
-                for aliquot in aliquots:
-                    sample_id = aliquot["sample_id"]
-                    sample_file_pairs.append({"sample_id": sample_id, "file_metadata": file_metadata})
-                    n += 1
-                    if n % 100 == 0:
-                        sys.stderr.write(f"Wrote {n} sample-file pairs in {time.time() - t0}s\n")
+        for fc in self.files_chunk():
+            for f in fc:
+                aliquots = f.get("aliquots")
+                file_metadata = get_file_metadata(f)
+                if aliquots:
+                    for aliquot in aliquots:
+                        sample_id = aliquot["sample_id"]
+                        sample_file_pairs.append({"sample_id": sample_id, "file_metadata": file_metadata})
+                        n += 1
+            sys.stderr.write(f"Chunk completed. Wrote {n} sample-file pairs in {time.time() - t0}s\n")
         sys.stderr.write(f"Wrote {n} sample-file pairs in {time.time() - t0}s\n")
 
         t1 = time.time()
@@ -66,8 +62,8 @@ class PDC:
         for sample_id, all_sample_pairs in groupby(sample_file_pairs, key=lambda x: x["sample_id"]):
             all_files_per_sample = [pair["file_metadata"] for pair in all_sample_pairs]
             files_per_sample[sample_id] = all_files_per_sample
-        sys.stderr.write(f"Created {len(files_per_sample)} in {time.time() - t1}s\n")
-        sys.stderr.write(f"Entire files preparation completed in {time.time() - t0}s\n")
+        sys.stderr.write(f"Created a files look-up dict for {len(files_per_sample)} samples in {time.time() - t1}s\n")
+        sys.stderr.write(f"Entire files preparation completed in {time.time() - t0}s\n\n")
         return files_per_sample
 
     def save_cases(self, out_file, case_ids=None):
