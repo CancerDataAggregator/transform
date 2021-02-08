@@ -3,3 +3,6 @@ cdatransform.egg-info/
 
 # Intellij
 .idea/
+
+# Python
+*.pyc
