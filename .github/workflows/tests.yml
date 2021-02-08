@@ -30,7 +30,8 @@ jobs:
     - name: Unit tests
       run: |
         pip install pytest
-        python -m pytest
+        cd tests
+        py.test
     - name: Integration tests
       run: |
         cd tests/integration
