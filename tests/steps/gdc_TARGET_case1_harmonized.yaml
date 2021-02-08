@@ -1,0 +1,37 @@
+# extract-gdc gdc_TARGET_case1.json.gz --case 7eeced68-1717-4116-bcee-328ac70a9682
+
+####################################################
+###               TARGET-10-PATCNI               ###
+####################################################
+
+id: "TARGET-10-PATCNI"
+ethnicity:
+sex:
+race:
+
+ResearchSubject:
+
+  # A ResearchSubject is unqiue to a DC and a study
+  - id: "7eeced68-1717-4116-bcee-328ac70a9682"
+    identifier: TARGET-10-PATCNI
+    CDA_context: "GDC"
+    primary_disease_type: "Lymphoid Leukemias"
+    primary_disease_site: "Hematopoietic and reticuloendothelial systems"
+
+    Project:
+      label: "TARGET-ALL-P3"
+
+    Specimen:
+      - id: "37789082-b4bb-4f18-9a3d-aca1a65c2ced"
+        identifier: "TARGET-10-PATCNI-09A"
+        derived_from_subject: "TARGET-10-PATCNI"
+        source_material_type: "Primary Blood Derived Cancer - Bone Marrow"
+        anatomical_site:
+        days_to_birth:
+        primary_disease_type: "Lymphoid Leukemias"
+        specimen_type: "sample"
+        derived_from: "None"
+        CDA_context: "GDC"
+        Files: []  # TODO: Add in file data if available
+
+    Diagnosis: []

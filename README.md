@@ -10,6 +10,14 @@ then be conveyed to the DCs.
 ![](overallflow.png)
 
 
+# Example Patient data with annotations explaining data harmonization, logging and merging
+
+Original case files: [GDC 1](tests/steps/gdc_TARGET_case1.json), [GDC 2](tests/steps/gdc_TARGET_case2.json), [PDC 1](tests/steps/pdc_QC1_case1.json), [PDC 2](tests/steps/pdc_QC1_case2.json)
+
+1. [Harmonized GDC Patient (1 case) with annotations](tests/steps/gdc_TARGET_case2_harmonized.yaml)
+1. [Aggregated, harmonized GDC Patient with annotations](tests/steps/gdc_TARGET_aggregated.yaml)
+1. [Merged, aggregated, harmonized GDC + PDC Patient](tests/steps/gdc_pdc_TCGA-E2-A10A_merged.yaml)
+
 # Install
 
 Clone repository and install
