@@ -13,7 +13,8 @@ def main():
     parser.add_argument("input_file", help="Input file name. Should be output file of transform function. Should end with .gz")
     parser.add_argument("output_file", help="Out file name. Should end with .gz")
     args = parser.parse_args()
-    with open(args["merge_file"]) as file:
+    #yaml.load(open(transform_file, "r"), Loader=Loader)
+    with open(args.merge_file) as file:
         how_to_merge = yaml.full_load(file)
     with gzip.open(args.input_file, "r") as infp:
         readDC = jsonlines.Reader(infp)
