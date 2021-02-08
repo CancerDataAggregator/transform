@@ -28,24 +28,31 @@ def research_subject(tip, orig, **kwargs):
         "identifier": [{"value": orig.get("case_id"), "system": "PDC"}],
         "primary_disease_type": orig.get("disease_type"),
         "primary_disease_site": orig.get("primary_site"),
-        "externalReferences": orig.get("externalReferences"),
         "Project": {
-            "label": orig.get("project", {}).get("project_submitter_id")
+            "label": orig.get("project_submitter_id")
         }
     }]
     tip["Research_Subject"] = res_subj
 
     return tip
-
+#"externalReferences": orig.get("externalReferences"),
 # pdc.diagnosis --------------------------------------------------
 
 def diagnosis(tip, orig, **kwargs):
     """Convert fields needed for Diagnosis"""
-    tip["Research_Subject"][0]["Diagnosis"] = deepcopy(orig.get("diagnoses", []))
-    for d in tip["Research_Subject"][0]["Diagnosis"]:
-        if "diagnosis_id" in d:
-            d["id"] = d.pop("diagnosis_id")
-        d["Treatment"] = []
+    diag_field_map = dict({"diagnosis_id":"id","age_at_diagnosis":"age_at_diagnosis",
+                           "primary_diagnosis":"primary_diagnosis","tumor_grade":"tumor_grade",
+                           "tumor_stage":"tumor_stage", "morphology":"morphology"})
+    
+    #tip["Research_Subject"][0]["Diagnosis"] = deepcopy(orig.get("diagnoses", []))
+    diag_rec_copy = deepcopy(orig.get("diagnoses", []))
+    tip["Research_Subject"][0]["Diagnosis"] = []
+    for d in diag_rec_copy:
+        diag_entry = dict({})
+        for field in diag_field_map:
+            diag_entry[diag_field_map[field]] = d.get(field)
+        diag_entry["Treatment"] = []
+        tip["Research_Subject"][0]["Diagnosis"].append(diag_entry)
 
     return tip
 
@@ -76,9 +83,9 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
     elif demog is None:
         demog = {}
     return {
-        "derived_from_subject": entity.get("submitter_id"),
         "id": entity.get(id_key),
         "identifier": [{"value": entity.get(id_key), "system": "PDC"}],
+        "derived_from_subject": case.get("submitter_id"),
         "specimen_type": _type,
         "primary_disease_type": case.get("disease_type"),
         "source_material_type": entity.get("sample_type"),
