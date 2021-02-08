@@ -21,7 +21,7 @@ def merge_demo_records_time_hierarchy(records_dict,how_to_merge):
     time_hier,dat_dict = source_hierarchy_by_time(records_dict)
     return merge_fields_level(dat_dict,how_to_merge,source_hierarchy =time_hier)
 def merge_fields_level(data_commons_fields_dict,how_to_merge,source_hierarchy):
-    dat = dict()
+    dat = dict({})
     for field in how_to_merge:
         dat[field] = how_to_merge[field]['default_value']
         hierarchy = source_hierarchy
