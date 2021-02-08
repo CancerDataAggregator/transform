@@ -40,11 +40,26 @@ def research_subject(tip, orig, **kwargs):
 
 def diagnosis(tip, orig, **kwargs):
     """Convert fields needed for Diagnosis"""
-    tip["Research_Subject"][0]["Diagnosis"] = deepcopy(orig.get("diagnoses", []))
-    for d in tip["Research_Subject"][0]["Diagnosis"]:
-        d["id"] = d.pop("diagnosis_id")
-        d["Treatment"] = []
-
+    diag_field_map = dict({"diagnosis_id":"id","age_at_diagnosis":"age_at_diagnosis",
+                           "primary_diagnosis":"primary_diagnosis","tumor_grade":"tumor_grade",
+                           "tumor_stage":"tumor_stage", "morphology":"morphology"})
+    treat_field_map = dict({"treatment_outcome":"outcome","treatment_type":"type"})
+    
+    #tip["Research_Subject"][0]["Diagnosis"] = deepcopy(orig.get("diagnoses", []))
+    diag_rec_copy = deepcopy(orig.get("diagnoses", []))
+    tip["Research_Subject"][0]["Diagnosis"] = []
+    for d in diag_rec_copy:
+        diag_entry = dict({})
+        for field in diag_field_map:
+            diag_entry[diag_field_map[field]] = d.get(field)
+        diag_entry["Treatment"] = []
+        treat_rec_copy = d.get("Treatments",[])
+        for treat in treat_rec_copy:
+            treat_entry = dict({})
+            for field in treat_field_map:
+                treat_entry[triet_field_map[field]] = treat.get(field)
+            diag_entry["Treatment"].append(treat_entry)
+        tip["Research_Subject"][0]["Diagnosis"].append(diag_entry)
     return tip
 
 
@@ -71,7 +86,7 @@ def get_entities(original):
 def specimen_from_entity(entity, _type, parent_id, sample, case):
     id_key = f"{_type}_id"
     return {
-        "derived_from_subject": entity.get("submitter_id"),
+        "derived_from_subject": case.get("submitter_id"),
         "id": entity.get(id_key),
         "identifier": [{"value": entity.get(id_key), "system": "GDC"}],
         "specimen_type": _type,
