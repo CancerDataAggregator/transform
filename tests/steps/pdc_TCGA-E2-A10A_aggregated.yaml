@@ -11,21 +11,16 @@ ethnicity: "Not Hispanic or Latino"
 sex: "Female"
 race: "White"
 
-"ResearchSubject":
+ResearchSubject:
   - id: "010df72d-63d9-11e8-bcf1-0a2705229b82"
     identifier: "TCGA-E2-A10A"
+    CDA_context: "PDC"
     primary_disease_type: "Breast Invasive Carcinoma"
     primary_disease_site: "Breast"
-    Diagnosis:
-      - id: "ff312994-70ca-11e8-bcf1-0a2705229b82"
-        age_at_diagnosis: "15085"
-        primary_diagnosis: "Infiltrating duct carcinoma, NOS"
-        tumor_grade: "Not Reported"
-        tumor_stage: "Stage IIB"
-        morphology: "8500/3"
-        Treatment: []
+
     Project:
       label: "CPTAC-TCGA"
+
     Specimen:
       - id: "9532a8b4-6420-11e8-bcf1-0a2705229b82"
         identifier: "TCGA-E2-A10A-01A"
@@ -37,3 +32,13 @@ race: "White"
         specimen_type: "sample"
         derived_from: "None"
         CDA_context: "PDC"
+        Files: []
+
+    Diagnosis:
+      - id: "ff312994-70ca-11e8-bcf1-0a2705229b82"
+        age_at_diagnosis: "15085"
+        primary_diagnosis: "Infiltrating duct carcinoma, NOS"
+        tumor_grade: "Not Reported"
+        tumor_stage: "Stage IIB"
+        morphology: "8500/3"
+        Treatment: []

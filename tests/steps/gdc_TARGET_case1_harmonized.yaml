@@ -32,6 +32,6 @@ ResearchSubject:
         specimen_type: "sample"
         derived_from: "None"
         CDA_context: "GDC"
-        File: []  # TODO: Add in file data if available
+        Files: []  # TODO: Add in file data if available
 
     Diagnosis: []

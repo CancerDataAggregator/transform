@@ -58,7 +58,7 @@ ResearchSubject:
         specimen_type: "sample"
         derived_from: "None"
         CDA_context: "GDC"
-        File: []
+        Files: []
 
       - id: "96666e88-de93-5416-8694-75ae5e9dec7e"
         identifier: "TARGET-10-PATCNI-09A"
@@ -70,7 +70,7 @@ ResearchSubject:
         specimen_type: "sample"
         derived_from: "None"
         CDA_context: "GDC"
-        File: []
+        Files: []
 
     # Logging
     # 1. Keep track of distinct values of 
