@@ -1,33 +1,42 @@
+# extract-pdc pdc_QC1_case2.json.gz --case df4f2aaf-8f98-11ea-b1fd-0aad30af8a83
+
 ###################################################
 ###                     QC1                     ###
 ###################################################
 
-# Before aggregation – still a single research subject
-# Patient hasn't been created yet
-id: "df4f2aaf-8f98-11ea-b1fd-0aad30af8a83"
-identifier: "QC1"
+id: "QC1"
 ethnicity: "Not Reported"
 sex: "Not Reported"
 race: "Not Reported"
-primary_disease_type: "Other"
-primary_disease_site: "Not Reported"
-Diagnosis:
-  - id: "df522558-8f98-11ea-b1fd-0aad30af8a83"
-    age_at_diagnosis:
-    primary_diagnosis: "Not Reported"
-    tumor_grade: "Not Reported"
-    tumor_stage: "Not Reported"
-    morphology: "Not Reported"
-Project:
-  label: "CPTAC3-Discovery"
-Specimen:
-  - id: "df50514e-8f98-11ea-b1fd-0aad30af8a83"
+
+ResearchSubject:
+  - id: "df4f2aaf-8f98-11ea-b1fd-0aad30af8a83"
     identifier: "QC1"
-    derived_from_subject: "QC1"
-    source_material_type: "Cell Lines"
-    anatomical_site:
-    days_to_birth:
-    primary_disease_type: "Other"
-    specimen_type: "sample"
-    derived_from: "None"
     CDA_context: "PDC"
+    primary_disease_type: "Other"
+    primary_disease_site: "Not Reported"
+
+    Project:
+      label: "CPTAC3-Discovery"
+
+    Specimen:
+      - id: "df50514e-8f98-11ea-b1fd-0aad30af8a83"
+        identifier: "QC1"
+        derived_from_subject: "QC1"
+        source_material_type: "Cell Lines"
+        anatomical_site:
+        days_to_birth:
+        primary_disease_type: "Other"
+        specimen_type: "sample"
+        derived_from: "None"
+        CDA_context: "PDC"
+        Files: []
+
+    Diagnosis:
+      - id: "df522558-8f98-11ea-b1fd-0aad30af8a83"
+        age_at_diagnosis:
+        primary_diagnosis: "Not Reported"
+        tumor_grade: "Not Reported"
+        tumor_stage: "Not Reported"
+        morphology: "Not Reported"
+        Treatment: []
