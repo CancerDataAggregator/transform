@@ -1,8 +1,8 @@
 """
 Transforms specific to GDC data structures
 """
-from copy import deepcopy
 
+from cdatransform.transform.commonlib import constrain_research_subject
 from cdatransform.transform.validate import LogValidation
 
 # gdc.patient ------------------------------------------
@@ -54,52 +54,55 @@ def research_subject(tip, orig, log: LogValidation, **kwargs: object) -> object:
 # gdc.diagnosis --------------------------------------------------
 
 def diagnosis(tip, orig, log: LogValidation, **kwargs):
-    """Convert fields needed for Diagnosis"""
-    diag_field_map = {
-        "diagnosis_id":"id",
-        "age_at_diagnosis":"age_at_diagnosis",
-        "primary_diagnosis":"primary_diagnosis",
-        "tumor_grade":"tumor_grade",
-        "tumor_stage":"tumor_stage", "morphology":"morphology"
-    }
-    treat_field_map = {
-        "treatment_outcome":"outcome",
-        "treatment_type":"type"
-    }
-    
-    diag_rec_copy = deepcopy(orig.get("diagnoses", []))
-    tip["ResearchSubject"][0]["Diagnosis"] = []
-    for d in diag_rec_copy:
-        diag_entry = dict({})
-        for field in diag_field_map:
-            diag_entry[diag_field_map[field]] = d.get(field)
-        diag_entry["Treatment"] = []
-        treat_rec_copy = d.get("Treatments",[])
-        for treat in treat_rec_copy:
-            treat_entry = dict({})
-            for field in treat_field_map:
-                treat_entry[treat_field_map[field]] = treat.get(field)
-            diag_entry["Treatment"].append(treat_entry)
-        tip["ResearchSubject"][0]["Diagnosis"].append(diag_entry)
+    """Convert fields needed for Diagnosis. Needs ResearchSubject first."""
+
+    constrain_research_subject(tip)
+
+    harmonized_diagnosis = []
+    diagnosis_fields = ["diagnosis_id", "age_at_diagnosis", "primary_diagnosis", "tumor_grade", "tumor_stage", "morphology"]
+    for d in orig.get("diagnoses",[]):
+        this_d = {
+            f: d.get(f)
+            for f in diagnosis_fields 
+        }
+        this_d["id"] = this_d.pop("diagnosis_id")
+
+        this_d["Treatment"] = [
+            {
+                "outcome": treatment.get("treatment_outcome"),
+                "type": treatment.get("treatment_type")
+            }
+            for treatment in d.get("treatments", [])
+        ]
+        
+        harmonized_diagnosis += [this_d]
+
+    # ResearchSubject is a list with one element at this stage
+    research_subject[0]["Diagnosis"] = harmonized_diagnosis
 
     return tip
 
 
 # gdc.entity_to_specimen -----------------------------------------
 
-def entity_to_specimen(transform_in_progress, original, log: LogValidation, **kwargs):
+def entity_to_specimen(tip, original, log: LogValidation, **kwargs):
     """Convert samples, portions and aliquots to specimens"""
-    transform_in_progress["Research_Subject"][0]["Specimen"] = [
+
+    constrain_research_subject(tip)
+
+    specimens = [
         specimen_from_entity(*s)
         for s in get_entities(original)
     ]
-    for specimen in transform_in_progress["Specimen"]:
+    
+    for specimen in specimens:
         for field in ["primary_disease_type", "source_material_type", "anatomical_site"]:
             log.distinct(specimen, field)
         # days to birth is negative days from birth until diagnosis. 73000 days is 200 years.
         log.validate(specimen, "days_to_birth", lambda x: not x or -73000 < x < 0)
 
-    return transform_in_progress
+    tip["Research_Subject"][0]["Specimen"] = specimens
+    return tip
 
 
 def get_entities(original):
@@ -135,7 +138,9 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
 # gdc.files -------------------------------------------------------
 
 def add_files(transform_in_progress, original, log: LogValidation, **kwargs):
-    transform_in_progress["ResearchSubject"][0]["Files"] = [
+    files = [
         f for f in original.get("files", [])
     ]
+
+    transform_in_progress["ResearchSubject"][0]["Files"] = files
     return transform_in_progress    

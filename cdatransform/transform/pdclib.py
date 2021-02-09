@@ -3,9 +3,13 @@ Transforms specific to PDC data structures
 """
 from copy import deepcopy
 
+from cdatransform.transform.commonlib import constrain_research_subject
+
+
 # pdc.patient ------------------------------------------
+
 def patient(tip, orig, **kwargs):
-    """Convert fields needed for ResearchSubject"""
+    """Promote select case fields to Patient."""
     demog = orig.get("demographics")
     if isinstance(demog, list):
         demog = demog[0]
@@ -19,40 +23,53 @@ def patient(tip, orig, **kwargs):
     }
     tip.update(patient)
     return tip
+
+
 # pdc.research_subject ------------------------------------------
 
 def research_subject(tip, orig, **kwargs):
-
-    res_subj = [{
-        "id": orig.get("case_id"),
-        "identifier": [{"value": orig.get("case_id"), "system": "PDC"}],
-        "primary_disease_type": orig.get("disease_type"),
-        "primary_disease_site": orig.get("primary_site"),
-        "Project": {
-            "label": orig.get("project_submitter_id")
+    res_subj = [
+        {
+            "id": orig.get("case_id"),
+            "identifier": [{"value": orig.get("case_id"), "system": "PDC"}],
+            "primary_disease_type": orig.get("disease_type"),
+            "primary_disease_site": orig.get("primary_site"),
+            "Project": {"label": orig.get("project_submitter_id")},
         }
-    }]
-    tip["Research_Subject"] = res_subj
+    ]
+    tip["ResearchSubject"] = res_subj
 
     return tip
-#"externalReferences": orig.get("externalReferences"),
+
+
 # pdc.diagnosis --------------------------------------------------
+
 
 def diagnosis(tip, orig, **kwargs):
     """Convert fields needed for Diagnosis"""
-    diag_field_map = dict({"diagnosis_id":"id","age_at_diagnosis":"age_at_diagnosis",
-                           "primary_diagnosis":"primary_diagnosis","tumor_grade":"tumor_grade",
-                           "tumor_stage":"tumor_stage", "morphology":"morphology"})
-    
-    #tip["Research_Subject"][0]["Diagnosis"] = deepcopy(orig.get("diagnoses", []))
-    diag_rec_copy = deepcopy(orig.get("diagnoses", []))
-    tip["Research_Subject"][0]["Diagnosis"] = []
-    for d in diag_rec_copy:
-        diag_entry = dict({})
-        for field in diag_field_map:
-            diag_entry[diag_field_map[field]] = d.get(field)
-        diag_entry["Treatment"] = []
-        tip["Research_Subject"][0]["Diagnosis"].append(diag_entry)
+    constrain_research_subject(tip)
+
+    harmonized_diagnosis = []
+    diagnosis_fields = ["diagnosis_id", "age_at_diagnosis", "primary_diagnosis", "tumor_grade", "tumor_stage", "morphology"]
+    for d in orig.get("diagnoses",[]):
+        this_d = {
+            f: d.get(f)
+            for f in diagnosis_fields 
+        }
+        this_d["id"] = this_d.pop("diagnosis_id")
+
+        this_d["Treatment"] = [
+            {
+                "outcome": treatment.get("treatment_outcome"),
+                "type": treatment.get("treatment_type")
+            }
+            for treatment in d.get("treatments", [])
+        ]
+        
+        harmonized_diagnosis += [this_d]
+
+    # ResearchSubject is a list with one element at this stage
+    research_subject[0]["Diagnosis"] = harmonized_diagnosis
 
     return tip
 
@@ -61,10 +78,11 @@ def diagnosis(tip, orig, **kwargs):
 
 def entity_to_specimen(transform_in_progress, original, **kwargs):
     """Convert samples, portions and aliquots to specimens"""
-    transform_in_progress["Research_Subject"][0]["Specimen"] = [
-        specimen_from_entity(*s)
-        for s in get_entities(original)
+    specimens = [
+        specimen_from_entity(*s) for s in get_entities(original)
     ]
+
+    transform_in_progress["ResearchSubject"][0]["Specimen"] = specimens
     return transform_in_progress
 
 
@@ -93,16 +111,16 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
         "days_to_birth": demog.get("days_to_birth"),
         "associated_project": case.get("project", {}).get("project_id"),
         "derived_from_specimen": parent_id,
-        "CDA_context": "PDC"
+        "CDA_context": "PDC",
     }
 
 
 # pdc.files -------------------------------------------------------
 
 def add_files(transform_in_progress, original, **kwargs):
-    transform_in_progress["Research_Subject"][0]["File"] = [
+    files = [
         f for f in original.get("files", [])
     ]
-    return transform_in_progress    
 
-# pdc.aggregate_to_patient
+    transform_in_progress["ResearchSubject"][0]["Files"] = files
+    return transform_in_progress
