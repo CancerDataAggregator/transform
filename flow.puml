@@ -4,31 +4,49 @@ left to right direction
 
 database GDC
 component "GDC API" as gdc_api
-file "RAW GDC\nJSON" as raw_gdc_json
-component "GDC Value\nTransforms" as gdc_val_xform
-file "GDC+\nJSON" as gdc_plus_json
-component "GDC Structural\nTransforms" as gdc_s_xform
-file "GDC in\nCCDH Model" as gdc_cda_model
+file "GDC Raw\nJSON" as raw_gdc_json
+component "GDC Transforms" as gdc_xform
+note left
+Problems logged:
+1. Terminology inconsistency
+2. Missing data
+end note
+file "GDC Patient\nJSON" as gdc_patient_json
+note left
+Case -> ResearchSubject
+Patient 1:1 ResearchSubject
+
+Contains:
+Patient, ResearchSubject, Specimen,
+Diagnosis, Files
+end note
+component "GDC Aggregate" as gdc_aggregate
+note left
+Problems logged:
+1. Terminology inconsistency
+2. Conflicting demographic data
+3. Missing demographic data
+end note
+file "GDC Patient in\nCCDH Model" as gdc_cda_model
+note left
+Patient 1:N ResearchSubject
+end note
+
+file "GDC Problem Log" as gdc_problem_log
 
 GDC -> gdc_api 
 gdc_api -> raw_gdc_json
-raw_gdc_json -> gdc_val_xform 
-gdc_val_xform -> gdc_plus_json
-gdc_plus_json -> gdc_s_xform
-gdc_s_xform -> gdc_cda_model
+raw_gdc_json -> gdc_xform 
+gdc_xform -> gdc_patient_json
+gdc_patient_json -> gdc_aggregate
+gdc_aggregate -> gdc_cda_model
 
+gdc_aggregate -> gdc_problem_log
 
 database PDC
 component "PDC API" as pdc_api
-file "RAW PDC\nJSON" as raw_pdc_json
-component "PDC Value\nTransforms" as pdc_val_xform
-note right
-Value transforms are on a 
-per column basis and are vocabulary
-harmonization transforms.
-end note
-file "PDC+\nJSON" as pdc_plus_json
-component "PDC Structural\nTransforms" as pdc_s_xform
+file "PDC raw\nJSON" as raw_pdc_json
+component "PDC Transforms" as pdc_xform
 note right
 Transforms are created as a series of
 filters that can be applied to the
@@ -36,23 +54,55 @@ data in sequence, changing particular
 source entities into destination
 entities.
 end note
-file "PDC in\nCCDH Model" as pdc_cda_model
+file "PDC Patient\nJSON" as pdc_patient_json
+component "PDC Aggregate" as pdc_aggregate
+note right
+Aggregation combines multiple
+Patient instances together, 
+concatenating ResearchSubjects 
+together
+end note
+file "PDC Patient in\nCCDH Model" as pdc_cda_model
+
+file "PDC Problem Log" as pdc_problem_log
 
 PDC -> pdc_api 
 pdc_api -> raw_pdc_json
-raw_pdc_json -> pdc_val_xform 
-pdc_val_xform -> pdc_plus_json
-pdc_plus_json -> pdc_s_xform
-pdc_s_xform -> pdc_cda_model
+raw_pdc_json -> pdc_xform 
+pdc_xform -> pdc_patient_json
+pdc_patient_json -> pdc_aggregate
+pdc_aggregate -> pdc_cda_model
 
-GDC --[hidden]> PDC
-gdc_cda_model --[hidden]> pdc_cda_model
+pdc_aggregate -> pdc_problem_log
 
-component Merge
+component "Aggregate" as Merge
+note left of Merge
+Problems logged:
+1. Patient: Conflicting demographic data
+end note
+note right of Merge
+Aggregation combines multiple
+Patient instances together, 
+concatenating ResearchSubjects 
+together
+end note
 gdc_cda_model -> Merge
 pdc_cda_model -> Merge
 
-file "Data in\nCCDH Model" as ccdh_model
+file "GDC + PDC Problem Log" as merge_problem_log
+
+Merge -> merge_problem_log
+
+file "GDC + PDC Data in\nCCDH Model" as ccdh_model
 Merge -> ccdh_model 
+
+database "BQ Table" as bq
+ccdh_model -> bq
+
+' Needed for aligning the diagram
+GDC --[hidden]> PDC
+gdc_cda_model --[hidden]> pdc_cda_model
+gdc_problem_log --[hidden]> pdc_problem_log
+pdc_problem_log --[hidden]> merge_problem_log
 
 @enduml

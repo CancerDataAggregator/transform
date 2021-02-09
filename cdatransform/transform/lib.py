@@ -58,12 +58,13 @@ def parse_transforms(t_list, t_lib):
 
 
 class Transform:
-    def __init__(self, transform_file) -> None:
+    def __init__(self, transform_file, validate) -> None:
         t_list = yaml.load(open(transform_file, "r"), Loader=Loader)
         self._transforms = parse_transforms(t_list, t_lib)
+        self._validate  = validate
 
     def __call__(self, source: dict) -> dict:
         destination = {}
         for vt in self._transforms:
-            destination = vt[0](destination, source, **vt[1])
+            destination = vt[0](destination, source, self._validate, **vt[1])
         return destination

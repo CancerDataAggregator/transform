@@ -1,0 +1,46 @@
+# extract-pdc pdc_QC1_case1.json.gz --case 0809987b-1fba-11e9-b7f8-0a80fada099c
+
+# See gdc_TARGET_case2_harmonized.yaml for detailed annotations
+
+###################################################
+###                     QC1                     ###
+###################################################
+
+# Before aggregation – still a single research subject
+# Patient hasn't been created yet
+id: "QC1"
+ethnicity: "Not Reported"
+sex: "Not Reported"
+race: "Not Reported"
+
+ResearchSubject:
+  - id: "0809987b-1fba-11e9-b7f8-0a80fada099c"
+    identifier: "QC1"
+    CDA_context: "PDC"
+    primary_disease_type: "Other"
+    primary_disease_site: "Not Reported"
+
+    Project:
+      label: "CPTAC3-Discovery"
+    
+    Specimen:
+      - id: "03394f84-204e-11e9-b7f8-0a80fada099c"
+        identifier: "QC1"
+        derived_from_subject: "QC1"
+        source_material_type: "Not Reported"
+        anatomical_site: "Not Reported"
+        days_to_birth: "0"
+        primary_disease_type: "Other"
+        specimen_type: "sample"
+        derived_from: "None"
+        CDA_context: "PDC"
+        Files: []
+
+    Diagnosis:
+      - id: "7bf87559-3040-11e9-8379-0a80fada099c"
+        age_at_diagnosis: "0"
+        primary_diagnosis: "Not Reported"
+        tumor_grade: "Not Reported"
+        tumor_stage: "Not Reported"
+        morphology: "Not Reported"
+        Treatment: []

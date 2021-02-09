@@ -1,0 +1,31 @@
+{
+    "case_submitter_id": "QC1",
+    "case_id": "df4f2aaf-8f98-11ea-b1fd-0aad30af8a83",
+    "project_submitter_id": "CPTAC3-Discovery",
+    "disease_type": "Other",
+    "primary_site": "Not Reported",
+    "samples": [
+        {
+            "sample_id": "df50514e-8f98-11ea-b1fd-0aad30af8a83",
+            "sample_type": "Cell Lines",
+            "sample_submitter_id": "QC1",
+            "biospecimen_anatomic_site": null
+        }
+    ],
+    "demographics": [
+        {
+            "ethnicity": "Not Reported",
+            "gender": "Not Reported",
+            "race": "Not Reported",
+            "days_to_birth": null
+        }
+    ],
+    "diagnoses": [
+        {
+            "primary_diagnosis": "Not Reported",
+            "tumor_grade": "Not Reported",
+            "tumor_stage": "Not Reported",
+            "morphology": "Not Reported"
+        }
+    ]
+}

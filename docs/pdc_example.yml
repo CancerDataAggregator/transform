@@ -1,0 +1,91 @@
+# This represents one important stage of the data processing. This is where we
+# have the final structure of the data, but we haven't done two things: 
+# 1. Multiple ResearchSubjects belonging to the same Patient have not been aggregated and 
+# 2. ResearchSubjects belonging to the same Patient from different DCs have not been aggregated. 
+# 
+# If you put on your data model hat, the way to interpret this is that the
+# (anonymous) top level is a Patient. Fields that begin with capital letters
+# like ResearchSubject are not actually part of the entity, but are a way of
+# linking that entity to another.
+
+# The top level corresponds to the Patient entity
+# "external_reference_id": "93095c36-2263-438f-a619-a4a4d6ae13c7",
+
+# These demographic data are copied over from a case
+# Logging:
+# 1. Conflicting demographic information
+# 2. Missing demographic information
+# 3. Track unique values for
+#  1. sex
+#  2. race
+
+"id": "TCGA-61-1911"
+"ethnicity": "Not Hispanic or Latino"
+"sex": "Female"
+"race": "White"
+
+# The rest of a case is converted to ResearchSubject
+# Logging:
+# 1. Keep track of number of distinct values of 
+#    1. primary_disease_type
+#    2. primary_disease_site
+"ResearchSubject":
+  - "id": "0067a0e0-63d8-11e8-bcf1-0a2705229b82"
+
+    # Could we simplify the identifier object, e.g. have a prefix?
+    # identifier: PDC-0067a0e0-63d8-11e8-bcf1-0a2705229b82
+    "identifier":
+      - "value": "0067a0e0-63d8-11e8-bcf1-0a2705229b82"
+        "system": "PDC"
+    "primary_disease_type": "Ovarian Serous Cystadenocarcinoma"
+    "primary_disease_site": "Ovary"
+
+    "Project":
+      "label": null
+
+    # Samples, portions, slides and aliquots are collapsed into Specimen
+    #
+    # Q. Specimens can be shared across studies, but will belong to separate
+    # ResearchSubjects. How do we resolve this?
+    #
+    # Logging:
+    # 1. Keep track of number of distinct values of 
+    #    1. primary_disease_type
+    #    2. source_material_type
+    #    3. anatomical_site
+    # 2. Flag invalid values of days_to_birth
+    # 3. Log if duplicated specimen id is found (also see after merge)
+    "Specimen":
+      - "derived_from_subject": null
+        "id": "25ed85d4-641f-11e8-bcf1-0a2705229b82"
+        "identifier":
+          - "value": "25ed85d4-641f-11e8-bcf1-0a2705229b82"
+            "system": "PDC"
+        "specimen_type": "sample"
+        "primary_disease_type": "Ovarian Serous Cystadenocarcinoma"  # Is this a copy from ResearchSubject
+        "source_material_type": "Primary Tumor"
+        "anatomical_site": "Not Reported"
+        "days_to_birth": -20144
+        "associated_project": null
+        "derived_from_specimen": "Initial specimen"
+        "CDA_context": "PDC"
+        "File": []
+
+    # Logging
+    # 1. Keep track of distinct values of 
+    #    1. primary_diagnosis
+    #    2. tumor_grade
+    #    3. tumor_stage
+    # 2. Keep track of ResearchSubjects with multiple Diagnoses
+    # 3. Log if there are non-unique diagnosis ids.
+    # In rare cases there can me multiple diagnoses related to a case
+    "Diagnosis":
+      - "primary_diagnosis": "Serous cystadenocarcinoma, NOS"
+        "tumor_grade": "Not Reported"
+        "tumor_stage": "Not Reported"
+        "morphology": "8441/3"
+
+        "id": "ff2cb83d-70ca-11e8-bcf1-0a2705229b82"
+
+        # What is this?
+        "Treatment": []

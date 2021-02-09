@@ -1,0 +1,8 @@
+# pip install -e generated
+cdatransform.egg-info/
+
+# Intellij
+.idea/
+
+# Python
+*.pyc
