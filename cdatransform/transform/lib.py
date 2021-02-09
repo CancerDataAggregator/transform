@@ -58,8 +58,7 @@ def parse_transforms(t_list, t_lib):
 
 
 class Transform:
-    def __init__(self, transform_file, validate) -> None:
-        t_list = yaml.load(open(transform_file, "r"), Loader=Loader)
+    def __init__(self, t_list, validate) -> None:
         self._transforms = parse_transforms(t_list, t_lib)
         self._validate  = validate
 

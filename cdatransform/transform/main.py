@@ -4,6 +4,8 @@ import logging
 import sys
 import time
 
+import yaml
+from yaml import Loader
 import jsonlines
 
 from cdatransform.lib import get_case_ids
@@ -55,8 +57,8 @@ def main():
     logger.info("----------------------")
 
     validate = LogValidation()
-
-    transform = Transform(args.transforms, validate)
+    t_list = yaml.load(open(args.transforms, "r"), Loader=Loader)
+    transform = Transform(t_list, validate)
 
     t0 = time.time()
     count = 0
