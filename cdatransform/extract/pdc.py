@@ -63,8 +63,8 @@ class PDC:
             sys.stderr.write(f"Loading files metadata from cache file {cache_file}.\n")
             with gzip.open(cache_file, "r") as f_in:
                 files_per_sample_dict = json.load(f_in)
-        return files_per_sample_dict    
-        
+        return files_per_sample_dict
+
     def _get_files_per_sample_dict(self) -> dict:
         t0 = time.time()
         n = 0
@@ -123,11 +123,11 @@ def get_file_metadata(file_metadata_record) -> dict:
 def main():
     parser = argparse.ArgumentParser(description="Pull case data from PDC API.")
     parser.add_argument("out_file", help="Out file name. Should end with .gz")
+    parser.add_argument("cache_file", help="Use (or generate if missing) cache file.")
     parser.add_argument("--case", help="Extract just this case")
     parser.add_argument(
         "--cases", help="Optional file with list of case ids (one to a line)"
     )
-    parser.add_argument("--cache-file", help="Use (or generate if missing) cache file.")
     args = parser.parse_args()
 
     pdc = PDC(pathlib.Path(args.cache_file))
