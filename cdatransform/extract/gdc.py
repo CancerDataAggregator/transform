@@ -40,13 +40,10 @@ cases_fields = [
     "files.revision",
     "files.tags",
     "files.type",
-    "files.data_type"
+    "files.data_type",
 ]
 
-files_fields = [
-    "file_id",
-    "cases.samples.sample_id"
-]
+files_fields = ["file_id", "cases.samples.sample_id"]
 
 
 def clean_fields(hit):
@@ -56,11 +53,9 @@ def clean_fields(hit):
 
 
 def get_total_number(endpoint):
-    params = {
-        'format': 'json'
-    }
+    params = {"format": "json"}
     result = retry_get(endpoint, params=params)
-    return result.json()['data']['pagination']['total']
+    return result.json()["data"]["pagination"]["total"]
 
 
 class GDC:
@@ -70,7 +65,7 @@ class GDC:
         files_endpoint="https://api.gdc.cancer.gov/v0/files",
         cases_fields=cases_fields,
         files_fields=files_fields,
-        cached_files="pdc_files_cached.json.gz"
+        cached_files="pdc_files_cached.json.gz",
     ) -> None:
 
         self.cases_endpoint = cases_endpoint
@@ -110,18 +105,16 @@ class GDC:
                 "from": offset,
             }
 
-            sys.stderr.write(f"Pulling cases page {int(offset / page_size) + 1}/{int(total_cases / page_size) + 1}\n")
+            sys.stderr.write(
+                f"Pulling cases page {int(offset / page_size) + 1}/{int(total_cases / page_size) + 1}\n"
+            )
             result = retry_get(self.cases_endpoint, params=params)
             hits = result.json()["data"]["hits"]
 
             for hit in hits:
                 yield clean_fields(hit)
 
-    def files(
-            self,
-            cached=False,
-            page_size=10000
-    ):
+    def files(self, cached=False, page_size=10000):
         if cached:
             if not os.path.isfile(self.cached_files):
                 sys.stderr.write("Cached file not found. Pulling from the API.\n")
@@ -139,13 +132,15 @@ class GDC:
                 writer = jsonlines.Writer(cache_file)
                 for offset in range(0, total_files, page_size):
                     params = {
-                        'format': 'json',
-                        'fields': fields,
-                        'sort': 'file_id',
-                        'from': offset,
-                        'size': 10000
+                        "format": "json",
+                        "fields": fields,
+                        "sort": "file_id",
+                        "from": offset,
+                        "size": 10000,
                     }
-                    sys.stderr.write(f"Pulling files page {int(offset / page_size) + 1}/{int(total_files / page_size) + 1}\n")
+                    sys.stderr.write(
+                        f"Pulling files page {int(offset / page_size) + 1}/{int(total_files / page_size) + 1}\n"
+                    )
                     result = retry_get(self.files_endpoint, params=params)
                     hits = result.json()["data"]["hits"]
 
@@ -176,7 +171,9 @@ class GDC:
                             sample_id = sample.get("sample_id")
                             files_per_sample[sample_id].append(file_id)
 
-        sys.stderr.write(f"Created a files look-up dict for {len(files_per_sample)} samples in {time.time() - t0}s\n")
+        sys.stderr.write(
+            f"Created a files look-up dict for {len(files_per_sample)} samples in {time.time() - t0}s\n"
+        )
         return files_per_sample
 
     def rearrange_fields(self, case_record, files_per_sample) -> dict:
@@ -227,12 +224,14 @@ def main():
     parser.add_argument(
         "--cases", help="Optional file with list of case ids (one to a line)"
     )
-    parser.add_argument("--cache", help="Use cached files.", action='store_true')
+    parser.add_argument("--cache", help="Use cached files.", action="store_true")
     args = parser.parse_args()
 
     gdc = GDC()
     gdc.save_cases(
-        args.out_file, case_ids=get_case_ids(case=args.case, case_list_file=args.cases), cached=args.cache
+        args.out_file,
+        case_ids=get_case_ids(case=args.case, case_list_file=args.cases),
+        cached=args.cache,
     )
 
 
