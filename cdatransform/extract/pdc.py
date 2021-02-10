@@ -1,10 +1,12 @@
 import json
+import os
+from collections import defaultdict
+
 import jsonlines
 import time
 import sys
 import gzip
 import argparse
-from itertools import groupby
 
 from cdatransform.lib import get_case_ids
 from .lib import retry_get
@@ -41,8 +43,7 @@ class PDC:
     def get_files_per_sample(self) -> dict:
         t0 = time.time()
         n = 0
-        sample_file_pairs = []
-        files_per_sample = dict()
+        files_per_sample = defaultdict(list)
         sys.stderr.write(f"Started collecting files.\n")
 
         for fc in self.files_chunk():
@@ -51,25 +52,35 @@ class PDC:
                 file_metadata = get_file_metadata(f)
                 if aliquots:
                     for aliquot in aliquots:
-                        sample_id = aliquot["sample_id"]
-                        sample_file_pairs.append({"sample_id": sample_id, "file_metadata": file_metadata})
+                        files_per_sample[aliquot["sample_id"]].append(file_metadata)
                         n += 1
             sys.stderr.write(f"Chunk completed. Wrote {n} sample-file pairs in {time.time() - t0}s\n")
         sys.stderr.write(f"Wrote {n} sample-file pairs in {time.time() - t0}s\n")
 
         t1 = time.time()
-        sample_file_pairs.sort(key=lambda x: x["sample_id"])
-        for sample_id, all_sample_pairs in groupby(sample_file_pairs, key=lambda x: x["sample_id"]):
-            all_files_per_sample = [pair["file_metadata"] for pair in all_sample_pairs]
-            files_per_sample[sample_id] = all_files_per_sample
         sys.stderr.write(f"Created a files look-up dict for {len(files_per_sample)} samples in {time.time() - t1}s\n")
         sys.stderr.write(f"Entire files preparation completed in {time.time() - t0}s\n\n")
         return files_per_sample
 
+    _all_files_cache_filename = "ALL-files_per_sample.json.gz"
+
+    def create_all_files_per_sample_cache(self):
+        files_per_sample = self.get_files_per_sample()
+        with gzip.open(self._all_files_cache_filename, "w") as fps:
+            writer = jsonlines.Writer(fps)
+            writer.write(files_per_sample)
+        return files_per_sample
+
+    def get_files_per_sample_cached(self):
+        if os.path.isfile(self._all_files_cache_filename):
+            with gzip.open(self._all_files_cache_filename, "r") as fp:
+                return json.load(fp)
+        return self.create_all_files_per_sample_cache()
+
     def save_cases(self, out_file, case_ids=None):
         t0 = time.time()
         n = 0
-        files_per_sample = self.get_files_per_sample()
+        files_per_sample = self.get_files_per_sample_cached()
         with gzip.open(out_file, "wb") as fp:
             writer = jsonlines.Writer(fp)
             for case in self.cases(case_ids):
@@ -84,16 +95,9 @@ class PDC:
 
 def get_file_metadata(file_metadata_record) -> dict:
     file_metadata = dict()
-    file_metadata["file_id"] = file_metadata_record.get("file_id")
-    file_metadata["file_name"] = file_metadata_record.get("file_name")
-    file_metadata["file_location"] = file_metadata_record.get("file_location")
-    file_metadata["file_submitter_id"] = file_metadata_record.get("file_submitter_id")
-    file_metadata["file_type"] = file_metadata_record.get("file_type")
-    file_metadata["file_format"] = file_metadata_record.get("file_format")
-    file_metadata["file_size"] = file_metadata_record.get("file_size")
-    file_metadata["data_category"] = file_metadata_record.get("data_category")
-    file_metadata["experiment_type"] = file_metadata_record.get("experiment_type")
-    file_metadata["md5sum"] = file_metadata_record.get("md5sum")
+    for field in ["file_id", "file_name", "file_location", "file_submitter_id", "file_type",
+                  "file_format", "file_size", "data_category", "experiment_type", "md5sum"]:
+        file_metadata[field] = file_metadata_record.get(field)
     return file_metadata
 
 
