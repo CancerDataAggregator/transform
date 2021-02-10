@@ -12,6 +12,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        lfs: 'true'
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
@@ -33,6 +35,7 @@ jobs:
         python -m pytest
     - name: Integration tests
       run: |
+        git lfs pull
         cd tests/integration
         extract-gdc gdc.jsonl.gz --cases gdc-case-list.txt  
         extract-pdc pdc.jsonl.gz pdc.files-per-sample-dict.json.gz --cases pdc-case-list.txt
