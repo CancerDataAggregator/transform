@@ -1,5 +1,4 @@
 import json
-import os
 from collections import defaultdict
 
 import jsonlines
@@ -7,6 +6,7 @@ import time
 import sys
 import gzip
 import argparse
+import pathlib
 
 from cdatransform.lib import get_case_ids
 from .lib import retry_get
@@ -14,8 +14,9 @@ from .pdc_query_lib import query_all_cases, query_single_case, query_files_bulk
 
 
 class PDC:
-    def __init__(self, endpoint="https://pdc.cancer.gov/graphql") -> None:
+    def __init__(self, cache_file, endpoint="https://pdc.cancer.gov/graphql") -> None:
         self.endpoint = endpoint
+        self._files_per_sample_dict = self._fetch_file_data_from_cache(cache_file)
 
     def cases(
         self,
@@ -36,21 +37,41 @@ class PDC:
         for case in result.json()["data"]["allCases"]:
             yield case["case_id"]
 
-    def files_chunk(self):
-        for page in range(0, 90000, 1000):
-            sys.stderr.write(f"<< Processing page {int(page/1000) + 1}/90 >>\n")
-            result = retry_get(
-                self.endpoint, params={"query": query_files_bulk(page, 1000)}
-            )
-            yield result.json()["data"]["fileMetadata"]
+    def save_cases(self, out_file, case_ids=None):
+        t0 = time.time()
+        n = 0
+        with gzip.open(out_file, "wb") as fp:
+            writer = jsonlines.Writer(fp)
+            for case in self.cases(case_ids):
+                for index, sample in enumerate(case["samples"]):
+                    case["samples"][index]["File"] = self._files_per_sample_dict.get(
+                        sample["sample_id"]
+                    )
+                writer.write(case)
+                n += 1
+                if n % 100 == 0:
+                    sys.stderr.write(f"Wrote {n} cases in {time.time() - t0}s\n")
+        sys.stderr.write(f"Wrote {n} cases in {time.time() - t0}s\n")
 
-    def get_files_per_sample(self) -> dict:
+    def _fetch_file_data_from_cache(self, cache_file):
+        if not cache_file.exists():
+            sys.stderr.write(f"Cache file {cache_file} not found. Generating.\n")
+            files_per_sample_dict = self._get_files_per_sample_dict()
+            with gzip.open(cache_file, "w") as f_out:
+                json.dump(files_per_sample_dict, f_out)
+        else:
+            sys.stderr.write(f"Loading files metadata from cache file {cache_file}.\n")
+            with gzip.open(cache_file, "r") as f_in:
+                files_per_sample_dict = json.load(f_in)
+        return files_per_sample_dict    
+        
+    def _get_files_per_sample_dict(self) -> dict:
         t0 = time.time()
         n = 0
         files_per_sample = defaultdict(list)
         sys.stderr.write(f"Started collecting files.\n")
 
-        for fc in self.files_chunk():
+        for fc in self._files_chunk():
             for f in fc:
                 aliquots = f.get("aliquots")
                 file_metadata = get_file_metadata(f)
@@ -72,55 +93,31 @@ class PDC:
         )
         return files_per_sample
 
-    _all_files_cache_filename = "ALL-files_per_sample.json.gz"
-
-    def create_all_files_per_sample_cache(self):
-        files_per_sample = self.get_files_per_sample()
-        with gzip.open(self._all_files_cache_filename, "w") as fps:
-            writer = jsonlines.Writer(fps)
-            writer.write(files_per_sample)
-        return files_per_sample
-
-    def get_files_per_sample_cached(self):
-        if os.path.isfile(self._all_files_cache_filename):
-            with gzip.open(self._all_files_cache_filename, "r") as fp:
-                return json.load(fp)
-        return self.create_all_files_per_sample_cache()
-
-    def save_cases(self, out_file, case_ids=None):
-        t0 = time.time()
-        n = 0
-        files_per_sample = self.get_files_per_sample_cached()
-        with gzip.open(out_file, "wb") as fp:
-            writer = jsonlines.Writer(fp)
-            for case in self.cases(case_ids):
-                for index, sample in enumerate(case["samples"]):
-                    case["samples"][index]["File"] = files_per_sample.get(
-                        sample["sample_id"]
-                    )
-                writer.write(case)
-                n += 1
-                if n % 100 == 0:
-                    sys.stderr.write(f"Wrote {n} cases in {time.time() - t0}s\n")
-        sys.stderr.write(f"Wrote {n} cases in {time.time() - t0}s\n")
+    def _files_chunk(self):
+        for page in range(0, 90000, 1000):
+            sys.stderr.write(f"<< Processing page {int(page/1000) + 1}/90 >>\n")
+            result = retry_get(
+                self.endpoint, params={"query": query_files_bulk(page, 1000)}
+            )
+            yield result.json()["data"]["fileMetadata"]
 
 
 def get_file_metadata(file_metadata_record) -> dict:
-    file_metadata = dict()
-    for field in [
-        "file_id",
-        "file_name",
-        "file_location",
-        "file_submitter_id",
-        "file_type",
-        "file_format",
-        "file_size",
-        "data_category",
-        "experiment_type",
-        "md5sum",
-    ]:
-        file_metadata[field] = file_metadata_record.get(field)
-    return file_metadata
+    return {
+        field: file_metadata_record.get(field)
+        for field in [
+            "file_id",
+            "file_name",
+            "file_location",
+            "file_submitter_id",
+            "file_type",
+            "file_format",
+            "file_size",
+            "data_category",
+            "experiment_type",
+            "md5sum",
+        ]
+    }
 
 
 def main():
@@ -130,9 +127,10 @@ def main():
     parser.add_argument(
         "--cases", help="Optional file with list of case ids (one to a line)"
     )
+    parser.add_argument("--cache-file", help="Use (or generate if missing) cache file.")
     args = parser.parse_args()
 
-    pdc = PDC()
+    pdc = PDC(pathlib.Path(args.cache_file))
     pdc.save_cases(
         args.out_file, case_ids=get_case_ids(case=args.case, case_list_file=args.cases)
     )
