@@ -76,7 +76,11 @@ pdc_aggregate -> pdc_cda_model
 pdc_aggregate -> pdc_problem_log
 
 component "Aggregate" as Merge
-note right
+note left of Merge
+Problems logged:
+1. Patient: Conflicting demographic data
+end note
+note right of Merge
 Aggregation combines multiple
 Patient instances together, 
 concatenating ResearchSubjects 
