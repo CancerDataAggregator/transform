@@ -26,7 +26,9 @@ class PDC:
             case_ids = self.get_case_id_list()
 
         for case_id in case_ids:
-            result = retry_get(self.endpoint, params={"query": query_single_case(case_id=case_id)})
+            result = retry_get(
+                self.endpoint, params={"query": query_single_case(case_id=case_id)}
+            )
             yield result.json()["data"]["case"][0]
 
     def get_case_id_list(self):
@@ -37,7 +39,9 @@ class PDC:
     def files_chunk(self):
         for page in range(0, 90000, 1000):
             sys.stderr.write(f"<< Processing page {int(page/1000) + 1}/90 >>\n")
-            result = retry_get(self.endpoint, params={"query": query_files_bulk(page, 1000)})
+            result = retry_get(
+                self.endpoint, params={"query": query_files_bulk(page, 1000)}
+            )
             yield result.json()["data"]["fileMetadata"]
 
     def get_files_per_sample(self) -> dict:
@@ -54,12 +58,18 @@ class PDC:
                     for aliquot in aliquots:
                         files_per_sample[aliquot["sample_id"]].append(file_metadata)
                         n += 1
-            sys.stderr.write(f"Chunk completed. Wrote {n} sample-file pairs in {time.time() - t0}s\n")
+            sys.stderr.write(
+                f"Chunk completed. Wrote {n} sample-file pairs in {time.time() - t0}s\n"
+            )
         sys.stderr.write(f"Wrote {n} sample-file pairs in {time.time() - t0}s\n")
 
         t1 = time.time()
-        sys.stderr.write(f"Created a files look-up dict for {len(files_per_sample)} samples in {time.time() - t1}s\n")
-        sys.stderr.write(f"Entire files preparation completed in {time.time() - t0}s\n\n")
+        sys.stderr.write(
+            f"Created a files look-up dict for {len(files_per_sample)} samples in {time.time() - t1}s\n"
+        )
+        sys.stderr.write(
+            f"Entire files preparation completed in {time.time() - t0}s\n\n"
+        )
         return files_per_sample
 
     _all_files_cache_filename = "ALL-files_per_sample.json.gz"
@@ -85,7 +95,9 @@ class PDC:
             writer = jsonlines.Writer(fp)
             for case in self.cases(case_ids):
                 for index, sample in enumerate(case["samples"]):
-                    case["samples"][index]["File"] = files_per_sample.get(sample["sample_id"])
+                    case["samples"][index]["File"] = files_per_sample.get(
+                        sample["sample_id"]
+                    )
                 writer.write(case)
                 n += 1
                 if n % 100 == 0:
@@ -95,8 +107,18 @@ class PDC:
 
 def get_file_metadata(file_metadata_record) -> dict:
     file_metadata = dict()
-    for field in ["file_id", "file_name", "file_location", "file_submitter_id", "file_type",
-                  "file_format", "file_size", "data_category", "experiment_type", "md5sum"]:
+    for field in [
+        "file_id",
+        "file_name",
+        "file_location",
+        "file_submitter_id",
+        "file_type",
+        "file_format",
+        "file_size",
+        "data_category",
+        "experiment_type",
+        "md5sum",
+    ]:
         file_metadata[field] = file_metadata_record.get(field)
     return file_metadata
 
