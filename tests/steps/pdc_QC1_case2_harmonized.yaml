@@ -8,28 +8,35 @@ id: "QC1"
 ethnicity: "Not Reported"
 sex: "Not Reported"
 race: "Not Reported"
+days_to_birth:
 
 ResearchSubject:
+  # id should represent unique identifier across all systems
+  # for ResearchSubject we don't have anything better than the case_id
   - id: "df4f2aaf-8f98-11ea-b1fd-0aad30af8a83"
-    identifier: "QC1"
-    CDA_context: "PDC"
+    identifier:
+      - value: "df4f2aaf-8f98-11ea-b1fd-0aad30af8a83"
+        system: "PDC"
+
     primary_disease_type: "Other"
     primary_disease_site: "Not Reported"
-
-    Project:
-      label: "CPTAC3-Discovery"
+    associated_project: "CPTAC3-Discovery"
 
     Specimen:
-      - id: "df50514e-8f98-11ea-b1fd-0aad30af8a83"
-        identifier: "QC1"
+      # id should represent unique identifier across all systems
+      - id: "QC1"
+        # identifier represents a list of IDs within each system
+        identifier:
+          - value: "df50514e-8f98-11ea-b1fd-0aad30af8a83"
+            system: "PDC"
         derived_from_subject: "QC1"
         source_material_type: "Cell Lines"
         anatomical_site:
-        days_to_birth:
+        # days_to_birth becomes the following:
+        age_at_collection:
         primary_disease_type: "Other"
         specimen_type: "sample"
-        derived_from: "None"
-        CDA_context: "PDC"
+        derived_from_specimen: "None"
         Files: []
 
     Diagnosis:
