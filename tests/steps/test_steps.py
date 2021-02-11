@@ -1,8 +1,8 @@
 import json
-from unittest import TestCase
 
 import pytest
 import yaml
+from deepdiff import DeepDiff
 
 from cdatransform.transform.lib import Transform
 from cdatransform.transform.validate import LogValidation
@@ -26,4 +26,8 @@ def test_transform(transform, case, expected):
     with open(case) as case_data:
         transformed = transform(json.load(case_data))
         with open(expected) as expected_data:
-            TestCase().assertDictEqual(transformed, yaml.safe_load(expected_data))
+            diff = DeepDiff(yaml.safe_load(expected_data), transformed, ignore_order=True)
+            if diff != {}:
+                print()
+                print(diff.pretty())
+                assert False, "output didn't match expected"

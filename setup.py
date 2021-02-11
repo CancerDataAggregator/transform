@@ -20,7 +20,8 @@ setup(
         "requests",
         "jsonlines",
         "pyyaml",
-        "pytest"
+        "pytest",
+        "deepdiff"
     ],
     entry_points={
         'console_scripts': [
