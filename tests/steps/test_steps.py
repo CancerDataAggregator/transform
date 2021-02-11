@@ -1,24 +1,29 @@
 import json
 from unittest import TestCase
 
+import pytest
 import yaml
 
 from cdatransform.transform.lib import Transform
 from cdatransform.transform.validate import LogValidation
 
-harmonize_test_cases = \
-    {
-        "gdc_TARGET_case1.json": "gdc_TARGET_case1_harmonized.yaml",
-        "gdc_TARGET_case2.json": "gdc_TARGET_case2_harmonized.yaml"
-     }
 
-
-def test_harmonize():
+@pytest.mark.parametrize(
+    "transform,case,expected",
+    [
+        pytest.param(
+            "../../gdc-transform.yml", "gdc_TARGET_case1.json", "gdc_TARGET_case1_harmonized.yaml"
+        ),
+        pytest.param(
+            "../../gdc-transform.yml", "gdc_TARGET_case2.json", "gdc_TARGET_case2_harmonized.yaml"
+        ),
+    ],
+)
+def test_transform(transform, case, expected):
     validate = LogValidation()
-    transform = Transform("../../gdc-transform.yml", validate)
-    for case, expected in harmonize_test_cases.items():
-        with open(case) as case_data:
-            transformed = transform(json.load(case_data))
-            with open(expected) as expected_data:
-                # print(yaml.dump(transformed))
-                TestCase().assertDictEqual(transformed, yaml.load(expected_data))
+    t_list = yaml.safe_load(open(transform, "r"))
+    transform = Transform(t_list, validate)
+    with open(case) as case_data:
+        transformed = transform(json.load(case_data))
+        with open(expected) as expected_data:
+            TestCase().assertDictEqual(transformed, yaml.safe_load(expected_data))
