@@ -158,7 +158,7 @@ class GDC:
         # cases that don't have samples is skipped
         for sample in new_case_record.get("samples", []):
             sample_id = sample.get("sample_id")
-            file_ids = self._samples_per_files_dict.get(sample_id)
+            file_ids = self._samples_per_files_dict.get(sample_id, [])
             sample["files"] = [
                 f_obj
                 for f_obj in (case_files_dict.get(f_id) for f_id in file_ids)
