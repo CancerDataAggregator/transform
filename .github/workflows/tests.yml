@@ -12,6 +12,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        lfs: 'true'
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
@@ -34,7 +36,10 @@ jobs:
         py.test
     - name: Integration tests
       run: |
+        git lfs pull
         cd tests/integration
-        extract-gdc gdc.jsonl.gz --cases gdc-case-list.txt  
-        extract-pdc pdc.jsonl.gz --cases pdc-case-list.txt
+        extract-gdc gdc.jsonl.gz gdc.samples-per-file.jsonl.gz --cases gdc-case-list.txt  
+        # Test cache generation. Run manually
+        # extract-gdc gdc.jsonl.gz gdc.no.cache.samples-per-file.jsonl.gz --cases gdc-case-list.txt        
+        extract-pdc pdc.jsonl.gz pdc.files-per-sample-dict.json.gz --cases pdc-case-list.txt
         cda-transform gdc.jsonl.gz gdc.transf.jsonl.gz gdc-transform.yml
