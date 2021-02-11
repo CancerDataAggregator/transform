@@ -19,7 +19,9 @@ setup(
     install_requires=[
         "requests",
         "jsonlines",
-        "pyyaml",
+        "pyyaml"
+    ],
+    tests_require=[
         "pytest",
         "deepdiff"
     ],
