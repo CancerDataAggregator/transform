@@ -141,13 +141,16 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
         "days_to_birth": case.get("demographic", {}).get("days_to_birth"),
         "associated_project": case.get("project", {}).get("project_id"),
         "derived_from_specimen": parent_id,
+        "Files": harmonize_files(sample.get("files")) if _type == "sample" else [],
         "CDA_context": "GDC",
     }
 
 
+def harmonize_files(files: list) -> list:
+    pass
+
+
 # gdc.files -------------------------------------------------------
 def add_files(transform_in_progress, original, log: LogValidation, **kwargs):
-    files = [f for f in original.get("files", [])]
-
-    transform_in_progress["ResearchSubject"][0]["Files"] = files
+    """Deprecated. Please remove"""
     return transform_in_progress
