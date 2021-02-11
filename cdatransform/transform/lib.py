@@ -2,16 +2,22 @@ import logging
 
 import yaml
 from yaml import Loader
-
-from .gdclib import (diagnosis, entity_to_specimen, research_subject, add_files)
+import cdatransform.transform.gdclib as gdclib
+import cdatransform.transform.pdclib as pdclib
 
 logger = logging.getLogger(__name__)
 
 t_lib = {
-    "gdc.research_subject": research_subject,
-    "gdc.diagnosis": diagnosis,
-    "gdc.entity_to_specimen": entity_to_specimen,
-    "gdc.files": add_files,
+    "gdc.research_subject": gdclib.research_subject,
+    "gdc.diagnosis": gdclib.diagnosis,
+    "gdc.entity_to_specimen": gdclib.entity_to_specimen,
+    "gdc.files": gdclib.add_files,
+    "gdc.patient": gdclib.patient,
+    "pdc.diagnosis": pdclib.diagnosis,
+    "pdc.entity_to_specimen": pdclib.entity_to_specimen,
+    "pdc.files": pdclib.add_files,
+    "pdc.patient":pdclib.patient,
+    "pdc.research_subject": pdclib.research_subject
 }
 
 
