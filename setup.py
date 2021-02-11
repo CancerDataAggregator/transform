@@ -25,7 +25,8 @@ setup(
         'console_scripts': [
             'extract-gdc = cdatransform.extract.gdc:main',
             'extract-pdc = cdatransform.extract.pdc:main',
-            'cda-transform = cdatransform.transform.main:main'
+            'cda-transform = cdatransform.transform.main:main',
+            'cda-aggregate = cdatransform.transform.aggregate:main'
         ],
     },
 
