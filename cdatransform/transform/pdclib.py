@@ -4,11 +4,12 @@ Transforms specific to PDC data structures
 from copy import deepcopy
 
 from cdatransform.transform.commonlib import constrain_research_subject
+from cdatransform.transform.validate import LogValidation
 
 
 # pdc.patient ------------------------------------------
 
-def patient(tip, orig, **kwargs):
+def patient(tip, orig, log: LogValidation, **kwargs):
     """Promote select case fields to Patient."""
     demog = orig.get("demographics")
     if isinstance(demog, list):
@@ -27,7 +28,7 @@ def patient(tip, orig, **kwargs):
 
 # pdc.research_subject ------------------------------------------
 
-def research_subject(tip, orig, **kwargs):
+def research_subject(tip, orig, log: LogValidation, **kwargs):
     res_subj = [
         {
             "id": orig.get("case_id"),
@@ -45,7 +46,7 @@ def research_subject(tip, orig, **kwargs):
 # pdc.diagnosis --------------------------------------------------
 
 
-def diagnosis(tip, orig, **kwargs):
+def diagnosis(tip, orig, log: LogValidation, **kwargs):
     """Convert fields needed for Diagnosis"""
     constrain_research_subject(tip)
 
@@ -69,14 +70,14 @@ def diagnosis(tip, orig, **kwargs):
         harmonized_diagnosis += [this_d]
 
     # ResearchSubject is a list with one element at this stage
-    research_subject[0]["Diagnosis"] = harmonized_diagnosis
+    tip["ResearchSubject"][0]["Diagnosis"] = harmonized_diagnosis
 
     return tip
 
 
 # pdc.entity_to_specimen -----------------------------------------
 
-def entity_to_specimen(transform_in_progress, original, **kwargs):
+def entity_to_specimen(transform_in_progress, original, log: LogValidation, **kwargs):
     """Convert samples, portions and aliquots to specimens"""
     specimens = [
         specimen_from_entity(*s) for s in get_entities(original)
@@ -117,7 +118,7 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
 
 # pdc.files -------------------------------------------------------
 
-def add_files(transform_in_progress, original, **kwargs):
+def add_files(transform_in_progress, original, log: LogValidation, **kwargs):
     files = [
         f for f in original.get("files", [])
     ]

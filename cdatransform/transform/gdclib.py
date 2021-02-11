@@ -5,6 +5,7 @@ Transforms specific to GDC data structures
 from cdatransform.transform.commonlib import constrain_research_subject
 from cdatransform.transform.validate import LogValidation
 
+
 # gdc.patient ------------------------------------------
 def patient(tip, orig, log: LogValidation, **kwargs: object) -> dict:
     """Promote select case fields to Patient."""
