@@ -6,3 +6,4 @@ cdatransform.egg-info/
 
 # Python
 *.pyc
+**/__pycache__
