@@ -7,13 +7,15 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest, ubuntu-latest]
-        python-version: [3.7, 3.8, 3.9]
+        # os: [macos-latest, ubuntu-latest]
+        # python-version: [3.7, 3.8, 3.9]
+        os: [ubuntu-latest]
+        python-version: [3.7]
 
     steps:
     - uses: actions/checkout@v2
-      with:
-        lfs: 'true'
+      # with:
+      #   lfs: 'true'
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
@@ -36,15 +38,17 @@ jobs:
         py.test
     - name: Integration tests
       run: |
-        git lfs pull
+        # git lfs pull
         cd tests/integration
-        
+        curl https://storage.googleapis.com/broad-cda-dev/public/gdc.samples-per-file.jsonl.gz --output gdc.cache.jsonl.gz
+        curl https://storage.googleapis.com/broad-cda-dev/public/pdc.files-per-sample-dict.json.gz --output pdc.cache.json.gz
+
         # Both these tests use the cache
         
-        extract-gdc gdc.jsonl.gz gdc.samples-per-file.jsonl.gz --cases gdc-case-list.txt  
+        extract-gdc gdc.jsonl.gz gdc.cache.jsonl.gz --cases gdc-case-list.txt  
         python check-gdc-pull.py gdc.jsonl.gz gdc-case-list.txt
         
-        extract-pdc pdc.jsonl.gz pdc.files-per-sample-dict.json.gz --cases pdc-case-list.txt
+        extract-pdc pdc.jsonl.gz pdc.cache.json.gz --cases pdc-case-list.txt
         python check-pdc-pull.py pdc.jsonl.gz pdc-case-list.txt
         
         cda-transform gdc.jsonl.gz gdc.transf.jsonl.gz gdc-transform.yml
