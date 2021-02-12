@@ -19,6 +19,7 @@ id: "TARGET-10-PATCNI"
 ethnicity: "not hispanic or latino"
 sex: "female"
 race: "black or african american"
+days_to_birth:
 
 # The rest of a case is converted to ResearchSubject
 # Logging:
@@ -26,14 +27,16 @@ race: "black or african american"
 #    1. primary_disease_type
 #    2. primary_disease_site
 ResearchSubject:
+  # id should represent unique identifier across all systems
+  # for ResearchSubject we don't have anything better than the case_id
   - id: "9e229e56-f7e1-58f9-984b-a9453be5dc9a"
-    identifier: "TARGET-10-PATCNI"
-    CDA_context: "GDC"
+    # identifier represents a list of IDs within each system
+    identifier:
+      - value: "9e229e56-f7e1-58f9-984b-a9453be5dc9a"
+        system: "GDC"
     primary_disease_type: "Lymphoid Leukemias"
     primary_disease_site: "Hematopoietic and reticuloendothelial systems"
-
-    Project:
-      label: "TARGET-ALL-P2"
+    associated_project: "TARGET-ALL-P2"
 
     # Samples, portions, slides and aliquots are collapsed into Specimen
     #
@@ -48,17 +51,24 @@ ResearchSubject:
     # 2. Flag invalid values of days_to_birth
     # 3. Log if duplicated specimen id is found (also see after merge)
     Specimen:
-      - id: "3d5bcc5c-dca3-5253-b25b-3351c9ef95f6"
-        identifier: "TARGET-10-PATCNI-10A"
+      # id should represent unique identifier across all systems
+      - id: "TARGET-10-PATCNI-10A"
+        # identifier represents a list of IDs within each system
+        identifier:
+          - value: "3d5bcc5c-dca3-5253-b25b-3351c9ef95f6"
+            system: "GDC"
         derived_from_subject: "TARGET-10-PATCNI"
         source_material_type: "Blood Derived Normal"
         anatomical_site:
-        days_to_birth:
+        # from days_to_birth
+        age_at_collection:
         primary_disease_type: "Lymphoid Leukemias"
         specimen_type: "sample"
-        derived_from: "None"
-        CDA_context: "GDC"
-        Files:
+        # Added to the specimen as well; as per CCDH data model
+        associated_project: "TARGET-ALL-P2"
+        # renamed; Kathy says that this should be null for the sample:
+        derived_from_specimen:
+        File:
           - "byte_size": 29363
             "checksum": "aebece56c4c5be8de0acc48e3d9e3146"
             "data_category": "Simple Nucleotide Variation"
@@ -160,17 +170,24 @@ ResearchSubject:
             "id": "fe1eeacc-4b69-43cc-a3fe-8c31e6c07311"
             "label": "b2606d5b-591f-4ee6-a806-6a0054662975.wxs.SomaticSniper.somatic_annotation.vcf.gz"
 
-      - id: "96666e88-de93-5416-8694-75ae5e9dec7e"
-        identifier: "TARGET-10-PATCNI-09A"
+      # id should represent unique identifier across all systems
+      - id: "TARGET-10-PATCNI-09A"
+        # identifier represents a list of IDs within each system
+        identifier:
+          - value: "96666e88-de93-5416-8694-75ae5e9dec7e"
+            system: "GDC"
         derived_from_subject: "TARGET-10-PATCNI"
         source_material_type: "Primary Blood Derived Cancer - Bone Marrow"
         anatomical_site:
-        days_to_birth:
+        # from days_to_birth
+        age_at_collection:
         primary_disease_type: "Lymphoid Leukemias"
         specimen_type: "sample"
-        derived_from: "None"
-        CDA_context: "GDC"
-        Files:
+        # Added to the specimen as well; as per CCDH data model
+        associated_project: "TARGET-ALL-P2"
+        # renamed; Kathy says that this should be null for the sample:
+        derived_from_specimen:
+        File:
           - "byte_size": 413749
             "checksum": "9c7bba88d964b24a6930e57944b15f0e"
             "data_category": "Transcriptome Profiling"

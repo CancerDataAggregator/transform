@@ -7,42 +7,41 @@
 # rearranged
 
 id: "TCGA-E2-A10A"
-# Note that the upper-case harmonization was applied
-# to the values for the following three fields
-ethnicity: "Not Hispanic or Latino"
-sex: "Female"
-race: "White"
+ethnicity: "not hispanic or latino"
+sex: "female"
+race: "white"
+days_to_birth: "-15085"
 
 "ResearchSubject":
+  # id should represent unique identifier across all systems
+  # for ResearchSubject we don't have anything better than the case_id
   - id: "4da7abaf-ac7a-41c0-8033-5780a398545c"
-    identifier: "TCGA-E2-A10A"
+    # identifier represents a list of IDs within each system
+    identifier:
+      - value: "4da7abaf-ac7a-41c0-8033-5780a398545c"
+        system: "GDC"
     primary_disease_type: "Ductal and Lobular Neoplasms"
     primary_disease_site: "Breast"
-    Diagnosis:
-      - id: "a84accf0-2294-550d-9825-22625f09f989"
-        age_at_diagnosis: "15085"
-        primary_diagnosis: "Infiltrating duct carcinoma, NOS"
-        tumor_grade: "not reported"
-        tumor_stage: "stage iib"
-        morphology: "8500/3"
-        Treatment:
-          - outcome:
-            type: "Pharmaceutical Therapy, NOS"
-          - outcome:
-            type: "Radiation Therapy, NOS"
-    Project:
-      label: "TCGA-BRCA"
+    associated_project: "TCGA-BRCA"
+
     Specimen:
-      - id: "d2900212-b6bd-423a-9968-6b35df0e98aa"
-        identifier: "TCGA-E2-A10A-01Z"
+      # id should represent unique identifier across all systems
+      - id: "TCGA-E2-A10A-01Z"
+        # identifier represents a list of IDs within each system
+        identifier:
+          - value: "d2900212-b6bd-423a-9968-6b35df0e98aa"
+            system: "GDC"
         derived_from_subject: "TCGA-E2-A10A"
         source_material_type: "Primary Tumor"
         anatomical_site:
-        days_to_birth: "-15085"
+        # from days_to_birth
+        age_at_collection: "-15085"
         primary_disease_type: "Ductal and Lobular Neoplasms"
         specimen_type: "sample"
-        derived_from: "None"
-        CDA_context: "GDC"
+        # Added to the specimen as well; as per CCDH data model
+        associated_project: "TCGA-BRCA"
+        # renamed; Kathy says that this should be null for the sample:
+        derived_from_specimen:
         File:
           - "byte_size": 1341476123
             "checksum": "ca82c81a4e33e89ee50f69855053b001"
@@ -50,16 +49,23 @@ race: "White"
             "id": "99a00a9f-c4bf-49ca-9c3d-435f0a207644"
             "label": "TCGA-E2-A10A-01Z-00-DX1.98B19EF1-0DAE-4DC6-8B0E-963CFABC6724.svs"
 
-      - id: "fcf94c6e-0840-4ad1-9fdf-bf1b4dcb28cb"
-        identifier: "TCGA-E2-A10A-10A"
+      # id should represent unique identifier across all systems
+      - id: "TCGA-E2-A10A-10A"
+        # identifier represents a list of IDs within each system
+        identifier:
+          - value: "fcf94c6e-0840-4ad1-9fdf-bf1b4dcb28cb"
+            system: "GDC"
         derived_from_subject: "TCGA-E2-A10A"
         source_material_type: "Blood Derived Normal"
         anatomical_site:
-        days_to_birth: "-15085"
+        # from days_to_birth
+        age_at_collection: "-15085"
         primary_disease_type: "Ductal and Lobular Neoplasms"
         specimen_type: "sample"
-        derived_from: "None"
-        CDA_context: "GDC"
+        # Added to the specimen as well; as per CCDH data model
+        associated_project: "TCGA-BRCA"
+        # renamed; Kathy says that this should be null for the sample:
+        derived_from_specimen:
         File:
           - "byte_size": 927367
             "checksum": "82fa7202b77fd1f95c8cea7dd7e12ab2"
@@ -167,16 +173,22 @@ race: "White"
             "id": "f9ff49e9-31ce-4051-9157-4bf4b0c5859a"
             "label": "TCGA.BRCA.somaticsniper.f9ff49e9-31ce-4051-9157-4bf4b0c5859a.DR-10.0.protected.maf.gz"
 
-      - id: "0c8615d8-e7a2-465a-8de3-961734941c16"
-        identifier: "TCGA-E2-A10A-01A"
+      # id should represent unique identifier across all systems
+      - id: "TCGA-E2-A10A-01A"
+        # identifier represents a list of IDs within each system
+        identifier:
+          - value: "0c8615d8-e7a2-465a-8de3-961734941c16"
+            system: "GDC"
         derived_from_subject: "TCGA-E2-A10A"
         source_material_type: "Primary Tumor"
         anatomical_site:
-        days_to_birth: "-15085"
+        age_at_collection: "-15085"
         primary_disease_type: "Ductal and Lobular Neoplasms"
         specimen_type: "sample"
-        derived_from: "None"
-        CDA_context: "GDC"
+        # Added to the specimen as well; as per CCDH data model
+        associated_project: "TCGA-BRCA"
+        # renamed; Kathy says that this should be null for the sample:
+        derived_from_specimen:
         File:
           - "byte_size": 927367
             "checksum": "82fa7202b77fd1f95c8cea7dd7e12ab2"
@@ -338,3 +350,16 @@ race: "White"
             "data_category": "Simple Nucleotide Variation"
             "id": "f9ff49e9-31ce-4051-9157-4bf4b0c5859a"
             "label": "TCGA.BRCA.somaticsniper.f9ff49e9-31ce-4051-9157-4bf4b0c5859a.DR-10.0.protected.maf.gz"
+
+    Diagnosis:
+      - id: "a84accf0-2294-550d-9825-22625f09f989"
+        age_at_diagnosis: "15085"
+        primary_diagnosis: "Infiltrating duct carcinoma, NOS"
+        tumor_grade: "not reported"
+        tumor_stage: "stage iib"
+        morphology: "8500/3"
+        Treatment:
+          - outcome:
+            type: "Pharmaceutical Therapy, NOS"
+          - outcome:
+            type: "Radiation Therapy, NOS"

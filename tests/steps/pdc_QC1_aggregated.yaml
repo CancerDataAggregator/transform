@@ -7,7 +7,8 @@ id: "QC1"
 ethnicity: "Not Reported"
 sex: "Not Reported"
 race: "Not Reported"
-# NOT SURE WHAT VALUE WE WILL PASS:
+# Not sure which value is assigned
+# by the current algorithm -- null or "0"
 days_to_birth: "0"
 
 ResearchSubject:
@@ -25,7 +26,9 @@ ResearchSubject:
 
     Specimen:
       # id should represent unique identifier across all systems
-      # Here, we have id that is not unique: sample_id values are different within the system!
+      # Here, we have id that is not unique: we assume that samples
+      # are different even though the id is the same because those
+      # are cell lines. This demonstrates the need to have unique IDs.
       # We will address this after the Release 1
       - id: "QC1"
         # identifier represents a list of IDs within each system

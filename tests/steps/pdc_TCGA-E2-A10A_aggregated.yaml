@@ -36,7 +36,10 @@ ResearchSubject:
         age_at_collection: "-15085"
         primary_disease_type: "Breast Invasive Carcinoma"
         specimen_type: "sample"
-        derived_from_specimen: "None"
+        # Added to the specimen as well; as per CCDH data model
+        associated_project: "CPTAC-TCGA"
+        # renamed; Kathy says that this should be null for the sample:
+        derived_from_specimen:
         File:
           - "byte_size": "162469862"
             "checksum": "3016d34ed65209ddd36a2ac1216dbd9e"
