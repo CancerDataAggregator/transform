@@ -19,10 +19,7 @@ setup(
     install_requires=[
         "requests",
         "jsonlines",
-        "pyyaml"
-    ],
-    tests_require=[
-        "pytest",
+        "pyyaml",
         "deepdiff"
     ],
     entry_points={
