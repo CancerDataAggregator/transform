@@ -41,8 +41,10 @@ ResearchSubject:
         age_at_collection: "0"
         primary_disease_type: "Other"
         specimen_type: "sample"
-        # renamed:
-        derived_from_specimen: "None"
+        # Added to the specimen as well; as per CCDH data model
+        associated_project: "CPTAC3-Discovery"
+        # renamed; Kathy says that this should be null for the sample:
+        derived_from_specimen:
         File:
           - "byte_size": "768281020"
             "checksum": "e5866e03c02dfe856f03c2e5df6b7630"

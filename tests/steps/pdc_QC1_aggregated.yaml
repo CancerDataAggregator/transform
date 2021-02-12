@@ -25,6 +25,8 @@ ResearchSubject:
 
     Specimen:
       # id should represent unique identifier across all systems
+      # Here, we have id that is not unique: sample_id values are different within the system!
+      # We will address this after the Release 1
       - id: "QC1"
         # identifier represents a list of IDs within each system
         identifier:
@@ -37,8 +39,10 @@ ResearchSubject:
         age_at_collection: "0"
         primary_disease_type: "Other"
         specimen_type: "sample"
-        # renamed:
-        derived_from_specimen: "None"
+        # Added to the specimen as well; as per CCDH data model
+        associated_project: "CPTAC3-Discovery"
+        # renamed; Kathy says that this should be null for the sample:
+        derived_from_specimen:
         File:
           - "byte_size": "768281020"
             "checksum": "e5866e03c02dfe856f03c2e5df6b7630"
@@ -1127,6 +1131,8 @@ ResearchSubject:
 
     Specimen:
       # id should represent unique identifier across all systems
+      # Here, we have id that is not unique: sample_id values are different within the system!
+      # We will address this after the Release 1
       - id: "QC1"
         # identifier represents a list of IDs within each system
         identifier:
@@ -1139,7 +1145,10 @@ ResearchSubject:
         age_at_collection:
         primary_disease_type: "Other"
         specimen_type: "sample"
-        derived_from_specimen: "None"
+        # Added to the specimen as well; as per CCDH data model
+        associated_project: "CPTAC3-Discovery"
+        # renamed; Kathy says that this should be null for the sample:
+        derived_from_specimen:
         File:
           - "byte_size": "8272179"
             "checksum": "18e40018cfa7082ffc424eb4ebe4d4a7"
