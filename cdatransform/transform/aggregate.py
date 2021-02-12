@@ -1,9 +1,7 @@
 import argparse
-import json
-import sys
+from typing import DefaultDict
 import jsonlines
 import yaml
-import datetime
 import gzip
 
 import cdatransform.transform.merge.merge_functions as mf
@@ -27,36 +25,23 @@ def main():
         how_to_merge = yaml.full_load(file)
     with gzip.open(args.input_file, "r") as infp:
         readDC = jsonlines.Reader(infp)
-        patient_case_mapping = dict({})
-        line_count = 0
-        lines = []
+        patient_case_mapping = DefaultDict(list)
         for case in readDC:
             patient_id = case.get("id")
-            if patient_id in patient_case_mapping:
-                patient_case_mapping[patient_id]["cases"].append(
-                    case.get("Research_Subject")[0].get("id")
-                )
-                patient_case_mapping[patient_id]["lines"].append(line_count)
-            else:
-                patient_case_mapping[patient_id] = dict(
-                    {
-                        "cases": [case.get("Research_Subject")[0].get("id")],
-                        "lines": [line_count],
-                    }
-                )
-            lines.append(case)
-            line_count += 1
-
+            patient_case_mapping[patient_id] += [case]
+    
     with gzip.open(args.output_file, "w") as outfp:
         writeDC = jsonlines.Writer(outfp)
-        for patient in patient_case_mapping:
-            lines_cases = patient_case_mapping[patient]["lines"]
-            if len(lines_cases) == 1:
-                writeDC.write(lines[lines_cases[0]])
+        for patient_id, patients in patient_case_mapping.items():
+            if len(patients) == 1:
+                writeDC.write(patients[0])
             else:
-                entities = dict({})
-                for line in lines_cases:
-                    entities[line] = lines[line]
+                entities = {
+                    k: patient
+                    for k, patient in enumerate(patients)
+                }
+                lines_cases = list(range(len(patients)))
+
                 merged_entry = mf.merge_fields_level(
                     entities, how_to_merge["Patient_merge"], lines_cases
                 )
