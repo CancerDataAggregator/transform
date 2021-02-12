@@ -43,6 +43,13 @@ race: "White"
         specimen_type: "sample"
         derived_from: "None"
         CDA_context: "GDC"
+        File:
+          - "byte_size": 1341476123
+            "checksum": "ca82c81a4e33e89ee50f69855053b001"
+            "data_category": "Biospecimen"
+            "id": "99a00a9f-c4bf-49ca-9c3d-435f0a207644"
+            "label": "TCGA-E2-A10A-01Z-00-DX1.98B19EF1-0DAE-4DC6-8B0E-963CFABC6724.svs"
+
       - id: "fcf94c6e-0840-4ad1-9fdf-bf1b4dcb28cb"
         identifier: "TCGA-E2-A10A-10A"
         derived_from_subject: "TCGA-E2-A10A"
@@ -53,6 +60,113 @@ race: "White"
         specimen_type: "sample"
         derived_from: "None"
         CDA_context: "GDC"
+        File:
+          - "byte_size": 927367
+            "checksum": "82fa7202b77fd1f95c8cea7dd7e12ab2"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "0012f466-075a-4d47-b1d7-e8e63e8b9c99"
+            "label": "0012f466-075a-4d47-b1d7-e8e63e8b9c99.vep.vcf.gz"
+          - "byte_size": 1882061658
+            "checksum": "ae12bbce7abcc03eff228935fa8d3d22"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "053f01ed-3154-4aea-9e7f-932c435034b3"
+            "label": "TCGA.BRCA.mutect.053f01ed-3154-4aea-9e7f-932c435034b3.DR-10.0.protected.maf.gz"
+          - "byte_size": 23945619680
+            "checksum": "4316d4ebf37e15485e7379b204e8c066"
+            "data_category": "Sequencing Reads"
+            "id": "0b1f4d50-a807-45cf-abfe-3b98ca8eb311"
+            "label": "TCGA-E2-A10A-10A-01D-A110-09_IlluminaGA-DNASeq_exome_gdc_realn.bam"
+          - "byte_size": 3184
+            "checksum": "19e398cc2ffc7565d677cefa549ab1e3"
+            "data_category": "Copy Number Variation"
+            "id": "0cc4682a-54bb-416b-a979-870383c82236"
+            "label": "GHOUL_p_TCGASNP_b85and51R_N_GenomeWideSNP_6_E08_735372.nocnv_grch38.seg.v2.txt"
+          - "byte_size": 41634
+            "checksum": "b5ac5918286445bb24cfc22667d37dcf"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "266ad2d3-86ea-4cb5-ba22-ea208a161dfc"
+            "label": "266ad2d3-86ea-4cb5-ba22-ea208a161dfc.vcf.gz"
+          - "byte_size": 154695
+            "checksum": "6ccae942011d63af73ce058971ca908b"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "2c2dae43-1770-4129-b33c-00a1d1b70bf0"
+            "label": "2c2dae43-1770-4129-b33c-00a1d1b70bf0.vcf"
+          - "byte_size": 342281557
+            "checksum": "735d3ccbf64778336ef535388e2c0939"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "5a6c3396-8c49-4c25-8a86-7ae63a887c43"
+            "label": "TCGA.BRCA.varscan.5a6c3396-8c49-4c25-8a86-7ae63a887c43.DR-10.0.protected.maf.gz"
+          - "byte_size": 24161125
+            "checksum": "23f303806e40f6f30fc52b5a9c6eb327"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "6c93f518-1956-4435-9806-37185266d248"
+            "label": "TCGA.BRCA.varscan.6c93f518-1956-4435-9806-37185266d248.DR-10.0.somatic.maf.gz"
+          - "byte_size": 24048
+            "checksum": "15ac8ffce58f7209c29d974c1ffd7241"
+            "data_category": "Copy Number Variation"
+            "id": "7b72de05-84bc-4938-8089-d627aee8266a"
+            "label": "TCGA-BRCA.d01c9656-e545-4261-aceb-135ef42825ce.ascat2.allelic_specific.seg.txt"
+          - "byte_size": 16910889
+            "checksum": "21d64325c5780be0b1fadcc55fe5e3d4"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "7dd592e3-5950-4438-96d5-3c718aca3f13"
+            "label": "TCGA.BRCA.somaticsniper.7dd592e3-5950-4438-96d5-3c718aca3f13.DR-10.0.somatic.maf.gz"
+          - "byte_size": 3483246
+            "checksum": "3a7200ce2863a78c9623c87534eb317e"
+            "data_category": "Copy Number Variation"
+            "id": "91649525-6597-4ce4-a478-d80023ba115f"
+            "label": "TCGA-BRCA.d01c9656-e545-4261-aceb-135ef42825ce.gene_level_copy_number.tsv"
+          - "byte_size": 31058116
+            "checksum": "4a00a1c3611c2ddcb2eed684c451eea7"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "995c0111-d90b-4140-bee7-3845436c3b42"
+            "label": "TCGA.BRCA.mutect.995c0111-d90b-4140-bee7-3845436c3b42.DR-10.0.somatic.maf.gz"
+          - "byte_size": 219424
+            "checksum": "32561de68b1aae63fe1330b13fe260ea"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "b672eb07-1b54-455c-a99e-b9f61792ae25"
+            "label": "b672eb07-1b54-455c-a99e-b9f61792ae25.vep.vcf.gz"
+          - "byte_size": 23039649
+            "checksum": "f814c909403da10f3d2200d2a4b45f42"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "b8ca5856-9819-459c-87c5-94e91aca4032"
+            "label": "TCGA.BRCA.muse.b8ca5856-9819-459c-87c5-94e91aca4032.DR-10.0.somatic.maf.gz"
+          - "byte_size": 855254
+            "checksum": "02abf3795bf86632684ba821156c9178"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "b9fb3867-2529-4f6a-b03c-1b6f061fec09"
+            "label": "b9fb3867-2529-4f6a-b03c-1b6f061fec09.vcf"
+          - "byte_size": 29965
+            "checksum": "7c89f9db9ee20a99300558715803c39e"
+            "data_category": "Copy Number Variation"
+            "id": "bc344f86-b9be-4b5a-8f59-6e768aaa0e68"
+            "label": "GHOUL_p_TCGASNP_b85and51R_N_GenomeWideSNP_6_E08_735372.grch38.seg.v2.txt"
+          - "byte_size": 148613852
+            "checksum": "12ac15df6973cfab8a7fef182082972a"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "cd0d1636-ae95-4141-94b3-8218eb3b8b25"
+            "label": "TCGA.BRCA.muse.cd0d1636-ae95-4141-94b3-8218eb3b8b25.DR-10.0.protected.maf.gz"
+          - "byte_size": 543623
+            "checksum": "118447c07262ecbbff0c79d9f4e248db"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "d9a1739e-915a-4ae0-86b0-0f1ffc5a4550"
+            "label": "d9a1739e-915a-4ae0-86b0-0f1ffc5a4550.vep.vcf.gz"
+          - "byte_size": 331980
+            "checksum": "53a1b81418ad234cc8955fadb40078b4"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "ede13ff7-8fc2-40d3-a211-63e1ec7fed69"
+            "label": "ede13ff7-8fc2-40d3-a211-63e1ec7fed69.vcf.gz"
+          - "byte_size": 52253
+            "checksum": "f854819614e2296595b6fb2d93101f70"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "f0661667-f69f-4ff0-a93a-07307917804b"
+            "label": "f0661667-f69f-4ff0-a93a-07307917804b.vep.vcf.gz"
+          - "byte_size": 621054920
+            "checksum": "a5d844676518cfe8517d86cccf588ccc"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "f9ff49e9-31ce-4051-9157-4bf4b0c5859a"
+            "label": "TCGA.BRCA.somaticsniper.f9ff49e9-31ce-4051-9157-4bf4b0c5859a.DR-10.0.protected.maf.gz"
+
       - id: "0c8615d8-e7a2-465a-8de3-961734941c16"
         identifier: "TCGA-E2-A10A-01A"
         derived_from_subject: "TCGA-E2-A10A"
@@ -63,3 +177,164 @@ race: "White"
         specimen_type: "sample"
         derived_from: "None"
         CDA_context: "GDC"
+        File:
+          - "byte_size": 927367
+            "checksum": "82fa7202b77fd1f95c8cea7dd7e12ab2"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "0012f466-075a-4d47-b1d7-e8e63e8b9c99"
+            "label": "0012f466-075a-4d47-b1d7-e8e63e8b9c99.vep.vcf.gz"
+          - "byte_size": 1882061658
+            "checksum": "ae12bbce7abcc03eff228935fa8d3d22"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "053f01ed-3154-4aea-9e7f-932c435034b3"
+            "label": "TCGA.BRCA.mutect.053f01ed-3154-4aea-9e7f-932c435034b3.DR-10.0.protected.maf.gz"
+          - "byte_size": 392954
+            "checksum": "4777a9d5f12b15987313cb3eb75396a9"
+            "data_category": "Transcriptome Profiling"
+            "id": "0b4727f6-8ed4-4ad6-a3fe-81a58dd7d033"
+            "label": "8a540cec-e283-4a26-868e-a07c64fe3efb.mirbase21.isoforms.quantification.txt"
+          - "byte_size": 26302
+            "checksum": "af888ac74c450816326496e03d11c851"
+            "data_category": "Copy Number Variation"
+            "id": "15a9ba9e-95fa-4823-947f-f99b50456a40"
+            "label": "GHOUL_p_TCGASNP_b85and51R_N_GenomeWideSNP_6_C11_735316.nocnv_grch38.seg.v2.txt"
+          - "byte_size": 9952473
+            "checksum": "8ca55b1ccd18cf38c9fcb50f39bef95b"
+            "data_category": "DNA Methylation"
+            "id": "192a100b-cc8a-48e6-8d43-d5863e3fb115"
+            "label": "jhu-usc.edu_BRCA.HumanMethylation27.3.lvl-3.TCGA-E2-A10A-01A-21D-A112-05.gdc_hg38.txt"
+          - "byte_size": 41634
+            "checksum": "b5ac5918286445bb24cfc22667d37dcf"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "266ad2d3-86ea-4cb5-ba22-ea208a161dfc"
+            "label": "266ad2d3-86ea-4cb5-ba22-ea208a161dfc.vcf.gz"
+          - "byte_size": 154695
+            "checksum": "6ccae942011d63af73ce058971ca908b"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "2c2dae43-1770-4129-b33c-00a1d1b70bf0"
+            "label": "2c2dae43-1770-4129-b33c-00a1d1b70bf0.vcf"
+          - "byte_size": 46577
+            "checksum": "5c7cbb2a7e52ad2baccc59461770365f"
+            "data_category": "Copy Number Variation"
+            "id": "58de425a-75de-4e38-8614-373d2cd93b30"
+            "label": "GHOUL_p_TCGASNP_b85and51R_N_GenomeWideSNP_6_C11_735316.grch38.seg.v2.txt"
+          - "byte_size": 342281557
+            "checksum": "735d3ccbf64778336ef535388e2c0939"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "5a6c3396-8c49-4c25-8a86-7ae63a887c43"
+            "label": "TCGA.BRCA.varscan.5a6c3396-8c49-4c25-8a86-7ae63a887c43.DR-10.0.protected.maf.gz"
+          - "byte_size": 24161125
+            "checksum": "23f303806e40f6f30fc52b5a9c6eb327"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "6c93f518-1956-4435-9806-37185266d248"
+            "label": "TCGA.BRCA.varscan.6c93f518-1956-4435-9806-37185266d248.DR-10.0.somatic.maf.gz"
+          - "byte_size": 254841
+            "checksum": "288110499b266702916e79999cdc4e0c"
+            "data_category": "Transcriptome Profiling"
+            "id": "73df749a-1614-40f0-abae-4915744ced3c"
+            "label": "6fdbbe35-6392-4100-8f96-0e0d02257b73.htseq.counts.gz"
+          - "byte_size": 24048
+            "checksum": "15ac8ffce58f7209c29d974c1ffd7241"
+            "data_category": "Copy Number Variation"
+            "id": "7b72de05-84bc-4938-8089-d627aee8266a"
+            "label": "TCGA-BRCA.d01c9656-e545-4261-aceb-135ef42825ce.ascat2.allelic_specific.seg.txt"
+          - "byte_size": 16910889
+            "checksum": "21d64325c5780be0b1fadcc55fe5e3d4"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "7dd592e3-5950-4438-96d5-3c718aca3f13"
+            "label": "TCGA.BRCA.somaticsniper.7dd592e3-5950-4438-96d5-3c718aca3f13.DR-10.0.somatic.maf.gz"
+          - "byte_size": 518599
+            "checksum": "4cb43b2cc927da0a272ca8fae2eb7470"
+            "data_category": "Transcriptome Profiling"
+            "id": "910f3ef6-b7f7-484f-9939-b569d5f8f3d8"
+            "label": "6fdbbe35-6392-4100-8f96-0e0d02257b73.FPKM.txt.gz"
+          - "byte_size": 3483246
+            "checksum": "3a7200ce2863a78c9623c87534eb317e"
+            "data_category": "Copy Number Variation"
+            "id": "91649525-6597-4ce4-a478-d80023ba115f"
+            "label": "TCGA-BRCA.d01c9656-e545-4261-aceb-135ef42825ce.gene_level_copy_number.tsv"
+          - "byte_size": 31058116
+            "checksum": "4a00a1c3611c2ddcb2eed684c451eea7"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "995c0111-d90b-4140-bee7-3845436c3b42"
+            "label": "TCGA.BRCA.mutect.995c0111-d90b-4140-bee7-3845436c3b42.DR-10.0.somatic.maf.gz"
+          - "byte_size": 45161979
+            "checksum": "cd4bc677968e6b8eea7b663dba692c40"
+            "data_category": "Copy Number Variation"
+            "id": "9afe6c9d-ed2f-402a-b043-77f042c4e7fc"
+            "label": "BRCA.focal_score_by_genes.txt"
+          - "byte_size": 219424
+            "checksum": "32561de68b1aae63fe1330b13fe260ea"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "b672eb07-1b54-455c-a99e-b9f61792ae25"
+            "label": "b672eb07-1b54-455c-a99e-b9f61792ae25.vep.vcf.gz"
+          - "byte_size": 23039649
+            "checksum": "f814c909403da10f3d2200d2a4b45f42"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "b8ca5856-9819-459c-87c5-94e91aca4032"
+            "label": "TCGA.BRCA.muse.b8ca5856-9819-459c-87c5-94e91aca4032.DR-10.0.somatic.maf.gz"
+          - "byte_size": 855254
+            "checksum": "02abf3795bf86632684ba821156c9178"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "b9fb3867-2529-4f6a-b03c-1b6f061fec09"
+            "label": "b9fb3867-2529-4f6a-b03c-1b6f061fec09.vcf"
+          - "byte_size": 174115723
+            "checksum": "ae957df33c9af5e693ad6df7044d0471"
+            "data_category": "Biospecimen"
+            "id": "ba9e5093-05c9-4d1e-af60-29c49cd26aae"
+            "label": "TCGA-E2-A10A-01A-02-TSB.36e0494e-10c5-4b95-a77c-d8dbe2532135.svs"
+          - "byte_size": 16759547635
+            "checksum": "adbc22074b1f994998286300eb35b5fb"
+            "data_category": "Sequencing Reads"
+            "id": "c294de24-1b42-4064-b7ab-9f2840f3e257"
+            "label": "TCGA-E2-A10A-01A-21D-A10Y-09_IlluminaGA-DNASeq_exome_gdc_realn.bam"
+          - "byte_size": 148613852
+            "checksum": "12ac15df6973cfab8a7fef182082972a"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "cd0d1636-ae95-4141-94b3-8218eb3b8b25"
+            "label": "TCGA.BRCA.muse.cd0d1636-ae95-4141-94b3-8218eb3b8b25.DR-10.0.protected.maf.gz"
+          - "byte_size": 146616199
+            "checksum": "a71f2364bec3a68738ac171466a20f67"
+            "data_category": "Biospecimen"
+            "id": "cdcdde8a-007b-4e85-802e-bd02f70977c2"
+            "label": "TCGA-E2-A10A-01A-02-BSB.79389df7-59f1-427f-80d4-3a959407407e.svs"
+          - "byte_size": 7711078179
+            "checksum": "11a6844016efe139be8ac37dd1044f2f"
+            "data_category": "Sequencing Reads"
+            "id": "d220ef40-7c9a-4a9f-a1d1-fc5371e5522c"
+            "label": "65c0245a-3785-4a7a-96a8-d20b4786c56d_gdc_realn_rehead.bam"
+          - "byte_size": 50169
+            "checksum": "ce4f99883fdca5372ea7793b484c1f6e"
+            "data_category": "Transcriptome Profiling"
+            "id": "d44ffd83-1b69-4fd3-9b67-51e16228820f"
+            "label": "8a540cec-e283-4a26-868e-a07c64fe3efb.mirbase21.mirnas.quantification.txt"
+          - "byte_size": 543623
+            "checksum": "118447c07262ecbbff0c79d9f4e248db"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "d9a1739e-915a-4ae0-86b0-0f1ffc5a4550"
+            "label": "d9a1739e-915a-4ae0-86b0-0f1ffc5a4550.vep.vcf.gz"
+          - "byte_size": 520784
+            "checksum": "975cd56a480d6403e5fea70986bfe0ec"
+            "data_category": "Transcriptome Profiling"
+            "id": "df6bdc45-be3c-4f9f-9fa0-6cad62b15ccd"
+            "label": "6fdbbe35-6392-4100-8f96-0e0d02257b73.FPKM-UQ.txt.gz"
+          - "byte_size": 331980
+            "checksum": "53a1b81418ad234cc8955fadb40078b4"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "ede13ff7-8fc2-40d3-a211-63e1ec7fed69"
+            "label": "ede13ff7-8fc2-40d3-a211-63e1ec7fed69.vcf.gz"
+          - "byte_size": 93031897
+            "checksum": "b96e05a46b5ea65734548e67eb480a27"
+            "data_category": "Sequencing Reads"
+            "id": "edf33849-c333-45a6-8823-52cd48a70bd1"
+            "label": "TCGA-E2-A10A-01A-21R-A114-13_mirna_gdc_realn.bam"
+          - "byte_size": 52253
+            "checksum": "f854819614e2296595b6fb2d93101f70"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "f0661667-f69f-4ff0-a93a-07307917804b"
+            "label": "f0661667-f69f-4ff0-a93a-07307917804b.vep.vcf.gz"
+          - "byte_size": 621054920
+            "checksum": "a5d844676518cfe8517d86cccf588ccc"
+            "data_category": "Simple Nucleotide Variation"
+            "id": "f9ff49e9-31ce-4051-9157-4bf4b0c5859a"
+            "label": "TCGA.BRCA.somaticsniper.f9ff49e9-31ce-4051-9157-4bf4b0c5859a.DR-10.0.protected.maf.gz"
