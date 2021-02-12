@@ -39,13 +39,12 @@ cases_fields = [
     "samples.portions.analytes.analyte_id",
     "samples.portions.analytes.aliquots.aliquot_id",
     "files.file_id",
+    "files.data_category",
+    "files.data_type",
     "files.file_name",
     "files.file_size",
-    "files.platform",
-    "files.revision",
-    "files.tags",
-    "files.type",
-    "files.data_type",
+    "files.md5sum",
+    "files.data_format"
 ]
 
 case_fields_to_use = [
