@@ -35,13 +35,12 @@ cases_fields = [
     "samples.sample_type",
     "samples.biospecimen_anatomic_site",
     "files.file_id",
+    "files.data_category",
+    "files.data_type",
     "files.file_name",
     "files.file_size",
-    "files.platform",
-    "files.revision",
-    "files.tags",
-    "files.type",
-    "files.data_type",
+    "files.md5sum",
+    "files.data_format"
 ]
 
 case_fields_to_use = [
