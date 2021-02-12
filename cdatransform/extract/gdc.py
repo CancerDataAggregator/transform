@@ -39,12 +39,13 @@ cases_fields = [
     "samples.portions.analytes.analyte_id",
     "samples.portions.analytes.aliquots.aliquot_id",
     "files.file_id",
-    "files.data_category",
-    "files.data_type",
     "files.file_name",
     "files.file_size",
-    "files.md5sum",
-    "files.data_format"
+    "files.platform",
+    "files.revision",
+    "files.tags",
+    "files.type",
+    "files.data_type",
 ]
 
 case_fields_to_use = [
@@ -225,6 +226,7 @@ def main():
     parser.add_argument(
         "--cases", help="Optional file with list of case ids (one to a line)"
     )
+    parser.add_argument("--cache", help="Use cached files.", action="store_true")
     args = parser.parse_args()
 
     gdc = GDC(cache_file=pathlib.Path(args.cache_file))
