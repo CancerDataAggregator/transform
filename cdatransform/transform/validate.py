@@ -12,48 +12,50 @@ class LogValidation:
         # map of field name -> invalid value
         self._invalid_fields: Dict[str, str] = {}
 
-    def distinct(self, table: Mapping[str, Any], field_name: str) -> str:
+    def distinct(self, field_name: str, *tables: Mapping[str, Any]) -> None:
         """
-        For every use of a field in a table, track all distinct values.
-        :param table: the table to find the field in
+        For every use of a field in one or more tables, track all distinct values.
         :param field_name: the field name
         :return: the value of the field in the table
+        :param tables: one or more tables to find the field in
         """
-        value = table.get(field_name)
-        if value:
-            self._distinct_fields[field_name].add(value)
-        return value
+        for table in tables:
+            value = table.get(field_name)
+            if value:
+                self._distinct_fields[field_name].add(value)
 
-    def agree(self, table: Mapping[str, Any], record_id: str, fields: list) -> None:
+    def agree(self, record_id: str, fields: list, *tables: Mapping[str, Any]) -> None:
         """
         Given an ID and a list of field names, track all values seen. For the same ID, the field values should match.
-        :param table: the table to find the fields in
         :param record_id: the identifier for the record, shared across different rows
         :param fields: the fields that should match for all records
+        :param tables: one or more tables to find the fields in
         """
-        other = self._matching_fields.get(record_id)
-        if other:
-            for field in fields:
-                value = table.get(field)
-                if value:
-                    other[field].add(value)
-        else:
-            self._matching_fields[record_id] = {}
-            for field in fields:
-                value = table.get(field)
-                if value:
-                    self._matching_fields[record_id][field] = {value}
+        for table in tables:
+            other = self._matching_fields.get(record_id)
+            if other:
+                for field in fields:
+                    value = table.get(field)
+                    if value:
+                        other[field].add(value)
+            else:
+                self._matching_fields[record_id] = {}
+                for field in fields:
+                    value = table.get(field)
+                    if value:
+                        self._matching_fields[record_id][field] = {value}
 
-    def validate(self, table: Mapping[str, Any], field_name: str, f: Callable[[Any], bool]) -> None:
+    def validate(self, field_name: str, f: Callable[[Any], bool], *tables: Mapping[str, Any]) -> None:
         """
-        Validate a field in table using function f. Invalid values are collected for reporting.
-        :param table: the table that contains the field
+        Validate a field in one or more tables using function f. Invalid values are collected for reporting.
         :param field_name: the field name
         :param f: called with the field value; if true, the value is valid
+        :param tables: one or more tables that contains the field
         """
-        value = table.get(field_name)
-        if not f(value):
-            self._invalid_fields[field_name] = value
+        for table in tables:
+            value = table.get(field_name)
+            if not f(value):
+                self._invalid_fields[field_name] = value
 
     def generate_report(self, logger) -> None:
 
