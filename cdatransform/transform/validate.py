@@ -20,7 +20,7 @@ class LogValidation:
         :return: the value of the field in the table
         :param tables: either a table or a list of tables to find the field in
         """
-        if type(tables) is not list:
+        if not isinstance(tables, list):
             tables = [ tables ]
         for table in tables:
             value = table.get(field_name)
@@ -36,7 +36,7 @@ class LogValidation:
         :param fields: the fields that should match for all records
         :param tables: either a table or a list of tables tables to find the fields in
         """
-        if type(tables) is not list:
+        if not isinstance(tables, list):
             tables = [ tables ]
         for table in tables:
             other = self._matching_fields.get(record_id)
@@ -61,7 +61,7 @@ class LogValidation:
         :param f: called with the field value; if true, the value is valid
         :param tables: either a table or a list of tables that contain the field
         """
-        if type(tables) is not list:
+        if not isinstance(tables, list):
             tables = [ tables ]
         for table in tables:
             value = table.get(field_name)
