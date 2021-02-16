@@ -101,10 +101,7 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
         demog = demog[0]
     elif demog is None:
         demog = {}
-    file_fields = ["file_id", "file_name", 
-                   "file_type", "file_format", "file_size", "data_category", 
-                   "md5sum"]
-    harmonized_specimen = {
+    return {
         "id": entity.get(id_key),
         "identifier": [{"value": entity.get(id_key), "system": "PDC"}],
         "derived_from_subject": case.get("submitter_id"),
@@ -114,10 +111,16 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
         "anatomical_site": sample.get("biospecimen_anatomic_site"),
         "days_to_birth": demog.get("days_to_birth"),
         "associated_project": case.get("project_submitter_id"),
-        "derived_from_specimen": parent_id
+        "derived_from_specimen": parent_id,
+        "File": harmonized_files(entity.get("File"),case)
     }
-    harmonized_specimen["File"] = []
-    for fil in entity.get("File",[]):
+
+def harmonized_files(files,case):
+    file_fields = ["file_id", "file_name", 
+                   "file_type", "file_format", "file_size", "data_category", 
+                   "md5sum"]
+    h_files = []
+    for fil in files:
         this_file = {
             f: fil.get(f)
             for f in file_fields 
@@ -129,9 +132,9 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
         this_file["checksum"] = this_file.pop("md5sum")
         this_file["label"] = this_file.pop("file_name")
         this_file["data_type"] = this_file.pop("file_type")
-        harmonized_specimen["File"].append(this_file)
+        h_files.append(this_file)
     
-    return harmonized_specimen
+    return h_files
 
 # pdc.files -------------------------------------------------------
 
