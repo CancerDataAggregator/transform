@@ -130,6 +130,11 @@ def get_entities(original):
 
 def specimen_from_entity(entity, _type, parent_id, sample, case):
     id_key = f"{_type}_id"
+    demog = case.get("demographics")
+    if isinstance(demog, list):
+        demog = demog[0]
+    elif demog is None:
+        demog = {}
     return {
         "derived_from_subject": case.get("submitter_id"),
         "id": entity.get(id_key),
@@ -138,19 +143,28 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
         "primary_disease_type": case.get("disease_type"),
         "source_material_type": entity.get("sample_type"),
         "anatomical_site": sample.get("biospecimen_anatomic_site"),
-        "days_to_birth": case.get("demographic", {}).get("days_to_birth"),
+        "days_to_birth": demog.get("days_to_birth"),
         "associated_project": case.get("project", {}).get("project_id"),
         "derived_from_specimen": parent_id,
-        "Files": harmonize_files(sample.get("files")) if _type == "sample" else [],
-        "CDA_context": "GDC",
+        "File": harmonized_files(entity.get("files",[]),case)
     }
 
-
-def harmonize_files(files: list) -> list:
-    pass
-
-
-# gdc.files -------------------------------------------------------
-def add_files(transform_in_progress, original, log: LogValidation, **kwargs):
-    """Deprecated. Please remove"""
-    return transform_in_progress
+def harmonized_files(files,case):
+    file_fields = ["file_id", "file_name", 
+                   "data_type", "type", "file_size", "data_category", 
+                   "md5sum"]
+    h_files = []
+    for fil in files:
+        this_file = {
+            f: fil.get(f)
+            for f in file_fields 
+        }
+        this_file["identifier"] = [{"value": this_file.get("file_id"), "system": "GDC"}]
+        this_file["id"] = this_file.pop("file_id")
+        this_file["associated_project"] = case.get("project", {}).get("project_id"),
+        this_file["byte_size"] = this_file.pop("file_size")
+        this_file["checksum"] = this_file.pop("md5sum")
+        this_file["label"] = this_file.pop("file_name")
+        h_files.append(this_file)
+    
+    return h_files
