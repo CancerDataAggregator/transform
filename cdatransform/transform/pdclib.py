@@ -112,7 +112,7 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
         "days_to_birth": demog.get("days_to_birth"),
         "associated_project": case.get("project_submitter_id"),
         "derived_from_specimen": parent_id,
-        "File": harmonized_files(entity.get("File"),case)
+        "File": harmonized_files(entity.get("File",[]),case)
     }
 
 def harmonized_files(files,case):
@@ -135,13 +135,3 @@ def harmonized_files(files,case):
         h_files.append(this_file)
     
     return h_files
-
-# pdc.files -------------------------------------------------------
-
-def add_files(transform_in_progress, original, log: LogValidation, **kwargs):
-    files = [
-        f for f in original.get("files", [])
-    ]
-
-    transform_in_progress["ResearchSubject"][0]["Files"] = files
-    return transform_in_progress
