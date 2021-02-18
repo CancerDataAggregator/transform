@@ -41,3 +41,4 @@ jobs:
         # git lfs pull
         cd tests/integration
         sh test.sh
+        sh test-fail.sh
