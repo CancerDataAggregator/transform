@@ -111,7 +111,7 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
         "primary_disease_type": case.get("disease_type"),
         "source_material_type": entity.get("sample_type"),
         "anatomical_site": sample.get("biospecimen_anatomic_site"),
-        "days_to_birth": demog.get("days_to_birth"),
+        "age_at_collection": demog.get("days_to_birth"),
         "associated_project": case.get("project_submitter_id"),
         "derived_from_specimen": parent_id,
         "File": harmonized_files(entity.get("File",[]),case)
