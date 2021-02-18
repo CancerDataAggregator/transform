@@ -350,7 +350,7 @@ ResearchSubject:
     # In rare cases there can me multiple diagnoses related to a case
     Diagnosis:
       - id: "63c6c7a2-c3e6-5e2b-9dd6-03bfabef5178"
-        age_at_diagnosis: "1682"
+        age_at_diagnosis: 1682
         primary_diagnosis: "T lymphoblastic leukemia/lymphoma"
         tumor_grade: "Not Reported"
         tumor_stage: "unknown"
