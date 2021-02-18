@@ -109,7 +109,7 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
         "derived_from_subject": case.get("submitter_id"),
         "specimen_type": _type,
         "primary_disease_type": case.get("disease_type"),
-        "source_material_type": entity.get("sample_type"),
+        "source_material_type": sample.get("sample_type"),
         "anatomical_site": sample.get("biospecimen_anatomic_site"),
         "age_at_collection": demog.get("days_to_birth"),
         "associated_project": case.get("project_submitter_id"),

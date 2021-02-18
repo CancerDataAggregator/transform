@@ -113,7 +113,7 @@ def entity_to_specimen(tip, original, log: LogValidation, **kwargs):
 
 def get_entities(original):
     for sample in original.get("samples", []):
-        yield (sample, "sample", "Initial specimen", sample, original)
+        yield (sample, "sample", "Initial sample", sample, original)
         for portion in sample.get("portions", []):
             yield (portion, "portion", sample.get("sample_id"), sample, original)
             for slide in portion.get("slides", []):
@@ -143,7 +143,7 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
         "identifier": [{"value": entity.get(id_key), "system": "GDC"}],
         "specimen_type": _type,
         "primary_disease_type": case.get("disease_type"),
-        "source_material_type": entity.get("sample_type"),
+        "source_material_type": sample.get("sample_type"),
         "anatomical_site": sample.get("biospecimen_anatomic_site"),
         "age_at_collection": demog.get("days_to_birth"),
         "associated_project": case.get("project", {}).get("project_id"),
