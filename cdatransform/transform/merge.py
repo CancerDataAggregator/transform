@@ -6,7 +6,7 @@ import yaml
 import datetime
 import gzip
 
-import cdatransform.merge.merge_functions as mf
+import cdatransform.transform.merge.merge_functions as mf
 
 def get_patient_info_1_DC(input_file):
     All_Patients = []
