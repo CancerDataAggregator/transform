@@ -38,7 +38,8 @@ def research_subject(tip, orig, log: LogValidation, **kwargs: object) -> object:
         "identifier": [{"value": orig.get("case_id"), "system": "GDC"}],
         "primary_disease_type": orig.get("disease_type"),
         "primary_disease_site": orig.get("primary_site"),
-        "Project": {"label": orig.get("project", {}).get("project_id")},
+        # "Project": {"label": orig.get("project", {}).get("project_id")},
+        "associated_project": orig.get("project", {}).get("project_id"),
     }
 
     for field in ["primary_disease_type", "primary_disease_site"]:

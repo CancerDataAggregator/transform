@@ -21,6 +21,7 @@ def patient(tip, orig, log: LogValidation, **kwargs):
         "ethnicity": demog.get("ethnicity"),
         "sex": demog.get("gender"),
         "race": demog.get("race"),
+        "days_to_birth": demog.get("days_to_birth"),
     }
     tip.update(patient)
     return tip
@@ -35,7 +36,8 @@ def research_subject(tip, orig, log: LogValidation, **kwargs):
             "identifier": [{"value": orig.get("case_id"), "system": "PDC"}],
             "primary_disease_type": orig.get("disease_type"),
             "primary_disease_site": orig.get("primary_site"),
-            "Project": {"label": orig.get("project_submitter_id")},
+        # "Project": {"label": orig.get("project", {}).get("project_id")},
+        "associated_project": orig.get("project", {}).get("project_id"),
         }
     ]
     tip["ResearchSubject"] = res_subj
