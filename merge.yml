@@ -4,13 +4,17 @@ Patient_merge:
     default_value: ""
   race:
     merge_type: "coalesce"
-    default_value: ""
+    default_value: null
   ethnicity:
     merge_type: "coalesce"
-    default_value: ""
+    default_value: null
   sex:
     merge_type: "coalesce"
-    default_value: ""
+    default_value: null
+  days_to_birth:
+    merge_type: "coalesce"
+    default_value: null
+  
   ResearchSubject:
     merge_type: "append_field_vals"
     default_value: []

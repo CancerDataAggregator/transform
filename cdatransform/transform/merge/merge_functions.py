@@ -1,11 +1,11 @@
 # Functions for merging fields either between DCs or within one DC
-def merge_all_fields(data_commons_fields_dict, full_merge, nested_levels=["Diagnosis"]):
-    # start with RS_merge
-    dat = merge_fields_level(data_commons_fields_dict, RS_merge)
-    dat_dict = make_dat_dict_for_transforms(
-        data_commons_fields_dict, "Diagnosis", hierarchy
-    )
-    print(dat_dict)
+# def merge_all_fields(data_commons_fields_dict, full_merge, nested_levels=["Diagnosis"]):
+#     # start with RS_merge
+#     dat = merge_fields_level(data_commons_fields_dict, RS_merge)
+#     dat_dict = make_dat_dict_for_transforms(
+#         data_commons_fields_dict, "Diagnosis", hierarchy
+#     )
+#     print(dat_dict)
 
 
 def source_hierarchy_by_time(records_dict):
