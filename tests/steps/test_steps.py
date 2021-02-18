@@ -27,7 +27,7 @@ def test_transform(transform, case, expected):
     with open(case) as case_data:
         transformed = transform(json.load(case_data))
         with open(expected) as expected_data:
-            diff = DeepDiff(yaml.safe_load(expected_data), transformed, ignore_order=True)
+            diff = DeepDiff(yaml.safe_load(expected_data), transformed, ignore_order=False)
             if diff != {}:
                 print(diff.pretty())
                 assert False, "output didn't match expected"
