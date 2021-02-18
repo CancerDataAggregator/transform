@@ -19,6 +19,7 @@ def patient(tip, orig, log: LogValidation, **kwargs: object) -> dict:
         "ethnicity": demog.get("ethnicity"),
         "sex": demog.get("gender"),
         "race": demog.get("race"),
+        "days_to_birth": demog.get("days_to_birth"),
     }
 
     for field in ["ethnicity", "sex", "race"]:
