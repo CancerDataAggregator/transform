@@ -47,6 +47,7 @@ def parse_transforms(t_list, t_lib):
     if len(_transforms) != len(t_list):
         _transforms = []
         logger.error("Will not run while there are issues with transforms.")
+        raise RuntimeError("Transforms have errors, please check log file.")
 
     return _transforms
 
