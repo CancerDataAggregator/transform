@@ -772,7 +772,8 @@ ResearchSubject:
         associated_project: "TARGET-ALL-P2"
         # renamed; Kathy says that this should be null for the sample:
         derived_from_specimen: 96666e88-de93-5416-8694-75ae5e9dec7e
-    
+        File: []
+
       # analyte
       - id: "3de6eb72-bc24-5713-aa32-d7568c3fe91a"
         # identifier represents a list of IDs within each system
@@ -790,6 +791,7 @@ ResearchSubject:
         associated_project: "TARGET-ALL-P2"
         # renamed; Kathy says that this should be null for the sample:
         derived_from_specimen: 4a022574-c827-56e1-bd84-b8c3be07de85
+        File: []
 
       # aliquot
       - id: "017a6212-fdbf-4b5e-99b6-7c84ce4bf46b"
@@ -808,6 +810,7 @@ ResearchSubject:
         associated_project: "TARGET-ALL-P2"
         # renamed; Kathy says that this should be null for the sample:
         derived_from_specimen: 3de6eb72-bc24-5713-aa32-d7568c3fe91a
+        File: []
 
       # Portion 2
       - id: "ff999b52-a9bc-5d6d-ac39-aa2d8ad1f78d"
@@ -826,6 +829,7 @@ ResearchSubject:
         associated_project: "TARGET-ALL-P2"
         # renamed; Kathy says that this should be null for the sample:
         derived_from_specimen: 96666e88-de93-5416-8694-75ae5e9dec7e
+        File: []
     
       # analyte
       - id: "ee3dc079-4b9c-56b5-87f7-3cb2cad9394f"
@@ -844,6 +848,7 @@ ResearchSubject:
         associated_project: "TARGET-ALL-P2"
         # renamed; Kathy says that this should be null for the sample:
         derived_from_specimen: ff999b52-a9bc-5d6d-ac39-aa2d8ad1f78d
+        File: []
 
       # aliquot
       - id: "920bf2a0-2ba0-5d46-9e0b-ef02f10030d8"
@@ -861,7 +866,8 @@ ResearchSubject:
         # Added to the specimen as well; as per CCDH data model
         associated_project: "TARGET-ALL-P2"
         # renamed; Kathy says that this should be null for the sample:
-        derived_from_specimen: 3de6eb72-bc24-5713-aa32-d7568c3fe91a
+        derived_from_specimen: ee3dc079-4b9c-56b5-87f7-3cb2cad9394f
+        File: []
 
     
     Diagnosis:
