@@ -12,14 +12,14 @@ from cdatransform.transform.validate import LogValidation
     "transform,case,expected",
     [
         pytest.param(
-            "gdc-transform.yml", "tests/steps/gdc_TARGET_case1.json", "tests/steps/gdc_TARGET_case1_harmonized.yaml"
+            "../gdc-transform.yml", "steps/gdc_TARGET_case1.json", "steps/gdc_TARGET_case1_harmonized.yaml"
         ),
         pytest.param(
-            "gdc-transform.yml", "tests/steps/gdc_TARGET_case2.json", "tests/steps/gdc_TARGET_case2_harmonized.yaml"
+            "../gdc-transform.yml", "steps/gdc_TARGET_case2.json", "steps/gdc_TARGET_case2_harmonized.yaml"
         ),
     ],
 )
-@pytest.mark.xfail
+#@pytest.mark.xfail
 def test_transform(transform, case, expected):
     validate = LogValidation()
     t_list = yaml.safe_load(open(transform, "r"))
