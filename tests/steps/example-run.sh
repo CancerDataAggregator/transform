@@ -39,3 +39,6 @@ cat pdc_QC1_case1.jsonl.gz pdc_QC1_case2.jsonl.gz > pdc.jsonl.gz
 cda-transform pdc.jsonl.gz pdc.H.jsonl.gz ../../pdc-transform.yml
 cda-aggregate ../../merge.yml pdc.H.jsonl.gz pdc.A.jsonl.gz
 python json2yaml.py pdc.A.jsonl.gz pdc.A.yml
+
+# Merge aggregated GDC and PDC files
+cda-merge ../../merge.yml gdc.pdc.M.jsonl.gz --gdc gdc.A.jsonl.gz --pdc pdc.A.jsonl.gz
