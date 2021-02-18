@@ -28,7 +28,7 @@ setup(
             'extract-pdc = cdatransform.extract.pdc:main',
             'cda-transform = cdatransform.transform.main:main',
             'cda-aggregate = cdatransform.transform.aggregate:main',
-            'cda-merge = cdatransform.transform.merge:main'
+            'cda-merge = cdatransform.transform.mergecli:main'
         ],
     },
 
