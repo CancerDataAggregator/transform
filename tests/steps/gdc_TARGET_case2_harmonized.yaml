@@ -52,7 +52,7 @@ ResearchSubject:
     # 3. Log if duplicated specimen id is found (also see after merge)
     Specimen:
       # id should represent unique identifier across all systems
-      - id: "TARGET-10-PATCNI-10A"
+      - id: "3d5bcc5c-dca3-5253-b25b-3351c9ef95f6"
         # identifier represents a list of IDs within each system
         identifier:
           - value: "3d5bcc5c-dca3-5253-b25b-3351c9ef95f6"
@@ -67,7 +67,7 @@ ResearchSubject:
         # Added to the specimen as well; as per CCDH data model
         associated_project: "TARGET-ALL-P2"
         # renamed; Kathy says that this should be null for the sample:
-        derived_from_specimen:
+        derived_from_specimen: Initial sample
         File:
           - "byte_size": 29363
             "checksum": "aebece56c4c5be8de0acc48e3d9e3146"
@@ -170,8 +170,65 @@ ResearchSubject:
             "id": "fe1eeacc-4b69-43cc-a3fe-8c31e6c07311"
             "label": "b2606d5b-591f-4ee6-a806-6a0054662975.wxs.SomaticSniper.somatic_annotation.vcf.gz"
 
-      # id should represent unique identifier across all systems
-      - id: "TARGET-10-PATCNI-09A"
+
+      # portion
+      - id: "38d9ca12-8d1e-5310-b5cb-7db6065f60b4"
+        # identifier represents a list of IDs within each system
+        identifier:
+          - value: "38d9ca12-8d1e-5310-b5cb-7db6065f60b4"
+            system: "GDC"
+        derived_from_subject: "TARGET-10-PATCNI"
+        source_material_type: "Blood Derived Normal"
+        anatomical_site:
+        # from days_to_birth
+        age_at_collection:
+        primary_disease_type: "Lymphoid Leukemias"
+        specimen_type: "portion"
+        # Added to the specimen as well; as per CCDH data model
+        associated_project: "TARGET-ALL-P2"
+        # renamed; Kathy says that this should be null for the sample:
+        derived_from_specimen: 3d5bcc5c-dca3-5253-b25b-3351c9ef95f6
+        File: []
+
+      # analyte
+      - id: "e9986bda-b087-5f50-8a6d-63a673454dba"
+        # identifier represents a list of IDs within each system
+        identifier:
+          - value: "e9986bda-b087-5f50-8a6d-63a673454dba"
+            system: "GDC"
+        derived_from_subject: "TARGET-10-PATCNI"
+        source_material_type: "Blood Derived Normal"
+        anatomical_site:
+        # from days_to_birth
+        age_at_collection:
+        primary_disease_type: "Lymphoid Leukemias"
+        specimen_type: "analyte"
+        # Added to the specimen as well; as per CCDH data model
+        associated_project: "TARGET-ALL-P2"
+        # renamed; Kathy says that this should be null for the sample:
+        derived_from_specimen: 38d9ca12-8d1e-5310-b5cb-7db6065f60b4
+        File: []
+
+      # aliquot
+      - id: "3c6c93c2-224e-5532-a449-5db9e1058b46"
+        # identifier represents a list of IDs within each system
+        identifier:
+          - value: "3c6c93c2-224e-5532-a449-5db9e1058b46"
+            system: "GDC"
+        derived_from_subject: "TARGET-10-PATCNI"
+        source_material_type: "Blood Derived Normal"
+        anatomical_site:
+        # from days_to_birth
+        age_at_collection:
+        primary_disease_type: "Lymphoid Leukemias"
+        specimen_type: "aliquot"
+        # Added to the specimen as well; as per CCDH data model
+        associated_project: "TARGET-ALL-P2"
+        # renamed; Kathy says that this should be null for the sample:
+        derived_from_specimen: e9986bda-b087-5f50-8a6d-63a673454dba
+        File: []
+      
+      - id: "96666e88-de93-5416-8694-75ae5e9dec7e"
         # identifier represents a list of IDs within each system
         identifier:
           - value: "96666e88-de93-5416-8694-75ae5e9dec7e"
@@ -186,7 +243,7 @@ ResearchSubject:
         # Added to the specimen as well; as per CCDH data model
         associated_project: "TARGET-ALL-P2"
         # renamed; Kathy says that this should be null for the sample:
-        derived_from_specimen:
+        derived_from_specimen: Initial sample
         File:
           - "byte_size": 413749
             "checksum": "9c7bba88d964b24a6930e57944b15f0e"
@@ -348,9 +405,119 @@ ResearchSubject:
     # 2. Keep track of ResearchSubjects with multiple Diagnoses
     # 3. Log if there are non-unique diagnosis ids.
     # In rare cases there can me multiple diagnoses related to a case
+    
+      # Portion 1
+      - id: "4a022574-c827-56e1-bd84-b8c3be07de85"
+        # identifier represents a list of IDs within each system
+        identifier:
+          - value: "4a022574-c827-56e1-bd84-b8c3be07de85"
+            system: "GDC"
+        derived_from_subject: "TARGET-10-PATCNI"
+        source_material_type: "Primary Blood Derived Cancer - Bone Marrow"
+        anatomical_site:
+        # from days_to_birth
+        age_at_collection:
+        primary_disease_type: "Lymphoid Leukemias"
+        specimen_type: "portion"
+        # Added to the specimen as well; as per CCDH data model
+        associated_project: "TARGET-ALL-P2"
+        # renamed; Kathy says that this should be null for the sample:
+        derived_from_specimen: 96666e88-de93-5416-8694-75ae5e9dec7e
+    
+      # analyte
+      - id: "3de6eb72-bc24-5713-aa32-d7568c3fe91a"
+        # identifier represents a list of IDs within each system
+        identifier:
+          - value: "3de6eb72-bc24-5713-aa32-d7568c3fe91a"
+            system: "GDC"
+        derived_from_subject: "TARGET-10-PATCNI"
+        source_material_type: "Primary Blood Derived Cancer - Bone Marrow"
+        anatomical_site:
+        # from days_to_birth
+        age_at_collection:
+        primary_disease_type: "Lymphoid Leukemias"
+        specimen_type: "analyte"
+        # Added to the specimen as well; as per CCDH data model
+        associated_project: "TARGET-ALL-P2"
+        # renamed; Kathy says that this should be null for the sample:
+        derived_from_specimen: 4a022574-c827-56e1-bd84-b8c3be07de85
+
+      # aliquot
+      - id: "017a6212-fdbf-4b5e-99b6-7c84ce4bf46b"
+        # identifier represents a list of IDs within each system
+        identifier:
+          - value: "017a6212-fdbf-4b5e-99b6-7c84ce4bf46b"
+            system: "GDC"
+        derived_from_subject: "TARGET-10-PATCNI"
+        source_material_type: "Primary Blood Derived Cancer - Bone Marrow"
+        anatomical_site:
+        # from days_to_birth
+        age_at_collection:
+        primary_disease_type: "Lymphoid Leukemias"
+        specimen_type: "aliquot"
+        # Added to the specimen as well; as per CCDH data model
+        associated_project: "TARGET-ALL-P2"
+        # renamed; Kathy says that this should be null for the sample:
+        derived_from_specimen: 3de6eb72-bc24-5713-aa32-d7568c3fe91a
+
+      # Portion 2
+      - id: "ff999b52-a9bc-5d6d-ac39-aa2d8ad1f78d"
+        # identifier represents a list of IDs within each system
+        identifier:
+          - value: "ff999b52-a9bc-5d6d-ac39-aa2d8ad1f78d"
+            system: "GDC"
+        derived_from_subject: "TARGET-10-PATCNI"
+        source_material_type: "Primary Blood Derived Cancer - Bone Marrow"
+        anatomical_site:
+        # from days_to_birth
+        age_at_collection:
+        primary_disease_type: "Lymphoid Leukemias"
+        specimen_type: "portion"
+        # Added to the specimen as well; as per CCDH data model
+        associated_project: "TARGET-ALL-P2"
+        # renamed; Kathy says that this should be null for the sample:
+        derived_from_specimen: 96666e88-de93-5416-8694-75ae5e9dec7e
+    
+      # analyte
+      - id: "ee3dc079-4b9c-56b5-87f7-3cb2cad9394f"
+        # identifier represents a list of IDs within each system
+        identifier:
+          - value: "ee3dc079-4b9c-56b5-87f7-3cb2cad9394f"
+            system: "GDC"
+        derived_from_subject: "TARGET-10-PATCNI"
+        source_material_type: "Primary Blood Derived Cancer - Bone Marrow"
+        anatomical_site:
+        # from days_to_birth
+        age_at_collection:
+        primary_disease_type: "Lymphoid Leukemias"
+        specimen_type: "analyte"
+        # Added to the specimen as well; as per CCDH data model
+        associated_project: "TARGET-ALL-P2"
+        # renamed; Kathy says that this should be null for the sample:
+        derived_from_specimen: ff999b52-a9bc-5d6d-ac39-aa2d8ad1f78d
+
+      # aliquot
+      - id: "920bf2a0-2ba0-5d46-9e0b-ef02f10030d8"
+        # identifier represents a list of IDs within each system
+        identifier:
+          - value: "920bf2a0-2ba0-5d46-9e0b-ef02f10030d8"
+            system: "GDC"
+        derived_from_subject: "TARGET-10-PATCNI"
+        source_material_type: "Primary Blood Derived Cancer - Bone Marrow"
+        anatomical_site:
+        # from days_to_birth
+        age_at_collection:
+        primary_disease_type: "Lymphoid Leukemias"
+        specimen_type: "aliquot"
+        # Added to the specimen as well; as per CCDH data model
+        associated_project: "TARGET-ALL-P2"
+        # renamed; Kathy says that this should be null for the sample:
+        derived_from_specimen: 3de6eb72-bc24-5713-aa32-d7568c3fe91a
+
+    
     Diagnosis:
       - id: "63c6c7a2-c3e6-5e2b-9dd6-03bfabef5178"
-        age_at_diagnosis: "1682"
+        age_at_diagnosis: 1682
         primary_diagnosis: "T lymphoblastic leukemia/lymphoma"
         tumor_grade: "Not Reported"
         tumor_stage: "unknown"

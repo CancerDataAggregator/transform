@@ -21,6 +21,7 @@ def patient(tip, orig, log: LogValidation, **kwargs):
         "ethnicity": demog.get("ethnicity"),
         "sex": demog.get("gender"),
         "race": demog.get("race"),
+        "days_to_birth": demog.get("days_to_birth"),
     }
     tip.update(patient)
     return tip
@@ -35,7 +36,8 @@ def research_subject(tip, orig, log: LogValidation, **kwargs):
             "identifier": [{"value": orig.get("case_id"), "system": "PDC"}],
             "primary_disease_type": orig.get("disease_type"),
             "primary_disease_site": orig.get("primary_site"),
-            "Project": {"label": orig.get("project_submitter_id")},
+        # "Project": {"label": orig.get("project", {}).get("project_id")},
+        "associated_project": orig.get("project", {}).get("project_id"),
         }
     ]
     tip["ResearchSubject"] = res_subj
@@ -110,18 +112,28 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
         "source_material_type": entity.get("sample_type"),
         "anatomical_site": sample.get("biospecimen_anatomic_site"),
         "days_to_birth": demog.get("days_to_birth"),
-        "associated_project": case.get("project", {}).get("project_id"),
+        "associated_project": case.get("project_submitter_id"),
         "derived_from_specimen": parent_id,
-        "CDA_context": "PDC",
+        "File": harmonized_files(entity.get("File",[]),case)
     }
 
-
-# pdc.files -------------------------------------------------------
-
-def add_files(transform_in_progress, original, log: LogValidation, **kwargs):
-    files = [
-        f for f in original.get("files", [])
-    ]
-
-    transform_in_progress["ResearchSubject"][0]["Files"] = files
-    return transform_in_progress
+def harmonized_files(files,case):
+    file_fields = ["file_id", "file_name", 
+                   "file_type", "file_format", "file_size", "data_category", 
+                   "md5sum"]
+    h_files = []
+    for fil in files:
+        this_file = {
+            f: fil.get(f)
+            for f in file_fields 
+        }
+        this_file["identifier"] = [{"value": this_file.get("file_id"), "system": "PDC"}]
+        this_file["id"] = this_file.pop("file_id")
+        this_file["associated_project"] = case.get("project_submitter_id"),
+        this_file["byte_size"] = this_file.pop("file_size")
+        this_file["checksum"] = this_file.pop("md5sum")
+        this_file["label"] = this_file.pop("file_name")
+        this_file["data_type"] = this_file.pop("file_type")
+        h_files.append(this_file)
+    
+    return h_files

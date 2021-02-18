@@ -11,11 +11,9 @@ t_lib = {
     "gdc.research_subject": gdclib.research_subject,
     "gdc.diagnosis": gdclib.diagnosis,
     "gdc.entity_to_specimen": gdclib.entity_to_specimen,
-    "gdc.files": gdclib.add_files,
     "gdc.patient": gdclib.patient,
     "pdc.diagnosis": pdclib.diagnosis,
     "pdc.entity_to_specimen": pdclib.entity_to_specimen,
-    "pdc.files": pdclib.add_files,
     "pdc.patient":pdclib.patient,
     "pdc.research_subject": pdclib.research_subject
 }
@@ -53,6 +51,7 @@ def parse_transforms(t_list, t_lib):
     if len(_transforms) != len(t_list):
         _transforms = []
         logger.error("Will not run while there are issues with transforms.")
+        raise RuntimeError("Transforms have errors, please check log file.")
 
     return _transforms
 

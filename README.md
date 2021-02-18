@@ -17,8 +17,8 @@ _be processing data in bulk. We unzip the files to show them, but in general you
 _will not be doing this either._
 
 ## Extraction
-We pull 2 cases from PDC and 2 from GDC using the following commands [Script
-here](tests/integration/extract.sh)
+We pull 2 cases from PDC and 2 from GDC using the following commands ([Script
+here](tests/steps/extract.sh)).
 
 ```
 extract-gdc gdc_TARGET_case1.json.gz ../integration/gdc.samples-per-file.jsonl.gz --case 7eeced68-1717-4116-bcee-328ac70a9682
