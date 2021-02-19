@@ -180,6 +180,10 @@ bq load --autodetect --source_format NEWLINE_DELIMITED_JSON kg_expt.gdc gdc.tran
    gdc.jsonl.gz| sed -n '1p' > test.json`. Change `1p` to what ever line you
    need. 
 
+# Upload script
+
+A complete end-to-end upload script is available [here](data/upload.sh).
+
 
 # Testing out local install
 
