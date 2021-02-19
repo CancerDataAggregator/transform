@@ -114,7 +114,7 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
         "age_at_collection": demog.get("days_to_birth"),
         "associated_project": case.get("project_submitter_id"),
         "derived_from_specimen": parent_id,
-        "File": harmonized_files(entity.get("File",[]),case)
+        "File": harmonized_files(entity.get("File",[]) or [],case)
     }
 
 def harmonized_files(files,case):
