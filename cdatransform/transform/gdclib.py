@@ -154,7 +154,7 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
 def harmonized_files(files,case):
     file_fields = ["file_id", "file_name", 
                    "data_type", "type", "file_size", "data_category", 
-                   "md5sum"]
+                   "md5sum","gcs_path"]
     h_files = []
     for fil in files:
         this_file = {
