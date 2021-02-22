@@ -224,8 +224,8 @@ class GDC:
         # The return is a dictionary sample_id: [file_ids]
         if not gcs_file.exists():
             sys.stderr.write(f"File_id to GCS cache file {gcs_file} not found. Generating gcs mapping.\n")
-            bucket_name = "gdc-bq-sample-bucket"
-            source_blob_name = "gdc_fileuuid_gs"
+            bucket_name = "broad-cda-dev"
+            source_blob_name = "public/gdc.fileuuid.jsonl.gz"
             #destination_file_name = "gdc_fileuuid_gs.jsonl.gz"
             destination_file_name = gcs_file
             download_blob(bucket_name, source_blob_name, destination_file_name)
