@@ -3,7 +3,7 @@ from string import Template
 
 def query_all_cases():
     query = """{
-  allCases {
+  allCases(acceptDUA: true) {
     case_id
   }
 }"""
@@ -13,7 +13,7 @@ def query_all_cases():
 def query_single_case(case_id):
     template = Template(
         """{
-  case(case_id: "$case_id") {
+  case(case_id: "$case_id" acceptDUA: true) {
     case_id
     case_submitter_id
     disease_type
@@ -51,7 +51,7 @@ def query_single_case(case_id):
 def query_files_bulk(offset, limit):
     template = Template(
         """{
-  fileMetadata(offset: $offset, limit: $limit) {
+  fileMetadata(offset: $offset, limit: $limit acceptDUA: true) {
     file_id
     file_name
     file_location
