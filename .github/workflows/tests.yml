@@ -38,7 +38,8 @@ jobs:
         py.test
     - name: Integration tests
       run: |
-        # git lfs pull
-        cd tests/integration
+        cd data
+        sh get-cache-files.sh
+        cd ../tests/integration
         sh test.sh
         sh test-fail.sh
