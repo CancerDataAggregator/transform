@@ -18,7 +18,7 @@ t_lib = {
 
 
 def parse_transforms(t_list, t_lib):
-    logger.info(f"Loading transforms")
+    logger.info("Loading transforms")
 
     _transforms = []
     if not isinstance(t_list, list):

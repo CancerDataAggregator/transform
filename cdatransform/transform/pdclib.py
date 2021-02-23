@@ -1,8 +1,6 @@
 """
 Transforms specific to PDC data structures
 """
-from copy import deepcopy
-
 from cdatransform.transform.commonlib import constrain_research_subject
 from cdatransform.transform.validate import LogValidation
 

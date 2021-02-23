@@ -119,7 +119,6 @@ class GDC:
             filt = None
 
         offset = 0
-        t0 = time.time()
         while True:
             params = {
                 "filters": filt,
