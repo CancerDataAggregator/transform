@@ -148,19 +148,24 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
         "age_at_collection": demog.get("days_to_birth"),
         "associated_project": case.get("project", {}).get("project_id"),
         "derived_from_specimen": parent_id,
-        "File": harmonized_files(entity.get("files",[]) or [],case)
+        "File": harmonized_files(entity.get("files", []) or [], case),
     }
 
-def harmonized_files(files,case):
-    file_fields = ["file_id", "file_name", 
-                   "data_type", "type", "file_size", "data_category", 
-                   "md5sum", "gcs_path"]
+
+def harmonized_files(files, case):
+    file_fields = [
+        "file_id",
+        "file_name",
+        "data_type",
+        "type",
+        "file_size",
+        "data_category",
+        "md5sum",
+        "gcs_path",
+    ]
     h_files = []
     for fil in files:
-        this_file = {
-            f: fil.get(f)
-            for f in file_fields 
-        }
+        this_file = {f: fil.get(f) for f in file_fields}
         this_file["identifier"] = [{"value": this_file.get("file_id"), "system": "GDC"}]
         this_file["id"] = this_file.pop("file_id")
         this_file["associated_project"] = [case.get("project", {}).get("project_id")]
@@ -168,5 +173,5 @@ def harmonized_files(files,case):
         this_file["checksum"] = this_file.pop("md5sum")
         this_file["label"] = this_file.pop("file_name")
         h_files.append(this_file)
-    
+
     return h_files

@@ -3,7 +3,6 @@ from typing import Dict, Set, Callable, Any, Mapping, Union, List
 
 
 class LogValidation:
-
     def __init__(self) -> None:
         # map of field name -> set of values
         self._distinct_fields: Dict[str, Set] = defaultdict(set)
@@ -12,8 +11,9 @@ class LogValidation:
         # map of field name -> invalid value
         self._invalid_fields: Dict[str, str] = {}
 
-    def distinct(self, tables: Union[Mapping[str, Any], List[Mapping[str, Any]]],
-                 field_name: str) -> None:
+    def distinct(
+        self, tables: Union[Mapping[str, Any], List[Mapping[str, Any]]], field_name: str
+    ) -> None:
         """
         For every use of a field in one or more tables, track all distinct values.
         :param field_name: the field name
@@ -21,14 +21,18 @@ class LogValidation:
         :param tables: either a table or a list of tables to find the field in
         """
         if not isinstance(tables, list):
-            tables = [ tables ]
+            tables = [tables]
         for table in tables:
             value = table.get(field_name)
             if value:
                 self._distinct_fields[field_name].add(value)
 
-    def agree(self, tables: Union[Mapping[str, Any], List[Mapping[str, Any]]], record_id: str,
-              fields: list) -> None:
+    def agree(
+        self,
+        tables: Union[Mapping[str, Any], List[Mapping[str, Any]]],
+        record_id: str,
+        fields: list,
+    ) -> None:
         """
         Given an ID and a list of field names, track all values seen. For the same ID, the field
          values should match.
@@ -37,7 +41,7 @@ class LogValidation:
         :param tables: either a table or a list of tables tables to find the fields in
         """
         if not isinstance(tables, list):
-            tables = [ tables ]
+            tables = [tables]
         for table in tables:
             other = self._matching_fields.get(record_id)
             if other:
@@ -52,8 +56,12 @@ class LogValidation:
                     if value:
                         self._matching_fields[record_id][field] = {value}
 
-    def validate(self, tables: Union[Mapping[str, Any], List[Mapping[str, Any]]], field_name: str,
-                 f: Callable[[Any], bool]) -> None:
+    def validate(
+        self,
+        tables: Union[Mapping[str, Any], List[Mapping[str, Any]]],
+        field_name: str,
+        f: Callable[[Any], bool],
+    ) -> None:
         """
         Validate a field in one or more tables using function f. Invalid values are collected
          for reporting.
@@ -62,7 +70,7 @@ class LogValidation:
         :param tables: either a table or a list of tables that contain the field
         """
         if not isinstance(tables, list):
-            tables = [ tables ]
+            tables = [tables]
         for table in tables:
             value = table.get(field_name)
             if not f(value):
@@ -81,7 +89,9 @@ class LogValidation:
         for id, fields in self._matching_fields.items():
             for field, values in fields.items():
                 if len(values) > 1:
-                    logger.warning(f"Conflict ID:{id} FIELD:{field} VALUES:{':'.join(sorted(values))}")
+                    logger.warning(
+                        f"Conflict ID:{id} FIELD:{field} VALUES:{':'.join(sorted(values))}"
+                    )
 
         for field, value in self._invalid_fields.items():
             logger.warning(f"Invalid FIELD:{field} VALUE:{value}")

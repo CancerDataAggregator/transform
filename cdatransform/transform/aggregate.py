@@ -29,17 +29,14 @@ def main():
         for case in readDC:
             patient_id = case.get("id")
             patient_case_mapping[patient_id] += [case]
-    
+
     with gzip.open(args.output_file, "w") as outfp:
         writeDC = jsonlines.Writer(outfp)
         for patient_id, patients in patient_case_mapping.items():
             if len(patients) == 1:
                 writeDC.write(patients[0])
             else:
-                entities = {
-                    k: patient
-                    for k, patient in enumerate(patients)
-                }
+                entities = {k: patient for k, patient in enumerate(patients)}
                 lines_cases = list(range(len(patients)))
 
                 merged_entry = mf.merge_fields_level(

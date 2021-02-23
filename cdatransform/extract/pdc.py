@@ -69,7 +69,7 @@ class PDC:
         t0 = time.time()
         n = 0
         files_per_sample = defaultdict(list)
-        sys.stderr.write(f"Started collecting files.\n")
+        sys.stderr.write("Started collecting files.\n")
 
         for fc in self._files_chunk():
             for f in fc:

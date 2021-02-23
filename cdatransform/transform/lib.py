@@ -1,7 +1,5 @@
 import logging
 
-import yaml
-from yaml import Loader
 import cdatransform.transform.gdclib as gdclib
 import cdatransform.transform.pdclib as pdclib
 
@@ -14,8 +12,8 @@ t_lib = {
     "gdc.patient": gdclib.patient,
     "pdc.diagnosis": pdclib.diagnosis,
     "pdc.entity_to_specimen": pdclib.entity_to_specimen,
-    "pdc.patient":pdclib.patient,
-    "pdc.research_subject": pdclib.research_subject
+    "pdc.patient": pdclib.patient,
+    "pdc.research_subject": pdclib.research_subject,
 }
 
 
@@ -26,7 +24,7 @@ def parse_transforms(t_list, t_lib):
     if not isinstance(t_list, list):
         logger.error("Transforms must be a list")
         return _transforms
-    
+
     for n, xform in enumerate(t_list):
         if isinstance(xform, str):
             _f, _p = xform, {}
@@ -59,7 +57,7 @@ def parse_transforms(t_list, t_lib):
 class Transform:
     def __init__(self, t_list, validate) -> None:
         self._transforms = parse_transforms(t_list, t_lib)
-        self._validate  = validate
+        self._validate = validate
 
     def __call__(self, source: dict) -> dict:
         destination = {}

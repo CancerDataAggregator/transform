@@ -46,7 +46,6 @@ def main():
     )
     args = parser.parse_args()
 
-
     logging.basicConfig(
         filename=args.log,
         format="%(asctime)s %(levelname)-8s %(message)s",

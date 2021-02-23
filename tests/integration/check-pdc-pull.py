@@ -21,7 +21,7 @@ def main():
     parser.add_argument("case_file", help="File produced by .")
     args = parser.parse_args()
 
-    case_ids=set(get_case_ids(case=None, case_list_file=args.case_file))
+    case_ids = set(get_case_ids(case=None, case_list_file=args.case_file))
 
     with gzip.open(args.pull_file, "rb") as f_in:
         reader = jsonlines.Reader(f_in)
