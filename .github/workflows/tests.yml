@@ -43,3 +43,6 @@ jobs:
         cd ../tests/integration
         sh test.sh
         sh test-fail.sh
+
+        cd ../steps
+        sh example-run.sh

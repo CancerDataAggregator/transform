@@ -16,34 +16,35 @@ _Note: Here we pull specific cases for purposes of example. In practice you will
 _be processing data in bulk. We unzip the files to show them, but in general you_
 _will not be doing this either._
 
+The full script is available [here](tests/steps/example-run.sh)
+
 ## Extraction
-We pull 2 cases from PDC and 2 from GDC using the following commands ([Script
-here](tests/steps/extract.sh)).
+We pull 2 cases from PDC and 2 from GDC using the following commands.
 
 ```
-extract-gdc gdc_TARGET_case1.json.gz ../integration/gdc.samples-per-file.jsonl.gz --case 7eeced68-1717-4116-bcee-328ac70a9682
-gunzip gdc_TARGET_case1.json.gz
+extract-gdc gdc_TARGET_case1.jsonl.gz ../../data/gdc.samples-per-file.jsonl.gz ../../data/gdc.fileuuid.jsonl.gz --case 7eeced68-1717-4116-bcee-328ac70a9682
+gunzip -c gdc_TARGET_case1.jsonl.gz > gdc_TARGET_case1.json
 ```
 -> [GDC 1](tests/steps/gdc_TARGET_case1.json)
 
 
 ```
-extract-gdc gdc_TARGET_case2.json.gz ../integration/gdc.samples-per-file.jsonl.gz --case 9e229e56-f7e1-58f9-984b-a9453be5dc9a
-gunzip gdc_TARGET_case2.json.gz
+extract-gdc gdc_TARGET_case2.jsonl.gz ../../data/gdc.samples-per-file.jsonl.gz ../../data/gdc.fileuuid.jsonl.gz --case 9e229e56-f7e1-58f9-984b-a9453be5dc9a
+gunzip -c gdc_TARGET_case2.jsonl.gz > gdc_TARGET_case2.json
 ```
 -> [GDC 2](tests/steps/gdc_TARGET_case2.json)
 
 
 ```
-extract-pdc pdc_QC1_case1.json.gz ../integration/pdc.files-per-sample-dict.json.gz --case 0809987b-1fba-11e9-b7f8-0a80fada099c
-gunzip pdc_QC1_case1.json.gz
+extract-pdc pdc_QC1_case1.jsonl.gz ../../pdc.files-per-sample-dict.json.gz --case 0809987b-1fba-11e9-b7f8-0a80fada099c
+gunzip -c pdc_QC1_case1.jsonl.gz > pdc_QC1_case1.json
 ```
 -> [PDC 1](tests/steps/pdc_QC1_case1.json)
 
 
 ```
-extract-pdc pdc_QC1_case2.json.gz ../integration/pdc.files-per-sample-dict.json.gz --case df4f2aaf-8f98-11ea-b1fd-0aad30af8a83
-gunzip pdc_QC1_case2.json.gz
+extract-pdc pdc_QC1_case2.jsonl.gz ../../pdc.files-per-sample-dict.json.gz --case df4f2aaf-8f98-11ea-b1fd-0aad30af8a83
+gunzip -c pdc_QC1_case2.jsonl.gz > pdc_QC1_case2.json
 ```
 -> [PDC 2](tests/steps/pdc_QC1_case2.json)
 
