@@ -9,7 +9,7 @@ import pathlib
 import os
 
 from cdatransform.lib import get_case_ids
-from cdatransform.extract.lib import retry_get, download_blob
+from cdatransform.extract.lib import retry_get
 
 
 cases_fields = [
@@ -165,14 +165,17 @@ class GDC:
             sample_id = sample.get("sample_id")
             file_ids = self._samples_per_files_dict.get(sample_id, [])
             
-            sample["files"] = []
-            for f_obj in (case_files_dict.get(f_id) for f_id in file_ids):
-                if f_obj is not None:
-                    f_obj.update({"gcs_path": self._fileuuid_to_gcs_mapping.get(f_obj.get("file_id"))})
-                    sample["files"].append(f_obj)
-            
+            sample["files"] = [
+                self._attach_download_link(f_obj)
+                for f_obj in (case_files_dict.get(f_id) for f_id in file_ids)    
+                if f_obj is not None
+            ]
 
         return new_case_record
+
+    def _attach_download_link(self, f_obj):
+        f_obj.update({"gcs_path": self._fileuuid_to_gcs_mapping.get(f_obj.get("file_id"))})
+        return f_obj
 
     def _fetch_file_data_from_cache(self, cache_file) -> dict:
         # The return is a dictionary sample_id: [file_ids]
@@ -223,14 +226,11 @@ class GDC:
     def _fetch_file_id_to_gcs_mapping(self, gcs_file) -> dict:
         # The return is a dictionary sample_id: [file_ids]
         if not gcs_file.exists():
-            sys.stderr.write(f"File_id to GCS cache file {gcs_file} not found. Generating gcs mapping.\n")
-            bucket_name = "broad-cda-dev"
-            source_blob_name = "public/gdc.fileuuid.jsonl.gz"
-            #destination_file_name = "gdc_fileuuid_gs.jsonl.gz"
-            destination_file_name = gcs_file
-            download_blob(bucket_name, source_blob_name, destination_file_name)
+            msg = f"File_id to GCS cache file {gcs_file} not found.\n"
+            sys.stderr.write(msg)
+            raise RuntimeError(msg)
         
-        sys.stderr.write(f"Loading files metadata from cache file {gcs_file}.\n")
+        sys.stderr.write(f"Loading download links from cache file {gcs_file}.\n")
         with gzip.open(gcs_file, "rb") as f_in:
             reader = jsonlines.Reader(f_in)
             files_mapping = {f["file_uuid"]: f["gcs_path"]
