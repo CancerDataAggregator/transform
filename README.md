@@ -163,6 +163,16 @@ In this project there is a dataset called `kg-expt`. You can use your own.
 bq load --autodetect --source_format NEWLINE_DELIMITED_JSON kg_expt.gdc gdc.transf.jsonl.gz
 ```
 
+# Downloading cached files
+Several of the ETL steps require cached files either to avoid bottlenecking a DC
+API or to load auxiliary information. These files are: 
+- gdc.samples-per-file.jsonl.gz (Match GDC samples and files)
+- pdc.files-per-sample-dict.json.gz (Match PDC files and samples)
+- gdc.fileuuid.jsonl.gz (Match download links for GDC files)
+
+These should be pulled down before running any ETL tests or processes into the
+`data` directory using the [`get-cache-files.sh`](data/get-cache-files.sh) script
+
 # End-to-end example
 
 ```

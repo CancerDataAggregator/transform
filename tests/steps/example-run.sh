@@ -1,16 +1,9 @@
 set -ex
 
-# If the cache files are missing, download them.
-for FILE in gdc.samples-per-file.jsonl.gz pdc.files-per-sample-dict.json.gz gdc.fileuuid.jsonl.gz; do
-    if [ ! -f "$FILE" ]; then
-      curl --remote-name https://storage.googleapis.com/broad-cda-dev/public/$FILE
-    fi
-done
-
 # Generate GDC examples
 
-extract-gdc gdc_TARGET_case1.jsonl.gz gdc.samples-per-file.jsonl.gz gdc.fileuuid.jsonl.gz --case 7eeced68-1717-4116-bcee-328ac70a9682
-extract-gdc gdc_TARGET_case2.jsonl.gz gdc.samples-per-file.jsonl.gz gdc.fileuuid.jsonl.gz --case 9e229e56-f7e1-58f9-984b-a9453be5dc9a
+extract-gdc gdc_TARGET_case1.jsonl.gz ../../data/gdc.samples-per-file.jsonl.gz ../../data/gdc.fileuuid.jsonl.gz --case 7eeced68-1717-4116-bcee-328ac70a9682
+extract-gdc gdc_TARGET_case2.jsonl.gz ../../data/gdc.samples-per-file.jsonl.gz ../../data/gdc.fileuuid.jsonl.gz --case 9e229e56-f7e1-58f9-984b-a9453be5dc9a
 
 gunzip -c gdc_TARGET_case1.jsonl.gz > gdc_TARGET_case1.json
 gunzip -c gdc_TARGET_case2.jsonl.gz > gdc_TARGET_case2.json
