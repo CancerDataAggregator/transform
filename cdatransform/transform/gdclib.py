@@ -163,7 +163,7 @@ def harmonized_files(files,case):
         }
         this_file["identifier"] = [{"value": this_file.get("file_id"), "system": "GDC"}]
         this_file["id"] = this_file.pop("file_id")
-        this_file["associated_project"] = case.get("project", {}).get("project_id"),
+        this_file["associated_project"] = [case.get("project", {}).get("project_id")]
         this_file["byte_size"] = this_file.pop("file_size")
         this_file["checksum"] = this_file.pop("md5sum")
         this_file["label"] = this_file.pop("file_name")

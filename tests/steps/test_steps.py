@@ -19,7 +19,6 @@ from cdatransform.transform.validate import LogValidation
         ),
     ],
 )
-#@pytest.mark.xfail
 def test_transform(transform, case, expected):
     validate = LogValidation()
     t_list = yaml.safe_load(open(transform, "r"))
