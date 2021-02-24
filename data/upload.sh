@@ -1,6 +1,6 @@
 set -ex
 
-extract-gdc gdc.jsonl.gz gdc.samples-per-file.jsonl.gz gdc.fileuuid.jsonl.gz
+extract-gdc gdc.jsonl.gz gdc.samples-per-file.jsonl.gz
 cda-transform gdc.jsonl.gz gdc.H.jsonl.gz ../gdc-transform.yml
 cda-aggregate ../merge.yml gdc.H.jsonl.gz gdc.A.jsonl.gz
 
