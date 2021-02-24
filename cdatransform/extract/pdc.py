@@ -99,7 +99,7 @@ class PDC:
             result = retry_get(
                 self.endpoint, params={"query": query_files_bulk(page, 1000)}
             )
-            yield result.json()["data"]["fileMetadata"]
+            yield result.json()["data"]["filesMetadata"]
 
 
 def get_file_metadata(file_metadata_record) -> dict:
