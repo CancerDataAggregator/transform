@@ -51,7 +51,7 @@ def query_single_case(case_id):
 def query_files_bulk(offset, limit):
     template = Template(
         """{
-  fileMetadata(offset: $offset, limit: $limit acceptDUA: true) {
+  filesMetadata(offset: $offset limit: $limit acceptDUA: true) {
     file_id
     file_name
     file_location
