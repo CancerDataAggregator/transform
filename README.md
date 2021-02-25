@@ -138,8 +138,8 @@ By default the log file is named `transform.log`
 
 - [gdc-transform.yml](gdc-transform.yml): Sample transforms list file for GDC
 
-- [gdclib.py](cdatransform/gdclib.py): Library of transforms for GDC 
-- [pdclib.py](cdatransform/pdclib.py): Library of transforms for PDC 
+- [gdclib.py](cdatransform/transform/gdclib.py): Library of transforms for GDC 
+- [pdclib.py](cdatransform/transform/pdclib.py): Library of transforms for PDC 
 
 
 # Load data into BigQuery
@@ -173,6 +173,22 @@ API or to load auxiliary information. These files are:
 
 These should be pulled down before running any ETL tests or processes into the
 `data` directory using the [`get-cache-files.sh`](data/get-cache-files.sh) script
+
+## Debugging cache file generation
+
+Generating actual cache files can take hours, so one trick to help when debugging the cache file
+generation code is to modify the generator code to only fetch a few records. For example, here's
+a modified version of the PDC generation code which will complete in less than a minute.
+
+```python
+def _files_chunk(self):
+   for page in range(0, 20, 10):
+      sys.stderr.write(f"<< Processing page {int(page/10) + 1}/90 >>\n")
+      result = retry_get(
+         self.endpoint, params={"query": query_files_bulk(page, 10)}
+      )
+      yield result.json()["data"]["filesMetadata"]
+```
 
 # End-to-end example
 
