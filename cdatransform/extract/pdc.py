@@ -57,7 +57,7 @@ class PDC:
         if not cache_file.exists():
             sys.stderr.write(f"Cache file {cache_file} not found. Generating.\n")
             files_per_sample_dict = self._get_files_per_sample_dict()
-            with gzip.open(cache_file, "w") as f_out:
+            with gzip.open(cache_file, "wt") as f_out:
                 json.dump(files_per_sample_dict, f_out)
         else:
             sys.stderr.write(f"Loading files metadata from cache file {cache_file}.\n")
