@@ -37,7 +37,7 @@ def research_subject(tip, orig, log: LogValidation, **kwargs):
             "primary_disease_type": orig.get("disease_type"),
             "primary_disease_site": orig.get("primary_site"),
             # "Project": {"label": orig.get("project", {}).get("project_id")},
-            "associated_project": orig.get("project", {}).get("project_id"),
+            "associated_project": orig.get("project_submitter_id"),
         }
     ]
     tip["ResearchSubject"] = res_subj
