@@ -6,18 +6,12 @@ class NamedValue:
 
     def __init__(self, value: Any,  name: Optional[str] = None) -> None:
         self._name = name
-        self._value = value
-
-    def __hash__(self) -> int:
-        return self._value.__hash__()
-
-    def __eq__(self, other) -> int:
-        return self._value == other._value
+        self.value = value
 
     def __str__(self) -> str:
         if self._name is not None:
-            return f"{self._name}-{self._value}"
-        return str(self._value)
+            return f"{self._name}-{self.value}"
+        return str(self.value)
 
 
 class LogValidation:
@@ -129,7 +123,7 @@ class LogValidation:
 
         for id, fields in self._matching_fields.items():
             for field, values in fields.items():
-                if len(values) > 1:
+                if len({nv.value for nv in values}) > 1:
                     values_data = sorted([str(v) for v in values])
                     logger.warning(
                         f"Conflict ID:{id} FIELD:{field} VALUES:{':'.join(values_data)}"
