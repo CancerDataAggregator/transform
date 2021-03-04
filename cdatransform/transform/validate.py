@@ -29,7 +29,7 @@ class LogValidation:
 
     def agree(
         self,
-        tables: Union[Mapping[str, Any], List[Mapping[str, Any]]],
+        table: Mapping[str, Any],
         record_id: str,
         fields: list,
     ) -> None:
@@ -40,15 +40,38 @@ class LogValidation:
         :param fields: the fields that should match for all records
         :param tables: either a table or a list of tables tables to find the fields in
         """
-        if not isinstance(tables, list):
-            tables = [tables]
+        other = self._matching_fields.get(record_id)
+        if other:
+            for field in fields:
+                value = table.get(field)
+                if value:
+                    other[field].add(value)
+        else:
+            self._matching_fields[record_id] = {}
+            for field in fields:
+                value = table.get(field)
+                if value:
+                    self._matching_fields[record_id][field] = {value}
+
+    def agree2(
+        self,
+        tables: Mapping[str, Mapping[str, Any]],
+        record_id: str,
+        fields: list,
+    ) -> None:
+        """
+        Given an ID and a list of field names, track all values seen. For the same ID, the field
+         values should match.
+        :param record_id: the identifier for the record, shared across different rows
+        :param fields: the fields that should match for all records
+        :param tables: either a table or a list of tables tables to find the fields in
+        """
         for table in tables:
             other = self._matching_fields.get(record_id)
             if other:
                 for field in fields:
                     value = table.get(field)
-                    if value:
-                        other[field].add(value)
+                    other[field].add(value)
             else:
                 self._matching_fields[record_id] = {}
                 for field in fields:
