@@ -3,10 +3,37 @@ from typing import DefaultDict
 import jsonlines
 import yaml
 import gzip
-
+import logging
 import cdatransform.transform.merge.merge_functions as mf
+from cdatransform.transform.validate import LogValidation
 
-
+def get_coalesce_field_names(merge_field_dict):
+    coal_fields = []
+    for key,val in merge_field_dict.items():
+        if val.get("merge_type") == 'coalesce':
+            coal_fields.append(key)
+    return coal_fields
+def prep_log_merge_error(entities,merge_field_dict):
+    sources = list(entities.keys())
+    coal_fields = get_coalesce_field_names(merge_field_dict)
+    ret_dat = dict()
+    for source in sources:
+        temp = dict()
+        for field in coal_fields:
+            temp[field]=entities.get(source).get(field)
+        ret_dat[source] = temp
+    for source,val in entities.items():
+        if val.get('id') is not None:
+            patient_id = val.get('id')
+            break
+    return coal_fields,ret_dat,patient_id
+def log_merge_error(entities,all_sources,fields):
+    coal_fields,coal_dat,patient_id = prep_log_merge_error(entities,fields)
+    log = LogValidation()
+    all_sources.append(patient_id)
+    prefix = '_'.join(all_sources)
+    log.agree_sources(coal_dat, '_'.join(all_sources), coal_fields)
+    log.generate_report(logging.getLogger('test'))
 def main():
     parser = argparse.ArgumentParser(
         description="Aggregate cases data from DC to Patient level."
@@ -42,6 +69,8 @@ def main():
                 merged_entry = mf.merge_fields_level(
                     entities, how_to_merge["Patient_merge"], lines_cases
                 )
+                case_ids = [patient.get('ResearchSubject')[0].get('id') for patient in patients]
+                log_merge_error(entities,case_ids, how_to_merge["Patient_merge"])
                 writeDC.write(merged_entry)
 
 
