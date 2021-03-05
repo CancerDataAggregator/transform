@@ -7,6 +7,8 @@ import logging
 import cdatransform.transform.merge.merge_functions as mf
 from cdatransform.transform.validate import LogValidation
 
+logger = logging.getLogger(__name__)
+
 def get_coalesce_field_names(merge_field_dict):
     coal_fields = []
     for key,val in merge_field_dict.items():
@@ -27,13 +29,12 @@ def prep_log_merge_error(entities,merge_field_dict):
             patient_id = val.get('id')
             break
     return coal_fields,ret_dat,patient_id
-def log_merge_error(entities,all_sources,fields):
+def log_merge_error(entities,all_sources,fields,log):
     coal_fields,coal_dat,patient_id = prep_log_merge_error(entities,fields)
-    log = LogValidation()
-    all_sources.append(patient_id)
+    all_sources.insert(0,patient_id)
     prefix = '_'.join(all_sources)
     log.agree_sources(coal_dat, '_'.join(all_sources), coal_fields)
-    log.generate_report(logging.getLogger('test'))
+    return log
 def main():
     parser = argparse.ArgumentParser(
         description="Aggregate cases data from DC to Patient level."
@@ -46,7 +47,16 @@ def main():
         help="Input file name. Should be output file of transform function. Should end with .gz",
     )
     parser.add_argument("output_file", help="Out file name. Should end with .gz")
+    parser.add_argument("--log", default="aggregate.log", help="Name of log file.")
     args = parser.parse_args()
+    logging.basicConfig(
+        filename=args.log,
+        format="%(asctime)s %(levelname)-8s %(message)s",
+        level=logging.INFO,
+    )
+    logger.info("----------------------")
+    logger.info("Starting aggregate run")
+    logger.info("----------------------")
     # yaml.load(open(transform_file, "r"), Loader=Loader)
     with open(args.merge_file) as file:
         how_to_merge = yaml.full_load(file)
@@ -59,6 +69,7 @@ def main():
 
     with gzip.open(args.output_file, "w") as outfp:
         writeDC = jsonlines.Writer(outfp)
+        log = LogValidation()
         for patient_id, patients in patient_case_mapping.items():
             if len(patients) == 1:
                 writeDC.write(patients[0])
@@ -70,9 +81,10 @@ def main():
                     entities, how_to_merge["Patient_merge"], lines_cases
                 )
                 case_ids = [patient.get('ResearchSubject')[0].get('id') for patient in patients]
-                log_merge_error(entities,case_ids, how_to_merge["Patient_merge"])
+                
+                log = log_merge_error(entities,case_ids, how_to_merge["Patient_merge"],log)
                 writeDC.write(merged_entry)
-
+        log.generate_report(logging.getLogger('test'))
 
 if __name__ == "__main__":
     main()
