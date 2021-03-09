@@ -1,6 +1,6 @@
 import json
 from collections import defaultdict
-
+from math import ceil
 import jsonlines
 import time
 import sys
@@ -10,7 +10,7 @@ import pathlib
 
 from cdatransform.lib import get_case_ids
 from .lib import retry_get
-from .pdc_query_lib import query_all_cases, query_single_case, query_files_bulk
+from .pdc_query_lib import query_all_cases, query_single_case, query_files_bulk, query_files_paginated
 
 
 class PDC:
@@ -94,13 +94,17 @@ class PDC:
         return files_per_sample
 
     def _files_chunk(self):
-        for page in range(0, 90000, 1000):
-            sys.stderr.write(f"<< Processing page {int(page/1000) + 1}/90 >>\n")
+        totalfiles = self._get_total_files()
+        for page in range(0, totalfiles, 1000):
+            sys.stderr.write(f"<< Processing page {int(page/1000) + 1}/{ceil(totalfiles/1000)} >>\n")
             result = retry_get(
                 self.endpoint, params={"query": query_files_bulk(page, 1000)}
             )
             yield result.json()["data"]["filesMetadata"]
-
+    def _get_total_files(self):
+        result = retry_get(self.endpoint, params={"query": query_files_paginated(0, 1)}
+        )
+        return result.json()["data"]["getPaginatedFiles"]["total"]
 
 def get_file_metadata(file_metadata_record) -> dict:
     return {
