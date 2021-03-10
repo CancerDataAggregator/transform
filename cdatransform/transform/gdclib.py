@@ -2,7 +2,7 @@
 Transforms specific to GDC data structures
 """
 
-from cdatransform.transform.commonlib import constrain_research_subject
+from cdatransform.transform.commonlib import constrain_research_subject, lower
 from cdatransform.transform.validate import LogValidation
 
 
@@ -16,9 +16,9 @@ def patient(tip, orig, log: LogValidation, **kwargs: object) -> dict:
         demog = {}
     patient = {
         "id": orig.get("submitter_id"),
-        "ethnicity": demog.get("ethnicity"),
-        "sex": demog.get("gender"),
-        "race": demog.get("race"),
+        "ethnicity": lower(demog.get("ethnicity")),
+        "sex": lower(demog.get("gender")),
+        "race": lower(demog.get("race")),
         "days_to_birth": demog.get("days_to_birth"),
     }
 
@@ -36,10 +36,10 @@ def research_subject(tip, orig, log: LogValidation, **kwargs: object) -> object:
     _this_research_subject = {
         "id": orig.get("case_id"),
         "identifier": [{"value": orig.get("case_id"), "system": "GDC"}],
-        "primary_disease_type": orig.get("disease_type"),
-        "primary_disease_site": orig.get("primary_site"),
+        "primary_disease_type": lower(orig.get("disease_type")),
+        "primary_disease_site": lower(orig.get("primary_site")),
         # "Project": {"label": orig.get("project", {}).get("project_id")},
-        "associated_project": orig.get("project", {}).get("project_id"),
+        "associated_project": lower(orig.get("project", {}).get("project_id")),
     }
 
     for field in ["primary_disease_type", "primary_disease_site"]:
@@ -72,11 +72,15 @@ def diagnosis(tip, orig, log: LogValidation, **kwargs):
     for d in orig.get("diagnoses", []):
         this_d = {f: d.get(f) for f in diagnosis_fields}
         this_d["id"] = this_d.pop("diagnosis_id")
+        this_d["primary_diagnosis"] = lower(this_d["primary_diagnosis"])
+        this_d["tumor_grade"] = lower(this_d["tumor_grade"])
+        this_d["tumor_stage"] = lower(this_d["tumor_stage"])
+        this_d["morphology"] = lower(this_d["morphology"])
 
         this_d["Treatment"] = [
             {
-                "outcome": treatment.get("treatment_outcome"),
-                "type": treatment.get("treatment_type"),
+                "outcome": lower(treatment.get("treatment_outcome")),
+                "type": lower(treatment.get("treatment_type")),
             }
             for treatment in d.get("treatments", [])
         ]
@@ -132,7 +136,6 @@ def get_entities(original):
 
 def specimen_from_entity(entity, _type, parent_id, sample, case):
     identifier_key = f"{_type}_id"
-    id_key = f"{_type}_submitter_id"
     demog = case.get("demographics")
     if isinstance(demog, list):
         demog = demog[0]
@@ -140,14 +143,14 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
         demog = {}
     return {
         "derived_from_subject": case.get("submitter_id"),
-        "id": entity.get(id_key),
+        "id": entity.get("submitter_id"),
         "identifier": [{"value": entity.get(identifier_key), "system": "GDC"}],
         "specimen_type": _type,
-        "primary_disease_type": case.get("disease_type"),
-        "source_material_type": sample.get("sample_type"),
-        "anatomical_site": sample.get("biospecimen_anatomic_site"),
+        "primary_disease_type": lower(case.get("disease_type")),
+        "source_material_type": lower(sample.get("sample_type")),
+        "anatomical_site": lower(sample.get("biospecimen_anatomic_site")),
         "age_at_collection": demog.get("days_to_birth"),
-        "associated_project": case.get("project", {}).get("project_id"),
+        "associated_project": lower(case.get("project", {}).get("project_id")),
         "derived_from_specimen": parent_id,
         "File": harmonized_files(entity.get("files", []) or [], case),
     }
@@ -169,10 +172,10 @@ def harmonized_files(files, case):
         this_file["identifier"] = [{"value": this_file.get("file_id"), "system": "GDC"}]
         this_file["drs_uri"] = "".join(["drs://dg.4DFC:",this_file.get("file_id")])
         this_file["id"] = this_file.pop("file_id")
-        this_file["associated_project"] = [case.get("project", {}).get("project_id")]
+        this_file["associated_project"] = [lower(case.get("project", {}).get("project_id"))]
         this_file["byte_size"] = this_file.pop("file_size")
         this_file["checksum"] = this_file.pop("md5sum")
-        this_file["label"] = this_file.pop("file_name")
+        this_file["label"] = lower(this_file.pop("file_name"))
         h_files.append(this_file)
 
     return h_files
