@@ -132,7 +132,6 @@ def get_entities(original):
 
 def specimen_from_entity(entity, _type, parent_id, sample, case):
     identifier_key = f"{_type}_id"
-    id_key = f"{_type}_submitter_id"
     demog = case.get("demographics")
     if isinstance(demog, list):
         demog = demog[0]
@@ -140,7 +139,7 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
         demog = {}
     return {
         "derived_from_subject": case.get("submitter_id"),
-        "id": entity.get(id_key),
+        "id": entity.get("submitter_id"),
         "identifier": [{"value": entity.get(identifier_key), "system": "GDC"}],
         "specimen_type": _type,
         "primary_disease_type": case.get("disease_type"),
