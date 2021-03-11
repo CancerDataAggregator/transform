@@ -72,7 +72,6 @@ def diagnosis(tip, orig, log: LogValidation, **kwargs):
     for d in orig.get("diagnoses", []):
         this_d = {f: d.get(f) for f in diagnosis_fields}
         this_d["id"] = this_d.pop("diagnosis_id")
-        this_d["primary_diagnosis"] = this_d["primary_diagnosis"]
         this_d["tumor_grade"] = this_d["tumor_grade"]
         this_d["tumor_stage"] = this_d["tumor_stage"]
         this_d["morphology"] = this_d["morphology"]
