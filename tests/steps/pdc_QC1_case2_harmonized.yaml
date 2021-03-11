@@ -24,7 +24,7 @@ ResearchSubject:
 
     Specimen:
       # id should represent unique identifier across all systems
-      - id: "QC1"
+      - id: "df50514e-8f98-11ea-b1fd-0aad30af8a83"
         # identifier represents a list of IDs within each system
         identifier:
           - value: "df50514e-8f98-11ea-b1fd-0aad30af8a83"
