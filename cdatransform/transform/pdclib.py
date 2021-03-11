@@ -64,10 +64,6 @@ def diagnosis(tip, orig, log: LogValidation, **kwargs):
     for d in orig.get("diagnoses", []):
         this_d = {f: d.get(f) for f in diagnosis_fields}
         this_d["id"] = this_d.pop("diagnosis_id")
-        this_d["primary_diagnosis"] = this_d["primary_diagnosis"]
-        this_d["tumor_grade"] = this_d["tumor_grade"]
-        this_d["tumor_stage"] = this_d["tumor_stage"]
-        this_d["morphology"] = this_d["morphology"]
 
         this_d["Treatment"] = [
             {
@@ -119,7 +115,7 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
         "source_material_type": sample.get("sample_type"),
         "anatomical_site": sample.get("biospecimen_anatomic_site"),
         "age_at_collection": demog.get("days_to_birth"),
-        "associated_project": case.get("project_submitter_id"),
+        "associated_project": [case.get("project_submitter_id")],
         "derived_from_specimen": parent_id,
         "File": harmonized_files(entity.get("File", []) or [], case),
     }
