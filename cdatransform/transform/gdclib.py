@@ -2,7 +2,7 @@
 Transforms specific to GDC data structures
 """
 
-from cdatransform.transform.commonlib import constrain_research_subject
+from cdatransform.transform.commonlib import constrain_research_subject, lower
 from cdatransform.transform.validate import LogValidation
 
 
@@ -16,9 +16,9 @@ def patient(tip, orig, log: LogValidation, **kwargs: object) -> dict:
         demog = {}
     patient = {
         "id": orig.get("submitter_id"),
-        "ethnicity": demog.get("ethnicity"),
-        "sex": demog.get("gender"),
-        "race": demog.get("race"),
+        "ethnicity": lower(demog.get("ethnicity")),
+        "sex": lower(demog.get("gender")),
+        "race": lower(demog.get("race")),
         "days_to_birth": demog.get("days_to_birth"),
     }
 

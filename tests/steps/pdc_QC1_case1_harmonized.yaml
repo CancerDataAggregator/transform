@@ -9,9 +9,9 @@
 # Before aggregation – still a single research subject
 # Patient hasn't been created yet
 id: "QC1"
-ethnicity: "Not Reported"
-sex: "Not Reported"
-race: "Not Reported"
+ethnicity: "not Reported"
+sex: "not Reported"
+race: "not Reported"
 days_to_birth: "0"
 
 ResearchSubject:
@@ -29,7 +29,7 @@ ResearchSubject:
 
     Specimen:
       # id should represent unique identifier across all systems
-      - id: "QC1"
+      - id: "03394f84-204e-11e9-b7f8-0a80fada099c"
         # identifier represents a list of IDs within each system
         identifier:
           - value: "03394f84-204e-11e9-b7f8-0a80fada099c"

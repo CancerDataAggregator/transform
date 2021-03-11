@@ -1,7 +1,7 @@
 """
 Transforms specific to PDC data structures
 """
-from cdatransform.transform.commonlib import constrain_research_subject
+from cdatransform.transform.commonlib import constrain_research_subject, lower
 from cdatransform.transform.validate import LogValidation
 
 
@@ -17,9 +17,9 @@ def patient(tip, orig, log: LogValidation, **kwargs):
         demog = {}
     patient = {
         "id": orig.get("case_submitter_id"),
-        "ethnicity": demog.get("ethnicity").lower() if demog.get("ethnicity") is not None else None,
-        "sex": demog.get("gender").lower(),
-        "race": demog.get("race").lower(),
+        "ethnicity": lower(demog.get("ethnicity")),
+        "sex": lower(demog.get("gender")),
+        "race": lower(demog.get("race")),
         "days_to_birth": demog.get("days_to_birth"),
     }
     tip.update(patient)
@@ -34,10 +34,10 @@ def research_subject(tip, orig, log: LogValidation, **kwargs):
         {
             "id": orig.get("case_id"),
             "identifier": [{"value": orig.get("case_id"), "system": "PDC"}],
-            "primary_disease_type": orig.get("disease_type").lower(),
-            "primary_disease_site": orig.get("primary_site").lower(),
+            "primary_disease_type": orig.get("disease_type"),
+            "primary_disease_site": orig.get("primary_site"),
             # "Project": {"label": orig.get("project", {}).get("project_id")},
-            "associated_project": orig.get("project_submitter_id").lower(),
+            "associated_project": orig.get("project_submitter_id"),
         }
     ]
     tip["ResearchSubject"] = res_subj
@@ -67,8 +67,8 @@ def diagnosis(tip, orig, log: LogValidation, **kwargs):
 
         this_d["Treatment"] = [
             {
-                "outcome": treatment.get("treatment_outcome").lower(),
-                "type": treatment.get("treatment_type").lower(),
+                "outcome": treatment.get("treatment_outcome"),
+                "type": treatment.get("treatment_type"),
             }
             for treatment in d.get("treatments", [])
         ]
@@ -111,11 +111,11 @@ def specimen_from_entity(entity, _type, parent_id, sample, case):
         "identifier": [{"value": entity.get(id_key), "system": "PDC"}],
         "derived_from_subject": case.get("submitter_id"),
         "specimen_type": _type,
-        "primary_disease_type": case.get("disease_type").lower(),
-        "source_material_type": sample.get("sample_type").lower(),
-        "anatomical_site": sample.get("biospecimen_anatomic_site").lower() if sample.get("biospecimen_anatomic_site") is not None else None,
+        "primary_disease_type": case.get("disease_type"),
+        "source_material_type": sample.get("sample_type"),
+        "anatomical_site": sample.get("biospecimen_anatomic_site"),
         "age_at_collection": demog.get("days_to_birth"),
-        "associated_project": case.get("project_submitter_id"),
+        "associated_project": [case.get("project_submitter_id")],
         "derived_from_specimen": parent_id,
         "File": harmonized_files(entity.get("File", []) or [], case),
     }
@@ -137,11 +137,12 @@ def harmonized_files(files, case):
         this_file["identifier"] = [{"value": this_file.get("file_id"), "system": "PDC"}]
         this_file["drs_uri"] = "".join(["drs://dg.4DFC:",this_file.get("file_id")])
         this_file["id"] = this_file.pop("file_id")
-        this_file["associated_project"] = (case.get("project_submitter_id"),)
+        this_file["associated_project"] = case.get("project_submitter_id")
         this_file["byte_size"] = this_file.pop("file_size")
         this_file["checksum"] = this_file.pop("md5sum")
         this_file["label"] = this_file.pop("file_name")
         this_file["data_type"] = this_file.pop("file_type")
+        this_file["data_category"] = this_file["data_category"]
         h_files.append(this_file)
 
     return h_files
