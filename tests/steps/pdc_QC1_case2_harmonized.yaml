@@ -5,9 +5,9 @@
 ###################################################
 
 id: "QC1"
-ethnicity: "Not Reported"
-sex: "Not Reported"
-race: "Not Reported"
+ethnicity: "not Reported"
+sex: "not Reported"
+race: "not Reported"
 days_to_birth:
 
 ResearchSubject:
