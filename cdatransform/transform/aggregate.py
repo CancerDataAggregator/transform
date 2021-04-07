@@ -28,10 +28,17 @@ def prep_log_merge_error(entities,merge_field_dict):
         if val.get('id') is not None:
             patient_id = val.get('id')
             break
-    return coal_fields,ret_dat,patient_id
+    for source,val in entities.items():
+        if val.get('ResearchSubject')[0].get('associated_project') is not None:
+            project = val.get('ResearchSubject')[0].get('associated_project')
+            break
+    return coal_fields,ret_dat,patient_id,project
 def log_merge_error(entities,all_sources,fields,log):
-    coal_fields,coal_dat,patient_id = prep_log_merge_error(entities,fields)
-    all_sources.insert(0,patient_id)
+    coal_fields,coal_dat,patient_id,project = prep_log_merge_error(entities,fields)
+    all_sources.insert(0,'patient')
+    all_sources.insert(1,patient_id)
+    all_sources.insert(2,'project')
+    all_sources.insert(3,project)
     prefix = '_'.join(all_sources)
     log.agree_sources(coal_dat, '_'.join(all_sources), coal_fields)
     return log
