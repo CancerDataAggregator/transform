@@ -93,7 +93,7 @@ def add_Specimen_rec(orig,MandT,DC,**kwargs):
                     spec_rec+=nest_rec
             spec+= spec_rec
     return(spec)
-#Functions to functionalize Transformation dictionary and apply the transforms to relevant fields
+#Functions to apply the transforms to relevant fields and functionalize Transformation dictionary
 def entity_value_transforms(tip,entity,MandT):
     if 'Transformations' in MandT[entity] and MandT[entity]['Transformations'] is not None:
         trans_dict = MandT[entity]['Transformations']
@@ -102,25 +102,15 @@ def entity_value_transforms(tip,entity,MandT):
 def apply_transformations(tip,trans_dict):
     for field_name, trans in trans_dict.items():
         excluded_field =(trans=='exclude')
-        #tempdict = dict({field_name:tip.pop(field_name)})
-        print('before trans')
-        print(tip[field_name])
-        print(excluded_field)
         if not excluded_field:
             tip[field_name] = apply_list_of_lists(tip[field_name],trans)
-            #tip.update(tempdict)
-        print('after trans')
-        print(tip[field_name])
     return(tip)
 def apply_list_of_lists(data,list_trans):
     temp = data
-    print(list_trans)
     if list_trans is not None:
         for lists in list_trans:
             if lists[1] == []:
                 temp = lists[0](data)
-                print('temp_aft_trans')
-                print(temp)
             else:
                 temp = lists[0](data,lists[1])
     return(temp)
@@ -130,9 +120,6 @@ def functionalize_trans_dict(trans_dict):
     for field_name, trans_vals in trans_dict.items():
         if trans_vals !='exclude':
             for trans in range(len(trans_vals)):
-                #temp[field_name][trans][0] = globals()[trans_dict[field_name][trans][0]]
-                print('before functionalize')
-                print(trans_dict[field_name][trans])
                 temp[field_name][trans][0] = getattr(vt, trans_dict[field_name][trans][0])
 
     return(temp)
