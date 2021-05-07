@@ -21,11 +21,13 @@ def transform(orig,MandT,DC,**kwargs):
         for diag_rec in range(len(ent_rec)):
             temp_diag = ruy.read_entry(orig,MandT,'Diagnosis',cur_path = cur_path + [diag_rec])
             
-            treat_path = cur_path+[diag_rec,'Treatment']
+            treat_path = cur_path+[diag_rec,'treatments']
             treat_rec = ruy.simp_read(orig,diag_path,cur_path,DC)
             if isinstance(treat_rec,list) and treat_rec !=[]:
                 temp_diag['Treatment'] = []
                 for treat in range(len(treat_rec)):
+                    treat_rec = ruy.read_entry(orig,MandT,'Treatment',
+                                                            cur_path = treat_path + [treat])
                     temp_diag['Treatment'].append(ruy.read_entry(orig,MandT,'Treatment',
                                                             cur_path = treat_path + [treat]))
             elif isinstance(treat_rec, dict):
