@@ -8,16 +8,16 @@ extract-gdc gdc_TARGET_case2.jsonl.gz ../../data/gdc.samples-per-file.jsonl.gz -
 gunzip -c gdc_TARGET_case1.jsonl.gz > gdc_TARGET_case1.json
 gunzip -c gdc_TARGET_case2.jsonl.gz > gdc_TARGET_case2.json
 
-cda-transform gdc_TARGET_case1.jsonl.gz gdc.case1.H.json.gz ../../gdc-transform.yml
+cda-transform gdc_TARGET_case1.jsonl.gz gdc.case1.H.json.gz ../../GDC_mapping.yml GDC
 python json2yaml.py gdc.case1.H.json.gz gdc.case1.H.yml
 
-cda-transform gdc_TARGET_case2.jsonl.gz gdc.case2.H.json.gz ../../gdc-transform.yml
+cda-transform gdc_TARGET_case2.jsonl.gz gdc.case2.H.json.gz ../../GDC_mapping.yml GDC
 python json2yaml.py gdc.case2.H.json.gz gdc.case2.H.yml
 
 
 cat gdc_TARGET_case1.jsonl.gz gdc_TARGET_case2.jsonl.gz > gdc.jsonl.gz
 
-cda-transform gdc.jsonl.gz gdc.H.jsonl.gz ../../gdc-transform.yml
+cda-transform gdc.jsonl.gz gdc.H.jsonl.gz ../../GDC_mapping.yml GDC
 cda-aggregate ../../merge.yml gdc.H.jsonl.gz gdc.A.jsonl.gz
 python json2yaml.py gdc.A.jsonl.gz gdc.A.yml
 
