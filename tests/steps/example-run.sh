@@ -30,15 +30,15 @@ extract-pdc pdc_QC1_case2.jsonl.gz ../../data/pdc.files-per-sample-dict.json.gz 
 gunzip -c pdc_QC1_case1.jsonl.gz > pdc_QC1_case1.json
 gunzip -c pdc_QC1_case2.jsonl.gz > pdc_QC1_case2.json
 
-cda-transform pdc_QC1_case1.jsonl.gz pdc.case1.H.json.gz ../../pdc-transform.yml
+cda-transform pdc_QC1_case1.jsonl.gz pdc.case1.H.json.gz ../../PDC_mapping.yml PDC
 python json2yaml.py pdc.case1.H.json.gz pdc.case1.H.yml
 
-cda-transform pdc_QC1_case2.jsonl.gz pdc.case2.H.json.gz ../../pdc-transform.yml
+cda-transform pdc_QC1_case2.jsonl.gz pdc.case2.H.json.gz ../../GDC_mapping.yml
 python json2yaml.py pdc.case2.H.json.gz pdc.case2.H.yml
 
 cat pdc_QC1_case1.jsonl.gz pdc_QC1_case2.jsonl.gz > pdc.jsonl.gz
 
-cda-transform pdc.jsonl.gz pdc.H.jsonl.gz ../../pdc-transform.yml
+cda-transform pdc.jsonl.gz pdc.H.jsonl.gz ../../PDC_mapping.yml PDC
 cda-aggregate ../../merge.yml pdc.H.jsonl.gz pdc.A.jsonl.gz
 python json2yaml.py pdc.A.jsonl.gz pdc.A.yml
 
