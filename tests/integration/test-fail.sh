@@ -5,3 +5,4 @@ if cda-transform gdc.jsonl.gz gdc.transf.jsonl.gz gdc-transform-bad.yml GDC; the
     exit 1
 else
     exit 0
+fi
