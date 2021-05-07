@@ -8,8 +8,18 @@ def transform(orig,MandT,DC,**kwargs):
     path_to_read = kwargs.get("path_to_read",'cases')
     tip = ruy.read_entry(orig,MandT,'Patient',DC = DC)
     tip = entity_value_transforms(tip,'Patient',MandT)
+    for field in ["ethnicity", "sex", "race"]:
+        log.distinct(tip, field)
+    log.agree(tip, tip["id"], ["ethnicity", "sex", "race"])
     RS = ruy.read_entry(orig,MandT,'ResearchSubject',DC=DC)
     RS = entity_value_transforms(RS,'ResearchSubject',MandT)
+    for field in ["primary_disease_type", "primary_disease_site"]:
+        log.distinct(RS, field)
+    log.agree(
+        RS,
+        RS["id"],
+        ["primary_disease_type", "primary_disease_site"],
+    )
     RS['Diagnosis'] = []
     diag_path = MandT['Diagnosis']['Mapping']['id']
     diag_path = diag_path.split('.')
@@ -81,6 +91,14 @@ def add_Specimen_rec(orig,MandT,DC,**kwargs):
                         file_rec = ruy.read_file_entry(orig,MandT,'File',DC,cur_path = file_path)
                         file_rec = entity_value_transforms(file_rec,'File',MandT)
                         spec_rec['File'].append(file_rec)
+            for field in [
+            "primary_disease_type",
+            "source_material_type",
+            "anatomical_site",
+            ]:
+                log.distinct(spec_rec, field)
+            # days to birth is negative days from birth until diagnosis. 73000 days is 200 years.
+            log.validate(spec_rec, "days_to_birth", lambda x: not x or -73000 < x < 0)
             spec_rec = [spec_rec]
             branches_dict = tree.get(spec_type)
             if branches_dict is not None:
