@@ -1,0 +1,80 @@
+Patient:
+    Mapping:
+        id: 'cases.case_submitter_id'
+        race: 'cases.demographics.race'
+        ethnicity: 'cases.demographics.ethnicity'
+        sex: 'cases.demographics.gender'
+        days_to_birth: 'cases.demographics.days_to_birth'
+    Transformations:
+        race:
+            - ['lower_case', [] ]
+        ethnicity:
+            - ['lower_case', [] ]
+        sex:
+            - ['lower_case', [] ]
+
+ResearchSubject:
+    Mapping:
+        id: 'cases.case_id'
+        identifier:
+            value: 'cases.case_id'
+            system: 'PDC'
+        primary_disease_type: 'cases.disease_type'
+        primary_disease_site: 'cases.primary_site'
+        associated_project: 'cases.project_submitter_id'
+            
+Diagnosis:
+    Mapping:
+        id: 'cases.diagnoses.diagnosis_id'
+        age_at_diagnosis: 'cases.diagnoses.age_at_diagnosis'
+        primary_diagnosis: 'cases.diagnoses.primary_diagnosis'
+        tumor_grade: 'cases.diagnoses.tumor_grade'
+        tumor_stage: 'cases.diagnoses.tumor_stage'
+        morphology: 'cases.diagnoses.morphology'
+
+Treatment:
+    Mapping:
+        id: 'cases.diagnoses.treatments.treatment_id'
+        outcome: 'cases.diagnoses.treatments.treatment_outcome'
+        type: 'cases.diagnoses.treatments.treatment_type'
+
+Specimen:
+    Mapping:
+        id:
+            samples: 'cases.samples.sample_id'
+            aliquots: 'cases.samples.aliquots.aliquot_id'
+        identifier:
+            value:
+                samples: 'cases.samples.sample_id'
+                aliquots: 'cases.samples.aliquots.aliquot_id'
+            system: 'PDC'
+        derived_from_subject: 'cases.case_submitter_id'
+        specimen_type:
+            samples: 'sample'
+            aliquots: 'aliquot'
+        primary_disease_type: 'cases.disease_type'
+        source_material_type: 'cases.samples.sample_type'
+        anatomical_site: 'cases.samples.biospecimen_anatomic_site'
+        age_at_collection: 'cases.demographics.days_to_birth'
+        associated_project: 'cases.project_submitter_id'
+        derived_from_specimen:
+            samples: 'initial sample'
+            aliquots: 'cases.samples.sample_id'
+
+File:
+    Mapping:
+        id: 'files.file_id'
+        identifier:
+            value: 'files.file_id'
+            system: 'PDC'
+        label: 'files.file_name'
+        data_type: 'files.file_type'
+        data_category: 'files.data_category'
+        byte_size: 'files.file_size'
+        checksum: 'files.md5sum'
+        associated_project: 'cases.project_submitter_id'
+        drs_uri: 'files.file_id'
+    Transformations:
+        drs_uri:
+            - ['format_drs',  [] ]
+            
