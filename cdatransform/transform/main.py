@@ -62,7 +62,7 @@ def main():
     for entity,MorT_dict in MandT.items():
         if 'Transformations' in MorT_dict:
             MandT[entity]['Transformations'] = tr.functionalize_trans_dict(MandT[entity]['Transformations'])
-
+    transform = tr.Transform(validate)
     t0 = time.time()
     count = 0
     case_list = get_case_ids(case=args.case, case_list_file=args.cases)
@@ -72,7 +72,7 @@ def main():
             reader = jsonlines.Reader(infp)
             writer = jsonlines.Writer(outfp)
             for case in filter_cases(reader, case_list=case_list):
-                writer.write(tr.transform(case,MandT,args.DC))
+                writer.write(transform(case,MandT,args.DC))
                 count += 1
                 if count % 5000 == 0:
                     sys.stderr.write(f"Processed {count} cases ({time.time() - t0}).\n")
