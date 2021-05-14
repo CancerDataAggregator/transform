@@ -161,6 +161,7 @@ def harmonized_files(files, case):
         "file_size",
         "data_category",
         "md5sum",
+        "data_format",
     ]
     h_files = []
     for fil in files:
@@ -172,6 +173,7 @@ def harmonized_files(files, case):
         this_file["byte_size"] = this_file.pop("file_size")
         this_file["checksum"] = this_file.pop("md5sum")
         this_file["label"] = this_file.pop("file_name")
+        this_file["file_format"] = this_file.pop("data_format")
         h_files.append(this_file)
 
     return h_files
