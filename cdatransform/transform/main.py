@@ -7,10 +7,10 @@ import time
 import yaml
 from yaml import Loader
 import jsonlines
-
+import cdatransform.transform.transform_lib.transform_with_YAML_v1 as tr
 from cdatransform.lib import get_case_ids
-from cdatransform.transform.lib import Transform
 from cdatransform.transform.validate import LogValidation
+
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +38,8 @@ def main():
     )
     parser.add_argument("input", help="Input data file.")
     parser.add_argument("output", help="Output data file.")
-    parser.add_argument("transforms", help="Transforms list file.")
+    parser.add_argument("map_trans", help="Mapping and Transformations file.")
+    parser.add_argument("DC", help="Data Commons source. (GDC, PDC, etc.)")
     parser.add_argument("--log", default="transform.log", help="Name of log file.")
     parser.add_argument("--case", help="Transform just this case")
     parser.add_argument(
@@ -56,9 +57,12 @@ def main():
     logger.info("----------------------")
 
     validate = LogValidation()
-    t_list = yaml.load(open(args.transforms, "r"), Loader=Loader)
-    transform = Transform(t_list, validate)
 
+    MandT = yaml.load(open(args.map_trans,"r"), Loader=Loader)
+    for entity,MorT_dict in MandT.items():
+        if 'Transformations' in MorT_dict:
+            MandT[entity]['Transformations'] = tr.functionalize_trans_dict(MandT[entity]['Transformations'])
+    transform = tr.Transform(validate)
     t0 = time.time()
     count = 0
     case_list = get_case_ids(case=args.case, case_list_file=args.cases)
@@ -68,7 +72,7 @@ def main():
             reader = jsonlines.Reader(infp)
             writer = jsonlines.Writer(outfp)
             for case in filter_cases(reader, case_list=case_list):
-                writer.write(transform(case))
+                writer.write(transform(case,MandT,args.DC))
                 count += 1
                 if count % 5000 == 0:
                     sys.stderr.write(f"Processed {count} cases ({time.time() - t0}).\n")
