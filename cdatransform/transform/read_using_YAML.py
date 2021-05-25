@@ -132,6 +132,7 @@ def read_file_entry(orig,MandT,entity,DC,**kwargs):
                 samp_rec['identifier']['value'] = simp_read(orig, adjust_file_path(paths,DC), cur_path, DC)
             field_path = adjust_file_path(val['system'],DC)
             samp_rec['identifier']['system'] = simp_read(orig,field_path,cur_path,DC)
+            samp_rec['identifier'] = [samp_rec['identifier']]
     return samp_rec
 def adjust_file_path(path,DC):
     new_path = path.split('.')
