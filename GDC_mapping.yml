@@ -79,6 +79,7 @@ File:
         checksum: 'files.md5sum'
         associated_project: 'cases.project.project_id'
         drs_uri: 'files.file_id'
+        file_format: 'files.data_format'
     Transformations:
         drs_uri: 
             - ['format_drs', [] ]
