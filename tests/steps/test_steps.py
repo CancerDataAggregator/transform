@@ -11,7 +11,7 @@ from cdatransform.transform.validate import LogValidation
 
 
 @pytest.mark.parametrize(
-    "transform,case,expected",
+    "transform,DC,case,expected",
     [
         pytest.param(
             "../../GDC_mapping.yml", "GDC", "steps/gdc_TARGET_case1.json", "steps/gdc_TARGET_case1_harmonized.yaml"
