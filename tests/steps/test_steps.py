@@ -2,6 +2,7 @@ import json
 
 import pytest
 import yaml
+from yaml import Loader
 from deepdiff import DeepDiff
 
 #from cdatransform.transform.lib import Transform
@@ -22,8 +23,8 @@ from cdatransform.transform.validate import LogValidation
 )
 def test_transform(transform, DC, case, expected):
     validate = LogValidation()
-    t_list = yaml.safe_load(open(transform, "r"))
-    MandT = yaml.load(open(args.map_trans,"r"), Loader=Loader)
+    #t_list = yaml.safe_load(open(transform, "r"))
+    MandT = yaml.load(open(transform,"r"), Loader=Loader)
     for entity,MorT_dict in MandT.items():
         if 'Transformations' in MorT_dict:
             MandT[entity]['Transformations'] = tr.functionalize_trans_dict(MandT[entity]['Transformations'])
