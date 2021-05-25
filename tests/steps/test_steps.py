@@ -14,10 +14,10 @@ from cdatransform.transform.validate import LogValidation
     "transform,DC,case,expected",
     [
         pytest.param(
-            "../../GDC_mapping.yml", "GDC", "steps/gdc_TARGET_case1.json", "steps/gdc_TARGET_case1_harmonized.yaml"
+            "../GDC_mapping.yml", "GDC", "steps/gdc_TARGET_case1.json", "steps/gdc_TARGET_case1_harmonized.yaml"
         ),
         pytest.param(
-            "../../GDC_mapping.yml", "GDC", "steps/gdc_TARGET_case2.json", "steps/gdc_TARGET_case2_harmonized.yaml"
+            "../GDC_mapping.yml", "GDC", "steps/gdc_TARGET_case2.json", "steps/gdc_TARGET_case2_harmonized.yaml"
         ),
     ],
 )
