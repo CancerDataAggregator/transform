@@ -65,7 +65,7 @@ def read_entry(orig,MandT,entity,**kwargs):
                 samp_rec['identifier']['value'] = simp_read(orig,paths,cur_path,DC)
             field_path = val['system']
             samp_rec['identifier']['system'] = simp_read(orig,field_path,cur_path,DC)
-            samp_rec = [samp_rec]
+            samp_rec['identifier'] = [samp_rec['identifier']]
     return samp_rec
 ########## Functions to determine tree structure of nested things in YAML - ex. Samples
 def det_tree_to_collapse(MandT,entity):
