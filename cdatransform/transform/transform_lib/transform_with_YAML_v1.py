@@ -128,7 +128,7 @@ class Transform:
                     for treat in range(len(treat_recs)):
                         temp_diag['Treatment'].append(ruy.read_entry(orig,MandT,'Treatment',
                                                                 cur_path = treat_path + [treat]))
-                elif isinstance(treat_rec, dict):
+                elif isinstance(treat_recs, dict):
                     temp_diag['Treatment']=[ruy.read_entry(orig,MandT,'Treatment',
                                                                 cur_path = treat_path)]
                 else:
