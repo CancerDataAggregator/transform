@@ -117,8 +117,12 @@ class Transform:
             for diag_rec in range(len(ent_rec)):
                 temp_diag = ruy.read_entry(orig,MandT,'Diagnosis',cur_path = cur_path + [diag_rec])
 
-                treat_path = cur_path+[diag_rec,'treatments']
-                treat_rec = ruy.simp_read(orig,diag_path,cur_path,DC)
+                treat_spec_path = cur_path+[diag_rec,'treatments']
+                treat_gen_path = MandT['Treatment']['Mapping']['id']
+                treat_gen_path = treat_gen_path.split('.')
+                treat_gen_path.pop()
+                treat_gen_path = '.'.join(treat_gen_path)
+                treat_rec = ruy.simp_read(orig,treat_gen_path,treat_spec_path,DC)
                 if isinstance(treat_rec,list) and treat_rec !=[]:
                     temp_diag['Treatment'] = []
                     for treat in range(len(treat_rec)):
