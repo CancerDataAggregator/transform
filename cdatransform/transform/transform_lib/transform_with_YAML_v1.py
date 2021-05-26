@@ -19,8 +19,9 @@ def add_Specimen_rec(orig,MandT,DC,**kwargs):
             spec_path = cur_path.copy()
             spec_path.append(spec_rec_ind)
             spec_rec = ruy.read_entry(orig,MandT,'Specimen', cur_path = spec_path, spec_type = spec_type)
+            spec_rec['File'] = []
             if spec_type == 'samples':
-                spec_rec['File'] = []
+                
                 if isinstance(ruy.simp_read(orig,rel_path+'.'+file,spec_path+[file],DC),list):
                     for file_ind in range(len(ruy.simp_read(orig,rel_path+'.'+file,spec_path+[file],DC))):
                         file_path = spec_path.copy()

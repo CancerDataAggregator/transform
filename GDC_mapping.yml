@@ -83,4 +83,6 @@ File:
     Transformations:
         drs_uri: 
             - ['format_drs', [] ]
+        associated_project:
+            - ['str_to_list', [] ]
             

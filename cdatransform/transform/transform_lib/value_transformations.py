@@ -7,4 +7,8 @@ def format_drs(val):
     if isinstance(val,str):
         val = "".join(["drs://dg.4DFC:",val])
     return val
+def str_to_list(val):
+    if isinstance(val,str):
+        val = [val]
+    return val
     
