@@ -58,12 +58,7 @@ class IDC:
         project = 'gdc-bq-sample'
         dataset_id = 'idc_test'
         table = 'dicom_pivot_wave1'
-        try:
-            credentials = implicit_storage_cred()
-        except:
-            credentials = service_account.Credentials.from_service_account_file(
-                key_path, scopes=["https://www.googleapis.com/auth/cloud-platform"],
-            )
+        credentials = self.service_account_cred
         client = bigquery.Client(credentials=credentials, project=credentials.project_id,)
         destination_uri = "gs://{}/{}".format(bucket_name, "idc-test.jsonl.gz")
         dataset_ref = bigquery.DatasetReference(project, dataset_id)
