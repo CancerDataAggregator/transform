@@ -82,7 +82,7 @@ ResearchSubject:
             - system: GDC
               value: 333216e7-fa25-4a63-870a-f549d146343b
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.varscan2.raw_somatic_mutation.vcf.gz
-            type: null
+            file_format: VCF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 1425448
@@ -96,7 +96,7 @@ ResearchSubject:
             - system: GDC
               value: 4e18df21-34e5-4481-b727-9c1b137ee73b
             label: 5ff020da-d7db-4c4a-abe2-98bad5dd1430.wxs.Pindel.aliquot.maf.gz
-            type: null
+            file_format: MAF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 596076
@@ -110,7 +110,7 @@ ResearchSubject:
             - system: GDC
               value: 4e293fae-8113-435e-b879-d3cc7565bc74
             label: cf5b5e37-abf5-415a-aaac-d67195c07d80.wxs.SomaticSniper.aliquot.maf.gz
-            type: null
+            file_format: MAF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 81760
@@ -124,7 +124,7 @@ ResearchSubject:
             - system: GDC
               value: 5e39c7c2-5ada-4923-8dc8-b4af6b1c204d
             label: 5da24537-dd46-45a7-acb9-2bb3bef2d720.wxs.VarScan2.aliquot.maf.gz
-            type: null
+            file_format: MAF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 4122
@@ -138,7 +138,7 @@ ResearchSubject:
             - system: GDC
               value: 6892c6ba-66aa-4083-a13e-845ae272700a
             label: fc24fe78-54e7-4d08-be0c-cd923aa6ada9.wxs.aliquot_ensemble_masked.maf.gz
-            type: null
+            file_format: MAF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 446679
@@ -152,7 +152,7 @@ ResearchSubject:
             - system: GDC
               value: 798486c0-b420-4744-805e-328135b38027
             label: 9be017ac-4a51-491d-a60a-6a0f8afe4df5.wxs.pindel.raw_somatic_mutation.vcf.gz
-            type: null
+            file_format: VCF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 1246512
@@ -166,7 +166,7 @@ ResearchSubject:
             - system: GDC
               value: 885a4122-86ae-4cdb-bbb5-4340c80e9d36
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.somaticsniper.raw_somatic_mutation.vcf.gz
-            type: null
+            file_format: VCF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 310737
@@ -180,7 +180,7 @@ ResearchSubject:
             - system: GDC
               value: 8e942be7-e932-4626-bbbe-a63d054cca43
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.mutect2.raw_somatic_mutation.vcf.gz
-            type: null
+            file_format: VCF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 74270
@@ -194,7 +194,7 @@ ResearchSubject:
             - system: GDC
               value: 979eca2d-9866-4aaa-aebf-139e1781a122
             label: fc24fe78-54e7-4d08-be0c-cd923aa6ada9.wxs.aliquot_ensemble_raw.maf.gz
-            type: null
+            file_format: MAF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 1275796
@@ -208,7 +208,7 @@ ResearchSubject:
             - system: GDC
               value: 9d0e0225-df8a-4d1d-899d-bda1839e4dd6
             label: 20c81dbf-3998-4773-b487-4a325d55e6cd.wxs.MuTect2.aliquot.maf.gz
-            type: null
+            file_format: MAF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 7858
@@ -222,7 +222,7 @@ ResearchSubject:
             - system: GDC
               value: a04a7f5d-ea3e-4988-9085-9b312b9c2880
             label: TARGET-ALL-P2.920bf2a0-2ba0-5d46-9e0b-ef02f10030d8.ascat2.allelic_specific.seg.txt
-            type: null
+            file_format: TXT
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 107750
@@ -236,7 +236,7 @@ ResearchSubject:
             - system: GDC
               value: a0d623aa-d634-48e3-8bce-0dbd53ca2c72
             label: 3e256913-6d4c-4ae3-bd9a-489495fe7d90.wxs.VarScan2.somatic_annotation.vcf.gz
-            type: null
+            file_format: VCF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 3482272
@@ -250,7 +250,7 @@ ResearchSubject:
             - system: GDC
               value: bd0ff04b-fdaa-4acf-b9cb-cae4c539d3e8
             label: TARGET-ALL-P2.920bf2a0-2ba0-5d46-9e0b-ef02f10030d8.gene_level_copy_number.tsv
-            type: null
+            file_format: TXT
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 583856
@@ -264,7 +264,7 @@ ResearchSubject:
             - system: GDC
               value: cd2d0f44-27d8-4428-9f29-5e9625b3d7f7
             label: 0296408a-7365-4c40-ae41-2052c06e69dc.wxs.Pindel.somatic_annotation.vcf.gz
-            type: null
+            file_format: VCF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 23935
@@ -278,7 +278,7 @@ ResearchSubject:
             - system: GDC
               value: da110c2a-55a1-41b1-a845-93488d63193a
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.muse.raw_somatic_mutation.vcf.gz
-            type: null
+            file_format: VCF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 77774
@@ -292,7 +292,7 @@ ResearchSubject:
             - system: GDC
               value: de01cfd3-72c0-48b6-8e31-80279dce8e6e
             label: c28fa842-2ae4-4ec7-b893-14eb3abc89f2.wxs.MuSE.somatic_annotation.vcf.gz
-            type: null
+            file_format: VCF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 1617007
@@ -306,7 +306,7 @@ ResearchSubject:
             - system: GDC
               value: eb66f012-158d-409c-b79b-c4cc605eebb3
             label: d6215803-3ddd-4585-b759-274016a3d7c6.wxs.MuTect2.somatic_annotation.vcf.gz
-            type: null
+            file_format: VCF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 54942
@@ -320,7 +320,7 @@ ResearchSubject:
             - system: GDC
               value: f41ca7c5-949d-45f2-8288-dd958d52a3f4
             label: b80ca517-4bbd-46bf-a85e-f4719d0ad0dd.wxs.MuSE.aliquot.maf.gz
-            type: null
+            file_format: MAF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 17366550274
@@ -334,7 +334,7 @@ ResearchSubject:
             - system: GDC
               value: fdd730c4-84d8-4779-80db-a32be6b332e8
             label: 3c6c93c2-224e-5532-a449-5db9e1058b46_wxs_gdc_realn.bam
-            type: null
+            file_format: BAM
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 750424
@@ -348,7 +348,7 @@ ResearchSubject:
             - system: GDC
               value: fe1eeacc-4b69-43cc-a3fe-8c31e6c07311
             label: b2606d5b-591f-4ee6-a806-6a0054662975.wxs.SomaticSniper.somatic_annotation.vcf.gz
-            type: null
+            file_format: VCF
 
       # portion
       - id: "38d9ca12-8d1e-5310-b5cb-7db6065f60b4"
@@ -437,7 +437,7 @@ ResearchSubject:
             - system: GDC
               value: 037596c3-8422-497f-9a3b-fd2444cb1fe5
             label: ee8ba34c-dc44-4c54-bb9f-e2842a1ec70f.FPKM-UQ.txt.gz
-            type: null
+            file_format: TXT
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 3143
@@ -451,7 +451,7 @@ ResearchSubject:
             - system: GDC
               value: 08f3ec69-a9c0-4641-868a-0adda89449ef
             label: 3875098e-d15f-4d0a-9d8e-8752978e9c9f.arriba.rna_fusion.bedpe
-            type: null
+            file_format: BEDPE
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 8394839415
@@ -465,7 +465,7 @@ ResearchSubject:
             - system: GDC
               value: 2808321b-5165-446a-ae27-ca4b8021c73b
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.genomic.gdc_realn.bam
-            type: null
+            file_format: BAM
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 29363
@@ -479,7 +479,7 @@ ResearchSubject:
             - system: GDC
               value: 333216e7-fa25-4a63-870a-f549d146343b
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.varscan2.raw_somatic_mutation.vcf.gz
-            type: null
+            file_format: VCF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 22922341082
@@ -493,7 +493,7 @@ ResearchSubject:
             - system: GDC
               value: 36069ce1-ff28-429d-bfad-5bbac28c181d
             label: 920bf2a0-2ba0-5d46-9e0b-ef02f10030d8_wxs_gdc_realn.bam
-            type: null
+            file_format: BAM
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 7813538623
@@ -507,7 +507,7 @@ ResearchSubject:
             - system: GDC
               value: 3a75af5f-04a8-4e9a-bd45-d0a69333a0fc
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.transcriptome.gdc_realn.bam
-            type: null
+            file_format: BAM
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 99532214
@@ -521,7 +521,7 @@ ResearchSubject:
             - system: GDC
               value: 41c77af2-987f-498b-8bbf-4dfe792046ef
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.chimeric.gdc_realn.bam
-            type: null
+            file_format: BAM
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 1425448
@@ -535,7 +535,7 @@ ResearchSubject:
             - system: GDC
               value: 4e18df21-34e5-4481-b727-9c1b137ee73b
             label: 5ff020da-d7db-4c4a-abe2-98bad5dd1430.wxs.Pindel.aliquot.maf.gz
-            type: null
+            file_format: MAF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 596076
@@ -549,7 +549,7 @@ ResearchSubject:
             - system: GDC
               value: 4e293fae-8113-435e-b879-d3cc7565bc74
             label: cf5b5e37-abf5-415a-aaac-d67195c07d80.wxs.SomaticSniper.aliquot.maf.gz
-            type: null
+            file_format: MAF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 81760
@@ -563,7 +563,7 @@ ResearchSubject:
             - system: GDC
               value: 5e39c7c2-5ada-4923-8dc8-b4af6b1c204d
             label: 5da24537-dd46-45a7-acb9-2bb3bef2d720.wxs.VarScan2.aliquot.maf.gz
-            type: null
+            file_format: MAF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 4122
@@ -577,7 +577,7 @@ ResearchSubject:
             - system: GDC
               value: 6892c6ba-66aa-4083-a13e-845ae272700a
             label: fc24fe78-54e7-4d08-be0c-cd923aa6ada9.wxs.aliquot_ensemble_masked.maf.gz
-            type: null
+            file_format: MAF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 446679
@@ -591,7 +591,7 @@ ResearchSubject:
             - system: GDC
               value: 798486c0-b420-4744-805e-328135b38027
             label: 9be017ac-4a51-491d-a60a-6a0f8afe4df5.wxs.pindel.raw_somatic_mutation.vcf.gz
-            type: null
+            file_format: VCF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 323094
@@ -605,7 +605,7 @@ ResearchSubject:
             - system: GDC
               value: 79c096cb-5768-49d5-b532-93f10ea2d92a
             label: ee8ba34c-dc44-4c54-bb9f-e2842a1ec70f.FPKM.txt.gz
-            type: null
+            file_format: TXT
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 1246512
@@ -619,7 +619,7 @@ ResearchSubject:
             - system: GDC
               value: 885a4122-86ae-4cdb-bbb5-4340c80e9d36
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.somaticsniper.raw_somatic_mutation.vcf.gz
-            type: null
+            file_format: VCF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 310737
@@ -633,7 +633,7 @@ ResearchSubject:
             - system: GDC
               value: 8e942be7-e932-4626-bbbe-a63d054cca43
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.mutect2.raw_somatic_mutation.vcf.gz
-            type: null
+            file_format: VCF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 74270
@@ -647,7 +647,7 @@ ResearchSubject:
             - system: GDC
               value: 979eca2d-9866-4aaa-aebf-139e1781a122
             label: fc24fe78-54e7-4d08-be0c-cd923aa6ada9.wxs.aliquot_ensemble_raw.maf.gz
-            type: null
+            file_format: MAF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 1275796
@@ -661,7 +661,7 @@ ResearchSubject:
             - system: GDC
               value: 9d0e0225-df8a-4d1d-899d-bda1839e4dd6
             label: 20c81dbf-3998-4773-b487-4a325d55e6cd.wxs.MuTect2.aliquot.maf.gz
-            type: null
+            file_format: MAF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 980
@@ -675,7 +675,7 @@ ResearchSubject:
             - system: GDC
               value: 9f5168f0-5022-429b-a2c3-da62ac5d6f50
             label: 954009c3-e76e-4337-b5cb-5c7de62a14e9.star_fusion.rna_fusion.bedpe
-            type: null
+            file_format: BEDPE
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 7858
@@ -689,7 +689,7 @@ ResearchSubject:
             - system: GDC
               value: a04a7f5d-ea3e-4988-9085-9b312b9c2880
             label: TARGET-ALL-P2.920bf2a0-2ba0-5d46-9e0b-ef02f10030d8.ascat2.allelic_specific.seg.txt
-            type: null
+            file_format: TXT
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 107750
@@ -703,7 +703,7 @@ ResearchSubject:
             - system: GDC
               value: a0d623aa-d634-48e3-8bce-0dbd53ca2c72
             label: 3e256913-6d4c-4ae3-bd9a-489495fe7d90.wxs.VarScan2.somatic_annotation.vcf.gz
-            type: null
+            file_format: VCF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 247918
@@ -717,7 +717,7 @@ ResearchSubject:
             - system: GDC
               value: b5c4a4ee-e64f-48b6-9bc6-30e9e1339ed5
             label: ee8ba34c-dc44-4c54-bb9f-e2842a1ec70f.htseq_counts.txt.gz
-            type: null
+            file_format: TXT
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 3482272
@@ -731,7 +731,7 @@ ResearchSubject:
             - system: GDC
               value: bd0ff04b-fdaa-4acf-b9cb-cae4c539d3e8
             label: TARGET-ALL-P2.920bf2a0-2ba0-5d46-9e0b-ef02f10030d8.gene_level_copy_number.tsv
-            type: null
+            file_format: TXT
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 393263
@@ -745,7 +745,7 @@ ResearchSubject:
             - system: GDC
               value: c88f0dc9-eaf0-4b39-ac18-b8477d5426af
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.star_gene_counts.tsv.gz
-            type: null
+            file_format: TSV
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 583856
@@ -759,7 +759,7 @@ ResearchSubject:
             - system: GDC
               value: cd2d0f44-27d8-4428-9f29-5e9625b3d7f7
             label: 0296408a-7365-4c40-ae41-2052c06e69dc.wxs.Pindel.somatic_annotation.vcf.gz
-            type: null
+            file_format: VCF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 23935
@@ -773,7 +773,7 @@ ResearchSubject:
             - system: GDC
               value: da110c2a-55a1-41b1-a845-93488d63193a
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.muse.raw_somatic_mutation.vcf.gz
-            type: null
+            file_format: VCF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 77774
@@ -787,7 +787,7 @@ ResearchSubject:
             - system: GDC
               value: de01cfd3-72c0-48b6-8e31-80279dce8e6e
             label: c28fa842-2ae4-4ec7-b893-14eb3abc89f2.wxs.MuSE.somatic_annotation.vcf.gz
-            type: null
+            file_format: VCF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 2865585
@@ -801,7 +801,7 @@ ResearchSubject:
             - system: GDC
               value: eb179a4c-341b-4fe9-9763-1c181ed2574e
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.star_splice_junctions.tsv.gz
-            type: null
+            file_format: TSV
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 1617007
@@ -815,7 +815,7 @@ ResearchSubject:
             - system: GDC
               value: eb66f012-158d-409c-b79b-c4cc605eebb3
             label: d6215803-3ddd-4585-b759-274016a3d7c6.wxs.MuTect2.somatic_annotation.vcf.gz
-            type: null
+            file_format: VCF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 54942
@@ -829,7 +829,7 @@ ResearchSubject:
             - system: GDC
               value: f41ca7c5-949d-45f2-8288-dd958d52a3f4
             label: b80ca517-4bbd-46bf-a85e-f4719d0ad0dd.wxs.MuSE.aliquot.maf.gz
-            type: null
+            file_format: MAF
           - associated_project:
             - TARGET-ALL-P2
             byte_size: 750424
@@ -843,7 +843,7 @@ ResearchSubject:
             - system: GDC
               value: fe1eeacc-4b69-43cc-a3fe-8c31e6c07311
             label: b2606d5b-591f-4ee6-a806-6a0054662975.wxs.SomaticSniper.somatic_annotation.vcf.gz
-            type: null
+            file_format: VCF
 
     # Logging
     # 1. Keep track of distinct values of 
