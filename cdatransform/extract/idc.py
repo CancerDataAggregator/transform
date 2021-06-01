@@ -110,6 +110,7 @@ def main():
     gsa_key = args.gsa_key
     make_bq_table = args.make_bq_table
     make_bucket_file = args.make_bucket_file
+    out_file = args.out_file
     idc = IDC(
         gsa_key = args.gsa_key
     )
