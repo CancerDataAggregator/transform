@@ -47,7 +47,7 @@ class IDC:
                 key_path, scopes=["https://www.googleapis.com/auth/cloud-platform"])
         return credentials
 
-    def query_idc_to_table(self,idc_fields):
+    def query_idc_to_table(self, idc_fields):
         dest_table_id = self.dest_table_id
         credentials = self.service_account_cred
 
@@ -55,9 +55,9 @@ class IDC:
 
         job_config = bigquery.QueryJobConfig(
             allow_large_results=True, destination=dest_table_id,
-        write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE)
+            write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE)
         sql = ' '.join(["""
-        SELECT""",""", """.join(idc_fields),"""
+        SELECT""", """, """.join(idc_fields), """
         FROM canceridc-data.idc_views.dicom_pivot_wave1
         """])
         if self.case_ids is not None:
@@ -68,7 +68,7 @@ class IDC:
         # Start the query, passing in the extra configuration.
         query_job = client.query(sql, job_config=job_config)  # Make an API request.
         query_job.result()  # Wait for the job to complete.
-    
+
     def table_to_bucket(self):
         # Save destination table to GCS bucket
         bucket_name = self.dest_bucket
@@ -99,7 +99,7 @@ class IDC:
         bucket_name = self.dest_bucket
         source_blob_name = self.dest_bucket_file_name
         destination_file_name = self.out_file
-        
+
         try:
             storage_client = storage.Client()
         except:
@@ -112,9 +112,9 @@ class IDC:
             "Blob {} downloaded to {}.".format(
                 source_blob_name, destination_file_name
             )
-        )    
+        )
 
-        
+
 def main():
     parser = argparse.ArgumentParser(description="Pull case data from GDC API.")
     parser.add_argument("out_file", help="Out file name. Should end with .gz",
@@ -124,15 +124,15 @@ def main():
     parser.add_argument(
         "--cases", help="Optional file with list of case ids (one to a line)", default=None)
     parser.add_argument("--cache", help="Use cached files.", action="store_true")
-    parser.add_argument("--make_bq_table", help="Create new BQ permanent table from IDC view",
-                           default=False, type=bool )
+    parser.add_argument("--make_bq_table", help="Create new BQ permanent table from IDC view", 
+                        default=False, type=bool)
     parser.add_argument("--make_bucket_file", help="Create new file in GCS from permanent table",
-                           default=False, type=bool )
-    parser.add_argument("--dest_table_id", help="Permanent table destination after querying IDC",
-                           default='gdc-bq-sample.idc_test.dicom_pivot_wave1')
+                        default=False, type=bool)
+    parser.add_argument("--dest_table_id", help="Permanent table destination after querying IDC", 
+                        default='gdc-bq-sample.idc_test.dicom_pivot_wave1')
     parser.add_argument("--dest_bucket", help="GCS bucket", default='gdc-bq-sample-bucket')
-    parser.add_argument("--dest_bucket_file_name", help="GCS bucket file name",
-                       default='idc-test.jsonl.gz')
+    parser.add_argument("--dest_bucket_file_name", help="GCS bucket file name", 
+                        default='idc-test.jsonl.gz')
     args = parser.parse_args()
     make_bq_table = args.make_bq_table
     make_bucket_file = args.make_bucket_file
@@ -151,6 +151,7 @@ def main():
     if make_bucket_file:
         idc.table_to_bucket()
     idc.download_blob()
+
 
 if __name__ == "__main__":
     main()
