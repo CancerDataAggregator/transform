@@ -4,19 +4,20 @@ from google.oauth2 import service_account
 from cdatransform.lib import get_case_ids
 
 idc_fields = [
-    "PatientID", 
-    "BodyPartExamined", 
-    "StudyDescription", 
-    "Modality", 
-    "collection_id", 
-    "crdc_study_uuid", 
-    "crdc_series_uuid", 
-    "crdc_instance_uuid", 
-    "Program", 
-    "tcia_tumorLocation", 
-    "source_DOI", 
+    "PatientID",
+    "BodyPartExamined",
+    "StudyDescription",
+    "Modality",
+    "collection_id",
+    "crdc_study_uuid",
+    "crdc_series_uuid",
+    "crdc_instance_uuid",
+    "Program",
+    "tcia_tumorLocation",
+    "source_DOI",
     "AnatomicRegionSequence",
 ]
+
 class IDC:
     def __init__(
         self,
@@ -42,20 +43,18 @@ class IDC:
             credentials = service_account.Credentials()
         except:
             credentials = service_account.Credentials.from_service_account_file(
-                key_path, scopes=["https://www.googleapis.com/auth/cloud-platform"],
-            )
+                key_path, scopes=["https://www.googleapis.com/auth/cloud-platform"])
         return credentials
         
     def query_idc_to_table(self,idc_fields):
         dest_table_id = self.dest_table_id
-        #key_path = kwargs.get('gsa_key','../../../../GCS-service-account-key.json')
         credentials = self.service_account_cred
 
         client = bigquery.Client(credentials=credentials, project=credentials.project_id,)
 
         job_config = bigquery.QueryJobConfig(
             allow_large_results=True, destination=dest_table_id,
-        write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE)#, use_legacy_sql=True
+        write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE)
         sql = ' '.join(["""
         SELECT""",""", """.join(idc_fields),"""
         FROM canceridc-data.idc_views.dicom_pivot_wave1
@@ -63,14 +62,14 @@ class IDC:
         if self.case_ids is not None:
             sql = ' '.join([sql, "WHERE crdc_instance_uuid in ('"])
             cases_str = "','".join(self.case_ids)
-            sql = sql+cases_str+"')"
+            sql = sql + cases_str + "')"
 
         # Start the query, passing in the extra configuration.
         query_job = client.query(sql, job_config=job_config)  # Make an API request.
         query_job.result()  # Wait for the job to complete.
+    
     def table_to_bucket(self):
         # Save destination table to GCS bucket
-        key_path = self.gsa_key
         bucket_name = self.dest_bucket
         dataset_id = 'idc_test'
         table = 'dicom_pivot_wave1'
@@ -113,11 +112,11 @@ class IDC:
                 source_blob_name, destination_file_name
             )
         )    
+
 def main():
     parser = argparse.ArgumentParser(description="Pull case data from GDC API.")
     parser.add_argument("out_file", help="Out file name. Should end with .gz",
                         default = 'idc_extract.jsonl.gz')
-    #parser.add_argument("cache_file", help="Use (or generate if missing) cache file.")
     parser.add_argument("--gsa_key", help="Location of user GSA key")
     parser.add_argument("--case", help="Extract just this case", default = None     )
     parser.add_argument(
