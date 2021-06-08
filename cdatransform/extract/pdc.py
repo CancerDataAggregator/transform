@@ -102,7 +102,6 @@ class PDC:
             )
             yield result.json()["data"]["filesMetadata"]
 
-
     def _get_total_files(self):
         result = retry_get(self.endpoint, params={"query": query_files_paginated(0, 1)})
         return result.json()["data"]["getPaginatedFiles"]["total"]

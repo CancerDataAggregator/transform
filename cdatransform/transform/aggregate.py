@@ -25,7 +25,7 @@ def prep_log_merge_error(entities, merge_field_dict):
     for source in sources:
         temp = dict()
         for field in coal_fields:
-            temp[field]=entities.get(source).get(field)
+            temp[field] = entities.get(source).get(field)
         ret_dat[source] = temp
     for source, val in entities.items():
         if val.get('id') is not None:
@@ -44,7 +44,6 @@ def log_merge_error(entities, all_sources, fields, log):
     all_sources.insert(1, patient_id)
     all_sources.insert(2, 'project')
     all_sources.insert(3, project)
-    prefix = '_'.join(all_sources)
     log.agree_sources(coal_dat, '_'.join(all_sources), coal_fields)
     return log
 
@@ -92,7 +91,7 @@ def main():
                     entities, how_to_merge["Patient_merge"], lines_cases
                 )
                 case_ids = [patient.get('ResearchSubject')[0].get('id') for patient in patients]
-                
+
                 log = log_merge_error(entities, case_ids, how_to_merge["Patient_merge"], log)
                 writeDC.write(merged_entry)
         log.generate_report(logging.getLogger('test'))

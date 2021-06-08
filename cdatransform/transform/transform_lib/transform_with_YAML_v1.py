@@ -90,13 +90,11 @@ class Transform:
         # self._transforms = transform(orig, MandT, DC)
         self._validate = validate
 
-
     def transforms(self, source: dict) -> dict:
         destination = {}
         for vt in self._transforms:
             destination = vt[0](destination, source, self._validate, **vt[1])
         return destination
-
 
     def __call__(self, orig, MandT, DC, **kwargs):
         # list or dict as return? - if Patient - dict, else, list
@@ -143,7 +141,7 @@ class Transform:
                                                                      cur_path=treat_path + [treat]))
                 elif isinstance(treat_recs, dict):
                     temp_diag['Treatment'] = [ruy.read_entry(orig, MandT, 'Treatment',
-                                                           cur_path=treat_path)]
+                                                             cur_path=treat_path)]
                 else:
                     temp_diag['Treatment'] = []
                 RS['Diagnosis'].append(temp_diag)
@@ -158,7 +156,7 @@ class Transform:
                                                                  cur_path=treat_path + [treat]))
             elif isinstance(treat_rec, dict):
                 temp_diag['Treatment'] = [ruy.read_entry(orig, MandT, 'Treatment',
-                                                       cur_path=treat_path)]
+                                                         cur_path=treat_path)]
             else:
                 temp_diag['Treatment'] = []
             RS['Diagnosis'].append(temp_diag)
