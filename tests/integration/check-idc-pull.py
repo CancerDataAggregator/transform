@@ -11,8 +11,8 @@ def check_case_375436b3(d):
     assert d.get("crdc_instance_uuid") == "dg.4DFC/f178b884-99b4-4929-a5a5-bc226b27da50"
     assert d.get("PatientID") == "TCGA-G4-6304"
     assert d.get("source_DOI") == "10.7937/K9/TCIA.2016.HJJHBOXZ"
-    assert d.get("Program") == "TCGA
-    assert d.get("tcia_tumorLocation") == "Colon
+    assert d.get("Program") == "TCGA"
+    assert d.get("tcia_tumorLocation") == "Colon"
 
 
 def main():
