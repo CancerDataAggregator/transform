@@ -120,7 +120,7 @@ def read_file_entry(orig, MandT, entity, DC, **kwargs):
     # spec_type = kwargs.get('spec_type', None)
     cur_path = kwargs.get('cur_path', ['cases'])
     samp_rec = dict({})
-    # if no identifier, no entry, return 
+    # if no identifier, no entry, return
     for field, val in MandT[entity]['Mapping'].items():
         if (field != 'identifier'):
             if isinstance(val, str):

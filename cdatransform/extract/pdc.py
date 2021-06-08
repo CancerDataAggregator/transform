@@ -101,10 +101,12 @@ class PDC:
                 self.endpoint, params={"query": query_files_bulk(page, 1000)}
             )
             yield result.json()["data"]["filesMetadata"]
+
+
     def _get_total_files(self):
-        result = retry_get(self.endpoint, params={"query": query_files_paginated(0, 1)}
-        )
+        result = retry_get(self.endpoint, params={"query": query_files_paginated(0, 1)})
         return result.json()["data"]["getPaginatedFiles"]["total"]
+
 
 def get_file_metadata(file_metadata_record) -> dict:
     return {

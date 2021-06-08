@@ -66,7 +66,7 @@ def prep_log_merge_error(entities, merge_field_dict):
 
 
 def log_merge_error(entities, all_sources, fields, log):
-    coal_fields,coal_dat,patient_id,project = prep_log_merge_error(entities, fields)
+    coal_fields, coal_dat, patient_id, project = prep_log_merge_error(entities, fields)
     all_sources.insert(0, 'patient')
     all_sources.insert(1, patient_id)
     all_sources.insert(2, 'project')

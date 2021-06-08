@@ -124,14 +124,14 @@ def main():
     parser.add_argument(
         "--cases", help="Optional file with list of case ids (one to a line)", default=None)
     parser.add_argument("--cache", help="Use cached files.", action="store_true")
-    parser.add_argument("--make_bq_table", help="Create new BQ permanent table from IDC view", 
+    parser.add_argument("--make_bq_table", help="Create new BQ permanent table from IDC view",
                         default=False, type=bool)
     parser.add_argument("--make_bucket_file", help="Create new file in GCS from permanent table",
                         default=False, type=bool)
-    parser.add_argument("--dest_table_id", help="Permanent table destination after querying IDC", 
+    parser.add_argument("--dest_table_id", help="Permanent table destination after querying IDC",
                         default='gdc-bq-sample.idc_test.dicom_pivot_wave1')
     parser.add_argument("--dest_bucket", help="GCS bucket", default='gdc-bq-sample-bucket')
-    parser.add_argument("--dest_bucket_file_name", help="GCS bucket file name", 
+    parser.add_argument("--dest_bucket_file_name", help="GCS bucket file name",
                         default='idc-test.jsonl.gz')
     args = parser.parse_args()
     make_bq_table = args.make_bq_table

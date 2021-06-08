@@ -6,7 +6,7 @@ from cdatransform.transform.validate import LogValidation
 def add_Specimen_rec(orig, MandT, DC, **kwargs):
     cur_path = kwargs.get('cur_path', ['cases', 'samples'])
     spec_type = kwargs.get('spec_type', 'samples')
-    rel_path = kwargs.get('rel_path','cases.samples')
+    rel_path = kwargs.get('rel_path', 'cases.samples')
     spec = []
 
     tree = kwargs.get('tree', ruy.det_tree_to_collapse(MandT, 'Specimen'))
@@ -18,13 +18,13 @@ def add_Specimen_rec(orig, MandT, DC, **kwargs):
         for spec_rec_ind in range(len(ruy.simp_read(orig, rel_path, cur_path, DC))):
             spec_path = cur_path.copy()
             spec_path.append(spec_rec_ind)
-            spec_rec = ruy.read_entry(orig, MandT, 'Specimen', cur_path=spec_path, 
+            spec_rec = ruy.read_entry(orig, MandT, 'Specimen', cur_path=spec_path,
                                       spec_type=spec_type)
             spec_rec['File'] = []
             if spec_type == 'samples':
-                if isinstance(ruy.simp_read(orig, rel_path + '.' + file, spec_path + [file], 
+                if isinstance(ruy.simp_read(orig, rel_path + '.' + file, spec_path + [file],
                                             DC), list):
-                    for file_ind in range(len(ruy.simp_read(orig, rel_path + '.' + file, 
+                    for file_ind in range(len(ruy.simp_read(orig, rel_path + '.' + file,
                                                             spec_path + [file], DC))):
                         file_path = spec_path.copy()
                         file_path.append(file)
@@ -39,12 +39,12 @@ def add_Specimen_rec(orig, MandT, DC, **kwargs):
                     nest_path = spec_path.copy() + [k]
                     nest_spec_type = k
                     nest_rel_path = '.'.join([rel_path, k])
-                    nest_rec = add_Specimen_rec(orig, MandT, DC, tree=branches_dict, 
-                                                cur_path=nest_path, 
-                                                spec_type=nest_spec_type, 
+                    nest_rec = add_Specimen_rec(orig, MandT, DC, tree=branches_dict,
+                                                cur_path=nest_path,
+                                                spec_type=nest_spec_type,
                                                 rel_path=nest_rel_path)
-                    spec_rec+=nest_rec
-            spec+= spec_rec
+                    spec_rec += nest_rec
+            spec += spec_rec
     return(spec)
 
 
@@ -87,7 +87,7 @@ def functionalize_trans_dict(trans_dict):
 
 class Transform:
     def __init__(self, validate) -> None:
-        #self._transforms = transform(orig,MandT,DC)
+        # self._transforms = transform(orig, MandT, DC)
         self._validate = validate
 
 
@@ -104,9 +104,9 @@ class Transform:
         print('read all entries')
         cur_path = kwargs.get("cur_path", ['cases'])
         path_to_read = kwargs.get("path_to_read", 'cases')
-        tip = ruy.read_entry(orig, MandT, 'Patient', DC = DC)
+        tip = ruy.read_entry(orig, MandT, 'Patient', DC=DC)
         tip = entity_value_transforms(tip, 'Patient', MandT)
-        
+
         for field in ["ethnicity", "sex", "race"]:
             self._validate.distinct(tip, field)
         self._validate.agree(tip, tip["id"], ["ethnicity", "sex", "race"])
@@ -139,10 +139,10 @@ class Transform:
                 if isinstance(treat_recs, list) and treat_recs != []:
                     temp_diag['Treatment'] = []
                     for treat in range(len(treat_recs)):
-                        temp_diag['Treatment'].append(ruy.read_entry(orig, MandT, 'Treatment', 
+                        temp_diag['Treatment'].append(ruy.read_entry(orig, MandT, 'Treatment',
                                                                      cur_path=treat_path + [treat]))
                 elif isinstance(treat_recs, dict):
-                    temp_diag['Treatment']=[ruy.read_entry(orig, MandT, 'Treatment', 
+                    temp_diag['Treatment'] = [ruy.read_entry(orig, MandT, 'Treatment',
                                                            cur_path=treat_path)]
                 else:
                     temp_diag['Treatment'] = []
@@ -154,10 +154,10 @@ class Transform:
             if isinstance(treat_rec, list) and treat_rec != []:
                 temp_diag['Treatment'] = []
                 for treat in range(len(treat_rec)):
-                    temp_diag['Treatment'].append(ruy.read_entry(orig, MandT, 'Treatment', 
+                    temp_diag['Treatment'].append(ruy.read_entry(orig, MandT, 'Treatment',
                                                                  cur_path=treat_path + [treat]))
             elif isinstance(treat_rec, dict):
-                temp_diag['Treatment']=[ruy.read_entry(orig, MandT, 'Treatment', 
+                temp_diag['Treatment'] = [ruy.read_entry(orig, MandT, 'Treatment',
                                                        cur_path=treat_path)]
             else:
                 temp_diag['Treatment'] = []
