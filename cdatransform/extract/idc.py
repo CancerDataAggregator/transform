@@ -18,16 +18,17 @@ idc_fields = [
     "AnatomicRegionSequence",
 ]
 
+
 class IDC:
     def __init__(
         self,
-        gsa_key = '../../GCS-service-account-key.json',
-        cases_file = None,
-        case = None,
-        dest_table_id = 'gdc-bq-sample.idc_test.dicom_pivot_wave1',
-        dest_bucket = 'gdc-bq-sample-bucket',
-        dest_bucket_file_name = 'druth/idc-extract.jsonl.gz',
-        out_file = 'idc-test.jsonl.gz'
+        gsa_key='../../GCS-service-account-key.json',
+        cases_file=None,
+        case=None,
+        dest_table_id='gdc-bq-sample.idc_test.dicom_pivot_wave1',
+        dest_bucket='gdc-bq-sample-bucket',
+        dest_bucket_file_name='druth/idc-extract.jsonl.gz',
+        out_file='idc-test.jsonl.gz'
     ) -> None:
         self.gsa_key = gsa_key
         self.dest_table_id = dest_table_id
@@ -36,7 +37,7 @@ class IDC:
         self.dest_bucket_file_name = dest_bucket_file_name
         self.service_account_cred = self._service_account_cred()
         self.case_ids = get_case_ids(case=case, case_list_file=cases_file)
-        
+
     def _service_account_cred(self):
         key_path = self.gsa_key
         try:
@@ -45,7 +46,7 @@ class IDC:
             credentials = service_account.Credentials.from_service_account_file(
                 key_path, scopes=["https://www.googleapis.com/auth/cloud-platform"])
         return credentials
-        
+
     def query_idc_to_table(self,idc_fields):
         dest_table_id = self.dest_table_id
         credentials = self.service_account_cred
@@ -113,43 +114,43 @@ class IDC:
             )
         )    
 
+        
 def main():
     parser = argparse.ArgumentParser(description="Pull case data from GDC API.")
     parser.add_argument("out_file", help="Out file name. Should end with .gz",
-                        default = 'idc_extract.jsonl.gz')
+                        default='idc_extract.jsonl.gz')
     parser.add_argument("--gsa_key", help="Location of user GSA key")
-    parser.add_argument("--case", help="Extract just this case", default = None     )
+    parser.add_argument("--case", help="Extract just this case", default=None)
     parser.add_argument(
-        "--cases", help="Optional file with list of case ids (one to a line)", default = None
-    )
+        "--cases", help="Optional file with list of case ids (one to a line)", default=None)
     parser.add_argument("--cache", help="Use cached files.", action="store_true")
     parser.add_argument("--make_bq_table", help="Create new BQ permanent table from IDC view",
-                       default = False, type = bool )
+                           default=False, type=bool )
     parser.add_argument("--make_bucket_file", help="Create new file in GCS from permanent table",
-                       default = False, type = bool )
+                           default=False, type=bool )
     parser.add_argument("--dest_table_id", help="Permanent table destination after querying IDC",
-                       default = 'gdc-bq-sample.idc_test.dicom_pivot_wave1')
-    parser.add_argument("--dest_bucket", help="GCS bucket", default = 'gdc-bq-sample-bucket')
+                           default='gdc-bq-sample.idc_test.dicom_pivot_wave1')
+    parser.add_argument("--dest_bucket", help="GCS bucket", default='gdc-bq-sample-bucket')
     parser.add_argument("--dest_bucket_file_name", help="GCS bucket file name",
-                       default = 'idc-test.jsonl.gz')
+                       default='idc-test.jsonl.gz')
     args = parser.parse_args()
     make_bq_table = args.make_bq_table
     make_bucket_file = args.make_bucket_file
     out_file = args.out_file
     idc = IDC(
-        gsa_key = args.gsa_key,
-        dest_table_id = args.dest_table_id,
-        cases_file = args.cases,
-        case = args.case,
-        dest_bucket = args.dest_bucket,
-        dest_bucket_file_name = args.dest_bucket_file_name,
-        out_file = out_file,
+        gsa_key=args.gsa_key,
+        dest_table_id=args.dest_table_id,
+        cases_file=args.cases,
+        case=args.case,
+        dest_bucket=args.dest_bucket,
+        dest_bucket_file_name=args.dest_bucket_file_name,
+        out_file=out_file,
     )
     if make_bq_table:
         idc.query_idc_to_table(idc_fields)
     if make_bucket_file:
         idc.table_to_bucket()
-    idc.download_blob() 
+    idc.download_blob()
 
 if __name__ == "__main__":
     main()
