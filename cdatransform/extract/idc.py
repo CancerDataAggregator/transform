@@ -1,6 +1,7 @@
 import argparse
 from google.cloud import bigquery, storage
 from google.oauth2 import service_account
+from cdatransform.lib import get_case_ids
 
 idc_fields = [
     "PatientID", 
@@ -33,7 +34,7 @@ class IDC:
         self.out_file = out_file
         self.dest_bucket_file_name = dest_bucket_file_name
         self.service_account_cred = self._service_account_cred()
-        self.cases = self._cases(case,cases_file)
+        self.case_ids = get_case_ids(case=case, case_list_file=cases_file)
         
     def _service_account_cred(self):
         key_path = self.gsa_key
@@ -44,16 +45,6 @@ class IDC:
                 key_path, scopes=["https://www.googleapis.com/auth/cloud-platform"],
             )
         return credentials
-    
-    def _cases(self, case, case_file):
-        if case is not None:
-            return [case]
-        elif case_file is not None:
-            with open(case_file) as f:
-                case = f.read().splitlines()
-            return case
-        else:
-            return None
         
     def query_idc_to_table(self,idc_fields):
         dest_table_id = self.dest_table_id
@@ -69,9 +60,9 @@ class IDC:
         SELECT""",""", """.join(idc_fields),"""
         FROM canceridc-data.idc_views.dicom_pivot_wave1
         """])
-        if self.cases is not None:
+        if self.case_ids is not None:
             sql = ' '.join([sql, "WHERE crdc_instance_uuid in ('"])
-            cases_str = "','".join(self.cases)
+            cases_str = "','".join(self.case_ids)
             sql = sql+cases_str+"')"
 
         # Start the query, passing in the extra configuration.
