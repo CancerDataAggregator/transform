@@ -26,9 +26,9 @@ ResearchSubject:
 Diagnosis:
     Mapping:
         id: 'cases.diagnoses.diagnosis_id'
-        identifier:
-            value: 'cases.diagnoses.diagnosis_id'
-            system: 'PDC'
+        #identifier:
+       #     value: 'cases.diagnoses.diagnosis_id'
+       #     system: 'PDC'
         age_at_diagnosis: 'cases.diagnoses.age_at_diagnosis'
         primary_diagnosis: 'cases.diagnoses.primary_diagnosis'
         tumor_grade: 'cases.diagnoses.tumor_grade'
