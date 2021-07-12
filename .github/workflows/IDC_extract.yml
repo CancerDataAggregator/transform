@@ -1,6 +1,5 @@
 # This is a basic workflow that is manually triggered
-
-name: IDC Pull Test
+name: IDC Pull Integration Test
 
 env:
   TDR_LOG_APPENDER: Console-Standard
@@ -16,12 +15,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - uses: actions-hub/gcloud@master
-        env:
-          PROJECT_ID: ${{ secrets.GOOGLE_CLOUD_PROJECT}
-          APPLICATION_CREDENTIALS: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}
-        with:
-          args: app deploy app.yaml
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
@@ -30,11 +23,13 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install .
-    - name: GDC pull test
-      run: |
-        cd tests/integration
-        # Test cache generation
-        extract-idc idc_extract.jsonl.gz --make_bq_table True \
-        --dest_table_id gdc-bq-sample.idc_test.dicom_pivot_wave1_case \
-        --case dg.4DFC/f178b884-99b4-4929-a5a5-bc226b27da50 
-        --make_bucket_file True --gsa_key APPLICATION_CREDENTIALS
+    - name: IDC pull test
+      uses: actions-hub/gcloud@master
+      env:
+          PROJECT_ID: ${{ secrets.GOOGLE_CLOUD_PROJECT}
+          APPLICATION_CREDENTIALS: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}
+      with:
+        args: extract-idc idc_extract.jsonl.gz --make_bq_table True \
+          --dest_table_id gdc-bq-sample.idc_test.dicom_pivot_wave1_case3 \
+          --case dg.4DFC/f178b884-99b4-4929-a5a5-bc226b27da50 
+          --make_bucket_file True --gsa_key APPLICATION_CREDENTIALS
