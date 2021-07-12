@@ -7,3 +7,6 @@ cdatransform.egg-info/
 # Python
 *.pyc
 **/__pycache__
+
+#Google Credentials file
+GCS-service-account-key.json
