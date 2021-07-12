@@ -1,33 +1,48 @@
 Patient_merge:
-  id:
-    merge_type: "coalesce"
-    default_value: ""
-  race:
-    merge_type: "coalesce"
-    default_value: null
-  ethnicity:
-    merge_type: "coalesce"
-    default_value: null
-  sex:
-    merge_type: "coalesce"
-    default_value: null
-  days_to_birth:
-    merge_type: "coalesce"
-    default_value: null
-  
-  ResearchSubject:
-    merge_type: "append_field_vals"
-    default_value: []
+    id:
+        merge_type: "coalesce"
+        default_value: ""
+    race:
+        merge_type: "coalesce"
+        default_value: null
+    ethnicity:
+        merge_type: "coalesce"
+        default_value: null
+    sex:
+        merge_type: "coalesce"
+        default_value: null
+    days_to_birth:
+        merge_type: "coalesce"
+        default_value: null
+    ResearchSubject:
+        merge_type: "append_field_vals"
+        default_value: []
+
+ResearchSubject_merge:
+    id:
+        merge_type: "coalesce"
+        default_value: ""
+    identifier:
+        merge_type: "coalesce"
+        default_value: ""
+    primary_disease_site:
+        merge_type: "coalesce"
+        default_value: ""
+    primary_disease_type:
+        merge_type: "coalesce"
+        default_value: ""
+    associated_project:
+        merge_type: "coalesce"
+        default_value: ""
+    Diagnosis:
+        merge_type: "append_field_vals"
+        default_value: []
+    Specimen:
+        merge_type: "append_field_vals"
+        default_value: []
 
 # Future extension
 #
-# Research_Subject_merge:
-#   case_id:
-#     merge_type: "coalesce"
-#     default_value: ""
-#   prim_disease_site:
-#     merge_type: "codeable_concept"
-#     default_value: ""
 #   Specimen:
 #     merge_type: "append_field_vals"
 #     default_value: []

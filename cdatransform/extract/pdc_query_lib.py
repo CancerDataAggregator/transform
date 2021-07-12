@@ -30,6 +30,9 @@ def query_single_case(case_id):
       sample_submitter_id
       biospecimen_anatomic_site
       sample_type
+      aliquots {
+          aliquot_id
+      }
     }
     diagnoses {
       age_at_diagnosis
@@ -82,3 +85,250 @@ def query_files_paginated(offset, limit):
     )
     query = template.substitute(offset=offset, limit=limit)
     return query
+
+
+def make_all_programs_query():
+    """
+    Creates a graphQL string for querying the PDC API's allPrograms endpoint.
+    :return: GraphQL query string
+    """
+    return """{
+        allPrograms (acceptDUA: true) {
+            program_id
+            program_submitter_id
+            name
+            start_date
+            end_date
+            program_manager
+            projects {
+                project_id
+                project_submitter_id
+                name
+                studies {
+                    pdc_study_id
+                    study_id
+                    study_submitter_id
+                    submitter_id_name
+                    analytical_fraction
+                    experiment_type
+                    acquisition_type
+                } 
+            }
+        }
+    }"""
+
+
+def make_study_query(pdc_study_id):
+    """
+    Creates a graphQL string for querying the PDC API's study endpoint.
+    :return: GraphQL query string
+    """
+    template = Template(
+        """{
+        study (study_id: "$pdc_study_id" acceptDUA: true) { 
+            pdc_study_id
+            study_name
+            study_submitter_id
+            analytical_fraction
+            experiment_type
+            disease_type
+            primary_site
+            embargo_date
+        }
+    }""")
+    return template.substitute(pdc_study_id = pdc_study_id)
+
+
+def case_demographics(study_id, offset, limit):
+    template = Template(
+        """{
+        paginatedCaseDemographicsPerStudy (study_id: "$study_id" offset: $offset limit: 
+        $limit acceptDUA: true) {  
+        total
+        caseDemographicsPerStudy { 
+            case_id
+            case_submitter_id
+            disease_type
+            primary_site
+            demographics { 
+                demographic_id
+                ethnicity
+                gender
+                demographic_submitter_id
+                race
+                cause_of_death
+                days_to_birth
+                days_to_death
+                vital_status
+                year_of_birth
+                year_of_death
+                } 
+            } 
+            pagination { 
+                count
+                sort
+                from
+                page
+                total
+                pages
+                size
+                } 
+            } 
+        }""")
+    return template.substitute(study_id = study_id, offset = str(offset), limit = str(limit))
+    
+
+def case_diagnoses(study_id, offset, limit):
+    template = Template(
+        """{ 
+        paginatedCaseDiagnosesPerStudy (study_id: "$study_id" offset: $offset limit: 
+        $limit acceptDUA: true) {  
+        total
+        caseDiagnosesPerStudy { 
+            case_id
+            case_submitter_id
+            disease_type
+            primary_site
+            diagnoses { 
+                diagnosis_id
+                tissue_or_organ_of_origin
+                age_at_diagnosis
+                primary_diagnosis
+                tumor_grade
+                tumor_stage
+                diagnosis_submitter_id
+                classification_of_tumor
+                days_to_last_follow_up
+                days_to_last_known_disease_status
+                days_to_recurrence
+                last_known_disease_status
+                morphology
+                progression_or_recurrence
+                site_of_resection_or_biopsy
+                prior_malignancy
+                ajcc_clinical_m
+                ajcc_clinical_n
+                ajcc_clinical_stage
+                ajcc_clinical_t
+                ajcc_pathologic_m
+                ajcc_pathologic_n
+                ajcc_pathologic_stage
+                ajcc_pathologic_t
+                ann_arbor_b_symptoms
+                ann_arbor_clinical_stage
+                ann_arbor_extranodal_involvement
+                ann_arbor_pathologic_stage
+                best_overall_response
+                burkitt_lymphoma_clinical_variant
+                circumferential_resection_margin
+                colon_polyps_history
+                days_to_best_overall_response
+                days_to_diagnosis
+                days_to_hiv_diagnosis
+                days_to_new_event
+                figo_stage
+                hiv_positive
+                hpv_positive_type
+                hpv_status iss_stage
+                laterality
+                ldh_level_at_diagnosis
+                ldh_normal_range_upper
+                lymph_nodes_positive
+                lymphatic_invasion_present
+                method_of_diagnosis
+                new_event_anatomic_site
+                new_event_type
+                overall_survival
+                perineural_invasion_present
+                prior_treatment
+                progression_free_survival
+                progression_free_survival_event
+                residual_disease
+                vascular_invasion_present
+                year_of_diagnosis
+                icd_10_code
+                synchronous_malignancy
+                tumor_largest_dimension_diameter
+                } 
+            } 
+            pagination { 
+                count
+                sort
+                from
+                page
+                total
+                pages
+                size
+                } 
+            } 
+        }""")
+    return template.substitute(study_id = study_id, offset = str(offset), limit = str(limit))
+    
+
+def case_samples(study_id, offset, limit):
+    template = Template(
+        """ {
+    paginatedCasesSamplesAliquots(study_id: "$study_id" offset: $offset limit: 
+    $limit acceptDUA: true) 
+    { 
+    total 
+    casesSamplesAliquots { 
+        case_id 
+        case_submitter_id 
+        days_to_lost_to_followup 
+        disease_type 
+        index_date 
+        lost_to_followup 
+        primary_site 
+        samples { 
+            sample_id 
+            sample_submitter_id 
+            sample_type 
+            sample_type_id 
+            gdc_sample_id 
+            gdc_project_id 
+            biospecimen_anatomic_site 
+            composition 
+            current_weight 
+            days_to_collection 
+            days_to_sample_procurement 
+            diagnosis_pathologically_confirmed 
+            freezing_method 
+            initial_weight 
+            intermediate_dimension 
+            is_ffpe 
+            longest_dimension 
+            method_of_sample_procurement 
+            oct_embedded 
+            pathology_report_uuid 
+            preservation_method 
+            sample_type_id 
+            shortest_dimension 
+            time_between_clamping_and_freezing 
+            time_between_excision_and_freezing 
+            tissue_type 
+            tumor_code 
+            tumor_code_id 
+            tumor_descriptor 
+            aliquots { 
+                aliquot_id 
+                aliquot_submitter_id 
+                analyte_type 
+                aliquot_run_metadata { 
+                    aliquot_run_metadata_id 
+                    }
+                } 
+            } 
+        } 
+    pagination { 
+        count 
+        sort 
+        from 
+        page 
+        total 
+        pages 
+        size 
+        } 
+    }
+    }""")
+    return template.substitute(study_id = study_id, offset = str(offset), limit = str(limit))

@@ -82,18 +82,42 @@ def main():
         log = LogValidation()
         for patient_id, patients in patient_case_mapping.items():
             if len(patients) == 1:
-                writeDC.write(patients[0])
+                merged_entry = patients[0]
             else:
                 entities = {k: patient for k, patient in enumerate(patients)}
+                print('patient_entities')
+                print(entities)
                 lines_cases = list(range(len(patients)))
-
                 merged_entry = mf.merge_fields_level(
                     entities, how_to_merge["Patient_merge"], lines_cases
                 )
                 case_ids = [patient.get('ResearchSubject')[0].get('id') for patient in patients]
-
                 log = log_merge_error(entities, case_ids, how_to_merge["Patient_merge"], log)
-                writeDC.write(merged_entry)
+            RS_entities = DefaultDict(list)
+            RS_rec = []
+            for RS in merged_entry['ResearchSubject']:
+                case_id = RS.get('id')
+                RS_entities[case_id] += [RS]
+            #print(RS_entities)
+            for case_id, cases in RS_entities.items():
+                if len(cases) == 1:
+                    RS_rec += cases
+                    print('only one case?')
+                else:
+                    entities = {k: case for k, case in enumerate(cases)}
+                    lines_cases = list(range(len(cases)))
+                    print('RS entities')
+                    print(entities)
+                    
+                    RS_rec += [mf.merge_fields_level(
+                        entities, how_to_merge["ResearchSubject_merge"], lines_cases
+                    )]
+                    #case_ids = [patient.get('ResearchSubject')[0].get('id') for patient in patients]
+                    #log = log_merge_error(entities, case_ids, how_to_merge["Patient_merge"], log)
+            print('blah')
+            print(len(RS_rec))
+            merged_entry['ResearchSubject'] = RS_rec    
+            writeDC.write(merged_entry)
         log.generate_report(logging.getLogger('test'))
 
 
