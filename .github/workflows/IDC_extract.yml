@@ -26,7 +26,7 @@ jobs:
     - name: IDC pull test
       uses: actions-hub/gcloud@master
       env:
-          PROJECT_ID: ${{ secrets.GOOGLE_CLOUD_PROJECT}
+          PROJECT_ID: ${{ secrets.GOOGLE_CLOUD_PROJECT}}
           APPLICATION_CREDENTIALS: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}
       with:
         args: extract-idc idc_extract.jsonl.gz --make_bq_table True \
