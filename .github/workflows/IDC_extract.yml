@@ -1,4 +1,5 @@
-name: IDC Pull Test
+
+name: IDC Pull Integration Test
 
 env:
   TDR_LOG_APPENDER: Console-Standard
@@ -35,6 +36,6 @@ jobs:
           APPLICATION_CREDENTIALS: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}
       with:
         args: extract-idc idc_extract.jsonl.gz --make_bq_table True \
-          --dest_table_id gdc-bq-sample.idc_test.dicom_pivot_wave1_case \
+          --dest_table_id gdc-bq-sample.idc_test.dicom_pivot_wave1_case3 \
           --case dg.4DFC/f178b884-99b4-4929-a5a5-bc226b27da50 
           --make_bucket_file True --gsa_key APPLICATION_CREDENTIALS
