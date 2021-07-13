@@ -10,5 +10,7 @@ def constrain_research_subject(tip):
         raise RuntimeError("ResearchSubject has to be list")
     if len(research_subject) != 1:
         raise RuntimeError("There should be exactly one ResearchSubject.")
+
+
 def lower(val):
     return val.lower() if val is not None else None

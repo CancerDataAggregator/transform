@@ -135,7 +135,7 @@ def harmonized_files(files, case):
     for fil in files:
         this_file = {f: fil.get(f) for f in file_fields}
         this_file["identifier"] = [{"value": this_file.get("file_id"), "system": "PDC"}]
-        this_file["drs_uri"] = "".join(["drs://dg.4DFC:",this_file.get("file_id")])
+        this_file["drs_uri"] = "".join(["drs://dg.4DFC:", this_file.get("file_id")])
         this_file["id"] = this_file.pop("file_id")
         this_file["associated_project"] = case.get("project_submitter_id")
         this_file["byte_size"] = this_file.pop("file_size")

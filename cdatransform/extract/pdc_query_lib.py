@@ -71,6 +71,7 @@ def query_files_bulk(offset, limit):
     query = template.substitute(offset=offset, limit=limit)
     return query
 
+
 def query_files_paginated(offset, limit):
     template = Template(
         """{
