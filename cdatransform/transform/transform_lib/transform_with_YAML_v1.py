@@ -99,7 +99,6 @@ class Transform:
     def __call__(self, orig, MandT, DC, **kwargs):
         # list or dict as return? - if Patient - dict, else, list
         # where do I read from? - Need cur_path and general path
-        print('read all entries')
         cur_path = kwargs.get("cur_path", ['cases'])
         path_to_read = kwargs.get("path_to_read", 'cases')
         tip = ruy.read_entry(orig, MandT, 'Patient', DC=DC)
