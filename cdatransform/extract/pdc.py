@@ -36,7 +36,6 @@ class PDC:
                 for study in project['studies']:
                     #get study_id and embargo_date, and other info for study
                     study_id = study['study_id']
-                    print('study_id')
                     study_info = retry_get(self.endpoint, params = {'query': make_study_query(study_id)})
                     study_rec = study_info.json()['data']['study'][0]
                     study_rec.update(study)
