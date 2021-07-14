@@ -31,7 +31,7 @@ gunzip -c pdc_QC1_case1.jsonl.gz > pdc_QC1_case1.json
 gunzip -c pdc_QC1_case2.jsonl.gz > pdc_QC1_case2.json
 
 cda-transform pdc_QC1_case1.jsonl.gz pdc.case1.H.json.gz ../../PDC_mapping.yml PDC
-python json2yaml.py pdc.case1.H.json.gz pdc.case1.H.yml
+python PDCH2yaml.py pdc.case1.H.json.gz pdc.case1.H.yml
 
 cda-transform pdc_QC1_case2.jsonl.gz pdc.case2.H.json.gz ../../PDC_mapping.yml PDC
 python json2yaml.py pdc.case2.H.json.gz pdc.case2.H.yml
