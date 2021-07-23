@@ -219,7 +219,6 @@ def get_file_metadata(file_metadata_record) -> dict:
 
         
 def agg_cases_info_for_study(study,demo,diag,samp,added_info):
-    out = dict({})
     out = []
     for demo_case in demo:
         case_id = demo_case['case_id']
