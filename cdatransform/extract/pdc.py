@@ -218,7 +218,7 @@ def get_file_metadata(file_metadata_record) -> dict:
     }
 
         
-def agg_cases_info_for_study(study,demo,diag,samp,added_info):
+def agg_cases_info_for_study(study,demo,diag,sample,added_info):
     out = []
     for demo_case in demo:
         case_id = demo_case['case_id']
@@ -227,10 +227,10 @@ def agg_cases_info_for_study(study,demo,diag,samp,added_info):
             if diag[diag_ind]['case_id'] == case_id:
                 demo_case['diagnoses'] = diag.pop(diag_ind)['diagnoses']
                 break
-        for samp_ind in range(len(samp)):
-            if samp[samp_ind]['case_id'] == case_id:
-                demo_case['samples'] = samp[samp_ind]['samples'].copy()
-                samp.pop(samp_ind)
+        for sample_index in range(len(sample)):
+            if samp[samp_index]['case_id'] == case_id:
+                demo_case['samples'] = sample[sample_index]['samples'].copy()
+                sample.pop(sample_index)
                 break
         demo_case['study'] = study
         out.append(demo_case)
