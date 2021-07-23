@@ -228,7 +228,7 @@ def agg_cases_info_for_study(study,demo,diag,sample,added_info):
                 demo_case['diagnoses'] = diag.pop(diag_ind)['diagnoses']
                 break
         for sample_index in range(len(sample)):
-            if samp[samp_index]['case_id'] == case_id:
+            if sample[sample_index]['case_id'] == case_id:
                 demo_case['samples'] = sample[sample_index]['samples'].copy()
                 sample.pop(sample_index)
                 break
