@@ -19,9 +19,9 @@ ResearchSubject:
 Diagnosis:
     Mapping:
         id: 'cases.diagnoses.diagnosis_id'
-        #identifier:
-        #    value: 'cases.diagnoses.diagnosis_id'
-        #    system: 'GDC'
+        identifier:
+            value: 'cases.diagnoses.diagnosis_id'
+            system: 'GDC'
         age_at_diagnosis: 'cases.diagnoses.age_at_diagnosis'
         primary_diagnosis: 'cases.diagnoses.primary_diagnosis'
         #harmonized_primary_diagnosis: 'cases.diagnoses.primary_diagnosis'
@@ -35,10 +35,10 @@ Treatment:
         identifier:
             value: 'cases.diagnoses.treatments.treatment_id'
             system: 'GDC'
-        outcome: 'cases.diagnoses.treatments.treatment_outcome'
-        type: 'cases.diagnoses.treatments.treatment_type'
+        treatment_outcome: 'cases.diagnoses.treatments.treatment_outcome'
+        treatment_type: 'cases.diagnoses.treatments.treatment_type'
         days_to_treatment_start: 'cases.diagnoses.treatments.days_to_treatment'
-        days_to_treatment_end: 
+        days_treatment_end: 
 
 Specimen:
     Mapping:

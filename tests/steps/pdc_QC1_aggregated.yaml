@@ -1114,6 +1114,9 @@ ResearchSubject:
 
     Diagnosis:
       - id: "7bf87559-3040-11e9-8379-0a80fada099c"
+        identifier:
+          - value: "7bf87559-3040-11e9-8379-0a80fada099c"
+            system: "PDC"
         age_at_diagnosis: "0"
         primary_diagnosis: "Not Reported"
         tumor_grade: "Not Reported"
@@ -2220,6 +2223,9 @@ ResearchSubject:
 
     Diagnosis:
       - id: "df522558-8f98-11ea-b1fd-0aad30af8a83"
+        identifier:
+          - value: "df522558-8f98-11ea-b1fd-0aad30af8a83"
+            system: "PDC"
         age_at_diagnosis:
         primary_diagnosis: "Not Reported"
         tumor_grade: "Not Reported"

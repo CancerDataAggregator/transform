@@ -1108,7 +1108,10 @@ ResearchSubject:
 
     Diagnosis:
       - id: "df522558-8f98-11ea-b1fd-0aad30af8a83"
-        age_at_diagnosis:
+        identifier:
+          - value: "df522558-8f98-11ea-b1fd-0aad30af8a83"
+            system: "PDC"
+        age_at_diagnosis: 
         primary_diagnosis: "Not Reported"
         tumor_grade: "Not Reported"
         tumor_stage: "Not Reported"

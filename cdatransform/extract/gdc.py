@@ -29,6 +29,8 @@ cases_fields = [
     "diagnoses.primary_diagnosis",
     "diagnoses.treatments.treatment_outcome",
     "diagnoses.treatments.treatment_type",
+    "diagnoses.treatments.diagnosis_id",
+    "diagnoses.treatments.days_to_treatment",
     "samples.sample_id",
     "samples.submitter_id",
     "samples.sample_type",
