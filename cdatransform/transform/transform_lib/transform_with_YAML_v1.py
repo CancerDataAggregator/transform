@@ -99,7 +99,6 @@ class Transform:
     def __call__(self, orig, MandT, DC, **kwargs):
         # list or dict as return? - if Patient - dict, else, list
         # where do I read from? - Need cur_path and general path
-        print('read all entries')
         cur_path = kwargs.get("cur_path", ['cases'])
         path_to_read = kwargs.get("path_to_read", 'cases')
         tip = ruy.read_entry(orig, MandT, 'Patient', DC=DC)
@@ -172,5 +171,12 @@ class Transform:
                 self._validate.distinct(specimen, field)
             # days to birth is negative days from birth until diagnosis. 73000 days is 200 years.
             self._validate.validate(specimen, "days_to_birth", lambda x: not x or -73000 < x < 0)
+        if 'Study' in MandT:
+            study_path = MandT['Study']['Mapping']['id']
+            study_path = study_path.split('.')
+            study_path.pop()
+            study_path = '.'.join(study_path)
+            cur_path = study_path.split('.')
+            RS['Study'] = [ruy.read_entry(orig, MandT, 'Study', cur_path=cur_path)]
         tip['ResearchSubject'] = [RS]
         return tip

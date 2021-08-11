@@ -19,8 +19,12 @@ ResearchSubject:
 Diagnosis:
     Mapping:
         id: 'cases.diagnoses.diagnosis_id'
+        #identifier:
+        #    value: 'cases.diagnoses.diagnosis_id'
+        #    system: 'GDC'
         age_at_diagnosis: 'cases.diagnoses.age_at_diagnosis'
         primary_diagnosis: 'cases.diagnoses.primary_diagnosis'
+        #harmonized_primary_diagnosis: 'cases.diagnoses.primary_diagnosis'
         tumor_grade: 'cases.diagnoses.tumor_grade'
         tumor_stage: 'cases.diagnoses.tumor_stage'
         morphology: 'cases.diagnoses.morphology'
@@ -28,8 +32,13 @@ Diagnosis:
 Treatment:
     Mapping:
         id: 'cases.diagnoses.treatments.treatment_id'
+        identifier:
+            value: 'cases.diagnoses.treatments.treatment_id'
+            system: 'GDC'
         outcome: 'cases.diagnoses.treatments.treatment_outcome'
         type: 'cases.diagnoses.treatments.treatment_type'
+        days_to_treatment_start: 'cases.diagnoses.treatments.days_to_treatment'
+        days_to_treatment_end: 
 
 Specimen:
     Mapping:

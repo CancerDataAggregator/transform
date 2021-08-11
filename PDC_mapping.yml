@@ -26,6 +26,9 @@ ResearchSubject:
 Diagnosis:
     Mapping:
         id: 'cases.diagnoses.diagnosis_id'
+        #identifier:
+       #     value: 'cases.diagnoses.diagnosis_id'
+       #     system: 'PDC'
         age_at_diagnosis: 'cases.diagnoses.age_at_diagnosis'
         primary_diagnosis: 'cases.diagnoses.primary_diagnosis'
         tumor_grade: 'cases.diagnoses.tumor_grade'
@@ -35,8 +38,13 @@ Diagnosis:
 Treatment:
     Mapping:
         id: 'cases.diagnoses.treatments.treatment_id'
+        identifier:
+            value: 'cases.diagnoses.treatments.treatment_id'
+            system: 'PDC'
         outcome: 'cases.diagnoses.treatments.treatment_outcome'
         type: 'cases.diagnoses.treatments.treatment_type'
+        days_to_treatment_start: 'cases.diagnoses.treatments.days_to_treatment_start'
+        days_to_treatment_end: 'cases.diagnoses.treatments.days_to_treatment_end'
 
 Specimen:
     Mapping:
@@ -78,4 +86,20 @@ File:
     Transformations:
         drs_uri:
             - ['format_drs',  [] ]
-            
+
+Study:
+    Mapping:
+        id: 'cases.study.study_id'
+        identifier:
+            value: 'cases.study.study_id'
+            system: 'PDC'
+        pdc_study_id: 'cases.study.pdc_study_id'
+        study_name: 'cases.study.study_name'
+        study_submitter_id: 'cases.study.study_submitter_id'
+        analytical_fraction: 'cases.study.analytical_fraction'
+        experiment_type: 'cases.study.experiment_type'
+        primary_disease_type: 'cases.study.disease_type'
+        primary_disease_site: 'cases.study.primary_site'
+        embargo_date: 'cases.study.embargo_date'
+        submitter_id_name: 'cases.study.submitter_id_name'
+        acquisition_type: 'cases.study.acquisition_type'
