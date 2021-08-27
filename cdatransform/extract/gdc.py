@@ -34,6 +34,11 @@ cases_fields = [
     "samples.sample_id",
     "samples.submitter_id",
     "samples.sample_type",
+    "samples.current_weight",
+    "samples.initial_weight",
+    "samples.days_to_collection",
+    "samples.days_to_sample_procurement",
+    "samples.passage_count",
     "samples.biospecimen_anatomic_site",
     "samples.portions.portion_id",
     "samples.portions.submitter_id",
@@ -61,9 +66,14 @@ case_fields_to_use = [
     "demographic",
     "diagnoses",
     "samples",
+    "files",
 ]
 
-files_fields = ["file_id", "cases.samples.sample_id"]
+files_fields = ["file_id", "cases.samples.sample_id", "cases.samples.portions.portion_id",
+"cases.samples.portions.slides.slide_id","cases.samples.portions.analytes.analyte_id",
+"cases.samples.portions.analytes.aliquots.aliquot_id"]
+#What is the significance of cases.samples.sample_id vs cases.sample_ids?
+#Answer: cases.sample_ids is not returned by GDC API
 gdc_files_page_size = 10000
 
 
@@ -172,6 +182,42 @@ class GDC:
                 for f_obj in (case_files_dict.get(f_id) for f_id in file_ids)
                 if f_obj is not None
             ]
+            for portion in sample.get("portions", []):
+                portion_id = portion.get("portion_id")
+                file_ids = self._samples_per_files_dict.get(portion_id, [])
+
+                portion["files"] = [
+                    f_obj
+                    for f_obj in (case_files_dict.get(f_id) for f_id in file_ids)
+                    if f_obj is not None
+                ]
+                for slide in portion.get("slides", []):
+                    slide_id = slide.get("slide_id")
+                    file_ids = self._samples_per_files_dict.get(slide_id, [])
+
+                    slide["files"] = [
+                        f_obj
+                        for f_obj in (case_files_dict.get(f_id) for f_id in file_ids)
+                        if f_obj is not None
+                    ]
+                for analyte in portion.get("analytes", []):
+                    analyte_id = analyte.get("analyte_id")
+                    file_ids = self._samples_per_files_dict.get(analyte_id, [])
+
+                    analyte["files"] = [
+                        f_obj
+                        for f_obj in (case_files_dict.get(f_id) for f_id in file_ids)
+                        if f_obj is not None
+                    ]
+                    for aliquot in analyte.get("aliquots", []):
+                        aliquot_id = aliquot.get("aliquot_id")
+                        file_ids = self._samples_per_files_dict.get(aliquot_id, [])
+
+                        aliquot["files"] = [
+                            f_obj
+                            for f_obj in (case_files_dict.get(f_id) for f_id in file_ids)
+                            if f_obj is not None
+                        ]
 
         return new_case_record
 
@@ -199,6 +245,22 @@ class GDC:
                     files_per_sample_dict[sample.get("sample_id")] += [
                         file_meta.get("file_id")
                     ]
+                    for portion in sample.get("portions",[]):
+                        files_per_sample_dict[portion.get("portion_id")] += [
+                            file_meta.get("file_id")
+                        ]
+                        for slide in portion.get("slides",[]):
+                            files_per_sample_dict[slide.get("slide_id")] += [
+                                file_meta.get("file_id")
+                            ]
+                        for analyte in portion.get("analytes",[]):
+                            files_per_sample_dict[analyte.get("analyte_id")] += [
+                                file_meta.get("file_id")
+                            ]
+                            for aliquot in analyte.get("aliquots",[]):
+                                files_per_sample_dict[aliquot.get("aliquot_id")] += [
+                                    file_meta.get("file_id")
+                                ]
 
         return files_per_sample_dict
 

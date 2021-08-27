@@ -48,6 +48,26 @@ def log_merge_error(entities, all_sources, fields, log):
     return log
 
 
+def merge_entities_with_same_id(entity_recs,how_to_merge_entity):
+    entities = DefaultDict(list)
+    rec = []
+    for entity in entity_recs:
+        id = entity.get('id')
+        entities[id] += [entity]
+    for id, recs in entities.items():
+        if len(recs) == 1:
+            rec += recs
+        else:
+            entities = {k: case for k, case in enumerate(recs)}
+            lines_recs = list(range(len(recs)))
+            rec += [mf.merge_fields_level(
+                entities, how_to_merge_entity, lines_recs
+            )]
+            #case_ids = [patient.get('ResearchSubject')[0].get('id') for patient in patients]
+            #log = log_merge_error(entities, case_ids, how_to_merge["Patient_merge"], log)
+    return rec
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Aggregate cases data from DC to Patient level.")
@@ -90,25 +110,16 @@ def main():
                     entities, how_to_merge["Patient_merge"], lines_cases
                 )
                 case_ids = [patient.get('ResearchSubject')[0].get('id') for patient in patients]
+                file_ids = [file.get('id') for patient in patients for file in patient.get('File')]
                 log = log_merge_error(entities, case_ids, how_to_merge["Patient_merge"], log)
-            RS_entities = DefaultDict(list)
-            RS_rec = []
+
+            merged_entry['File'] = merge_entities_with_same_id(merged_entry['File'],how_to_merge['File_merge'])
+            merged_entry['ResearchSubject'] = merge_entities_with_same_id(merged_entry['ResearchSubject'],how_to_merge['ResearchSubject_merge'])
             for RS in merged_entry['ResearchSubject']:
-                case_id = RS.get('id')
-                RS_entities[case_id] += [RS]
-            #print(RS_entities)
-            for case_id, cases in RS_entities.items():
-                if len(cases) == 1:
-                    RS_rec += cases
-                else:
-                    entities = {k: case for k, case in enumerate(cases)}
-                    lines_cases = list(range(len(cases)))
-                    RS_rec += [mf.merge_fields_level(
-                        entities, how_to_merge["ResearchSubject_merge"], lines_cases
-                    )]
-                    #case_ids = [patient.get('ResearchSubject')[0].get('id') for patient in patients]
-                    #log = log_merge_error(entities, case_ids, how_to_merge["Patient_merge"], log)
-            merged_entry['ResearchSubject'] = RS_rec    
+                RS['Diagnosis'] = merge_entities_with_same_id(RS['Diagnosis'],how_to_merge['Diagnosis_merge'])
+                RS['Specimen'] = merge_entities_with_same_id(RS['Specimen'],how_to_merge['Specimen_merge'])
+                for specimen in RS['Specimen']:
+                    specimen['File'] = merge_entities_with_same_id(specimen['File'],how_to_merge['File_merge'])
             writeDC.write(merged_entry)
         log.generate_report(logging.getLogger('test'))
 

@@ -35,12 +35,12 @@ class PDC:
                 added_info = dict({'project_submitter_id': project['project_submitter_id']})
                 for study in project['studies']:
                     #get study_id and embargo_date, and other info for study
-                    study_id = study['study_id']
-                    study_info = retry_get(self.endpoint, params = {'query': make_study_query(study_id)})
+                    pdc_study_id = study['pdc_study_id']
+                    study_info = retry_get(self.endpoint, params = {'query': make_study_query(pdc_study_id)})
                     study_rec = study_info.json()['data']['study'][0]
                     study_rec.update(study)
                     #Get demographic info
-                    dem = self.demographics_for_study(study_id,100)
+                    dem = self.demographics_for_study(pdc_study_id,100)
                     if case_ids is not None:
                         dem = self.filter_cases(dem,case_ids)
                         #print(dem)
@@ -48,11 +48,11 @@ class PDC:
                             continue
                         #print(dem1)
                     #Get diagnosis info
-                    diag = self.diagnoses_for_study(study_id,100)
+                    diag = self.diagnoses_for_study(pdc_study_id,100)
                     if case_ids is not None:
                         diag = self.filter_cases(diag,case_ids)
                     #Get samples info
-                    samp = self.samples_for_study(study_id,100)
+                    samp = self.samples_for_study(pdc_study_id,100)
                     if case_ids is not None:
                         samp = self.filter_cases(samp,case_ids)
                     out = agg_cases_info_for_study(study_rec,dem,diag,samp,added_info)
@@ -75,10 +75,19 @@ class PDC:
         with gzip.open(out_file, "wb") as fp:
             writer = jsonlines.Writer(fp)
             for case in self.cases(case_ids):
+                samples_files_list = []
                 for index, sample in enumerate(case["samples"]):
-                    case["samples"][index]["File"] = self._files_per_sample_dict.get(
+                    # Based on the PDC data model, all files in PDC are associated 
+                    # with samples/aliquots. Can append all samples files
+                    samples_files_list += self._files_per_sample_dict.get(
                         sample["sample_id"]
                     )
+                    case["samples"][index]["files"] = samples_files_list
+                    for index_aliquot, aliquot in enumerate(case["samples"][index]["aliquots"]):
+                        case["samples"][index]["aliquots"][index_aliquot]["files"] = self._files_per_sample_dict.get(
+                            aliquot["aliquot_id"]
+                        )
+                case["files"] = list({v['file_id']:v for v in samples_files_list}.values())
                 writer.write(case)
                 n += 1
                 if n % 100 == 0:
@@ -120,6 +129,8 @@ class PDC:
                     for aliquot in aliquots:
                         files_per_sample[aliquot["sample_id"]].append(file_metadata)
                         n += 1
+                        files_per_sample[aliquot["aliquot_id"]].append(file_metadata)
+                        n += 1
             sys.stderr.write(
                 f"Chunk completed. Wrote {n} sample-file pairs in {time.time() - t0}s\n"
             )
@@ -141,7 +152,7 @@ class PDC:
             result = retry_get(
                 self.endpoint, params={"query": query_files_bulk(page, 1000)}
             )
-            yield result.json()["data"]["filesMetadata"]
+            yield result.json()["data"]["fileMetadata"]
 
     def _get_total_files(self):
         result = retry_get(self.endpoint, params={"query": query_files_paginated(0, 1)})

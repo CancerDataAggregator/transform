@@ -32,6 +32,7 @@ def query_single_case(case_id):
       sample_type
       aliquots {
           aliquot_id
+          aliquot_submitter_id
       }
     }
     diagnoses {
@@ -54,7 +55,7 @@ def query_single_case(case_id):
 def query_files_bulk(offset, limit):
     template = Template(
         """{
-  filesMetadata(offset: $offset limit: $limit acceptDUA: true) {
+  fileMetadata(offset: $offset limit: $limit acceptDUA: true) {
     file_id
     file_name
     file_location
@@ -67,6 +68,8 @@ def query_files_bulk(offset, limit):
     experiment_type
     aliquots {
       sample_id
+      aliquot_id
+      case_id
     }
   }
 }"""
@@ -112,6 +115,10 @@ def make_all_programs_query():
                     analytical_fraction
                     experiment_type
                     acquisition_type
+                    embargo_date
+                    study_name
+                    disease_types
+                    primary_sites
                 } 
             }
         }
@@ -125,7 +132,8 @@ def make_study_query(pdc_study_id):
     """
     template = Template(
         """{
-        study (study_id: "$pdc_study_id" acceptDUA: true) { 
+        study (pdc_study_id: "$pdc_study_id" acceptDUA: true) { 
+            study_id
             pdc_study_id
             study_name
             study_submitter_id
@@ -139,10 +147,10 @@ def make_study_query(pdc_study_id):
     return template.substitute(pdc_study_id = pdc_study_id)
 
 
-def case_demographics(study_id, offset, limit):
+def case_demographics(pdc_study_id, offset, limit):
     template = Template(
         """{
-        paginatedCaseDemographicsPerStudy (study_id: "$study_id" offset: $offset limit: 
+        paginatedCaseDemographicsPerStudy (pdc_study_id: "$pdc_study_id" offset: $offset limit: 
         $limit acceptDUA: true) {  
         total
         caseDemographicsPerStudy { 
@@ -175,13 +183,13 @@ def case_demographics(study_id, offset, limit):
                 } 
             } 
         }""")
-    return template.substitute(study_id = study_id, offset = str(offset), limit = str(limit))
+    return template.substitute(pdc_study_id = pdc_study_id, offset = str(offset), limit = str(limit))
     
 
-def case_diagnoses(study_id, offset, limit):
+def case_diagnoses(pdc_study_id, offset, limit):
     template = Template(
         """{ 
-        paginatedCaseDiagnosesPerStudy (study_id: "$study_id" offset: $offset limit: 
+        paginatedCaseDiagnosesPerStudy (pdc_study_id: "$pdc_study_id" offset: $offset limit: 
         $limit acceptDUA: true) {  
         total
         caseDiagnosesPerStudy { 
@@ -262,13 +270,13 @@ def case_diagnoses(study_id, offset, limit):
                 } 
             } 
         }""")
-    return template.substitute(study_id = study_id, offset = str(offset), limit = str(limit))
+    return template.substitute(pdc_study_id = pdc_study_id, offset = str(offset), limit = str(limit))
     
 
-def case_samples(study_id, offset, limit):
+def case_samples(pdc_study_id, offset, limit):
     template = Template(
         """ {
-    paginatedCasesSamplesAliquots(study_id: "$study_id" offset: $offset limit: 
+    paginatedCasesSamplesAliquots(pdc_study_id: "$pdc_study_id" offset: $offset limit: 
     $limit acceptDUA: true) 
     { 
     total 
@@ -331,4 +339,4 @@ def case_samples(study_id, offset, limit):
         } 
     }
     }""")
-    return template.substitute(study_id = study_id, offset = str(offset), limit = str(limit))
+    return template.substitute(pdc_study_id = pdc_study_id, offset = str(offset), limit = str(limit))

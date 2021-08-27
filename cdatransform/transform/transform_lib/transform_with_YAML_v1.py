@@ -10,28 +10,14 @@ def add_Specimen_rec(orig, MandT, DC, **kwargs):
     spec = []
 
     tree = kwargs.get('tree', ruy.det_tree_to_collapse(MandT, 'Specimen'))
-    if DC == 'GDC':
-        file = 'files'
-    if DC == 'PDC':
-        file = 'File'
+    file = 'files'
     if ruy.simp_read(orig, rel_path, cur_path, DC) is not None:
         for spec_rec_ind in range(len(ruy.simp_read(orig, rel_path, cur_path, DC))):
             spec_path = cur_path.copy()
             spec_path.append(spec_rec_ind)
             spec_rec = ruy.read_entry(orig, MandT, 'Specimen', cur_path=spec_path,
                                       spec_type=spec_type)
-            spec_rec['File'] = []
-            if spec_type == 'samples':
-                if isinstance(ruy.simp_read(orig, rel_path + '.' + file, spec_path + [file],
-                                            DC), list):
-                    for file_ind in range(len(ruy.simp_read(orig, rel_path + '.' + file,
-                                                            spec_path + [file], DC))):
-                        file_path = spec_path.copy()
-                        file_path.append(file)
-                        file_path.append(file_ind)
-                        file_rec = ruy.read_file_entry(orig, MandT, 'File', DC, cur_path=file_path)
-                        file_rec = entity_value_transforms(file_rec, 'File', MandT)
-                        spec_rec['File'].append(file_rec)
+            spec_rec['File'] = add_File_rec(orig, MandT, DC, cur_path=spec_path, rel_path=rel_path)
             spec_rec = [spec_rec]
             branches_dict = tree.get(spec_type)
             if branches_dict is not None:
@@ -46,6 +32,26 @@ def add_Specimen_rec(orig, MandT, DC, **kwargs):
                     spec_rec += nest_rec
             spec += spec_rec
     return(spec)
+
+
+def add_File_rec(orig, MandT, DC, **kwargs):
+    File_recs = []
+    file_rec_name = ruy.files_rec_name(DC)
+    cur_path = kwargs.get('cur_path', ['cases'])
+    rel_path = kwargs.get('rel_path', 'cases')
+    file_rel_path = rel_path + '.' + file_rec_name
+    if isinstance(ruy.simp_read(orig, file_rel_path, cur_path + [file_rec_name],
+                                DC), list):
+        for file_ind in range(len(ruy.simp_read(orig, file_rel_path, 
+                                cur_path + [file_rec_name], DC))):
+            file_path = cur_path.copy()
+            file_path.append(file_rec_name)
+            file_path.append(file_ind)
+            file_rec = ruy.read_file_entry_v2(orig, MandT, 'File', DC, cur_path=file_path, 
+                                            rel_path=file_rel_path)
+            file_rec = entity_value_transforms(file_rec, 'File', MandT)
+            File_recs.append(file_rec)
+    return File_recs
 
 
 # Functions to apply the transforms to relevant fields and functionalize Transformation dictionary
@@ -103,7 +109,7 @@ class Transform:
         path_to_read = kwargs.get("path_to_read", 'cases')
         tip = ruy.read_entry(orig, MandT, 'Patient', DC=DC)
         tip = entity_value_transforms(tip, 'Patient', MandT)
-
+        tip['File'] = add_File_rec(orig, MandT, DC)
         for field in ["ethnicity", "sex", "race"]:
             self._validate.distinct(tip, field)
         self._validate.agree(tip, tip["id"], ["ethnicity", "sex", "race"])
@@ -116,6 +122,7 @@ class Transform:
             RS["id"],
             ["primary_disease_type", "primary_disease_site"],
         )
+        RS['File'] = add_File_rec(orig, MandT, DC)
         RS['Diagnosis'] = []
         diag_path = MandT['Diagnosis']['Mapping']['id']
         diag_path = diag_path.split('.')
@@ -126,6 +133,8 @@ class Transform:
         if isinstance(ent_rec, list):
             for diag_rec in range(len(ent_rec)):
                 temp_diag = ruy.read_entry(orig, MandT, 'Diagnosis', cur_path=cur_path + [diag_rec])
+                """ may need transformation step when Diagnosis records eventually have
+                transformations"""
 
                 treat_path = cur_path + [diag_rec, 'treatments']
                 treat_gen_path = MandT['Treatment']['Mapping']['id']
