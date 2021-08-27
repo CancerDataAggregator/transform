@@ -119,7 +119,7 @@ def make_all_programs_query():
                     study_name
                     disease_types
                     primary_sites
-                } 
+                }
             }
         }
     }"""
@@ -132,7 +132,7 @@ def make_study_query(pdc_study_id):
     """
     template = Template(
         """{
-        study (pdc_study_id: "$pdc_study_id" acceptDUA: true) { 
+        study (pdc_study_id: "$pdc_study_id" acceptDUA: true) {
             study_id
             pdc_study_id
             study_name
@@ -144,21 +144,21 @@ def make_study_query(pdc_study_id):
             embargo_date
         }
     }""")
-    return template.substitute(pdc_study_id = pdc_study_id)
+    return template.substitute(pdc_study_id=pdc_study_id)
 
 
 def case_demographics(pdc_study_id, offset, limit):
     template = Template(
         """{
-        paginatedCaseDemographicsPerStudy (pdc_study_id: "$pdc_study_id" offset: $offset limit: 
-        $limit acceptDUA: true) {  
+        paginatedCaseDemographicsPerStudy (pdc_study_id: "$pdc_study_id" offset: $offset limit:
+        $limit acceptDUA: true) {
         total
-        caseDemographicsPerStudy { 
+        caseDemographicsPerStudy {
             case_id
             case_submitter_id
             disease_type
             primary_site
-            demographics { 
+            demographics {
                 demographic_id
                 ethnicity
                 gender
@@ -170,9 +170,9 @@ def case_demographics(pdc_study_id, offset, limit):
                 vital_status
                 year_of_birth
                 year_of_death
-                } 
-            } 
-            pagination { 
+                }
+            }
+            pagination {
                 count
                 sort
                 from
@@ -180,24 +180,24 @@ def case_demographics(pdc_study_id, offset, limit):
                 total
                 pages
                 size
-                } 
-            } 
+                }
+            }
         }""")
-    return template.substitute(pdc_study_id = pdc_study_id, offset = str(offset), limit = str(limit))
-    
+    return template.substitute(pdc_study_id=pdc_study_id, offset=str(offset), limit=str(limit))
+
 
 def case_diagnoses(pdc_study_id, offset, limit):
     template = Template(
-        """{ 
-        paginatedCaseDiagnosesPerStudy (pdc_study_id: "$pdc_study_id" offset: $offset limit: 
-        $limit acceptDUA: true) {  
+        """{
+        paginatedCaseDiagnosesPerStudy (pdc_study_id: "$pdc_study_id" offset: $offset limit:
+        $limit acceptDUA: true) {
         total
-        caseDiagnosesPerStudy { 
+        caseDiagnosesPerStudy {
             case_id
             case_submitter_id
             disease_type
             primary_site
-            diagnoses { 
+            diagnoses {
                 diagnosis_id
                 tissue_or_organ_of_origin
                 age_at_diagnosis
@@ -257,9 +257,9 @@ def case_diagnoses(pdc_study_id, offset, limit):
                 icd_10_code
                 synchronous_malignancy
                 tumor_largest_dimension_diameter
-                } 
-            } 
-            pagination { 
+                }
+            }
+            pagination {
                 count
                 sort
                 from
@@ -267,76 +267,76 @@ def case_diagnoses(pdc_study_id, offset, limit):
                 total
                 pages
                 size
-                } 
-            } 
+                }
+            }
         }""")
-    return template.substitute(pdc_study_id = pdc_study_id, offset = str(offset), limit = str(limit))
-    
+    return template.substitute(pdc_study_id=pdc_study_id, offset=str(offset), limit=str(limit))
+
 
 def case_samples(pdc_study_id, offset, limit):
     template = Template(
         """ {
-    paginatedCasesSamplesAliquots(pdc_study_id: "$pdc_study_id" offset: $offset limit: 
+    paginatedCasesSamplesAliquots(pdc_study_id: "$pdc_study_id" offset: $offset limit:
     $limit acceptDUA: true) 
-    { 
-    total 
-    casesSamplesAliquots { 
-        case_id 
-        case_submitter_id 
-        days_to_lost_to_followup 
-        disease_type 
-        index_date 
-        lost_to_followup 
-        primary_site 
-        samples { 
-            sample_id 
-            sample_submitter_id 
-            sample_type 
-            sample_type_id 
-            gdc_sample_id 
-            gdc_project_id 
-            biospecimen_anatomic_site 
-            composition 
-            current_weight 
-            days_to_collection 
-            days_to_sample_procurement 
-            diagnosis_pathologically_confirmed 
-            freezing_method 
-            initial_weight 
-            intermediate_dimension 
-            is_ffpe 
-            longest_dimension 
-            method_of_sample_procurement 
-            oct_embedded 
-            pathology_report_uuid 
-            preservation_method 
-            sample_type_id 
-            shortest_dimension 
-            time_between_clamping_and_freezing 
-            time_between_excision_and_freezing 
-            tissue_type 
-            tumor_code 
-            tumor_code_id 
-            tumor_descriptor 
-            aliquots { 
-                aliquot_id 
-                aliquot_submitter_id 
-                analyte_type 
-                aliquot_run_metadata { 
-                    aliquot_run_metadata_id 
+    {
+    total
+    casesSamplesAliquots {
+        case_id
+        case_submitter_id
+        days_to_lost_to_followup
+        disease_type
+        index_date
+        lost_to_followup
+        primary_site
+        samples {
+            sample_id
+            sample_submitter_id
+            sample_type
+            sample_type_id
+            gdc_sample_id
+            gdc_project_id
+            biospecimen_anatomic_site
+            composition
+            current_weight
+            days_to_collection
+            days_to_sample_procurement
+            diagnosis_pathologically_confirmed
+            freezing_method
+            initial_weight
+            intermediate_dimension
+            is_ffpe
+            longest_dimension
+            method_of_sample_procurement
+            oct_embedded
+            pathology_report_uuid
+            preservation_method
+            sample_type_id
+            shortest_dimension
+            time_between_clamping_and_freezing
+            time_between_excision_and_freezing
+            tissue_type
+            tumor_code
+            tumor_code_id
+            tumor_descriptor
+            aliquots {
+                aliquot_id
+                aliquot_submitter_id
+                analyte_type
+                aliquot_run_metadata {
+                    aliquot_run_metadata_id
                     }
-                } 
-            } 
-        } 
-    pagination { 
-        count 
-        sort 
-        from 
-        page 
-        total 
-        pages 
-        size 
-        } 
+                }
+            }
+        }
+    pagination {
+        count
+        sort
+        from
+        page
+        total
+        pages
+        size
+        }
     }
     }""")
-    return template.substitute(pdc_study_id = pdc_study_id, offset = str(offset), limit = str(limit))
+    return template.substitute(pdc_study_id=pdc_study_id, offset=str(offset), limit=str(limit))

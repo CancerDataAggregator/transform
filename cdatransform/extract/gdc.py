@@ -70,10 +70,10 @@ case_fields_to_use = [
 ]
 
 files_fields = ["file_id", "cases.samples.sample_id", "cases.samples.portions.portion_id",
-"cases.samples.portions.slides.slide_id","cases.samples.portions.analytes.analyte_id",
-"cases.samples.portions.analytes.aliquots.aliquot_id"]
-#What is the significance of cases.samples.sample_id vs cases.sample_ids?
-#Answer: cases.sample_ids is not returned by GDC API
+                "cases.samples.portions.slides.slide_id", "cases.samples.portions.analytes.analyte_id",
+                "cases.samples.portions.analytes.aliquots.aliquot_id"]
+# What is the significance of cases.samples.sample_id vs cases.sample_ids?
+# Answer: cases.sample_ids is not returned by GDC API
 gdc_files_page_size = 10000
 
 
@@ -245,19 +245,19 @@ class GDC:
                     files_per_sample_dict[sample.get("sample_id")] += [
                         file_meta.get("file_id")
                     ]
-                    for portion in sample.get("portions",[]):
+                    for portion in sample.get("portions", []):
                         files_per_sample_dict[portion.get("portion_id")] += [
                             file_meta.get("file_id")
                         ]
-                        for slide in portion.get("slides",[]):
+                        for slide in portion.get("slides", []):
                             files_per_sample_dict[slide.get("slide_id")] += [
                                 file_meta.get("file_id")
                             ]
-                        for analyte in portion.get("analytes",[]):
+                        for analyte in portion.get("analytes", []):
                             files_per_sample_dict[analyte.get("analyte_id")] += [
                                 file_meta.get("file_id")
                             ]
-                            for aliquot in analyte.get("aliquots",[]):
+                            for aliquot in analyte.get("aliquots", []):
                                 files_per_sample_dict[aliquot.get("aliquot_id")] += [
                                     file_meta.get("file_id")
                                 ]

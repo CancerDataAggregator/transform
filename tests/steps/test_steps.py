@@ -5,7 +5,7 @@ import yaml
 from yaml import Loader
 from deepdiff import DeepDiff
 
-#from cdatransform.transform.lib import Transform
+# from cdatransform.transform.lib import Transform
 import cdatransform.transform.transform_lib.transform_with_YAML_v1 as tr
 from cdatransform.transform.validate import LogValidation
 
@@ -23,15 +23,15 @@ from cdatransform.transform.validate import LogValidation
 )
 def test_transform(transform, DC, case, expected):
     validate = LogValidation()
-    #t_list = yaml.safe_load(open(transform, "r"))
-    MandT = yaml.load(open(transform,"r"), Loader=Loader)
-    for entity,MorT_dict in MandT.items():
+    # t_list = yaml.safe_load(open(transform, "r"))
+    MandT = yaml.load(open(transform, "r"), Loader=Loader)
+    for entity, MorT_dict in MandT.items():
         if 'Transformations' in MorT_dict:
             MandT[entity]['Transformations'] = tr.functionalize_trans_dict(MandT[entity]['Transformations'])
     transform = tr.Transform(validate)
-    #transform = Transform(t_list, validate)
+    # transform = Transform(t_list, validate)
     with open(case) as case_data:
-        transformed = transform(json.load(case_data),MandT,DC)
+        transformed = transform(json.load(case_data), MandT, DC)
         with open(expected) as expected_data:
             diff = DeepDiff(yaml.safe_load(expected_data), transformed, ignore_order=False)
             if diff != {}:

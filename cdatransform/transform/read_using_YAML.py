@@ -9,7 +9,7 @@ def simp_read(orig, ptr, cp_o, DC):
     cp.remove('cases')
     try:
         ptr.remove('cases')
-    except:
+    except Exception:
         ptr.insert(0, 'samples')
         if DC == 'PDC':
             ptr.remove('files')
@@ -21,7 +21,7 @@ def simp_read(orig, ptr, cp_o, DC):
             ptr.pop(0)
             try:
                 cp.pop(0)
-            except:
+            except Exception:
                 pass
         elif cp != [] and isinstance(cp[0], int):
             rec = rec[cp[0]]
@@ -116,7 +116,7 @@ def spec_type_from_path(cur_path):
         return cur_path[-2]
 
 
-#ef read_file_entry(orig, MandT, entity, DC, **kwargs):
+# def read_file_entry(orig, MandT, entity, DC, **kwargs):
 #    # spec_type = kwargs.get('spec_type', None)
 #    cur_path = kwargs.get('cur_path', ['cases'])
 #    samp_rec = dict({})
@@ -145,10 +145,9 @@ def spec_type_from_path(cur_path):
 #    return samp_rec
 
 
-def adjust_file_mapping_path(cur_rel_path,map_path, DC):
+def adjust_file_mapping_path(cur_rel_path, map_path):
     new_path = map_path.split('.')
     cur_rel_path = cur_rel_path.split('.')
-    file_loc = files_rec_name(DC)
     if new_path[0] == 'files':
         new_path.remove('files')
         new_path = cur_rel_path + new_path
@@ -173,17 +172,17 @@ def read_file_entry_v2(orig, MandT, entity, DC, **kwargs):
     for field, val in MandT[entity]['Mapping'].items():
         if (field != 'identifier'):
             if isinstance(val, str):
-                field_rel_path = adjust_file_mapping_path(rel_path, val, DC)
+                field_rel_path = adjust_file_mapping_path(rel_path, val)
                 file_rec[field] = simp_read(orig, field_rel_path, cur_path, DC)
         else:
             file_rec['identifier'] = dict({})
             paths = val['value']
             if isinstance(paths, dict):
                 spec_type = spec_type_from_path(cur_path)
-                file_rec['identifier']['value'] = simp_read(orig, adjust_file_mapping_path(paths[spec_type], DC), cur_path, DC)
+                file_rec['identifier']['value'] = simp_read(orig, adjust_file_mapping_path(paths[spec_type]), cur_path, DC)
             else:
-                file_rec['identifier']['value'] = simp_read(orig, adjust_file_mapping_path(rel_path, paths, DC), cur_path, DC)
-            file_rec['identifier']['system'] = simp_read(orig, adjust_file_mapping_path(rel_path, val['system'], DC), 
-                                                        cur_path, DC)
+                file_rec['identifier']['value'] = simp_read(orig, adjust_file_mapping_path(rel_path, paths), cur_path, DC)
+            file_rec['identifier']['system'] = simp_read(orig, adjust_file_mapping_path(rel_path, val['system']),
+                                                            cur_path, DC)
             file_rec['identifier'] = [file_rec['identifier']]
     return file_rec

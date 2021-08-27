@@ -48,7 +48,7 @@ def log_merge_error(entities, all_sources, fields, log):
     return log
 
 
-def merge_entities_with_same_id(entity_recs,how_to_merge_entity):
+def merge_entities_with_same_id(entity_recs, how_to_merge_entity):
     entities = DefaultDict(list)
     rec = []
     for entity in entity_recs:
@@ -63,8 +63,8 @@ def merge_entities_with_same_id(entity_recs,how_to_merge_entity):
             rec += [mf.merge_fields_level(
                 entities, how_to_merge_entity, lines_recs
             )]
-            #case_ids = [patient.get('ResearchSubject')[0].get('id') for patient in patients]
-            #log = log_merge_error(entities, case_ids, how_to_merge["Patient_merge"], log)
+            # case_ids = [patient.get('ResearchSubject')[0].get('id') for patient in patients]
+            # log = log_merge_error(entities, case_ids, how_to_merge["Patient_merge"], log)
     return rec
 
 
@@ -110,16 +110,17 @@ def main():
                     entities, how_to_merge["Patient_merge"], lines_cases
                 )
                 case_ids = [patient.get('ResearchSubject')[0].get('id') for patient in patients]
-                file_ids = [file.get('id') for patient in patients for file in patient.get('File')]
+                # file_ids = [file.get('id') for patient in patients for file in patient.get('File')]
                 log = log_merge_error(entities, case_ids, how_to_merge["Patient_merge"], log)
 
-            merged_entry['File'] = merge_entities_with_same_id(merged_entry['File'],how_to_merge['File_merge'])
-            merged_entry['ResearchSubject'] = merge_entities_with_same_id(merged_entry['ResearchSubject'],how_to_merge['ResearchSubject_merge'])
+            merged_entry['File'] = merge_entities_with_same_id(merged_entry['File'], how_to_merge['File_merge'])
+            merged_entry['ResearchSubject'] = merge_entities_with_same_id(merged_entry['ResearchSubject'],
+                                                                            how_to_merge['ResearchSubject_merge'])
             for RS in merged_entry['ResearchSubject']:
-                RS['Diagnosis'] = merge_entities_with_same_id(RS['Diagnosis'],how_to_merge['Diagnosis_merge'])
-                RS['Specimen'] = merge_entities_with_same_id(RS['Specimen'],how_to_merge['Specimen_merge'])
+                RS['Diagnosis'] = merge_entities_with_same_id(RS['Diagnosis'], how_to_merge['Diagnosis_merge'])
+                RS['Specimen'] = merge_entities_with_same_id(RS['Specimen'], how_to_merge['Specimen_merge'])
                 for specimen in RS['Specimen']:
-                    specimen['File'] = merge_entities_with_same_id(specimen['File'],how_to_merge['File_merge'])
+                    specimen['File'] = merge_entities_with_same_id(specimen['File'], how_to_merge['File_merge'])
             writeDC.write(merged_entry)
         log.generate_report(logging.getLogger('test'))
 

@@ -10,7 +10,6 @@ def add_Specimen_rec(orig, MandT, DC, **kwargs):
     spec = []
 
     tree = kwargs.get('tree', ruy.det_tree_to_collapse(MandT, 'Specimen'))
-    file = 'files'
     if ruy.simp_read(orig, rel_path, cur_path, DC) is not None:
         for spec_rec_ind in range(len(ruy.simp_read(orig, rel_path, cur_path, DC))):
             spec_path = cur_path.copy()
@@ -42,13 +41,13 @@ def add_File_rec(orig, MandT, DC, **kwargs):
     file_rel_path = rel_path + '.' + file_rec_name
     if isinstance(ruy.simp_read(orig, file_rel_path, cur_path + [file_rec_name],
                                 DC), list):
-        for file_ind in range(len(ruy.simp_read(orig, file_rel_path, 
-                                cur_path + [file_rec_name], DC))):
+        for file_ind in range(len(ruy.simp_read(orig, file_rel_path,
+                                                cur_path + [file_rec_name], DC))):
             file_path = cur_path.copy()
             file_path.append(file_rec_name)
             file_path.append(file_ind)
-            file_rec = ruy.read_file_entry_v2(orig, MandT, 'File', DC, cur_path=file_path, 
-                                            rel_path=file_rel_path)
+            file_rec = ruy.read_file_entry_v2(orig, MandT, 'File', DC, cur_path=file_path,
+                                                rel_path=file_rel_path)
             file_rec = entity_value_transforms(file_rec, 'File', MandT)
             File_recs.append(file_rec)
     return File_recs
@@ -98,15 +97,15 @@ class Transform:
 
     def transforms(self, source: dict) -> dict:
         destination = {}
-        for vt in self._transforms:
-            destination = vt[0](destination, source, self._validate, **vt[1])
+        for val_transform in self._transforms:
+            destination = val_transform[0](destination, source, self._validate, **val_transform[1])
         return destination
 
     def __call__(self, orig, MandT, DC, **kwargs):
         # list or dict as return? - if Patient - dict, else, list
         # where do I read from? - Need cur_path and general path
         cur_path = kwargs.get("cur_path", ['cases'])
-        path_to_read = kwargs.get("path_to_read", 'cases')
+        # path_to_read = kwargs.get("path_to_read", 'cases')
         tip = ruy.read_entry(orig, MandT, 'Patient', DC=DC)
         tip = entity_value_transforms(tip, 'Patient', MandT)
         tip['File'] = add_File_rec(orig, MandT, DC)
