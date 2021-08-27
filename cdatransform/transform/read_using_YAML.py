@@ -116,33 +116,33 @@ def spec_type_from_path(cur_path):
         return cur_path[-2]
 
 
-def read_file_entry(orig, MandT, entity, DC, **kwargs):
-    # spec_type = kwargs.get('spec_type', None)
-    cur_path = kwargs.get('cur_path', ['cases'])
-    samp_rec = dict({})
-    # if no identifier, no entry, return
-    for field, val in MandT[entity]['Mapping'].items():
-        if (field != 'identifier'):
-            if isinstance(val, str):
-                field_path = adjust_file_path(val, DC)
-                samp_rec[field] = simp_read(orig, field_path, cur_path, DC)
-            elif isinstance(val, dict):
-                samp_rec[field] = []
-                spec_type = spec_type_from_path(cur_path)
-                path = adjust_file_path(val[spec_type])
-                samp_rec[field] = simp_read(orig, path, cur_path, DC)
-        else:
-            samp_rec['identifier'] = dict({})
-            paths = val['value']
-            if isinstance(paths, dict):
-                spec_type = spec_type_from_path(cur_path)
-                samp_rec['identifier']['value'] = simp_read(orig, adjust_file_path(paths[spec_type], DC), cur_path, DC)
-            else:
-                samp_rec['identifier']['value'] = simp_read(orig, adjust_file_path(paths, DC), cur_path, DC)
-            field_path = adjust_file_path(val['system'], DC)
-            samp_rec['identifier']['system'] = simp_read(orig, field_path, cur_path, DC)
-            samp_rec['identifier'] = [samp_rec['identifier']]
-    return samp_rec
+#ef read_file_entry(orig, MandT, entity, DC, **kwargs):
+#    # spec_type = kwargs.get('spec_type', None)
+#    cur_path = kwargs.get('cur_path', ['cases'])
+#    samp_rec = dict({})
+#    # if no identifier, no entry, return
+#    for field, val in MandT[entity]['Mapping'].items():
+#        if (field != 'identifier'):
+#            if isinstance(val, str):
+#                field_path = adjust_file_path(val, DC)
+#                samp_rec[field] = simp_read(orig, field_path, cur_path, DC)
+#            elif isinstance(val, dict):
+#                samp_rec[field] = []
+#                spec_type = spec_type_from_path(cur_path)
+#                path = adjust_file_path(val[spec_type])
+#                samp_rec[field] = simp_read(orig, path, cur_path, DC)
+#        else:
+#            samp_rec['identifier'] = dict({})
+#            paths = val['value']
+#            if isinstance(paths, dict):
+#                spec_type = spec_type_from_path(cur_path)
+#                samp_rec['identifier']['value'] = simp_read(orig, adjust_file_path(paths[spec_type], DC), cur_path, DC)
+#            else:
+#                samp_rec['identifier']['value'] = simp_read(orig, adjust_file_path(paths, DC), cur_path, DC)
+#            field_path = adjust_file_path(val['system'], DC)
+#            samp_rec['identifier']['system'] = simp_read(orig, field_path, cur_path, DC)
+#            samp_rec['identifier'] = [samp_rec['identifier']]
+#    return samp_rec
 
 
 def adjust_file_mapping_path(cur_rel_path,map_path, DC):
