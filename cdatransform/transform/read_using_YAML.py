@@ -183,6 +183,6 @@ def read_file_entry_v2(orig, MandT, entity, DC, **kwargs):
             else:
                 file_rec['identifier']['value'] = simp_read(orig, adjust_file_mapping_path(rel_path, paths), cur_path, DC)
             file_rec['identifier']['system'] = simp_read(orig, adjust_file_mapping_path(rel_path, val['system']),
-                                                            cur_path, DC)
+                                                        cur_path, DC)
             file_rec['identifier'] = [file_rec['identifier']]
     return file_rec

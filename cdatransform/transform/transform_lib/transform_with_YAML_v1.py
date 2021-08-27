@@ -47,7 +47,7 @@ def add_File_rec(orig, MandT, DC, **kwargs):
             file_path.append(file_rec_name)
             file_path.append(file_ind)
             file_rec = ruy.read_file_entry_v2(orig, MandT, 'File', DC, cur_path=file_path,
-                                                rel_path=file_rel_path)
+                                            rel_path=file_rel_path)
             file_rec = entity_value_transforms(file_rec, 'File', MandT)
             File_recs.append(file_rec)
     return File_recs
