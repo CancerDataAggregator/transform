@@ -1,0 +1,25 @@
+Patient:
+    Mapping:
+        id: 'files.PatientID'
+        race: 'NULL'
+        ethnicity: 'NULL'
+        sex: 'NULL'
+        days_to_birth: null
+
+File:
+    Mapping:
+        id: 'files.crdc_instance_uuid'
+        identifier:
+            value: 'files.crdc_instance_uuid'
+            system: 'IDC'
+        label: 'files.SUBSTR(gcs_url, 15)'
+        data_type: 'files.Modality'
+        data_category: 'Imaging'
+        byte_size: null
+        checksum: 'NULL'
+        associated_project: 'NULL'
+        drs_uri: 'files.gcs_url'
+        file_format: 'DICOM'
+# 'NULL' ensures a string type for the field, but null
+# null ensures an integer type for the field, but null
+            
