@@ -1,19 +1,17 @@
-import json
-import jsonlines
-import gzip
-import sys
-import time
-from collections import defaultdict
-import pathlib
+# import json
+# import jsonlines
+# import gzip
+# import sys
+# import time
+# from collections import defaultdict
+# import pathlib
 import yaml
 from yaml import Loader
 
 from cdatransform.lib import get_case_ids
-from cdatransform.extract.lib import retry_get
 import argparse
 from google.cloud import bigquery, storage
 from google.oauth2 import service_account
-from cdatransform.lib import get_case_ids
 
 idc_fields = [
     "PatientID",
@@ -59,7 +57,7 @@ class IDC:
         key_path = self.gsa_key
         try:
             credentials = service_account.Credentials()
-        except:
+        except Exception:
             credentials = service_account.Credentials.from_service_account_file(
                 key_path, scopes=["https://www.googleapis.com/auth/cloud-platform"])
         return credentials
@@ -120,7 +118,7 @@ class IDC:
 
         try:
             storage_client = storage.Client()
-        except:
+        except Exception:
             storage_client = storage.Client.from_service_account_json(key_path)
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.blob(source_blob_name)
@@ -133,7 +131,7 @@ class IDC:
         )
 
     def field_line(self, k, val):
-        if isinstance(val,str):
+        if isinstance(val, str):
             val_split = val.split('.')
             if len(val_split) > 1:
                 val_split.pop(0)
@@ -143,19 +141,19 @@ class IDC:
             else:
                 val_split = "'" + val_split[0] + "'"
             return (val_split) + """ AS """ + k
-        elif isinstance(val,dict):
+        elif isinstance(val, dict):
             temp = "[STRUCT("
             keys = list(val.keys())
             for index in range(len(keys)):
-                temp += self.field_line(keys[index],val[keys[index]])
+                temp += self.field_line(keys[index], val[keys[index]])
                 if index < len(keys)-1:
                     temp += ', '
-            temp +=")] AS " + k
+            temp += ")] AS " + k
             return temp
         else:
             return """Null""" + """ AS """ + k
         return val
-    
+
     def add_entity_fields(self, entity):
         entity_string = ''
         keys = list(self.mapping[entity]['Mapping'].keys())
@@ -164,14 +162,14 @@ class IDC:
             if index < len(keys)-1:
                 entity_string += """, """
         return entity_string
-    
+
     def build_where_patients(self):
         where = ''
         if self.patient_ids is not None:
             where = """WHERE PatientID in ("""
             where += """','""".join(self.patient_ids)+"""')"""
         return where
-    
+
     def _query_build(self, **kwargs):
         query = """SELECT """
         query += self.add_entity_fields('Patient')
@@ -185,6 +183,7 @@ class IDC:
         query += self.build_where_patients()
         query += """ GROUP by id"""
         return query
+
 
 def main():
     parser = argparse.ArgumentParser(description="Pull case data from GDC API.")
@@ -209,9 +208,9 @@ def main():
                         default='idc-test.jsonl.gz')
     args = parser.parse_args()
     make_bq_table = args.make_bq_table
-    make_bucket_file = args.make_bucket_file
+    # make_bucket_file = args.make_bucket_file
     mapping = yaml.load(open(args.mapping_file, "r"), Loader=Loader)
-    out_file = args.out_file
+    # out_file = args.out_file
     idc = IDC(
         gsa_key=args.gsa_key,
         dest_table_id=args.dest_table_id,
