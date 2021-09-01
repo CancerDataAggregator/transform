@@ -190,7 +190,7 @@ def main():
     # out_file = args.out_file
     idc = IDC(
         gsa_key=args.gsa_key,
-        gsa_info=args.gsa_info
+        gsa_info=args.gsa_info,
         dest_table_id=args.dest_table_id,
         patients_file=args.patients,
         patient=args.patient,
