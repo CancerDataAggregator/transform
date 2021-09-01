@@ -69,7 +69,7 @@ case_fields_to_use = [
     "files",
 ]
 
-files_fields = ["file_id", "cases.samples.sample_id", "cases.samples.portions.portion_id",
+files_fields = ["file_id", "cases.case_id", "cases.samples.sample_id", "cases.samples.portions.portion_id",
                 "cases.samples.portions.slides.slide_id", "cases.samples.portions.analytes.analyte_id",
                 "cases.samples.portions.analytes.aliquots.aliquot_id"]
 # What is the significance of cases.samples.sample_id vs cases.sample_ids?
@@ -212,7 +212,6 @@ class GDC:
                     for aliquot in analyte.get("aliquots", []):
                         aliquot_id = aliquot.get("aliquot_id")
                         file_ids = self._samples_per_files_dict.get(aliquot_id, [])
-
                         aliquot["files"] = [
                             f_obj
                             for f_obj in (case_files_dict.get(f_id) for f_id in file_ids)
@@ -262,6 +261,7 @@ class GDC:
                                     file_meta.get("file_id")
                                 ]
 
+        print(files_per_sample_dict["12cfe700-d1b4-4b88-b509-b8dfaf12ecdf"])
         return files_per_sample_dict
 
     def _get_gdc_files(self):

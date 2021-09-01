@@ -9,7 +9,7 @@ ethnicity:
 sex:
 race:
 days_to_birth:
-
+File: []
 ResearchSubject:
   # id should represent unique identifier across all systems
   # for ResearchSubject we don't have anything better than the case_id
@@ -21,7 +21,7 @@ ResearchSubject:
     primary_disease_type: "Lymphoid Leukemias"
     primary_disease_site: "Hematopoietic and reticuloendothelial systems"
     associated_project: "TARGET-ALL-P3"
-
+    File: []
     Specimen:
       # id should represent unique identifier across all systems
       - id: "37789082-b4bb-4f18-9a3d-aca1a65c2ced"

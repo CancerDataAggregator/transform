@@ -1,38 +1,16 @@
-# import json
-# import jsonlines
-# import gzip
-# import sys
-# import time
-# from collections import defaultdict
-# import pathlib
 import yaml
 from yaml import Loader
-
-from cdatransform.lib import get_case_ids
 import argparse
 from google.cloud import bigquery, storage
 from google.oauth2 import service_account
-
-idc_fields = [
-    "PatientID",
-    "BodyPartExamined",
-    "StudyDescription",
-    "Modality",
-    "collection_id",
-    "crdc_study_uuid",
-    "crdc_series_uuid",
-    "crdc_instance_uuid",
-    "Program",
-    "tcia_tumorLocation",
-    "source_DOI",
-    "AnatomicRegionSequence",
-]
+from cdatransform.lib import get_case_ids
 
 
 class IDC:
     def __init__(
         self,
         gsa_key='../../GCS-service-account-key.json',
+        gsa_info=None,
         patients_file=None,
         patient=None,
         dest_table_id='gdc-bq-sample.idc_test.dicom_pivot_v3',
@@ -43,6 +21,7 @@ class IDC:
         # out_file='idc-test.jsonl.gz'
     ) -> None:
         self.gsa_key = gsa_key
+        self.gsa_info = gsa_info
         self.dest_table_id = dest_table_id
         # self.dest_bucket = dest_bucket
         # self.out_file = out_file
@@ -55,14 +34,19 @@ class IDC:
 
     def _service_account_cred(self):
         key_path = self.gsa_key
+        gsa_info = self.gsa_info
         try:
             credentials = service_account.Credentials()
         except Exception:
-            credentials = service_account.Credentials.from_service_account_file(
-                key_path, scopes=["https://www.googleapis.com/auth/cloud-platform"])
+            if self.gsa_info is not None:
+                credentials = service_account.Credentials.from_service_account_info(
+                    gsa_info)
+            else:
+                credentials = service_account.Credentials.from_service_account_file(
+                    key_path, scopes=["https://www.googleapis.com/auth/cloud-platform"])
         return credentials
 
-    def query_idc_to_table(self, idc_fields):
+    def query_idc_to_table(self):
         dest_table_id = self.dest_table_id
         credentials = self.service_account_cred
 
@@ -72,14 +56,6 @@ class IDC:
             allow_large_results=True, destination=dest_table_id,
             write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE)
         sql = self.transform_query
-        # sql = ' '.join(["""
-        # SELECT""", """, """.join(idc_fields), """
-        # FROM canceridc-data.idc_views.dicom_pivot_wave1
-        # """])
-        # if self.case_ids is not None:
-        #    sql = ' '.join([sql, "WHERE crdc_instance_uuid in ('"])
-        #    cases_str = "','".join(self.case_ids)
-        #    sql = sql + cases_str + "')"
 
         # Start the query, passing in the extra configuration.
         query_job = client.query(sql, job_config=job_config)  # Make an API request.
@@ -193,6 +169,7 @@ def main():
     parser.add_argument("--source_table", help="IDC source table to be queried",
                         default='canceridc-data.idc_v3.dicom_pivot_v3')
     parser.add_argument("--gsa_key", help="Location of user GSA key")
+    parser.add_argument("--gsa_info", help="json content of GSA key or github.secret")
     parser.add_argument("--patient", help="Extract just this patient", default=None)
     parser.add_argument(
         "--patients", help="Optional file with list of patient ids (one to a line)", default=None)
@@ -213,6 +190,7 @@ def main():
     # out_file = args.out_file
     idc = IDC(
         gsa_key=args.gsa_key,
+        gsa_info=args.gsa_info
         dest_table_id=args.dest_table_id,
         patients_file=args.patients,
         patient=args.patient,
@@ -223,7 +201,7 @@ def main():
         # out_file=out_file,
     )
     if make_bq_table:
-        idc.query_idc_to_table(idc_fields)
+        idc.query_idc_to_table()
     # if make_bucket_file:
     #    idc.table_to_bucket()
     # idc.download_blob()
