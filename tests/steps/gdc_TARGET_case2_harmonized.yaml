@@ -67,7 +67,7 @@ ResearchSubject:
         # Added to the specimen as well; as per CCDH data model
         associated_project: "TARGET-ALL-P2"
         # renamed; Kathy says that this should be null for the sample:
-        derived_from_specimen: Initial sample
+        derived_from_specimen: initial specimen
         File:
           - associated_project:
             - TARGET-ALL-P2
@@ -1262,7 +1262,7 @@ ResearchSubject:
         # Added to the specimen as well; as per CCDH data model
         associated_project: "TARGET-ALL-P2"
         # renamed; Kathy says that this should be null for the sample:
-        derived_from_specimen: Initial sample
+        derived_from_specimen: initial specimen
         File:
           - associated_project:
             - TARGET-ALL-P2

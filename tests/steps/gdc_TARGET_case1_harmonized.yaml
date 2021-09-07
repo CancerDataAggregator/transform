@@ -39,7 +39,7 @@ ResearchSubject:
         # Added to the specimen as well; as per CCDH data model
         associated_project: "TARGET-ALL-P3"
         # renamed; Kathy says that this should be null for the sample:
-        derived_from_specimen: Initial sample
+        derived_from_specimen: initial specimen
         File: []  # This sample has no files
 
       # From portions
