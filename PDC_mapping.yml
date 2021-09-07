@@ -66,7 +66,7 @@ Specimen:
         age_at_collection: 'cases.demographics.days_to_birth'
         associated_project: 'cases.project_submitter_id'
         derived_from_specimen:
-            samples: 'initial sample'
+            samples: 'initial specimen'
             aliquots: 'cases.samples.sample_id'
 
 File:
@@ -86,6 +86,8 @@ File:
     Transformations:
         drs_uri:
             - ['format_drs',  [] ]
+        associated_project:
+            - ['str_to_list', [] ]
 
 Study:
     Mapping:

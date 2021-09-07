@@ -69,7 +69,7 @@ Specimen:
         age_at_collection: 'cases.demographic.days_to_birth'
         associated_project: 'cases.project.project_id'
         derived_from_specimen:
-            samples: 'Initial sample'
+            samples: 'initial specimen'
             portions: 'cases.samples.sample_id'
             slides: 'cases.samples.portions.portion_id'
             analytes: 'cases.samples.portions.portion_id'
