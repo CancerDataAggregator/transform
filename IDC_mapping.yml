@@ -17,7 +17,7 @@ File:
         data_category: 'Imaging'
         byte_size: null
         checksum: 'NULL'
-        associated_project: 'NULL'
+        associated_project: 'files.collection_id'
         drs_uri: 'files.gcs_url'
         file_format: 'DICOM'
 # 'NULL' ensures a string type for the field, but null

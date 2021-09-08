@@ -116,6 +116,9 @@ class IDC:
                 val_split = 'STRING(NULL)'
             else:
                 val_split = "'" + val_split[0] + "'"
+            if k == 'associated_project':
+                val_split = "[" + val_split + "]"
+            print((val_split) + """ AS """ + k)
             return (val_split) + """ AS """ + k
         elif isinstance(val, dict):
             temp = "[STRUCT("
