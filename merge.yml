@@ -2,6 +2,9 @@ Patient_merge:
     id:
         merge_type: "coalesce"
         default_value: ""
+    identifier:
+        merge_type: "merge_identifiers"
+        default_value: "[]"
     race:
         merge_type: "coalesce"
         default_value: null
@@ -14,6 +17,12 @@ Patient_merge:
     days_to_birth:
         merge_type: "coalesce"
         default_value: null
+    species:
+        merge_type: "coalesce"
+        default_value: null
+    subject_associated_project:
+        merge_type: "append_field_vals"
+        default_value: []
     ResearchSubject:
         merge_type: "append_field_vals"
         default_value: []
@@ -89,10 +98,10 @@ Diagnosis_merge:
     primary_diagnosis:
         merge_type: "coalesce"
         default_value: ""
-    tumor_grade:
+    grade:
         merge_type: "coalesce"
         default_value: ""
-    tumor_stage:
+    stage:
         merge_type: "coalesce"
         default_value: ""
 

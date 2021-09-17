@@ -340,3 +340,13 @@ def case_samples(pdc_study_id, offset, limit):
     }
     }""")
     return template.substitute(pdc_study_id=pdc_study_id, offset=str(offset), limit=str(limit))
+
+def specimen_taxon(pdc_study_id):
+    template = Template(
+        """{
+        biospecimenPerStudy (pdc_study_id: "$pdc_study_id" acceptDUA: true) {
+        case_id
+        taxon
+        }
+        }""")
+    return template.substitute(pdc_study_id=pdc_study_id)

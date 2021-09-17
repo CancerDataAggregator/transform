@@ -1,43 +1,54 @@
 Patient:
     Mapping:
         id: 'cases.submitter_id'
+        identifier:
+            system: 'GDC'
+            value: 'cases.submitter_id'
+        subject_associated_project: 'cases.project.project_id'
+        sex: 'cases.demographic.gender'
         race: 'cases.demographic.race'
         ethnicity: 'cases.demographic.ethnicity'
-        sex: 'cases.demographic.gender'
         days_to_birth: 'cases.demographic.days_to_birth'
+        species: 'Homo sapiens'
+    Transformations:
+        subject_associated_project:
+            - ['str_to_list', [] ]
+        
 
 ResearchSubject:
     Mapping:
         id: 'cases.case_id'
         identifier:
-            value: 'cases.case_id'
             system: 'GDC'
+            value: 'cases.case_id'
+        associated_project: 'cases.project.project_id'
         primary_disease_type: 'cases.disease_type'
         primary_disease_site: 'cases.primary_site'
-        associated_project: 'cases.project.project_id'
+        
             
 Diagnosis:
     Mapping:
         id: 'cases.diagnoses.diagnosis_id'
         identifier:
-            value: 'cases.diagnoses.diagnosis_id'
             system: 'GDC'
-        age_at_diagnosis: 'cases.diagnoses.age_at_diagnosis'
+            value: 'cases.diagnoses.diagnosis_id'
         primary_diagnosis: 'cases.diagnoses.primary_diagnosis'
+        age_at_diagnosis: 'cases.diagnoses.age_at_diagnosis'
         #harmonized_primary_diagnosis: 'cases.diagnoses.primary_diagnosis'
-        tumor_grade: 'cases.diagnoses.tumor_grade'
-        tumor_stage: 'cases.diagnoses.tumor_stage'
         morphology: 'cases.diagnoses.morphology'
+        stage: 'cases.diagnoses.tumor_stage'
+        grade: 'cases.diagnoses.tumor_grade'
+        
 
 Treatment:
     Mapping:
         id: 'cases.diagnoses.treatments.treatment_id'
         identifier:
-            value: 'cases.diagnoses.treatments.treatment_id'
             system: 'GDC'
+            value: 'cases.diagnoses.treatments.treatment_id'
+        days_to_treatment_start: 'cases.diagnoses.treatments.days_to_treatment'
         treatment_outcome: 'cases.diagnoses.treatments.treatment_outcome'
         treatment_type: 'cases.diagnoses.treatments.treatment_type'
-        days_to_treatment_start: 'cases.diagnoses.treatments.days_to_treatment'
         days_treatment_end: 
 
 Specimen:
@@ -49,49 +60,53 @@ Specimen:
             analytes: 'cases.samples.portions.analytes.analyte_id'
             aliquots: 'cases.samples.portions.analytes.aliquots.aliquot_id'
         identifier:
+            system: 'GDC'
             value:
                 samples: 'cases.samples.sample_id'
                 portions: 'cases.samples.portions.portion_id'
                 slides: 'cases.samples.portions.slides.slide_id'
                 analytes: 'cases.samples.portions.analytes.analyte_id'
                 aliquots: 'cases.samples.portions.analytes.aliquots.aliquot_id'
-            system: 'GDC'
-        derived_from_subject: 'cases.submitter_id'
+        associated_project: 'cases.project.project_id'
+        age_at_collection: 'cases.demographic.days_to_birth'
+        primary_disease_type: 'cases.disease_type'
+        anatomical_site: 'cases.samples.biospecimen_anatomic_site'
+        source_material_type: 'cases.samples.sample_type'
         specimen_type:
             samples: 'sample'
             portions: 'portion'
             slides: 'slide'
             analytes: 'analyte'
             aliquots: 'aliquot'
-        primary_disease_type: 'cases.disease_type'
-        source_material_type: 'cases.samples.sample_type'
-        anatomical_site: 'cases.samples.biospecimen_anatomic_site'
-        age_at_collection: 'cases.demographic.days_to_birth'
-        associated_project: 'cases.project.project_id'
         derived_from_specimen:
             samples: 'initial specimen'
             portions: 'cases.samples.sample_id'
             slides: 'cases.samples.portions.portion_id'
             analytes: 'cases.samples.portions.portion_id'
             aliquots: 'cases.samples.portions.analytes.analyte_id'
+        derived_from_subject: 'cases.submitter_id'
 
 File:
     Mapping:
         id: 'files.file_id'
         identifier:
-            value: 'files.file_id'
             system: 'GDC'
+            value: 'files.file_id'
         label: 'files.file_name'
-        data_type: 'files.data_type'
         data_category: 'files.data_category'
-        byte_size: 'files.file_size'
-        checksum: 'files.md5sum'
+        data_type: 'files.data_type'
+        file_format: 'files.data_format'
         associated_project: 'cases.project.project_id'
         drs_uri: 'files.file_id'
-        file_format: 'files.data_format'
+        byte_size: 'files.file_size'
+        checksum: 'files.md5sum'
+        
+        
+        data_modality: 'Genomic'
+        imaging_modality: ''
     Transformations:
         drs_uri: 
             - ['format_drs', [] ]
-        associated_project:
-            - ['str_to_list', [] ]
+        #associated_project:
+        #    - ['str_to_list', [] ]
             

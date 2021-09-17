@@ -123,7 +123,7 @@ class LogValidation:
 
         for id, fields in self._matching_fields.items():
             for field, values in fields.items():
-                if len({nv.value for nv in values}) > 1:
+                if isinstance(values, dict) and len({nv.value for nv in values}) > 1:
                     values_data = sorted([str(v) for v in values])
                     logger.warning(
                         f"Conflict ID:{id} FIELD:{field} VALUES:{':'.join(values_data)}"

@@ -11,7 +11,7 @@ import pathlib
 from cdatransform.lib import get_case_ids
 from .lib import retry_get
 from .pdc_query_lib import query_all_cases, query_files_bulk, query_files_paginated, make_all_programs_query
-from .pdc_query_lib import make_study_query, case_demographics, case_diagnoses, case_samples
+from .pdc_query_lib import make_study_query, case_demographics, case_diagnoses, case_samples, specimen_taxon
 
 
 class PDC:
@@ -55,7 +55,8 @@ class PDC:
                     samp = self.samples_for_study(pdc_study_id, 100)
                     if case_ids is not None:
                         samp = self.filter_cases(samp, case_ids)
-                    out = agg_cases_info_for_study(study_rec, dem, diag, samp, added_info)
+                    taxon = self.taxon_for_study(pdc_study_id)
+                    out = agg_cases_info_for_study(study_rec, dem, diag, samp, taxon, added_info)
                     for case in out:
                         yield case
         # for case_id in case_ids:
@@ -206,6 +207,22 @@ class PDC:
             page += 1
         return out
 
+    def taxon_for_study(self, study_id):
+        taxon_info = retry_get(
+                self.endpoint, params={"query": specimen_taxon(study_id)}
+            )
+        out = taxon_info.json()['data']['biospecimenPerStudy']
+        #print(type(out))
+        seen = dict({})
+        for case_taxon in out:
+            if case_taxon['case_id'] not in seen:
+                seen[case_taxon['case_id']] = case_taxon['taxon']
+            else:
+                if case_taxon['taxon'] != seen[case_taxon['case_id']]:
+                    print("taxon does not match for case_id:")
+                    print(case_taxon['case_id'])
+        return seen
+
 
 def get_file_metadata(file_metadata_record) -> dict:
     return {
@@ -225,11 +242,12 @@ def get_file_metadata(file_metadata_record) -> dict:
     }
 
 
-def agg_cases_info_for_study(study, demo, diag, sample, added_info):
+def agg_cases_info_for_study(study, demo, diag, sample, taxon, added_info):
     out = []
     for demo_case in demo:
         case_id = demo_case['case_id']
         demo_case.update(added_info)
+        demo_case['taxon'] = taxon[case_id]
         for diag_ind in range(len(diag)):
             if diag[diag_ind]['case_id'] == case_id:
                 demo_case['diagnoses'] = diag.pop(diag_ind)['diagnoses']

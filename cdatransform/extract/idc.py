@@ -4,7 +4,7 @@ import argparse
 from google.cloud import bigquery, storage
 from google.oauth2 import service_account
 from cdatransform.lib import get_case_ids
-
+import cdatransform.transform.transform_lib.transform_with_YAML_v1 as tr
 
 class IDC:
     def __init__(
@@ -27,7 +27,7 @@ class IDC:
         # self.out_file = out_file
         # self.dest_bucket_file_name = dest_bucket_file_name
         self.service_account_cred = self._service_account_cred()
-        self.mapping = mapping
+        self.mapping = self._init_mapping(mapping)
         self.patient_ids = get_case_ids(case=patient, case_list_file=patients_file)
         self.source_table = source_table
         self.transform_query = self._query_build()
@@ -45,6 +45,12 @@ class IDC:
                 credentials = service_account.Credentials.from_service_account_file(
                     key_path, scopes=["https://www.googleapis.com/auth/cloud-platform"])
         return credentials
+
+    def _init_mapping(self, mapping):
+        for entity, MorT_dict in mapping.items():
+            if 'Transformations' in MorT_dict:
+                mapping[entity]['Transformations'] = tr.functionalize_trans_dict(mapping[entity]['Transformations'])
+        return mapping
 
     def query_idc_to_table(self):
         dest_table_id = self.dest_table_id
@@ -105,8 +111,15 @@ class IDC:
                 source_blob_name, destination_file_name
             )
         )
+    def add_udf_to_field_query(self, val_split, mapping_transform):
+        for transform in mapping_transform:
+            val_split = transform[0].__name__+"("+val_split
+            #if len(transform[1]) > 1:
+            #    val_split = val_split + ", [" +",".join([str(item) for item in transform[1][1:]])+"]"
+            val_split = val_split + ")"
+        return val_split
 
-    def field_line(self, k, val):
+    def field_line(self, k, val, entity):
         if isinstance(val, str):
             val_split = val.split('.')
             if len(val_split) > 1:
@@ -118,13 +131,16 @@ class IDC:
                 val_split = "'" + val_split[0] + "'"
             if k == 'associated_project':
                 val_split = "[" + val_split + "]"
-            print((val_split) + """ AS """ + k)
+            if self.mapping[entity].get('Transformations', None) is not None:
+                if self.mapping[entity]['Transformations'].get(k, None) is not None:
+                    val_split = self.add_udf_to_field_query(val_split, self.mapping[entity]['Transformations'][k])
+            
             return (val_split) + """ AS """ + k
         elif isinstance(val, dict):
             temp = "[STRUCT("
             keys = list(val.keys())
             for index in range(len(keys)):
-                temp += self.field_line(keys[index], val[keys[index]])
+                temp += self.field_line(keys[index], val[keys[index]], entity)
                 if index < len(keys)-1:
                     temp += ', '
             temp += ")] AS " + k
@@ -137,7 +153,7 @@ class IDC:
         entity_string = ''
         keys = list(self.mapping[entity]['Mapping'].keys())
         for index in range(len(self.mapping[entity]['Mapping'].keys())):
-            entity_string += self.field_line(keys[index], self.mapping[entity]['Mapping'][keys[index]])
+            entity_string += self.field_line(keys[index], self.mapping[entity]['Mapping'][keys[index]], entity)
             if index < len(keys)-1:
                 entity_string += """, """
         return entity_string
@@ -149,8 +165,30 @@ class IDC:
             where += """','""".join(self.patient_ids)+"""')"""
         return where
 
+    def create_udf_str(self,func_desc):
+        out = "CREATE TEMP FUNCTION " + func_desc[0].__name__ + "(x " + func_desc[1][0] + ") RETURNS "
+        out = out + func_desc[1][0] + " AS ("
+        if len(func_desc[1]) == 1:
+            out = out + func_desc[0]()
+        else:
+            out = out + func_desc[0](func_desc[1][1:])
+        out = out + "); "
+        return out
+
+    def create_all_udfs(self):
+        functions_added = []
+        all_udfs = ""
+        for entity, Map_and_Trans in self.mapping.items():
+            if Map_and_Trans.get('Transformations',None) is not None:
+                for field, functions in Map_and_Trans.get('Transformations').items():
+                    for function in functions:
+                        if function[0] not in functions_added:
+                            all_udfs = all_udfs + self.create_udf_str(function)
+        return all_udfs
+
     def _query_build(self, **kwargs):
-        query = """SELECT """
+        query = self.create_all_udfs()
+        query += """ SELECT """
         query += self.add_entity_fields('Patient')
         query += """, """
         # add File record structure to query
@@ -160,7 +198,8 @@ class IDC:
         # add WHERE statement if just looking for specific patients
         query += """FROM `""" + self.source_table + """`"""
         query += self.build_where_patients()
-        query += """ GROUP by id"""
+        query += """ GROUP by id, species"""
+        print(query)
         return query
 
 
