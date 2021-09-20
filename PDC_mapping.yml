@@ -95,7 +95,7 @@ File:
         
         
         data_modality: 'Proteomic'
-        imaging_modality: ''
+        imaging_modality: 
     Transformations:
         drs_uri:
             - ['format_drs',  [] ]

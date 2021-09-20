@@ -103,7 +103,7 @@ File:
         
         
         data_modality: 'Genomic'
-        imaging_modality: ''
+        imaging_modality: 
     Transformations:
         drs_uri: 
             - ['format_drs', [] ]
