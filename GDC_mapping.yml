@@ -100,10 +100,8 @@ File:
         drs_uri: 'files.file_id'
         byte_size: 'files.file_size'
         checksum: 'files.md5sum'
-        
-        
         data_modality: 'Genomic'
-        imaging_modality: None
+        imaging_modality: 
     Transformations:
         drs_uri: 
             - ['format_drs', [] ]
