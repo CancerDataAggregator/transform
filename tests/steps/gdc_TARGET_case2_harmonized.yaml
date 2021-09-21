@@ -2038,7 +2038,6 @@ ResearchSubject:
             label: ee8ba34c-dc44-4c54-bb9f-e2842a1ec70f.FPKM-UQ.txt.gz
             file_format: TXT
             data_modality: Genomic
-            imaging_modality:
           - associated_project: TARGET-ALL-P2
             byte_size: 3143
             checksum: d0b02980057ff812e8fe754ea4ad0286
@@ -2053,7 +2052,6 @@ ResearchSubject:
             label: 3875098e-d15f-4d0a-9d8e-8752978e9c9f.arriba.rna_fusion.bedpe
             file_format: BEDPE
             data_modality: Genomic
-            imaging_modality:
           - associated_project: TARGET-ALL-P2
             byte_size: 8394839415
             checksum: 8ef1cbbeeb018af3a56d2f402702a754
@@ -2068,7 +2066,6 @@ ResearchSubject:
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.genomic.gdc_realn.bam
             file_format: BAM
             data_modality: Genomic
-            imaging_modality:
           - associated_project: TARGET-ALL-P2
             byte_size: 7813538623
             checksum: cda63bf8d01b2a8e9ddbc78d1686fc85
@@ -2083,7 +2080,6 @@ ResearchSubject:
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.transcriptome.gdc_realn.bam
             file_format: BAM
             data_modality: Genomic
-            imaging_modality:
           - associated_project: TARGET-ALL-P2
             byte_size: 99532214
             checksum: b5dd7a1301c75f2f68629907fdb178a8
@@ -2098,7 +2094,6 @@ ResearchSubject:
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.chimeric.gdc_realn.bam
             file_format: BAM
             data_modality: Genomic
-            imaging_modality:
           - associated_project: TARGET-ALL-P2
             byte_size: 323094
             checksum: 5a7d048d39be5c2181cafdb22d47f617
@@ -2113,7 +2108,6 @@ ResearchSubject:
             label: ee8ba34c-dc44-4c54-bb9f-e2842a1ec70f.FPKM.txt.gz
             file_format: TXT
             data_modality: Genomic
-            imaging_modality:
           - associated_project: TARGET-ALL-P2
             byte_size: 980
             checksum: c2a116bcd2d9aa94de89813595b1099e
@@ -2128,7 +2122,6 @@ ResearchSubject:
             label: 954009c3-e76e-4337-b5cb-5c7de62a14e9.star_fusion.rna_fusion.bedpe
             file_format: BEDPE
             data_modality: Genomic
-            imaging_modality:
           - associated_project: TARGET-ALL-P2
             byte_size: 247918
             checksum: f833c9466ee5be1e73bde04c10cf4bba
@@ -2143,7 +2136,6 @@ ResearchSubject:
             label: ee8ba34c-dc44-4c54-bb9f-e2842a1ec70f.htseq_counts.txt.gz
             file_format: TXT
             data_modality: Genomic
-            imaging_modality:
           - associated_project: TARGET-ALL-P2
             byte_size: 393263
             checksum: c1aa2cd338c5822748d104ea695e29c8
@@ -2158,7 +2150,6 @@ ResearchSubject:
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.star_gene_counts.tsv.gz
             file_format: TSV
             data_modality: Genomic
-            imaging_modality:
           - associated_project: TARGET-ALL-P2
             byte_size: 2865585
             checksum: e2caea9faa0241dddba8ac925f2ecf32
@@ -2172,8 +2163,7 @@ ResearchSubject:
               value: eb179a4c-341b-4fe9-9763-1c181ed2574e
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.star_splice_junctions.tsv.gz
             file_format: TSV
-            data_modality: Genomic
-            imaging_modality:     
+            data_modality: Genomic  
 
       # Portion 2
       - id: "ff999b52-a9bc-5d6d-ac39-aa2d8ad1f78d"
@@ -2458,6 +2448,7 @@ ResearchSubject:
               value: f41ca7c5-949d-45f2-8288-dd958d52a3f4
             label: b80ca517-4bbd-46bf-a85e-f4719d0ad0dd.wxs.MuSE.aliquot.maf.gz
             file_format: MAF
+            data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 750424
             checksum: acac7ee784dc8215ec5e071cd8e0bb5b
@@ -2756,6 +2747,7 @@ ResearchSubject:
               value: f41ca7c5-949d-45f2-8288-dd958d52a3f4
             label: b80ca517-4bbd-46bf-a85e-f4719d0ad0dd.wxs.MuSE.aliquot.maf.gz
             file_format: MAF
+            data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 750424
             checksum: acac7ee784dc8215ec5e071cd8e0bb5b
@@ -3053,6 +3045,7 @@ ResearchSubject:
               value: f41ca7c5-949d-45f2-8288-dd958d52a3f4
             label: b80ca517-4bbd-46bf-a85e-f4719d0ad0dd.wxs.MuSE.aliquot.maf.gz
             file_format: MAF
+            data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 750424
             checksum: acac7ee784dc8215ec5e071cd8e0bb5b
@@ -3074,8 +3067,8 @@ ResearchSubject:
             system: "GDC"
         age_at_diagnosis: 1682
         primary_diagnosis: "T lymphoblastic leukemia/lymphoma"
-        tumor_grade: "Not Reported"
-        tumor_stage: "unknown"
+        grade: "Not Reported"
+        stage: "unknown"
         morphology: "9837/3"
         Treatment: []
       
