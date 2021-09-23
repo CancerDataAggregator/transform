@@ -4,12 +4,12 @@ Patient:
         identifier:
             system: 'GDC'
             value: 'cases.submitter_id'
-        subject_associated_project: 'cases.project.project_id'
+        species: 'Homo sapiens'
         sex: 'cases.demographic.gender'
         race: 'cases.demographic.race'
         ethnicity: 'cases.demographic.ethnicity'
         days_to_birth: 'cases.demographic.days_to_birth'
-        species: 'Homo sapiens'
+        subject_associated_project: 'cases.project.project_id'
     Transformations:
         subject_associated_project:
             - ['str_to_list', [] ]
@@ -46,9 +46,9 @@ Treatment:
         identifier:
             system: 'GDC'
             value: 'cases.diagnoses.treatments.treatment_id'
-        days_to_treatment_start: 'cases.diagnoses.treatments.days_to_treatment'
-        treatment_outcome: 'cases.diagnoses.treatments.treatment_outcome'
         treatment_type: 'cases.diagnoses.treatments.treatment_type'
+        treatment_outcome: 'cases.diagnoses.treatments.treatment_outcome'
+        days_to_treatment_start: 'cases.diagnoses.treatments.days_to_treatment'
         days_treatment_end: 
 
 Specimen:
@@ -100,8 +100,8 @@ File:
         drs_uri: 'files.file_id'
         byte_size: 'files.file_size'
         checksum: 'files.md5sum'
-        data_modality: 'Genomic'
-        imaging_modality: 
+        #data_modality: 'Genomic'
+        #imaging_modality: 
     Transformations:
         drs_uri: 
             - ['format_drs', [] ]

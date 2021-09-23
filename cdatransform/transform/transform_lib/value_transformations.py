@@ -16,6 +16,7 @@ def str_to_list(val):
         val = [val]
     return val
 
+
 def idc_species_mapping():
     return "CASE x WHEN 'Human' THEN 'Homo sapiens' WHEN 'Canine' THEN 'Canis familiaris' WHEN 'Mouse' THEN 'Mus musculus' ELSE ''END"
 

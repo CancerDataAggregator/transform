@@ -52,19 +52,19 @@ class LogValidation:
         :param table: a table to find the fields in
         """
         other = self._matching_fields.get(record_id, None)
-        open('agree_id.txt', 'a+').write(record_id + '\n')
-        open('agree_id.txt', 'a+').write(str(other) + str(type(other))+ '\n')
+        open("agree_id.txt", "a+").write(record_id + "\n")
+        open("agree_id.txt", "a+").write(str(other) + str(type(other)) + "\n")
         if other is None:
-            open('steps_in_agree.txt', 'a+').write(record_id+' first other \n')
+            open("steps_in_agree.txt", "a+").write(record_id + " first other \n")
             self._matching_fields[record_id] = {}
             for field in fields:
                 if field in table:
                     self._matching_fields[record_id][field] = {
                         NamedValue(table.get(field))
                     }
-            
+
         else:
-            open('steps_in_agree.txt', 'a+').write(record_id+' second other \n')
+            open("steps_in_agree.txt", "a+").write(record_id + " second other \n")
             for field in fields:
                 if field in table:
                     other[field].add(NamedValue(table.get(field)))

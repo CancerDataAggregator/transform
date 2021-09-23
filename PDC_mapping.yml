@@ -4,12 +4,12 @@ Patient:
         identifier:
             system: 'PDC'
             value: 'cases.case_submitter_id'
-        subject_associated_project: 'cases.project_submitter_id'
+        species: 'cases.taxon'
         sex: 'cases.demographics.gender'
         race: 'cases.demographics.race'
         ethnicity: 'cases.demographics.ethnicity'
         days_to_birth: 'cases.demographics.days_to_birth'
-        species: 'cases.taxon'
+        subject_associated_project: 'cases.project_submitter_id'
         
     Transformations:
         race:
@@ -49,10 +49,9 @@ Treatment:
         identifier:
             system: 'PDC'
             value: 'cases.diagnoses.treatments.treatment_id'
-        days_to_treatment_start: 'cases.diagnoses.treatments.days_to_treatment_start'
         treatment_outcome: 'cases.diagnoses.treatments.treatment_outcome'
         treatment_type: 'cases.diagnoses.treatments.treatment_type'
-        
+        days_to_treatment_start: 'cases.diagnoses.treatments.days_to_treatment_start'
         days_to_treatment_end: 'cases.diagnoses.treatments.days_to_treatment_end'
 
 Specimen:
@@ -92,10 +91,8 @@ File:
         drs_uri: 'files.file_id'
         byte_size: 'files.file_size'
         checksum: 'files.md5sum'
-        
-        
-        data_modality: 'Proteomic'
-        imaging_modality: 
+        #data_modality: 'Proteomic'
+        #imaging_modality: 
     Transformations:
         drs_uri:
             - ['format_drs',  [] ]

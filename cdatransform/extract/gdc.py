@@ -69,9 +69,15 @@ case_fields_to_use = [
     "files",
 ]
 
-files_fields = ["file_id", "cases.case_id", "cases.samples.sample_id", "cases.samples.portions.portion_id",
-                "cases.samples.portions.slides.slide_id", "cases.samples.portions.analytes.analyte_id",
-                "cases.samples.portions.analytes.aliquots.aliquot_id"]
+files_fields = [
+    "file_id",
+    "cases.case_id",
+    "cases.samples.sample_id",
+    "cases.samples.portions.portion_id",
+    "cases.samples.portions.slides.slide_id",
+    "cases.samples.portions.analytes.analyte_id",
+    "cases.samples.portions.analytes.aliquots.aliquot_id",
+]
 # What is the significance of cases.samples.sample_id vs cases.sample_ids?
 # Answer: cases.sample_ids is not returned by GDC API
 gdc_files_page_size = 10000
@@ -214,7 +220,9 @@ class GDC:
                         file_ids = self._samples_per_files_dict.get(aliquot_id, [])
                         aliquot["files"] = [
                             f_obj
-                            for f_obj in (case_files_dict.get(f_id) for f_id in file_ids)
+                            for f_obj in (
+                                case_files_dict.get(f_id) for f_id in file_ids
+                            )
                             if f_obj is not None
                         ]
 
@@ -295,9 +303,7 @@ def main():
     parser.add_argument("--cache", help="Use cached files.", action="store_true")
     args = parser.parse_args()
 
-    gdc = GDC(
-        cache_file=pathlib.Path(args.cache_file)
-    )
+    gdc = GDC(cache_file=pathlib.Path(args.cache_file))
     gdc.save_cases(
         args.out_file, case_ids=get_case_ids(case=args.case, case_list_file=args.cases)
     )

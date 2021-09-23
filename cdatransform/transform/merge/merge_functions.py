@@ -53,15 +53,11 @@ def merge_fields_level(data_commons_fields_dict, how_to_merge, source_hierarchy)
             dat[field] = coalesce_field_values(
                 dat_dict, how_to_merge[field]["default_value"], hierarchy
             )
-        elif (
-            how_to_merge[field]["merge_type"] == "merge_identifiers"
-        ):
+        elif how_to_merge[field]["merge_type"] == "merge_identifiers":
             dat_dict = make_dat_dict_for_transforms(
                 data_commons_fields_dict, field, hierarchy
             )
-            dat[field] = merge_identifiers(
-                dat_dict
-            )
+            dat[field] = merge_identifiers(dat_dict)
         else:  # merge_codeable_concept
             dat_dict = make_dat_dict_for_transforms(
                 data_commons_fields_dict, field, hierarchy
@@ -114,15 +110,18 @@ def coalesce_field_values(data_dictionary, default_value, source_hierarchy):
             break
     return dat_return
 
+
 def merge_identifiers(data_dictionary):
     dat_identifiers = []
     for source, identifiers in data_dictionary.items():
         for identifier in identifiers:
-            if dat_identifiers !=[]:
+            if dat_identifiers != []:
                 found = False
                 for confirmed_identifier in dat_identifiers:
-                    if (identifier['value'] == confirmed_identifier['value'] and 
-                        identifier['system'] == confirmed_identifier['system']):
+                    if (
+                        identifier["value"] == confirmed_identifier["value"]
+                        and identifier["system"] == confirmed_identifier["system"]
+                    ):
                         found = True
                         break
                 if found == False:
@@ -130,6 +129,7 @@ def merge_identifiers(data_dictionary):
             else:
                 dat_identifiers.append(identifier)
     return dat_identifiers
+
 
 def make_dat_dict_for_transforms(data_commons_fields_dict, field, source_hierarchy):
     dat_dict = dict()

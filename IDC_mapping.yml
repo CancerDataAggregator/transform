@@ -28,11 +28,8 @@ File:
         drs_uri: 'files.gcs_url'
         byte_size: null
         checksum: 'NULL'
-        
-        
-        
-        data_modality: 'Imaging'
-        imaging_modality: ''
+        #data_modality: 'Imaging'
+        #imaging_modality: ''
     Transformations:
         label: 
         - ['idc_substr', ['STRING',15] ]

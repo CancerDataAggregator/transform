@@ -40,7 +40,7 @@ def get_patient_info_all_DCs(input_file_dict):
 def get_coalesce_field_names(merge_field_dict):
     coal_fields = []
     for key, val in merge_field_dict.items():
-        if val.get("merge_type") == 'coalesce':
+        if val.get("merge_type") == "coalesce":
             coal_fields.append(key)
     return coal_fields
 
@@ -55,23 +55,23 @@ def prep_log_merge_error(entities, merge_field_dict):
             temp[field] = entities.get(source).get(field)
         ret_dat[source] = temp
     for source, val in entities.items():
-        if val.get('id') is not None:
-            patient_id = val.get('id')
+        if val.get("id") is not None:
+            patient_id = val.get("id")
             break
     for source, val in entities.items():
-        if val.get('ResearchSubject')[0].get('associated_project') is not None:
-            project = val.get('ResearchSubject')[0].get('associated_project')
+        if val.get("ResearchSubject")[0].get("associated_project") is not None:
+            project = val.get("ResearchSubject")[0].get("associated_project")
             break
     return coal_fields, ret_dat, patient_id, project
 
 
 def log_merge_error(entities, all_sources, fields, log):
     coal_fields, coal_dat, patient_id, project = prep_log_merge_error(entities, fields)
-    all_sources.insert(0, 'patient')
+    all_sources.insert(0, "patient")
     all_sources.insert(1, patient_id)
-    all_sources.insert(2, 'project')
+    all_sources.insert(2, "project")
     all_sources.insert(3, project)
-    prefix = '_'.join(all_sources)
+    prefix = "_".join(all_sources)
     log.agree_sources(coal_dat, prefix, coal_fields)
     return log
 
@@ -121,12 +121,14 @@ def main():
                 merged_entry = mf.merge_fields_level(
                     entities, how_to_merge["Patient_merge"], ["gdc", "pdc"]
                 )
-                log = log_merge_error(entities, ["gdc", "pdc"], how_to_merge["Patient_merge"], log)
+                log = log_merge_error(
+                    entities, ["gdc", "pdc"], how_to_merge["Patient_merge"], log
+                )
                 writer.write(merged_entry)
             count += 1
             if count % 5000 == 0:
                 sys.stderr.write(f"Processed {count} cases out of {total_patient}.\n")
-        log.generate_report(logging.getLogger('test'))
+        log.generate_report(logging.getLogger("test"))
 
 
 if __name__ == "__main__":

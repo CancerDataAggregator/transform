@@ -60,8 +60,10 @@ def main():
 
     MandT = yaml.load(open(args.map_trans, "r"), Loader=Loader)
     for entity, MorT_dict in MandT.items():
-        if 'Transformations' in MorT_dict:
-            MandT[entity]['Transformations'] = tr.functionalize_trans_dict(MandT[entity]['Transformations'])
+        if "Transformations" in MorT_dict:
+            MandT[entity]["Transformations"] = tr.functionalize_trans_dict(
+                MandT[entity]["Transformations"]
+            )
     transform = tr.Transform(validate)
     t0 = time.time()
     count = 0
