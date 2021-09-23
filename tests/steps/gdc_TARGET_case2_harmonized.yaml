@@ -19,12 +19,12 @@ id: "TARGET-10-PATCNI"
 identifier:
   - value: "TARGET-10-PATCNI"
     system: "GDC"
-ethnicity: "not hispanic or latino"
-sex: "female"
-race: "black or african american"
-days_to_birth:
 subject_associated_project:
   - "TARGET-ALL-P2"
+sex: "female"
+race: "black or african american"
+ethnicity: "not hispanic or latino"
+days_to_birth:
 species: "Homo sapiens"
 # The rest of a case is converted to ResearchSubject
 # Logging:
@@ -39,9 +39,10 @@ ResearchSubject:
     identifier:
       - value: "9e229e56-f7e1-58f9-984b-a9453be5dc9a"
         system: "GDC"
+    associated_project: "TARGET-ALL-P2"
     primary_disease_type: "Lymphoid Leukemias"
     primary_disease_site: "Hematopoietic and reticuloendothelial systems"
-    associated_project: "TARGET-ALL-P2"
+    
 
     # Samples, portions, slides and aliquots are collapsed into Specimen
     #
@@ -87,7 +88,7 @@ ResearchSubject:
               value: 333216e7-fa25-4a63-870a-f549d146343b
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.varscan2.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1425448
             checksum: 4a6ca754380cf989f62172eb7cdce1e5
@@ -101,7 +102,7 @@ ResearchSubject:
               value: 4e18df21-34e5-4481-b727-9c1b137ee73b
             label: 5ff020da-d7db-4c4a-abe2-98bad5dd1430.wxs.Pindel.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 596076
             checksum: 50e2b0f94fd2decf3f8836ae98a69ab9
@@ -115,7 +116,7 @@ ResearchSubject:
               value: 4e293fae-8113-435e-b879-d3cc7565bc74
             label: cf5b5e37-abf5-415a-aaac-d67195c07d80.wxs.SomaticSniper.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 81760
             checksum: 28832fcc90c81fa5703266d6141628e9
@@ -129,7 +130,7 @@ ResearchSubject:
               value: 5e39c7c2-5ada-4923-8dc8-b4af6b1c204d
             label: 5da24537-dd46-45a7-acb9-2bb3bef2d720.wxs.VarScan2.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 4122
             checksum: c033145e2e6c30d5a0771e977eacefff
@@ -143,7 +144,7 @@ ResearchSubject:
               value: 6892c6ba-66aa-4083-a13e-845ae272700a
             label: fc24fe78-54e7-4d08-be0c-cd923aa6ada9.wxs.aliquot_ensemble_masked.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 446679
             checksum: e456aeed3604fe0d5195ff33640d5c35
@@ -157,7 +158,7 @@ ResearchSubject:
               value: 798486c0-b420-4744-805e-328135b38027
             label: 9be017ac-4a51-491d-a60a-6a0f8afe4df5.wxs.pindel.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1246512
             checksum: a51388dd0d0d8c9d9c0569f05fbc37bc
@@ -171,7 +172,7 @@ ResearchSubject:
               value: 885a4122-86ae-4cdb-bbb5-4340c80e9d36
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.somaticsniper.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 310737
             checksum: 1211955cf1ffd5f0a27e74c286f3edd7
@@ -185,7 +186,7 @@ ResearchSubject:
               value: 8e942be7-e932-4626-bbbe-a63d054cca43
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.mutect2.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 74270
             checksum: 7f81081b43cf138ba795b09069bad5fc
@@ -199,7 +200,7 @@ ResearchSubject:
               value: 979eca2d-9866-4aaa-aebf-139e1781a122
             label: fc24fe78-54e7-4d08-be0c-cd923aa6ada9.wxs.aliquot_ensemble_raw.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1275796
             checksum: a87e3310d124912194d0f274fc061d36
@@ -213,7 +214,7 @@ ResearchSubject:
               value: 9d0e0225-df8a-4d1d-899d-bda1839e4dd6
             label: 20c81dbf-3998-4773-b487-4a325d55e6cd.wxs.MuTect2.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 7858
             checksum: 8c342f245e3810f5859b53ee4e4e459f
@@ -227,7 +228,7 @@ ResearchSubject:
               value: a04a7f5d-ea3e-4988-9085-9b312b9c2880
             label: TARGET-ALL-P2.920bf2a0-2ba0-5d46-9e0b-ef02f10030d8.ascat2.allelic_specific.seg.txt
             file_format: TXT
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 107750
             checksum: 2b8e304d6f97b5831a09871f1e4049b1
@@ -241,7 +242,7 @@ ResearchSubject:
               value: a0d623aa-d634-48e3-8bce-0dbd53ca2c72
             label: 3e256913-6d4c-4ae3-bd9a-489495fe7d90.wxs.VarScan2.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 3482272
             checksum: dcdb77cd1c8026cabd28ac6c808e9250
@@ -255,7 +256,7 @@ ResearchSubject:
               value: bd0ff04b-fdaa-4acf-b9cb-cae4c539d3e8
             label: TARGET-ALL-P2.920bf2a0-2ba0-5d46-9e0b-ef02f10030d8.gene_level_copy_number.tsv
             file_format: TXT
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 583856
             checksum: d7110a7f75abec3d07b7bff89de12e7e
@@ -269,7 +270,7 @@ ResearchSubject:
               value: cd2d0f44-27d8-4428-9f29-5e9625b3d7f7
             label: 0296408a-7365-4c40-ae41-2052c06e69dc.wxs.Pindel.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 23935
             checksum: c618e7c1e8ce92bc4710414252aa2651
@@ -283,7 +284,7 @@ ResearchSubject:
               value: da110c2a-55a1-41b1-a845-93488d63193a
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.muse.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 77774
             checksum: c49858e928f1f412ecba77939021a0ee
@@ -297,7 +298,7 @@ ResearchSubject:
               value: de01cfd3-72c0-48b6-8e31-80279dce8e6e
             label: c28fa842-2ae4-4ec7-b893-14eb3abc89f2.wxs.MuSE.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1617007
             checksum: 46f0263f550f0399df15356f8b16fe57
@@ -311,7 +312,7 @@ ResearchSubject:
               value: eb66f012-158d-409c-b79b-c4cc605eebb3
             label: d6215803-3ddd-4585-b759-274016a3d7c6.wxs.MuTect2.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 54942
             checksum: 7b9cc9b8cad9dd66426f39043b8a8c65
@@ -325,7 +326,7 @@ ResearchSubject:
               value: f41ca7c5-949d-45f2-8288-dd958d52a3f4
             label: b80ca517-4bbd-46bf-a85e-f4719d0ad0dd.wxs.MuSE.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 17366550274
             checksum: a5b68f7b00651b914c3bf8551dca87ca
@@ -339,7 +340,7 @@ ResearchSubject:
               value: fdd730c4-84d8-4779-80db-a32be6b332e8
             label: 3c6c93c2-224e-5532-a449-5db9e1058b46_wxs_gdc_realn.bam
             file_format: BAM
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 750424
             checksum: acac7ee784dc8215ec5e071cd8e0bb5b
@@ -353,7 +354,7 @@ ResearchSubject:
               value: fe1eeacc-4b69-43cc-a3fe-8c31e6c07311
             label: b2606d5b-591f-4ee6-a806-6a0054662975.wxs.SomaticSniper.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
 
       # portion
       - id: "38d9ca12-8d1e-5310-b5cb-7db6065f60b4"
@@ -386,7 +387,7 @@ ResearchSubject:
               value: 333216e7-fa25-4a63-870a-f549d146343b
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.varscan2.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1425448
             checksum: 4a6ca754380cf989f62172eb7cdce1e5
@@ -400,7 +401,7 @@ ResearchSubject:
               value: 4e18df21-34e5-4481-b727-9c1b137ee73b
             label: 5ff020da-d7db-4c4a-abe2-98bad5dd1430.wxs.Pindel.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 596076
             checksum: 50e2b0f94fd2decf3f8836ae98a69ab9
@@ -414,7 +415,7 @@ ResearchSubject:
               value: 4e293fae-8113-435e-b879-d3cc7565bc74
             label: cf5b5e37-abf5-415a-aaac-d67195c07d80.wxs.SomaticSniper.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 81760
             checksum: 28832fcc90c81fa5703266d6141628e9
@@ -428,7 +429,7 @@ ResearchSubject:
               value: 5e39c7c2-5ada-4923-8dc8-b4af6b1c204d
             label: 5da24537-dd46-45a7-acb9-2bb3bef2d720.wxs.VarScan2.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 4122
             checksum: c033145e2e6c30d5a0771e977eacefff
@@ -442,7 +443,7 @@ ResearchSubject:
               value: 6892c6ba-66aa-4083-a13e-845ae272700a
             label: fc24fe78-54e7-4d08-be0c-cd923aa6ada9.wxs.aliquot_ensemble_masked.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 446679
             checksum: e456aeed3604fe0d5195ff33640d5c35
@@ -456,7 +457,7 @@ ResearchSubject:
               value: 798486c0-b420-4744-805e-328135b38027
             label: 9be017ac-4a51-491d-a60a-6a0f8afe4df5.wxs.pindel.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1246512
             checksum: a51388dd0d0d8c9d9c0569f05fbc37bc
@@ -470,7 +471,7 @@ ResearchSubject:
               value: 885a4122-86ae-4cdb-bbb5-4340c80e9d36
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.somaticsniper.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 310737
             checksum: 1211955cf1ffd5f0a27e74c286f3edd7
@@ -484,7 +485,7 @@ ResearchSubject:
               value: 8e942be7-e932-4626-bbbe-a63d054cca43
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.mutect2.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 74270
             checksum: 7f81081b43cf138ba795b09069bad5fc
@@ -498,7 +499,7 @@ ResearchSubject:
               value: 979eca2d-9866-4aaa-aebf-139e1781a122
             label: fc24fe78-54e7-4d08-be0c-cd923aa6ada9.wxs.aliquot_ensemble_raw.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1275796
             checksum: a87e3310d124912194d0f274fc061d36
@@ -512,7 +513,7 @@ ResearchSubject:
               value: 9d0e0225-df8a-4d1d-899d-bda1839e4dd6
             label: 20c81dbf-3998-4773-b487-4a325d55e6cd.wxs.MuTect2.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 7858
             checksum: 8c342f245e3810f5859b53ee4e4e459f
@@ -526,7 +527,7 @@ ResearchSubject:
               value: a04a7f5d-ea3e-4988-9085-9b312b9c2880
             label: TARGET-ALL-P2.920bf2a0-2ba0-5d46-9e0b-ef02f10030d8.ascat2.allelic_specific.seg.txt
             file_format: TXT
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 107750
             checksum: 2b8e304d6f97b5831a09871f1e4049b1
@@ -540,7 +541,7 @@ ResearchSubject:
               value: a0d623aa-d634-48e3-8bce-0dbd53ca2c72
             label: 3e256913-6d4c-4ae3-bd9a-489495fe7d90.wxs.VarScan2.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 3482272
             checksum: dcdb77cd1c8026cabd28ac6c808e9250
@@ -554,7 +555,7 @@ ResearchSubject:
               value: bd0ff04b-fdaa-4acf-b9cb-cae4c539d3e8
             label: TARGET-ALL-P2.920bf2a0-2ba0-5d46-9e0b-ef02f10030d8.gene_level_copy_number.tsv
             file_format: TXT
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 583856
             checksum: d7110a7f75abec3d07b7bff89de12e7e
@@ -568,7 +569,7 @@ ResearchSubject:
               value: cd2d0f44-27d8-4428-9f29-5e9625b3d7f7
             label: 0296408a-7365-4c40-ae41-2052c06e69dc.wxs.Pindel.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 23935
             checksum: c618e7c1e8ce92bc4710414252aa2651
@@ -582,7 +583,7 @@ ResearchSubject:
               value: da110c2a-55a1-41b1-a845-93488d63193a
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.muse.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 77774
             checksum: c49858e928f1f412ecba77939021a0ee
@@ -596,7 +597,7 @@ ResearchSubject:
               value: de01cfd3-72c0-48b6-8e31-80279dce8e6e
             label: c28fa842-2ae4-4ec7-b893-14eb3abc89f2.wxs.MuSE.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1617007
             checksum: 46f0263f550f0399df15356f8b16fe57
@@ -610,7 +611,7 @@ ResearchSubject:
               value: eb66f012-158d-409c-b79b-c4cc605eebb3
             label: d6215803-3ddd-4585-b759-274016a3d7c6.wxs.MuTect2.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 54942
             checksum: 7b9cc9b8cad9dd66426f39043b8a8c65
@@ -624,7 +625,7 @@ ResearchSubject:
               value: f41ca7c5-949d-45f2-8288-dd958d52a3f4
             label: b80ca517-4bbd-46bf-a85e-f4719d0ad0dd.wxs.MuSE.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 17366550274
             checksum: a5b68f7b00651b914c3bf8551dca87ca
@@ -638,7 +639,7 @@ ResearchSubject:
               value: fdd730c4-84d8-4779-80db-a32be6b332e8
             label: 3c6c93c2-224e-5532-a449-5db9e1058b46_wxs_gdc_realn.bam
             file_format: BAM
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 750424
             checksum: acac7ee784dc8215ec5e071cd8e0bb5b
@@ -652,7 +653,7 @@ ResearchSubject:
               value: fe1eeacc-4b69-43cc-a3fe-8c31e6c07311
             label: b2606d5b-591f-4ee6-a806-6a0054662975.wxs.SomaticSniper.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
 
       # analyte
       - id: "e9986bda-b087-5f50-8a6d-63a673454dba"
@@ -685,7 +686,7 @@ ResearchSubject:
               value: 333216e7-fa25-4a63-870a-f549d146343b
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.varscan2.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1425448
             checksum: 4a6ca754380cf989f62172eb7cdce1e5
@@ -699,7 +700,7 @@ ResearchSubject:
               value: 4e18df21-34e5-4481-b727-9c1b137ee73b
             label: 5ff020da-d7db-4c4a-abe2-98bad5dd1430.wxs.Pindel.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 596076
             checksum: 50e2b0f94fd2decf3f8836ae98a69ab9
@@ -713,7 +714,7 @@ ResearchSubject:
               value: 4e293fae-8113-435e-b879-d3cc7565bc74
             label: cf5b5e37-abf5-415a-aaac-d67195c07d80.wxs.SomaticSniper.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 81760
             checksum: 28832fcc90c81fa5703266d6141628e9
@@ -727,7 +728,7 @@ ResearchSubject:
               value: 5e39c7c2-5ada-4923-8dc8-b4af6b1c204d
             label: 5da24537-dd46-45a7-acb9-2bb3bef2d720.wxs.VarScan2.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 4122
             checksum: c033145e2e6c30d5a0771e977eacefff
@@ -741,7 +742,7 @@ ResearchSubject:
               value: 6892c6ba-66aa-4083-a13e-845ae272700a
             label: fc24fe78-54e7-4d08-be0c-cd923aa6ada9.wxs.aliquot_ensemble_masked.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 446679
             checksum: e456aeed3604fe0d5195ff33640d5c35
@@ -755,7 +756,7 @@ ResearchSubject:
               value: 798486c0-b420-4744-805e-328135b38027
             label: 9be017ac-4a51-491d-a60a-6a0f8afe4df5.wxs.pindel.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1246512
             checksum: a51388dd0d0d8c9d9c0569f05fbc37bc
@@ -769,7 +770,7 @@ ResearchSubject:
               value: 885a4122-86ae-4cdb-bbb5-4340c80e9d36
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.somaticsniper.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 310737
             checksum: 1211955cf1ffd5f0a27e74c286f3edd7
@@ -783,7 +784,7 @@ ResearchSubject:
               value: 8e942be7-e932-4626-bbbe-a63d054cca43
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.mutect2.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 74270
             checksum: 7f81081b43cf138ba795b09069bad5fc
@@ -797,7 +798,7 @@ ResearchSubject:
               value: 979eca2d-9866-4aaa-aebf-139e1781a122
             label: fc24fe78-54e7-4d08-be0c-cd923aa6ada9.wxs.aliquot_ensemble_raw.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1275796
             checksum: a87e3310d124912194d0f274fc061d36
@@ -811,7 +812,7 @@ ResearchSubject:
               value: 9d0e0225-df8a-4d1d-899d-bda1839e4dd6
             label: 20c81dbf-3998-4773-b487-4a325d55e6cd.wxs.MuTect2.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 7858
             checksum: 8c342f245e3810f5859b53ee4e4e459f
@@ -825,7 +826,7 @@ ResearchSubject:
               value: a04a7f5d-ea3e-4988-9085-9b312b9c2880
             label: TARGET-ALL-P2.920bf2a0-2ba0-5d46-9e0b-ef02f10030d8.ascat2.allelic_specific.seg.txt
             file_format: TXT
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 107750
             checksum: 2b8e304d6f97b5831a09871f1e4049b1
@@ -839,7 +840,7 @@ ResearchSubject:
               value: a0d623aa-d634-48e3-8bce-0dbd53ca2c72
             label: 3e256913-6d4c-4ae3-bd9a-489495fe7d90.wxs.VarScan2.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 3482272
             checksum: dcdb77cd1c8026cabd28ac6c808e9250
@@ -853,7 +854,7 @@ ResearchSubject:
               value: bd0ff04b-fdaa-4acf-b9cb-cae4c539d3e8
             label: TARGET-ALL-P2.920bf2a0-2ba0-5d46-9e0b-ef02f10030d8.gene_level_copy_number.tsv
             file_format: TXT
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 583856
             checksum: d7110a7f75abec3d07b7bff89de12e7e
@@ -867,7 +868,7 @@ ResearchSubject:
               value: cd2d0f44-27d8-4428-9f29-5e9625b3d7f7
             label: 0296408a-7365-4c40-ae41-2052c06e69dc.wxs.Pindel.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 23935
             checksum: c618e7c1e8ce92bc4710414252aa2651
@@ -881,7 +882,7 @@ ResearchSubject:
               value: da110c2a-55a1-41b1-a845-93488d63193a
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.muse.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 77774
             checksum: c49858e928f1f412ecba77939021a0ee
@@ -895,7 +896,7 @@ ResearchSubject:
               value: de01cfd3-72c0-48b6-8e31-80279dce8e6e
             label: c28fa842-2ae4-4ec7-b893-14eb3abc89f2.wxs.MuSE.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1617007
             checksum: 46f0263f550f0399df15356f8b16fe57
@@ -909,7 +910,7 @@ ResearchSubject:
               value: eb66f012-158d-409c-b79b-c4cc605eebb3
             label: d6215803-3ddd-4585-b759-274016a3d7c6.wxs.MuTect2.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 54942
             checksum: 7b9cc9b8cad9dd66426f39043b8a8c65
@@ -923,7 +924,7 @@ ResearchSubject:
               value: f41ca7c5-949d-45f2-8288-dd958d52a3f4
             label: b80ca517-4bbd-46bf-a85e-f4719d0ad0dd.wxs.MuSE.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 17366550274
             checksum: a5b68f7b00651b914c3bf8551dca87ca
@@ -937,7 +938,7 @@ ResearchSubject:
               value: fdd730c4-84d8-4779-80db-a32be6b332e8
             label: 3c6c93c2-224e-5532-a449-5db9e1058b46_wxs_gdc_realn.bam
             file_format: BAM
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 750424
             checksum: acac7ee784dc8215ec5e071cd8e0bb5b
@@ -951,7 +952,7 @@ ResearchSubject:
               value: fe1eeacc-4b69-43cc-a3fe-8c31e6c07311
             label: b2606d5b-591f-4ee6-a806-6a0054662975.wxs.SomaticSniper.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
 
       # aliquot
       - id: "3c6c93c2-224e-5532-a449-5db9e1058b46"
@@ -984,7 +985,7 @@ ResearchSubject:
               value: 333216e7-fa25-4a63-870a-f549d146343b
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.varscan2.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1425448
             checksum: 4a6ca754380cf989f62172eb7cdce1e5
@@ -998,7 +999,7 @@ ResearchSubject:
               value: 4e18df21-34e5-4481-b727-9c1b137ee73b
             label: 5ff020da-d7db-4c4a-abe2-98bad5dd1430.wxs.Pindel.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 596076
             checksum: 50e2b0f94fd2decf3f8836ae98a69ab9
@@ -1012,7 +1013,7 @@ ResearchSubject:
               value: 4e293fae-8113-435e-b879-d3cc7565bc74
             label: cf5b5e37-abf5-415a-aaac-d67195c07d80.wxs.SomaticSniper.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 81760
             checksum: 28832fcc90c81fa5703266d6141628e9
@@ -1026,7 +1027,7 @@ ResearchSubject:
               value: 5e39c7c2-5ada-4923-8dc8-b4af6b1c204d
             label: 5da24537-dd46-45a7-acb9-2bb3bef2d720.wxs.VarScan2.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 4122
             checksum: c033145e2e6c30d5a0771e977eacefff
@@ -1040,7 +1041,7 @@ ResearchSubject:
               value: 6892c6ba-66aa-4083-a13e-845ae272700a
             label: fc24fe78-54e7-4d08-be0c-cd923aa6ada9.wxs.aliquot_ensemble_masked.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 446679
             checksum: e456aeed3604fe0d5195ff33640d5c35
@@ -1054,7 +1055,7 @@ ResearchSubject:
               value: 798486c0-b420-4744-805e-328135b38027
             label: 9be017ac-4a51-491d-a60a-6a0f8afe4df5.wxs.pindel.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1246512
             checksum: a51388dd0d0d8c9d9c0569f05fbc37bc
@@ -1068,7 +1069,7 @@ ResearchSubject:
               value: 885a4122-86ae-4cdb-bbb5-4340c80e9d36
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.somaticsniper.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 310737
             checksum: 1211955cf1ffd5f0a27e74c286f3edd7
@@ -1082,7 +1083,7 @@ ResearchSubject:
               value: 8e942be7-e932-4626-bbbe-a63d054cca43
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.mutect2.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 74270
             checksum: 7f81081b43cf138ba795b09069bad5fc
@@ -1096,7 +1097,7 @@ ResearchSubject:
               value: 979eca2d-9866-4aaa-aebf-139e1781a122
             label: fc24fe78-54e7-4d08-be0c-cd923aa6ada9.wxs.aliquot_ensemble_raw.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1275796
             checksum: a87e3310d124912194d0f274fc061d36
@@ -1110,7 +1111,7 @@ ResearchSubject:
               value: 9d0e0225-df8a-4d1d-899d-bda1839e4dd6
             label: 20c81dbf-3998-4773-b487-4a325d55e6cd.wxs.MuTect2.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 7858
             checksum: 8c342f245e3810f5859b53ee4e4e459f
@@ -1124,7 +1125,7 @@ ResearchSubject:
               value: a04a7f5d-ea3e-4988-9085-9b312b9c2880
             label: TARGET-ALL-P2.920bf2a0-2ba0-5d46-9e0b-ef02f10030d8.ascat2.allelic_specific.seg.txt
             file_format: TXT
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 107750
             checksum: 2b8e304d6f97b5831a09871f1e4049b1
@@ -1138,7 +1139,7 @@ ResearchSubject:
               value: a0d623aa-d634-48e3-8bce-0dbd53ca2c72
             label: 3e256913-6d4c-4ae3-bd9a-489495fe7d90.wxs.VarScan2.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 3482272
             checksum: dcdb77cd1c8026cabd28ac6c808e9250
@@ -1152,7 +1153,7 @@ ResearchSubject:
               value: bd0ff04b-fdaa-4acf-b9cb-cae4c539d3e8
             label: TARGET-ALL-P2.920bf2a0-2ba0-5d46-9e0b-ef02f10030d8.gene_level_copy_number.tsv
             file_format: TXT
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 583856
             checksum: d7110a7f75abec3d07b7bff89de12e7e
@@ -1166,7 +1167,7 @@ ResearchSubject:
               value: cd2d0f44-27d8-4428-9f29-5e9625b3d7f7
             label: 0296408a-7365-4c40-ae41-2052c06e69dc.wxs.Pindel.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 23935
             checksum: c618e7c1e8ce92bc4710414252aa2651
@@ -1180,7 +1181,7 @@ ResearchSubject:
               value: da110c2a-55a1-41b1-a845-93488d63193a
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.muse.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 77774
             checksum: c49858e928f1f412ecba77939021a0ee
@@ -1194,7 +1195,7 @@ ResearchSubject:
               value: de01cfd3-72c0-48b6-8e31-80279dce8e6e
             label: c28fa842-2ae4-4ec7-b893-14eb3abc89f2.wxs.MuSE.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1617007
             checksum: 46f0263f550f0399df15356f8b16fe57
@@ -1208,7 +1209,7 @@ ResearchSubject:
               value: eb66f012-158d-409c-b79b-c4cc605eebb3
             label: d6215803-3ddd-4585-b759-274016a3d7c6.wxs.MuTect2.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 54942
             checksum: 7b9cc9b8cad9dd66426f39043b8a8c65
@@ -1222,7 +1223,7 @@ ResearchSubject:
               value: f41ca7c5-949d-45f2-8288-dd958d52a3f4
             label: b80ca517-4bbd-46bf-a85e-f4719d0ad0dd.wxs.MuSE.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 17366550274
             checksum: a5b68f7b00651b914c3bf8551dca87ca
@@ -1236,7 +1237,7 @@ ResearchSubject:
               value: fdd730c4-84d8-4779-80db-a32be6b332e8
             label: 3c6c93c2-224e-5532-a449-5db9e1058b46_wxs_gdc_realn.bam
             file_format: BAM
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 750424
             checksum: acac7ee784dc8215ec5e071cd8e0bb5b
@@ -1250,7 +1251,7 @@ ResearchSubject:
               value: fe1eeacc-4b69-43cc-a3fe-8c31e6c07311
             label: b2606d5b-591f-4ee6-a806-6a0054662975.wxs.SomaticSniper.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
 
       - id: "96666e88-de93-5416-8694-75ae5e9dec7e"
         # identifier represents a list of IDs within each system
@@ -1282,7 +1283,7 @@ ResearchSubject:
               value: 037596c3-8422-497f-9a3b-fd2444cb1fe5
             label: ee8ba34c-dc44-4c54-bb9f-e2842a1ec70f.FPKM-UQ.txt.gz
             file_format: TXT
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 3143
             checksum: d0b02980057ff812e8fe754ea4ad0286
@@ -1296,7 +1297,7 @@ ResearchSubject:
               value: 08f3ec69-a9c0-4641-868a-0adda89449ef
             label: 3875098e-d15f-4d0a-9d8e-8752978e9c9f.arriba.rna_fusion.bedpe
             file_format: BEDPE
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 8394839415
             checksum: 8ef1cbbeeb018af3a56d2f402702a754
@@ -1310,7 +1311,7 @@ ResearchSubject:
               value: 2808321b-5165-446a-ae27-ca4b8021c73b
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.genomic.gdc_realn.bam
             file_format: BAM
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 29363
             checksum: aebece56c4c5be8de0acc48e3d9e3146
@@ -1324,7 +1325,7 @@ ResearchSubject:
               value: 333216e7-fa25-4a63-870a-f549d146343b
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.varscan2.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 22922341082
             checksum: e72911eb0f483c98ae02acf868c85f60
@@ -1338,7 +1339,7 @@ ResearchSubject:
               value: 36069ce1-ff28-429d-bfad-5bbac28c181d
             label: 920bf2a0-2ba0-5d46-9e0b-ef02f10030d8_wxs_gdc_realn.bam
             file_format: BAM
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 7813538623
             checksum: cda63bf8d01b2a8e9ddbc78d1686fc85
@@ -1352,7 +1353,7 @@ ResearchSubject:
               value: 3a75af5f-04a8-4e9a-bd45-d0a69333a0fc
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.transcriptome.gdc_realn.bam
             file_format: BAM
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 99532214
             checksum: b5dd7a1301c75f2f68629907fdb178a8
@@ -1366,7 +1367,7 @@ ResearchSubject:
               value: 41c77af2-987f-498b-8bbf-4dfe792046ef
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.chimeric.gdc_realn.bam
             file_format: BAM
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1425448
             checksum: 4a6ca754380cf989f62172eb7cdce1e5
@@ -1380,7 +1381,7 @@ ResearchSubject:
               value: 4e18df21-34e5-4481-b727-9c1b137ee73b
             label: 5ff020da-d7db-4c4a-abe2-98bad5dd1430.wxs.Pindel.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 596076
             checksum: 50e2b0f94fd2decf3f8836ae98a69ab9
@@ -1394,7 +1395,7 @@ ResearchSubject:
               value: 4e293fae-8113-435e-b879-d3cc7565bc74
             label: cf5b5e37-abf5-415a-aaac-d67195c07d80.wxs.SomaticSniper.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 81760
             checksum: 28832fcc90c81fa5703266d6141628e9
@@ -1408,7 +1409,7 @@ ResearchSubject:
               value: 5e39c7c2-5ada-4923-8dc8-b4af6b1c204d
             label: 5da24537-dd46-45a7-acb9-2bb3bef2d720.wxs.VarScan2.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 4122
             checksum: c033145e2e6c30d5a0771e977eacefff
@@ -1422,7 +1423,7 @@ ResearchSubject:
               value: 6892c6ba-66aa-4083-a13e-845ae272700a
             label: fc24fe78-54e7-4d08-be0c-cd923aa6ada9.wxs.aliquot_ensemble_masked.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 446679
             checksum: e456aeed3604fe0d5195ff33640d5c35
@@ -1436,7 +1437,7 @@ ResearchSubject:
               value: 798486c0-b420-4744-805e-328135b38027
             label: 9be017ac-4a51-491d-a60a-6a0f8afe4df5.wxs.pindel.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 323094
             checksum: 5a7d048d39be5c2181cafdb22d47f617
@@ -1450,7 +1451,7 @@ ResearchSubject:
               value: 79c096cb-5768-49d5-b532-93f10ea2d92a
             label: ee8ba34c-dc44-4c54-bb9f-e2842a1ec70f.FPKM.txt.gz
             file_format: TXT
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1246512
             checksum: a51388dd0d0d8c9d9c0569f05fbc37bc
@@ -1464,7 +1465,7 @@ ResearchSubject:
               value: 885a4122-86ae-4cdb-bbb5-4340c80e9d36
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.somaticsniper.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 310737
             checksum: 1211955cf1ffd5f0a27e74c286f3edd7
@@ -1478,7 +1479,7 @@ ResearchSubject:
               value: 8e942be7-e932-4626-bbbe-a63d054cca43
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.mutect2.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 74270
             checksum: 7f81081b43cf138ba795b09069bad5fc
@@ -1492,7 +1493,7 @@ ResearchSubject:
               value: 979eca2d-9866-4aaa-aebf-139e1781a122
             label: fc24fe78-54e7-4d08-be0c-cd923aa6ada9.wxs.aliquot_ensemble_raw.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1275796
             checksum: a87e3310d124912194d0f274fc061d36
@@ -1506,7 +1507,7 @@ ResearchSubject:
               value: 9d0e0225-df8a-4d1d-899d-bda1839e4dd6
             label: 20c81dbf-3998-4773-b487-4a325d55e6cd.wxs.MuTect2.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 980
             checksum: c2a116bcd2d9aa94de89813595b1099e
@@ -1520,7 +1521,7 @@ ResearchSubject:
               value: 9f5168f0-5022-429b-a2c3-da62ac5d6f50
             label: 954009c3-e76e-4337-b5cb-5c7de62a14e9.star_fusion.rna_fusion.bedpe
             file_format: BEDPE
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 7858
             checksum: 8c342f245e3810f5859b53ee4e4e459f
@@ -1534,7 +1535,7 @@ ResearchSubject:
               value: a04a7f5d-ea3e-4988-9085-9b312b9c2880
             label: TARGET-ALL-P2.920bf2a0-2ba0-5d46-9e0b-ef02f10030d8.ascat2.allelic_specific.seg.txt
             file_format: TXT
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 107750
             checksum: 2b8e304d6f97b5831a09871f1e4049b1
@@ -1548,7 +1549,7 @@ ResearchSubject:
               value: a0d623aa-d634-48e3-8bce-0dbd53ca2c72
             label: 3e256913-6d4c-4ae3-bd9a-489495fe7d90.wxs.VarScan2.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 247918
             checksum: f833c9466ee5be1e73bde04c10cf4bba
@@ -1562,7 +1563,7 @@ ResearchSubject:
               value: b5c4a4ee-e64f-48b6-9bc6-30e9e1339ed5
             label: ee8ba34c-dc44-4c54-bb9f-e2842a1ec70f.htseq_counts.txt.gz
             file_format: TXT
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 3482272
             checksum: dcdb77cd1c8026cabd28ac6c808e9250
@@ -1576,7 +1577,7 @@ ResearchSubject:
               value: bd0ff04b-fdaa-4acf-b9cb-cae4c539d3e8
             label: TARGET-ALL-P2.920bf2a0-2ba0-5d46-9e0b-ef02f10030d8.gene_level_copy_number.tsv
             file_format: TXT
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 393263
             checksum: c1aa2cd338c5822748d104ea695e29c8
@@ -1590,7 +1591,7 @@ ResearchSubject:
               value: c88f0dc9-eaf0-4b39-ac18-b8477d5426af
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.star_gene_counts.tsv.gz
             file_format: TSV
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 583856
             checksum: d7110a7f75abec3d07b7bff89de12e7e
@@ -1604,7 +1605,7 @@ ResearchSubject:
               value: cd2d0f44-27d8-4428-9f29-5e9625b3d7f7
             label: 0296408a-7365-4c40-ae41-2052c06e69dc.wxs.Pindel.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 23935
             checksum: c618e7c1e8ce92bc4710414252aa2651
@@ -1618,7 +1619,7 @@ ResearchSubject:
               value: da110c2a-55a1-41b1-a845-93488d63193a
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.muse.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 77774
             checksum: c49858e928f1f412ecba77939021a0ee
@@ -1632,7 +1633,7 @@ ResearchSubject:
               value: de01cfd3-72c0-48b6-8e31-80279dce8e6e
             label: c28fa842-2ae4-4ec7-b893-14eb3abc89f2.wxs.MuSE.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 2865585
             checksum: e2caea9faa0241dddba8ac925f2ecf32
@@ -1646,7 +1647,7 @@ ResearchSubject:
               value: eb179a4c-341b-4fe9-9763-1c181ed2574e
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.star_splice_junctions.tsv.gz
             file_format: TSV
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1617007
             checksum: 46f0263f550f0399df15356f8b16fe57
@@ -1660,7 +1661,7 @@ ResearchSubject:
               value: eb66f012-158d-409c-b79b-c4cc605eebb3
             label: d6215803-3ddd-4585-b759-274016a3d7c6.wxs.MuTect2.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 54942
             checksum: 7b9cc9b8cad9dd66426f39043b8a8c65
@@ -1674,7 +1675,7 @@ ResearchSubject:
               value: f41ca7c5-949d-45f2-8288-dd958d52a3f4
             label: b80ca517-4bbd-46bf-a85e-f4719d0ad0dd.wxs.MuSE.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 750424
             checksum: acac7ee784dc8215ec5e071cd8e0bb5b
@@ -1688,7 +1689,7 @@ ResearchSubject:
               value: fe1eeacc-4b69-43cc-a3fe-8c31e6c07311
             label: b2606d5b-591f-4ee6-a806-6a0054662975.wxs.SomaticSniper.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
     
       # Portion 1
       - id: "4a022574-c827-56e1-bd84-b8c3be07de85"
@@ -1721,7 +1722,7 @@ ResearchSubject:
               value: 037596c3-8422-497f-9a3b-fd2444cb1fe5
             label: ee8ba34c-dc44-4c54-bb9f-e2842a1ec70f.FPKM-UQ.txt.gz
             file_format: TXT
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 3143
             checksum: d0b02980057ff812e8fe754ea4ad0286
@@ -1735,7 +1736,7 @@ ResearchSubject:
               value: 08f3ec69-a9c0-4641-868a-0adda89449ef
             label: 3875098e-d15f-4d0a-9d8e-8752978e9c9f.arriba.rna_fusion.bedpe
             file_format: BEDPE
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 8394839415
             checksum: 8ef1cbbeeb018af3a56d2f402702a754
@@ -1749,7 +1750,7 @@ ResearchSubject:
               value: 2808321b-5165-446a-ae27-ca4b8021c73b
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.genomic.gdc_realn.bam
             file_format: BAM
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 7813538623
             checksum: cda63bf8d01b2a8e9ddbc78d1686fc85
@@ -1763,7 +1764,7 @@ ResearchSubject:
               value: 3a75af5f-04a8-4e9a-bd45-d0a69333a0fc
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.transcriptome.gdc_realn.bam
             file_format: BAM
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 99532214
             checksum: b5dd7a1301c75f2f68629907fdb178a8
@@ -1777,7 +1778,7 @@ ResearchSubject:
               value: 41c77af2-987f-498b-8bbf-4dfe792046ef
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.chimeric.gdc_realn.bam
             file_format: BAM
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 323094
             checksum: 5a7d048d39be5c2181cafdb22d47f617
@@ -1791,7 +1792,7 @@ ResearchSubject:
               value: 79c096cb-5768-49d5-b532-93f10ea2d92a
             label: ee8ba34c-dc44-4c54-bb9f-e2842a1ec70f.FPKM.txt.gz
             file_format: TXT
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 980
             checksum: c2a116bcd2d9aa94de89813595b1099e
@@ -1805,7 +1806,7 @@ ResearchSubject:
               value: 9f5168f0-5022-429b-a2c3-da62ac5d6f50
             label: 954009c3-e76e-4337-b5cb-5c7de62a14e9.star_fusion.rna_fusion.bedpe
             file_format: BEDPE
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 247918
             checksum: f833c9466ee5be1e73bde04c10cf4bba
@@ -1819,7 +1820,7 @@ ResearchSubject:
               value: b5c4a4ee-e64f-48b6-9bc6-30e9e1339ed5
             label: ee8ba34c-dc44-4c54-bb9f-e2842a1ec70f.htseq_counts.txt.gz
             file_format: TXT
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 393263
             checksum: c1aa2cd338c5822748d104ea695e29c8
@@ -1833,7 +1834,7 @@ ResearchSubject:
               value: c88f0dc9-eaf0-4b39-ac18-b8477d5426af
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.star_gene_counts.tsv.gz
             file_format: TSV
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 2865585
             checksum: e2caea9faa0241dddba8ac925f2ecf32
@@ -1847,7 +1848,7 @@ ResearchSubject:
               value: eb179a4c-341b-4fe9-9763-1c181ed2574e
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.star_splice_junctions.tsv.gz
             file_format: TSV
-            data_modality: Genomic 
+            #data_modality: Genomic 
       # analyte
       - id: "3de6eb72-bc24-5713-aa32-d7568c3fe91a"
         # identifier represents a list of IDs within each system
@@ -1879,7 +1880,7 @@ ResearchSubject:
               value: 037596c3-8422-497f-9a3b-fd2444cb1fe5
             label: ee8ba34c-dc44-4c54-bb9f-e2842a1ec70f.FPKM-UQ.txt.gz
             file_format: TXT
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 3143
             checksum: d0b02980057ff812e8fe754ea4ad0286
@@ -1893,7 +1894,7 @@ ResearchSubject:
               value: 08f3ec69-a9c0-4641-868a-0adda89449ef
             label: 3875098e-d15f-4d0a-9d8e-8752978e9c9f.arriba.rna_fusion.bedpe
             file_format: BEDPE
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 8394839415
             checksum: 8ef1cbbeeb018af3a56d2f402702a754
@@ -1907,7 +1908,7 @@ ResearchSubject:
               value: 2808321b-5165-446a-ae27-ca4b8021c73b
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.genomic.gdc_realn.bam
             file_format: BAM
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 7813538623
             checksum: cda63bf8d01b2a8e9ddbc78d1686fc85
@@ -1921,7 +1922,7 @@ ResearchSubject:
               value: 3a75af5f-04a8-4e9a-bd45-d0a69333a0fc
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.transcriptome.gdc_realn.bam
             file_format: BAM
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 99532214
             checksum: b5dd7a1301c75f2f68629907fdb178a8
@@ -1935,7 +1936,7 @@ ResearchSubject:
               value: 41c77af2-987f-498b-8bbf-4dfe792046ef
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.chimeric.gdc_realn.bam
             file_format: BAM
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 323094
             checksum: 5a7d048d39be5c2181cafdb22d47f617
@@ -1949,7 +1950,7 @@ ResearchSubject:
               value: 79c096cb-5768-49d5-b532-93f10ea2d92a
             label: ee8ba34c-dc44-4c54-bb9f-e2842a1ec70f.FPKM.txt.gz
             file_format: TXT
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 980
             checksum: c2a116bcd2d9aa94de89813595b1099e
@@ -1963,7 +1964,7 @@ ResearchSubject:
               value: 9f5168f0-5022-429b-a2c3-da62ac5d6f50
             label: 954009c3-e76e-4337-b5cb-5c7de62a14e9.star_fusion.rna_fusion.bedpe
             file_format: BEDPE
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 247918
             checksum: f833c9466ee5be1e73bde04c10cf4bba
@@ -1977,7 +1978,7 @@ ResearchSubject:
               value: b5c4a4ee-e64f-48b6-9bc6-30e9e1339ed5
             label: ee8ba34c-dc44-4c54-bb9f-e2842a1ec70f.htseq_counts.txt.gz
             file_format: TXT
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 393263
             checksum: c1aa2cd338c5822748d104ea695e29c8
@@ -1991,7 +1992,7 @@ ResearchSubject:
               value: c88f0dc9-eaf0-4b39-ac18-b8477d5426af
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.star_gene_counts.tsv.gz
             file_format: TSV
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 2865585
             checksum: e2caea9faa0241dddba8ac925f2ecf32
@@ -2005,7 +2006,7 @@ ResearchSubject:
               value: eb179a4c-341b-4fe9-9763-1c181ed2574e
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.star_splice_junctions.tsv.gz
             file_format: TSV
-            data_modality: Genomic 
+            #data_modality: Genomic 
       # aliquot
       - id: "017a6212-fdbf-4b5e-99b6-7c84ce4bf46b"
         # identifier represents a list of IDs within each system
@@ -2037,7 +2038,7 @@ ResearchSubject:
               value: 037596c3-8422-497f-9a3b-fd2444cb1fe5
             label: ee8ba34c-dc44-4c54-bb9f-e2842a1ec70f.FPKM-UQ.txt.gz
             file_format: TXT
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 3143
             checksum: d0b02980057ff812e8fe754ea4ad0286
@@ -2051,7 +2052,7 @@ ResearchSubject:
               value: 08f3ec69-a9c0-4641-868a-0adda89449ef
             label: 3875098e-d15f-4d0a-9d8e-8752978e9c9f.arriba.rna_fusion.bedpe
             file_format: BEDPE
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 8394839415
             checksum: 8ef1cbbeeb018af3a56d2f402702a754
@@ -2065,7 +2066,7 @@ ResearchSubject:
               value: 2808321b-5165-446a-ae27-ca4b8021c73b
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.genomic.gdc_realn.bam
             file_format: BAM
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 7813538623
             checksum: cda63bf8d01b2a8e9ddbc78d1686fc85
@@ -2079,7 +2080,7 @@ ResearchSubject:
               value: 3a75af5f-04a8-4e9a-bd45-d0a69333a0fc
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.transcriptome.gdc_realn.bam
             file_format: BAM
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 99532214
             checksum: b5dd7a1301c75f2f68629907fdb178a8
@@ -2093,7 +2094,7 @@ ResearchSubject:
               value: 41c77af2-987f-498b-8bbf-4dfe792046ef
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.chimeric.gdc_realn.bam
             file_format: BAM
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 323094
             checksum: 5a7d048d39be5c2181cafdb22d47f617
@@ -2107,7 +2108,7 @@ ResearchSubject:
               value: 79c096cb-5768-49d5-b532-93f10ea2d92a
             label: ee8ba34c-dc44-4c54-bb9f-e2842a1ec70f.FPKM.txt.gz
             file_format: TXT
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 980
             checksum: c2a116bcd2d9aa94de89813595b1099e
@@ -2121,7 +2122,7 @@ ResearchSubject:
               value: 9f5168f0-5022-429b-a2c3-da62ac5d6f50
             label: 954009c3-e76e-4337-b5cb-5c7de62a14e9.star_fusion.rna_fusion.bedpe
             file_format: BEDPE
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 247918
             checksum: f833c9466ee5be1e73bde04c10cf4bba
@@ -2135,7 +2136,7 @@ ResearchSubject:
               value: b5c4a4ee-e64f-48b6-9bc6-30e9e1339ed5
             label: ee8ba34c-dc44-4c54-bb9f-e2842a1ec70f.htseq_counts.txt.gz
             file_format: TXT
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 393263
             checksum: c1aa2cd338c5822748d104ea695e29c8
@@ -2149,7 +2150,7 @@ ResearchSubject:
               value: c88f0dc9-eaf0-4b39-ac18-b8477d5426af
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.star_gene_counts.tsv.gz
             file_format: TSV
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 2865585
             checksum: e2caea9faa0241dddba8ac925f2ecf32
@@ -2163,7 +2164,7 @@ ResearchSubject:
               value: eb179a4c-341b-4fe9-9763-1c181ed2574e
             label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.star_splice_junctions.tsv.gz
             file_format: TSV
-            data_modality: Genomic  
+            #data_modality: Genomic  
 
       # Portion 2
       - id: "ff999b52-a9bc-5d6d-ac39-aa2d8ad1f78d"
@@ -2196,7 +2197,7 @@ ResearchSubject:
               value: 333216e7-fa25-4a63-870a-f549d146343b
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.varscan2.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 22922341082
             checksum: e72911eb0f483c98ae02acf868c85f60
@@ -2210,7 +2211,7 @@ ResearchSubject:
               value: 36069ce1-ff28-429d-bfad-5bbac28c181d
             label: 920bf2a0-2ba0-5d46-9e0b-ef02f10030d8_wxs_gdc_realn.bam
             file_format: BAM
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1425448
             checksum: 4a6ca754380cf989f62172eb7cdce1e5
@@ -2224,7 +2225,7 @@ ResearchSubject:
               value: 4e18df21-34e5-4481-b727-9c1b137ee73b
             label: 5ff020da-d7db-4c4a-abe2-98bad5dd1430.wxs.Pindel.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 596076
             checksum: 50e2b0f94fd2decf3f8836ae98a69ab9
@@ -2238,7 +2239,7 @@ ResearchSubject:
               value: 4e293fae-8113-435e-b879-d3cc7565bc74
             label: cf5b5e37-abf5-415a-aaac-d67195c07d80.wxs.SomaticSniper.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 81760
             checksum: 28832fcc90c81fa5703266d6141628e9
@@ -2252,7 +2253,7 @@ ResearchSubject:
               value: 5e39c7c2-5ada-4923-8dc8-b4af6b1c204d
             label: 5da24537-dd46-45a7-acb9-2bb3bef2d720.wxs.VarScan2.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 4122
             checksum: c033145e2e6c30d5a0771e977eacefff
@@ -2266,7 +2267,7 @@ ResearchSubject:
               value: 6892c6ba-66aa-4083-a13e-845ae272700a
             label: fc24fe78-54e7-4d08-be0c-cd923aa6ada9.wxs.aliquot_ensemble_masked.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 446679
             checksum: e456aeed3604fe0d5195ff33640d5c35
@@ -2280,7 +2281,7 @@ ResearchSubject:
               value: 798486c0-b420-4744-805e-328135b38027
             label: 9be017ac-4a51-491d-a60a-6a0f8afe4df5.wxs.pindel.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1246512
             checksum: a51388dd0d0d8c9d9c0569f05fbc37bc
@@ -2294,7 +2295,7 @@ ResearchSubject:
               value: 885a4122-86ae-4cdb-bbb5-4340c80e9d36
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.somaticsniper.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 310737
             checksum: 1211955cf1ffd5f0a27e74c286f3edd7
@@ -2308,7 +2309,7 @@ ResearchSubject:
               value: 8e942be7-e932-4626-bbbe-a63d054cca43
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.mutect2.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 74270
             checksum: 7f81081b43cf138ba795b09069bad5fc
@@ -2322,7 +2323,7 @@ ResearchSubject:
               value: 979eca2d-9866-4aaa-aebf-139e1781a122
             label: fc24fe78-54e7-4d08-be0c-cd923aa6ada9.wxs.aliquot_ensemble_raw.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1275796
             checksum: a87e3310d124912194d0f274fc061d36
@@ -2336,7 +2337,7 @@ ResearchSubject:
               value: 9d0e0225-df8a-4d1d-899d-bda1839e4dd6
             label: 20c81dbf-3998-4773-b487-4a325d55e6cd.wxs.MuTect2.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 7858
             checksum: 8c342f245e3810f5859b53ee4e4e459f
@@ -2350,7 +2351,7 @@ ResearchSubject:
               value: a04a7f5d-ea3e-4988-9085-9b312b9c2880
             label: TARGET-ALL-P2.920bf2a0-2ba0-5d46-9e0b-ef02f10030d8.ascat2.allelic_specific.seg.txt
             file_format: TXT
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 107750
             checksum: 2b8e304d6f97b5831a09871f1e4049b1
@@ -2364,7 +2365,7 @@ ResearchSubject:
               value: a0d623aa-d634-48e3-8bce-0dbd53ca2c72
             label: 3e256913-6d4c-4ae3-bd9a-489495fe7d90.wxs.VarScan2.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 3482272
             checksum: dcdb77cd1c8026cabd28ac6c808e9250
@@ -2378,7 +2379,7 @@ ResearchSubject:
               value: bd0ff04b-fdaa-4acf-b9cb-cae4c539d3e8
             label: TARGET-ALL-P2.920bf2a0-2ba0-5d46-9e0b-ef02f10030d8.gene_level_copy_number.tsv
             file_format: TXT
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 583856
             checksum: d7110a7f75abec3d07b7bff89de12e7e
@@ -2392,7 +2393,7 @@ ResearchSubject:
               value: cd2d0f44-27d8-4428-9f29-5e9625b3d7f7
             label: 0296408a-7365-4c40-ae41-2052c06e69dc.wxs.Pindel.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 23935
             checksum: c618e7c1e8ce92bc4710414252aa2651
@@ -2406,7 +2407,7 @@ ResearchSubject:
               value: da110c2a-55a1-41b1-a845-93488d63193a
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.muse.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 77774
             checksum: c49858e928f1f412ecba77939021a0ee
@@ -2420,7 +2421,7 @@ ResearchSubject:
               value: de01cfd3-72c0-48b6-8e31-80279dce8e6e
             label: c28fa842-2ae4-4ec7-b893-14eb3abc89f2.wxs.MuSE.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1617007
             checksum: 46f0263f550f0399df15356f8b16fe57
@@ -2434,7 +2435,7 @@ ResearchSubject:
               value: eb66f012-158d-409c-b79b-c4cc605eebb3
             label: d6215803-3ddd-4585-b759-274016a3d7c6.wxs.MuTect2.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 54942
             checksum: 7b9cc9b8cad9dd66426f39043b8a8c65
@@ -2448,7 +2449,7 @@ ResearchSubject:
               value: f41ca7c5-949d-45f2-8288-dd958d52a3f4
             label: b80ca517-4bbd-46bf-a85e-f4719d0ad0dd.wxs.MuSE.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 750424
             checksum: acac7ee784dc8215ec5e071cd8e0bb5b
@@ -2462,7 +2463,7 @@ ResearchSubject:
               value: fe1eeacc-4b69-43cc-a3fe-8c31e6c07311
             label: b2606d5b-591f-4ee6-a806-6a0054662975.wxs.SomaticSniper.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
 
       # analyte
       - id: "ee3dc079-4b9c-56b5-87f7-3cb2cad9394f"
@@ -2495,7 +2496,7 @@ ResearchSubject:
               value: 333216e7-fa25-4a63-870a-f549d146343b
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.varscan2.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 22922341082
             checksum: e72911eb0f483c98ae02acf868c85f60
@@ -2509,7 +2510,7 @@ ResearchSubject:
               value: 36069ce1-ff28-429d-bfad-5bbac28c181d
             label: 920bf2a0-2ba0-5d46-9e0b-ef02f10030d8_wxs_gdc_realn.bam
             file_format: BAM
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1425448
             checksum: 4a6ca754380cf989f62172eb7cdce1e5
@@ -2523,7 +2524,7 @@ ResearchSubject:
               value: 4e18df21-34e5-4481-b727-9c1b137ee73b
             label: 5ff020da-d7db-4c4a-abe2-98bad5dd1430.wxs.Pindel.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 596076
             checksum: 50e2b0f94fd2decf3f8836ae98a69ab9
@@ -2537,7 +2538,7 @@ ResearchSubject:
               value: 4e293fae-8113-435e-b879-d3cc7565bc74
             label: cf5b5e37-abf5-415a-aaac-d67195c07d80.wxs.SomaticSniper.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 81760
             checksum: 28832fcc90c81fa5703266d6141628e9
@@ -2551,7 +2552,7 @@ ResearchSubject:
               value: 5e39c7c2-5ada-4923-8dc8-b4af6b1c204d
             label: 5da24537-dd46-45a7-acb9-2bb3bef2d720.wxs.VarScan2.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 4122
             checksum: c033145e2e6c30d5a0771e977eacefff
@@ -2565,7 +2566,7 @@ ResearchSubject:
               value: 6892c6ba-66aa-4083-a13e-845ae272700a
             label: fc24fe78-54e7-4d08-be0c-cd923aa6ada9.wxs.aliquot_ensemble_masked.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 446679
             checksum: e456aeed3604fe0d5195ff33640d5c35
@@ -2579,7 +2580,7 @@ ResearchSubject:
               value: 798486c0-b420-4744-805e-328135b38027
             label: 9be017ac-4a51-491d-a60a-6a0f8afe4df5.wxs.pindel.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1246512
             checksum: a51388dd0d0d8c9d9c0569f05fbc37bc
@@ -2593,7 +2594,7 @@ ResearchSubject:
               value: 885a4122-86ae-4cdb-bbb5-4340c80e9d36
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.somaticsniper.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 310737
             checksum: 1211955cf1ffd5f0a27e74c286f3edd7
@@ -2607,7 +2608,7 @@ ResearchSubject:
               value: 8e942be7-e932-4626-bbbe-a63d054cca43
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.mutect2.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 74270
             checksum: 7f81081b43cf138ba795b09069bad5fc
@@ -2621,7 +2622,7 @@ ResearchSubject:
               value: 979eca2d-9866-4aaa-aebf-139e1781a122
             label: fc24fe78-54e7-4d08-be0c-cd923aa6ada9.wxs.aliquot_ensemble_raw.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1275796
             checksum: a87e3310d124912194d0f274fc061d36
@@ -2635,7 +2636,7 @@ ResearchSubject:
               value: 9d0e0225-df8a-4d1d-899d-bda1839e4dd6
             label: 20c81dbf-3998-4773-b487-4a325d55e6cd.wxs.MuTect2.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 7858
             checksum: 8c342f245e3810f5859b53ee4e4e459f
@@ -2649,7 +2650,7 @@ ResearchSubject:
               value: a04a7f5d-ea3e-4988-9085-9b312b9c2880
             label: TARGET-ALL-P2.920bf2a0-2ba0-5d46-9e0b-ef02f10030d8.ascat2.allelic_specific.seg.txt
             file_format: TXT
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 107750
             checksum: 2b8e304d6f97b5831a09871f1e4049b1
@@ -2663,7 +2664,7 @@ ResearchSubject:
               value: a0d623aa-d634-48e3-8bce-0dbd53ca2c72
             label: 3e256913-6d4c-4ae3-bd9a-489495fe7d90.wxs.VarScan2.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 3482272
             checksum: dcdb77cd1c8026cabd28ac6c808e9250
@@ -2677,7 +2678,7 @@ ResearchSubject:
               value: bd0ff04b-fdaa-4acf-b9cb-cae4c539d3e8
             label: TARGET-ALL-P2.920bf2a0-2ba0-5d46-9e0b-ef02f10030d8.gene_level_copy_number.tsv
             file_format: TXT
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 583856
             checksum: d7110a7f75abec3d07b7bff89de12e7e
@@ -2691,7 +2692,7 @@ ResearchSubject:
               value: cd2d0f44-27d8-4428-9f29-5e9625b3d7f7
             label: 0296408a-7365-4c40-ae41-2052c06e69dc.wxs.Pindel.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 23935
             checksum: c618e7c1e8ce92bc4710414252aa2651
@@ -2705,7 +2706,7 @@ ResearchSubject:
               value: da110c2a-55a1-41b1-a845-93488d63193a
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.muse.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 77774
             checksum: c49858e928f1f412ecba77939021a0ee
@@ -2719,7 +2720,7 @@ ResearchSubject:
               value: de01cfd3-72c0-48b6-8e31-80279dce8e6e
             label: c28fa842-2ae4-4ec7-b893-14eb3abc89f2.wxs.MuSE.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1617007
             checksum: 46f0263f550f0399df15356f8b16fe57
@@ -2733,7 +2734,7 @@ ResearchSubject:
               value: eb66f012-158d-409c-b79b-c4cc605eebb3
             label: d6215803-3ddd-4585-b759-274016a3d7c6.wxs.MuTect2.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 54942
             checksum: 7b9cc9b8cad9dd66426f39043b8a8c65
@@ -2747,7 +2748,7 @@ ResearchSubject:
               value: f41ca7c5-949d-45f2-8288-dd958d52a3f4
             label: b80ca517-4bbd-46bf-a85e-f4719d0ad0dd.wxs.MuSE.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 750424
             checksum: acac7ee784dc8215ec5e071cd8e0bb5b
@@ -2761,7 +2762,7 @@ ResearchSubject:
               value: fe1eeacc-4b69-43cc-a3fe-8c31e6c07311
             label: b2606d5b-591f-4ee6-a806-6a0054662975.wxs.SomaticSniper.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
       # aliquot
       - id: "920bf2a0-2ba0-5d46-9e0b-ef02f10030d8"
         # identifier represents a list of IDs within each system
@@ -2793,7 +2794,7 @@ ResearchSubject:
               value: 333216e7-fa25-4a63-870a-f549d146343b
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.varscan2.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 22922341082
             checksum: e72911eb0f483c98ae02acf868c85f60
@@ -2807,7 +2808,7 @@ ResearchSubject:
               value: 36069ce1-ff28-429d-bfad-5bbac28c181d
             label: 920bf2a0-2ba0-5d46-9e0b-ef02f10030d8_wxs_gdc_realn.bam
             file_format: BAM
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1425448
             checksum: 4a6ca754380cf989f62172eb7cdce1e5
@@ -2821,7 +2822,7 @@ ResearchSubject:
               value: 4e18df21-34e5-4481-b727-9c1b137ee73b
             label: 5ff020da-d7db-4c4a-abe2-98bad5dd1430.wxs.Pindel.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 596076
             checksum: 50e2b0f94fd2decf3f8836ae98a69ab9
@@ -2835,7 +2836,7 @@ ResearchSubject:
               value: 4e293fae-8113-435e-b879-d3cc7565bc74
             label: cf5b5e37-abf5-415a-aaac-d67195c07d80.wxs.SomaticSniper.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 81760
             checksum: 28832fcc90c81fa5703266d6141628e9
@@ -2849,7 +2850,7 @@ ResearchSubject:
               value: 5e39c7c2-5ada-4923-8dc8-b4af6b1c204d
             label: 5da24537-dd46-45a7-acb9-2bb3bef2d720.wxs.VarScan2.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 4122
             checksum: c033145e2e6c30d5a0771e977eacefff
@@ -2863,7 +2864,7 @@ ResearchSubject:
               value: 6892c6ba-66aa-4083-a13e-845ae272700a
             label: fc24fe78-54e7-4d08-be0c-cd923aa6ada9.wxs.aliquot_ensemble_masked.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 446679
             checksum: e456aeed3604fe0d5195ff33640d5c35
@@ -2877,7 +2878,7 @@ ResearchSubject:
               value: 798486c0-b420-4744-805e-328135b38027
             label: 9be017ac-4a51-491d-a60a-6a0f8afe4df5.wxs.pindel.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1246512
             checksum: a51388dd0d0d8c9d9c0569f05fbc37bc
@@ -2891,7 +2892,7 @@ ResearchSubject:
               value: 885a4122-86ae-4cdb-bbb5-4340c80e9d36
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.somaticsniper.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 310737
             checksum: 1211955cf1ffd5f0a27e74c286f3edd7
@@ -2905,7 +2906,7 @@ ResearchSubject:
               value: 8e942be7-e932-4626-bbbe-a63d054cca43
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.mutect2.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 74270
             checksum: 7f81081b43cf138ba795b09069bad5fc
@@ -2919,7 +2920,7 @@ ResearchSubject:
               value: 979eca2d-9866-4aaa-aebf-139e1781a122
             label: fc24fe78-54e7-4d08-be0c-cd923aa6ada9.wxs.aliquot_ensemble_raw.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1275796
             checksum: a87e3310d124912194d0f274fc061d36
@@ -2933,7 +2934,7 @@ ResearchSubject:
               value: 9d0e0225-df8a-4d1d-899d-bda1839e4dd6
             label: 20c81dbf-3998-4773-b487-4a325d55e6cd.wxs.MuTect2.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 7858
             checksum: 8c342f245e3810f5859b53ee4e4e459f
@@ -2947,7 +2948,7 @@ ResearchSubject:
               value: a04a7f5d-ea3e-4988-9085-9b312b9c2880
             label: TARGET-ALL-P2.920bf2a0-2ba0-5d46-9e0b-ef02f10030d8.ascat2.allelic_specific.seg.txt
             file_format: TXT
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 107750
             checksum: 2b8e304d6f97b5831a09871f1e4049b1
@@ -2961,7 +2962,7 @@ ResearchSubject:
               value: a0d623aa-d634-48e3-8bce-0dbd53ca2c72
             label: 3e256913-6d4c-4ae3-bd9a-489495fe7d90.wxs.VarScan2.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 3482272
             checksum: dcdb77cd1c8026cabd28ac6c808e9250
@@ -2975,7 +2976,7 @@ ResearchSubject:
               value: bd0ff04b-fdaa-4acf-b9cb-cae4c539d3e8
             label: TARGET-ALL-P2.920bf2a0-2ba0-5d46-9e0b-ef02f10030d8.gene_level_copy_number.tsv
             file_format: TXT
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 583856
             checksum: d7110a7f75abec3d07b7bff89de12e7e
@@ -2989,7 +2990,7 @@ ResearchSubject:
               value: cd2d0f44-27d8-4428-9f29-5e9625b3d7f7
             label: 0296408a-7365-4c40-ae41-2052c06e69dc.wxs.Pindel.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 23935
             checksum: c618e7c1e8ce92bc4710414252aa2651
@@ -3003,7 +3004,7 @@ ResearchSubject:
               value: da110c2a-55a1-41b1-a845-93488d63193a
             label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.muse.raw_somatic_mutation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 77774
             checksum: c49858e928f1f412ecba77939021a0ee
@@ -3017,7 +3018,7 @@ ResearchSubject:
               value: de01cfd3-72c0-48b6-8e31-80279dce8e6e
             label: c28fa842-2ae4-4ec7-b893-14eb3abc89f2.wxs.MuSE.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 1617007
             checksum: 46f0263f550f0399df15356f8b16fe57
@@ -3031,7 +3032,7 @@ ResearchSubject:
               value: eb66f012-158d-409c-b79b-c4cc605eebb3
             label: d6215803-3ddd-4585-b759-274016a3d7c6.wxs.MuTect2.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 54942
             checksum: 7b9cc9b8cad9dd66426f39043b8a8c65
@@ -3045,7 +3046,7 @@ ResearchSubject:
               value: f41ca7c5-949d-45f2-8288-dd958d52a3f4
             label: b80ca517-4bbd-46bf-a85e-f4719d0ad0dd.wxs.MuSE.aliquot.maf.gz
             file_format: MAF
-            data_modality: Genomic
+            #data_modality: Genomic
           - associated_project: TARGET-ALL-P2
             byte_size: 750424
             checksum: acac7ee784dc8215ec5e071cd8e0bb5b
@@ -3059,7 +3060,7 @@ ResearchSubject:
               value: fe1eeacc-4b69-43cc-a3fe-8c31e6c07311
             label: b2606d5b-591f-4ee6-a806-6a0054662975.wxs.SomaticSniper.somatic_annotation.vcf.gz
             file_format: VCF
-            data_modality: Genomic
+            #data_modality: Genomic
     Diagnosis:
       - id: "63c6c7a2-c3e6-5e2b-9dd6-03bfabef5178"
         identifier:
@@ -3086,7 +3087,7 @@ ResearchSubject:
           value: 5d580488-a65f-4c7d-bf3e-5e109c06974e
         label: TARGET_ALL_ClinicalData_Phase_II_Validation_20170525.xlsx
         file_format: XLSX
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 1246512
         checksum: a51388dd0d0d8c9d9c0569f05fbc37bc
@@ -3100,7 +3101,7 @@ ResearchSubject:
           value: 885a4122-86ae-4cdb-bbb5-4340c80e9d36
         label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.somaticsniper.raw_somatic_mutation.vcf.gz
         file_format: VCF
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 583856
         checksum: d7110a7f75abec3d07b7bff89de12e7e
@@ -3114,7 +3115,7 @@ ResearchSubject:
           value: cd2d0f44-27d8-4428-9f29-5e9625b3d7f7
         label: 0296408a-7365-4c40-ae41-2052c06e69dc.wxs.Pindel.somatic_annotation.vcf.gz
         file_format: VCF
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 596076
         checksum: 50e2b0f94fd2decf3f8836ae98a69ab9
@@ -3128,7 +3129,7 @@ ResearchSubject:
           value: 4e293fae-8113-435e-b879-d3cc7565bc74
         label: cf5b5e37-abf5-415a-aaac-d67195c07d80.wxs.SomaticSniper.aliquot.maf.gz
         file_format: MAF
-        data_modality: Genomic
+        #data_modality: Genomic
       - associated_project: TARGET-ALL-P2
         byte_size: 24390
         checksum: f0c7a3b23354e5ce9fd13712daa35c4e
@@ -3142,7 +3143,7 @@ ResearchSubject:
           value: 69efa42c-8dd9-451e-9e1e-47beecc5a7f7
         label: TARGET_ALL_CDE_20181213.xlsx
         file_format: XLSX
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 750424
         checksum: acac7ee784dc8215ec5e071cd8e0bb5b
@@ -3156,7 +3157,7 @@ ResearchSubject:
           value: fe1eeacc-4b69-43cc-a3fe-8c31e6c07311
         label: b2606d5b-591f-4ee6-a806-6a0054662975.wxs.SomaticSniper.somatic_annotation.vcf.gz
         file_format: VCF
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 393263
         checksum: c1aa2cd338c5822748d104ea695e29c8
@@ -3170,7 +3171,7 @@ ResearchSubject:
           value: c88f0dc9-eaf0-4b39-ac18-b8477d5426af
         label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.star_gene_counts.tsv.gz
         file_format: TSV
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 446679
         checksum: e456aeed3604fe0d5195ff33640d5c35
@@ -3184,7 +3185,7 @@ ResearchSubject:
           value: 798486c0-b420-4744-805e-328135b38027
         label: 9be017ac-4a51-491d-a60a-6a0f8afe4df5.wxs.pindel.raw_somatic_mutation.vcf.gz
         file_format: VCF
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 81760
         checksum: 28832fcc90c81fa5703266d6141628e9
@@ -3198,7 +3199,7 @@ ResearchSubject:
           value: 5e39c7c2-5ada-4923-8dc8-b4af6b1c204d
         label: 5da24537-dd46-45a7-acb9-2bb3bef2d720.wxs.VarScan2.aliquot.maf.gz
         file_format: MAF
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 3143
         checksum: d0b02980057ff812e8fe754ea4ad0286
@@ -3212,7 +3213,7 @@ ResearchSubject:
           value: 08f3ec69-a9c0-4641-868a-0adda89449ef
         label: 3875098e-d15f-4d0a-9d8e-8752978e9c9f.arriba.rna_fusion.bedpe
         file_format: BEDPE
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 2865585
         checksum: e2caea9faa0241dddba8ac925f2ecf32
@@ -3226,7 +3227,7 @@ ResearchSubject:
           value: eb179a4c-341b-4fe9-9763-1c181ed2574e
         label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.star_splice_junctions.tsv.gz
         file_format: TSV
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 99532214
         checksum: b5dd7a1301c75f2f68629907fdb178a8
@@ -3240,7 +3241,7 @@ ResearchSubject:
           value: 41c77af2-987f-498b-8bbf-4dfe792046ef
         label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.chimeric.gdc_realn.bam
         file_format: BAM
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 25697
         checksum: 69d3a57683cad072f53552a8ddffaeab
@@ -3254,7 +3255,7 @@ ResearchSubject:
           value: f5745326-39d1-46b0-8a82-2d901096a79d
         label: TARGET_ALL_ClinicalData_Validation_Supplement_20190129.xlsx
         file_format: XLSX
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 7858
         checksum: 8c342f245e3810f5859b53ee4e4e459f
@@ -3268,7 +3269,7 @@ ResearchSubject:
           value: a04a7f5d-ea3e-4988-9085-9b312b9c2880
         label: TARGET-ALL-P2.920bf2a0-2ba0-5d46-9e0b-ef02f10030d8.ascat2.allelic_specific.seg.txt
         file_format: TXT
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 1617007
         checksum: 46f0263f550f0399df15356f8b16fe57
@@ -3282,7 +3283,7 @@ ResearchSubject:
           value: eb66f012-158d-409c-b79b-c4cc605eebb3
         label: d6215803-3ddd-4585-b759-274016a3d7c6.wxs.MuTect2.somatic_annotation.vcf.gz
         file_format: VCF
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 22922341082
         checksum: e72911eb0f483c98ae02acf868c85f60
@@ -3296,7 +3297,7 @@ ResearchSubject:
           value: 36069ce1-ff28-429d-bfad-5bbac28c181d
         label: 920bf2a0-2ba0-5d46-9e0b-ef02f10030d8_wxs_gdc_realn.bam
         file_format: BAM
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 1425448
         checksum: 4a6ca754380cf989f62172eb7cdce1e5
@@ -3310,7 +3311,7 @@ ResearchSubject:
           value: 4e18df21-34e5-4481-b727-9c1b137ee73b
         label: 5ff020da-d7db-4c4a-abe2-98bad5dd1430.wxs.Pindel.aliquot.maf.gz
         file_format: MAF
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 3482272
         checksum: dcdb77cd1c8026cabd28ac6c808e9250
@@ -3324,7 +3325,7 @@ ResearchSubject:
           value: bd0ff04b-fdaa-4acf-b9cb-cae4c539d3e8
         label: TARGET-ALL-P2.920bf2a0-2ba0-5d46-9e0b-ef02f10030d8.gene_level_copy_number.tsv
         file_format: TXT
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 7813538623
         checksum: cda63bf8d01b2a8e9ddbc78d1686fc85
@@ -3338,7 +3339,7 @@ ResearchSubject:
           value: 3a75af5f-04a8-4e9a-bd45-d0a69333a0fc
         label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.transcriptome.gdc_realn.bam
         file_format: BAM
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 308214
         checksum: b002c3578f8454603025afcc8151d6d3
@@ -3352,7 +3353,7 @@ ResearchSubject:
           value: 798b05d1-6a9e-47f1-8bf7-6831186ddbd5
         label: TARGET_ALL_SampleMatrix_Phase2_Validation_20190606.xlsx
         file_format: XLSX
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 51171
         checksum: 42a920f9b9fef3e64ad6e6094274b5fd
@@ -3366,7 +3367,7 @@ ResearchSubject:
           value: ddb48316-8690-4697-91bb-2366bc021d67
         label: TARGET_ALL_ClinicalData_Validation_Percent_Blast_Supplement_20170525.xlsx
         file_format: XLSX
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 107750
         checksum: 2b8e304d6f97b5831a09871f1e4049b1
@@ -3380,7 +3381,7 @@ ResearchSubject:
           value: a0d623aa-d634-48e3-8bce-0dbd53ca2c72
         label: 3e256913-6d4c-4ae3-bd9a-489495fe7d90.wxs.VarScan2.somatic_annotation.vcf.gz
         file_format: VCF
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 310737
         checksum: 1211955cf1ffd5f0a27e74c286f3edd7
@@ -3394,7 +3395,7 @@ ResearchSubject:
           value: 8e942be7-e932-4626-bbbe-a63d054cca43
         label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.mutect2.raw_somatic_mutation.vcf.gz
         file_format: VCF
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 54942
         checksum: 7b9cc9b8cad9dd66426f39043b8a8c65
@@ -3408,7 +3409,7 @@ ResearchSubject:
           value: f41ca7c5-949d-45f2-8288-dd958d52a3f4
         label: b80ca517-4bbd-46bf-a85e-f4719d0ad0dd.wxs.MuSE.aliquot.maf.gz
         file_format: MAF
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 23935
         checksum: c618e7c1e8ce92bc4710414252aa2651
@@ -3422,7 +3423,7 @@ ResearchSubject:
           value: da110c2a-55a1-41b1-a845-93488d63193a
         label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.muse.raw_somatic_mutation.vcf.gz
         file_format: VCF
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 980
         checksum: c2a116bcd2d9aa94de89813595b1099e
@@ -3436,7 +3437,7 @@ ResearchSubject:
           value: 9f5168f0-5022-429b-a2c3-da62ac5d6f50
         label: 954009c3-e76e-4337-b5cb-5c7de62a14e9.star_fusion.rna_fusion.bedpe
         file_format: BEDPE
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 323094
         checksum: 5a7d048d39be5c2181cafdb22d47f617
@@ -3450,7 +3451,7 @@ ResearchSubject:
           value: 79c096cb-5768-49d5-b532-93f10ea2d92a
         label: ee8ba34c-dc44-4c54-bb9f-e2842a1ec70f.FPKM.txt.gz
         file_format: TXT
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 17366550274
         checksum: a5b68f7b00651b914c3bf8551dca87ca
@@ -3464,7 +3465,7 @@ ResearchSubject:
           value: fdd730c4-84d8-4779-80db-a32be6b332e8
         label: 3c6c93c2-224e-5532-a449-5db9e1058b46_wxs_gdc_realn.bam
         file_format: BAM
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 413749
         checksum: 9c7bba88d964b24a6930e57944b15f0e
@@ -3478,7 +3479,7 @@ ResearchSubject:
           value: 037596c3-8422-497f-9a3b-fd2444cb1fe5
         label: ee8ba34c-dc44-4c54-bb9f-e2842a1ec70f.FPKM-UQ.txt.gz
         file_format: TXT
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 29363
         checksum: aebece56c4c5be8de0acc48e3d9e3146
@@ -3492,7 +3493,7 @@ ResearchSubject:
           value: 333216e7-fa25-4a63-870a-f549d146343b
         label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.varscan2.raw_somatic_mutation.vcf.gz
         file_format: VCF
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 8394839415
         checksum: 8ef1cbbeeb018af3a56d2f402702a754
@@ -3506,7 +3507,7 @@ ResearchSubject:
           value: 2808321b-5165-446a-ae27-ca4b8021c73b
         label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.genomic.gdc_realn.bam
         file_format: BAM
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 74270
         checksum: 7f81081b43cf138ba795b09069bad5fc
@@ -3520,7 +3521,7 @@ ResearchSubject:
           value: 979eca2d-9866-4aaa-aebf-139e1781a122
         label: fc24fe78-54e7-4d08-be0c-cd923aa6ada9.wxs.aliquot_ensemble_raw.maf.gz
         file_format: MAF
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 77774
         checksum: c49858e928f1f412ecba77939021a0ee
@@ -3534,7 +3535,7 @@ ResearchSubject:
           value: de01cfd3-72c0-48b6-8e31-80279dce8e6e
         label: c28fa842-2ae4-4ec7-b893-14eb3abc89f2.wxs.MuSE.somatic_annotation.vcf.gz
         file_format: VCF
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 1275796
         checksum: a87e3310d124912194d0f274fc061d36
@@ -3548,7 +3549,7 @@ ResearchSubject:
           value: 9d0e0225-df8a-4d1d-899d-bda1839e4dd6
         label: 20c81dbf-3998-4773-b487-4a325d55e6cd.wxs.MuTect2.aliquot.maf.gz
         file_format: MAF
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 247918
         checksum: f833c9466ee5be1e73bde04c10cf4bba
@@ -3562,7 +3563,7 @@ ResearchSubject:
           value: b5c4a4ee-e64f-48b6-9bc6-30e9e1339ed5
         label: ee8ba34c-dc44-4c54-bb9f-e2842a1ec70f.htseq_counts.txt.gz
         file_format: TXT
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
       - associated_project: TARGET-ALL-P2
         byte_size: 4122
         checksum: c033145e2e6c30d5a0771e977eacefff
@@ -3576,7 +3577,7 @@ ResearchSubject:
           value: 6892c6ba-66aa-4083-a13e-845ae272700a
         label: fc24fe78-54e7-4d08-be0c-cd923aa6ada9.wxs.aliquot_ensemble_masked.maf.gz
         file_format: MAF
-        data_modality: "Genomic"
+        #data_modality: "Genomic"
 File:
   - associated_project: TARGET-ALL-P2
     byte_size: 145790
@@ -3591,7 +3592,7 @@ File:
       value: 5d580488-a65f-4c7d-bf3e-5e109c06974e
     label: TARGET_ALL_ClinicalData_Phase_II_Validation_20170525.xlsx
     file_format: XLSX
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 1246512
     checksum: a51388dd0d0d8c9d9c0569f05fbc37bc
@@ -3605,7 +3606,7 @@ File:
       value: 885a4122-86ae-4cdb-bbb5-4340c80e9d36
     label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.somaticsniper.raw_somatic_mutation.vcf.gz
     file_format: VCF
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 583856
     checksum: d7110a7f75abec3d07b7bff89de12e7e
@@ -3619,7 +3620,7 @@ File:
       value: cd2d0f44-27d8-4428-9f29-5e9625b3d7f7
     label: 0296408a-7365-4c40-ae41-2052c06e69dc.wxs.Pindel.somatic_annotation.vcf.gz
     file_format: VCF
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 596076
     checksum: 50e2b0f94fd2decf3f8836ae98a69ab9
@@ -3633,7 +3634,7 @@ File:
       value: 4e293fae-8113-435e-b879-d3cc7565bc74
     label: cf5b5e37-abf5-415a-aaac-d67195c07d80.wxs.SomaticSniper.aliquot.maf.gz
     file_format: MAF
-    data_modality: Genomic
+    #data_modality: Genomic
   - associated_project: TARGET-ALL-P2
     byte_size: 24390
     checksum: f0c7a3b23354e5ce9fd13712daa35c4e
@@ -3647,7 +3648,7 @@ File:
       value: 69efa42c-8dd9-451e-9e1e-47beecc5a7f7
     label: TARGET_ALL_CDE_20181213.xlsx
     file_format: XLSX
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 750424
     checksum: acac7ee784dc8215ec5e071cd8e0bb5b
@@ -3661,7 +3662,7 @@ File:
       value: fe1eeacc-4b69-43cc-a3fe-8c31e6c07311
     label: b2606d5b-591f-4ee6-a806-6a0054662975.wxs.SomaticSniper.somatic_annotation.vcf.gz
     file_format: VCF
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 393263
     checksum: c1aa2cd338c5822748d104ea695e29c8
@@ -3675,7 +3676,7 @@ File:
       value: c88f0dc9-eaf0-4b39-ac18-b8477d5426af
     label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.star_gene_counts.tsv.gz
     file_format: TSV
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 446679
     checksum: e456aeed3604fe0d5195ff33640d5c35
@@ -3689,7 +3690,7 @@ File:
       value: 798486c0-b420-4744-805e-328135b38027
     label: 9be017ac-4a51-491d-a60a-6a0f8afe4df5.wxs.pindel.raw_somatic_mutation.vcf.gz
     file_format: VCF
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 81760
     checksum: 28832fcc90c81fa5703266d6141628e9
@@ -3703,7 +3704,7 @@ File:
       value: 5e39c7c2-5ada-4923-8dc8-b4af6b1c204d
     label: 5da24537-dd46-45a7-acb9-2bb3bef2d720.wxs.VarScan2.aliquot.maf.gz
     file_format: MAF
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 3143
     checksum: d0b02980057ff812e8fe754ea4ad0286
@@ -3717,7 +3718,7 @@ File:
       value: 08f3ec69-a9c0-4641-868a-0adda89449ef
     label: 3875098e-d15f-4d0a-9d8e-8752978e9c9f.arriba.rna_fusion.bedpe
     file_format: BEDPE
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 2865585
     checksum: e2caea9faa0241dddba8ac925f2ecf32
@@ -3731,7 +3732,7 @@ File:
       value: eb179a4c-341b-4fe9-9763-1c181ed2574e
     label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.star_splice_junctions.tsv.gz
     file_format: TSV
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 99532214
     checksum: b5dd7a1301c75f2f68629907fdb178a8
@@ -3745,7 +3746,7 @@ File:
       value: 41c77af2-987f-498b-8bbf-4dfe792046ef
     label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.chimeric.gdc_realn.bam
     file_format: BAM
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 25697
     checksum: 69d3a57683cad072f53552a8ddffaeab
@@ -3759,7 +3760,7 @@ File:
       value: f5745326-39d1-46b0-8a82-2d901096a79d
     label: TARGET_ALL_ClinicalData_Validation_Supplement_20190129.xlsx
     file_format: XLSX
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 7858
     checksum: 8c342f245e3810f5859b53ee4e4e459f
@@ -3773,7 +3774,7 @@ File:
       value: a04a7f5d-ea3e-4988-9085-9b312b9c2880
     label: TARGET-ALL-P2.920bf2a0-2ba0-5d46-9e0b-ef02f10030d8.ascat2.allelic_specific.seg.txt
     file_format: TXT
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 1617007
     checksum: 46f0263f550f0399df15356f8b16fe57
@@ -3787,7 +3788,7 @@ File:
       value: eb66f012-158d-409c-b79b-c4cc605eebb3
     label: d6215803-3ddd-4585-b759-274016a3d7c6.wxs.MuTect2.somatic_annotation.vcf.gz
     file_format: VCF
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 22922341082
     checksum: e72911eb0f483c98ae02acf868c85f60
@@ -3801,7 +3802,7 @@ File:
       value: 36069ce1-ff28-429d-bfad-5bbac28c181d
     label: 920bf2a0-2ba0-5d46-9e0b-ef02f10030d8_wxs_gdc_realn.bam
     file_format: BAM
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 1425448
     checksum: 4a6ca754380cf989f62172eb7cdce1e5
@@ -3815,7 +3816,7 @@ File:
       value: 4e18df21-34e5-4481-b727-9c1b137ee73b
     label: 5ff020da-d7db-4c4a-abe2-98bad5dd1430.wxs.Pindel.aliquot.maf.gz
     file_format: MAF
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 3482272
     checksum: dcdb77cd1c8026cabd28ac6c808e9250
@@ -3829,7 +3830,7 @@ File:
       value: bd0ff04b-fdaa-4acf-b9cb-cae4c539d3e8
     label: TARGET-ALL-P2.920bf2a0-2ba0-5d46-9e0b-ef02f10030d8.gene_level_copy_number.tsv
     file_format: TXT
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 7813538623
     checksum: cda63bf8d01b2a8e9ddbc78d1686fc85
@@ -3843,7 +3844,7 @@ File:
       value: 3a75af5f-04a8-4e9a-bd45-d0a69333a0fc
     label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.transcriptome.gdc_realn.bam
     file_format: BAM
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 308214
     checksum: b002c3578f8454603025afcc8151d6d3
@@ -3857,7 +3858,7 @@ File:
       value: 798b05d1-6a9e-47f1-8bf7-6831186ddbd5
     label: TARGET_ALL_SampleMatrix_Phase2_Validation_20190606.xlsx
     file_format: XLSX
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 51171
     checksum: 42a920f9b9fef3e64ad6e6094274b5fd
@@ -3871,7 +3872,7 @@ File:
       value: ddb48316-8690-4697-91bb-2366bc021d67
     label: TARGET_ALL_ClinicalData_Validation_Percent_Blast_Supplement_20170525.xlsx
     file_format: XLSX
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 107750
     checksum: 2b8e304d6f97b5831a09871f1e4049b1
@@ -3885,7 +3886,7 @@ File:
       value: a0d623aa-d634-48e3-8bce-0dbd53ca2c72
     label: 3e256913-6d4c-4ae3-bd9a-489495fe7d90.wxs.VarScan2.somatic_annotation.vcf.gz
     file_format: VCF
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 310737
     checksum: 1211955cf1ffd5f0a27e74c286f3edd7
@@ -3899,7 +3900,7 @@ File:
       value: 8e942be7-e932-4626-bbbe-a63d054cca43
     label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.mutect2.raw_somatic_mutation.vcf.gz
     file_format: VCF
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 54942
     checksum: 7b9cc9b8cad9dd66426f39043b8a8c65
@@ -3913,7 +3914,7 @@ File:
       value: f41ca7c5-949d-45f2-8288-dd958d52a3f4
     label: b80ca517-4bbd-46bf-a85e-f4719d0ad0dd.wxs.MuSE.aliquot.maf.gz
     file_format: MAF
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 23935
     checksum: c618e7c1e8ce92bc4710414252aa2651
@@ -3927,7 +3928,7 @@ File:
       value: da110c2a-55a1-41b1-a845-93488d63193a
     label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.muse.raw_somatic_mutation.vcf.gz
     file_format: VCF
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 980
     checksum: c2a116bcd2d9aa94de89813595b1099e
@@ -3941,7 +3942,7 @@ File:
       value: 9f5168f0-5022-429b-a2c3-da62ac5d6f50
     label: 954009c3-e76e-4337-b5cb-5c7de62a14e9.star_fusion.rna_fusion.bedpe
     file_format: BEDPE
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 323094
     checksum: 5a7d048d39be5c2181cafdb22d47f617
@@ -3955,7 +3956,7 @@ File:
       value: 79c096cb-5768-49d5-b532-93f10ea2d92a
     label: ee8ba34c-dc44-4c54-bb9f-e2842a1ec70f.FPKM.txt.gz
     file_format: TXT
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 17366550274
     checksum: a5b68f7b00651b914c3bf8551dca87ca
@@ -3969,7 +3970,7 @@ File:
       value: fdd730c4-84d8-4779-80db-a32be6b332e8
     label: 3c6c93c2-224e-5532-a449-5db9e1058b46_wxs_gdc_realn.bam
     file_format: BAM
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 413749
     checksum: 9c7bba88d964b24a6930e57944b15f0e
@@ -3983,7 +3984,7 @@ File:
       value: 037596c3-8422-497f-9a3b-fd2444cb1fe5
     label: ee8ba34c-dc44-4c54-bb9f-e2842a1ec70f.FPKM-UQ.txt.gz
     file_format: TXT
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 29363
     checksum: aebece56c4c5be8de0acc48e3d9e3146
@@ -3997,7 +3998,7 @@ File:
       value: 333216e7-fa25-4a63-870a-f549d146343b
     label: 20b4aa65-565d-4d97-8d5d-ebd65ed4673d.wxs.varscan2.raw_somatic_mutation.vcf.gz
     file_format: VCF
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 8394839415
     checksum: 8ef1cbbeeb018af3a56d2f402702a754
@@ -4011,7 +4012,7 @@ File:
       value: 2808321b-5165-446a-ae27-ca4b8021c73b
     label: d97a03fc-7df4-4dd7-bfa7-235a8eff5108.rna_seq.genomic.gdc_realn.bam
     file_format: BAM
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 74270
     checksum: 7f81081b43cf138ba795b09069bad5fc
@@ -4025,7 +4026,7 @@ File:
       value: 979eca2d-9866-4aaa-aebf-139e1781a122
     label: fc24fe78-54e7-4d08-be0c-cd923aa6ada9.wxs.aliquot_ensemble_raw.maf.gz
     file_format: MAF
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 77774
     checksum: c49858e928f1f412ecba77939021a0ee
@@ -4039,7 +4040,7 @@ File:
       value: de01cfd3-72c0-48b6-8e31-80279dce8e6e
     label: c28fa842-2ae4-4ec7-b893-14eb3abc89f2.wxs.MuSE.somatic_annotation.vcf.gz
     file_format: VCF
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 1275796
     checksum: a87e3310d124912194d0f274fc061d36
@@ -4053,7 +4054,7 @@ File:
       value: 9d0e0225-df8a-4d1d-899d-bda1839e4dd6
     label: 20c81dbf-3998-4773-b487-4a325d55e6cd.wxs.MuTect2.aliquot.maf.gz
     file_format: MAF
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 247918
     checksum: f833c9466ee5be1e73bde04c10cf4bba
@@ -4067,7 +4068,7 @@ File:
       value: b5c4a4ee-e64f-48b6-9bc6-30e9e1339ed5
     label: ee8ba34c-dc44-4c54-bb9f-e2842a1ec70f.htseq_counts.txt.gz
     file_format: TXT
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
   - associated_project: TARGET-ALL-P2
     byte_size: 4122
     checksum: c033145e2e6c30d5a0771e977eacefff
@@ -4081,5 +4082,5 @@ File:
       value: 6892c6ba-66aa-4083-a13e-845ae272700a
     label: fc24fe78-54e7-4d08-be0c-cd923aa6ada9.wxs.aliquot_ensemble_masked.maf.gz
     file_format: MAF
-    data_modality: "Genomic"
+    #data_modality: "Genomic"
 
