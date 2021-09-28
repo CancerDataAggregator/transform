@@ -34,8 +34,13 @@ class TestLogValidation(TestCase):
 
         with self.assertLogs("test", level="INFO") as cm:
             log.generate_report(logging.getLogger("test"))
-        self.assertEqual(cm.output, ["INFO:test:==== Validation Report ====",
-        'WARNING:test:Conflict ID:id1 FIELD:field2 VALUES:val3:val5'])
+        self.assertEqual(
+            cm.output,
+            [
+                "INFO:test:==== Validation Report ====",
+                "WARNING:test:Conflict ID:id1 FIELD:field2 VALUES:val3:val5",
+            ],
+        )
 
     def test_agree_sources(self):
         log = LogValidation()
@@ -45,8 +50,13 @@ class TestLogValidation(TestCase):
         log.agree_sources({"t1": t1, "t2": t2, "t3": t3}, "id1", ["field1", "field2"])
         with self.assertLogs("test", level="INFO") as cm:
             log.generate_report(logging.getLogger("test"))
-        self.assertEqual(cm.output, ["INFO:test:==== Validation Report ====",
-        'WARNING:test:Conflict ID:id1 FIELD:field2 VALUES:t1-val3:t2-val4:t3-val3'])
+        self.assertEqual(
+            cm.output,
+            [
+                "INFO:test:==== Validation Report ====",
+                "WARNING:test:Conflict ID:id1 FIELD:field2 VALUES:t1-val3:t2-val4:t3-val3",
+            ],
+        )
 
     def test_validate(self):
         log = LogValidation()
