@@ -11,8 +11,8 @@ def check_case_375436b3(d):
     assert d.get("case_id") == "375436b3-66ac-4d5e-b495-18a96d812a69"
     assert d.get("submitter_id") == "TCGA-F5-6810"
     assert len(d.get("samples")) == 3
-    assert len(d.get("samples")[0].get("files")) == 1
-    assert len(d.get("samples")[1].get("files")) == 21
+    assert len(d.get("samples")[0].get("files")) == 21
+    assert len(d.get("samples")[1].get("files")) == 31
 
 
 def main():
