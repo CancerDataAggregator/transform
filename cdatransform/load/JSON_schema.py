@@ -108,7 +108,6 @@ class Schema:
 
     def write_json_schema(self):
         print("attempted to run build json")
-        full_schema = []
         Patient = self.make_entity_schema("Patient")
         RS = self.make_entity_schema("ResearchSubject")
         Diag = self.make_entity_schema("Diagnosis")
