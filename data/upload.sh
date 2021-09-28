@@ -4,7 +4,7 @@ extract-gdc gdc.jsonl.gz gdc.files-specimens-cases.jsonl.gz
 cda-transform gdc.jsonl.gz gdc.H.jsonl.gz ../gdc-transform.yml
 cda-aggregate ../merge.yml gdc.H.jsonl.gz gdc.A.jsonl.gz
 
-extract-pdc pdc.jsonl.gz pdc.files-specimens-cases.json.gz
+extract-pdc pdc.jsonl.gz pdc.files-specimens-cases.jsonl.gz
 cda-transform pdc.jsonl.gz pdc.H.jsonl.gz ../pdc-transform.yml
 cda-aggregate ../merge.yml pdc.H.jsonl.gz pdc.A.jsonl.gz
 
