@@ -18,6 +18,8 @@ Patient:
             - ['lower_case', [] ]
         sex:
             - ['lower_case', [] ]
+        subject_associated_project:
+            - ['str_to_list', [] ]
 
 ResearchSubject:
     Mapping:

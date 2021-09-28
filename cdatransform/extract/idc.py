@@ -143,7 +143,7 @@ class IDC:
                 val_split = "STRING(NULL)"
             else:
                 val_split = "'" + val_split[0] + "'"
-            if k == "associated_project":
+            if k == "subject_associated_project":
                 val_split = "[" + val_split + "]"
             if self.mapping[entity].get("Transformations", None) is not None:
                 if self.mapping[entity]["Transformations"].get(k, None) is not None:
@@ -222,7 +222,7 @@ class IDC:
         # add WHERE statement if just looking for specific patients
         query += """FROM `""" + self.source_table + """`"""
         query += self.build_where_patients()
-        query += """ GROUP by id, species"""
+        query += """ GROUP by id, species, collection_id"""
         print(query)
         return query
 

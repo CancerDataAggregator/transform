@@ -10,6 +10,7 @@ Patient:
         days_to_birth: null
         species: 'files.tcia_species'
         subject_associated_project: 'files.collection_id'
+    
     Transformations:
         species: 
         - ['idc_species_mapping', ['STRING'] ]
