@@ -1,25 +1,39 @@
 Patient:
     Mapping:
         id: 'files.PatientID'
+        identifier:
+            system: 'IDC'
+            value: 'files.PatientID'    
+        sex: 'NULL'
         race: 'NULL'
         ethnicity: 'NULL'
-        sex: 'NULL'
         days_to_birth: null
+        species: 'files.tcia_species'
+        subject_associated_project: 'files.collection_id'
+    
+    Transformations:
+        species: 
+        - ['idc_species_mapping', ['STRING'] ]
 
 File:
     Mapping:
         id: 'files.crdc_instance_uuid'
         identifier:
-            value: 'files.crdc_instance_uuid'
             system: 'IDC'
-        label: 'files.SUBSTR(gcs_url, 15)'
-        data_type: 'files.Modality'
+            value: 'files.crdc_instance_uuid'
+        label: 'files.gcs_url'
         data_category: 'Imaging'
+        data_type: 'files.Modality'
+        file_format: 'DICOM'
+        associated_project: 'files.collection_id'
+        drs_uri: 'files.gcs_url'
         byte_size: null
         checksum: 'NULL'
-        associated_project: 'NULL'
-        drs_uri: 'files.gcs_url'
-        file_format: 'DICOM'
+        #data_modality: 'Imaging'
+        #imaging_modality: ''
+    Transformations:
+        label: 
+        - ['idc_substr', ['STRING',15] ]
 # 'NULL' ensures a string type for the field, but null
 # null ensures an integer type for the field, but null
             

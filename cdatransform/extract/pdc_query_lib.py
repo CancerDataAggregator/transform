@@ -143,7 +143,8 @@ def make_study_query(pdc_study_id):
             primary_site
             embargo_date
         }
-    }""")
+    }"""
+    )
     return template.substitute(pdc_study_id=pdc_study_id)
 
 
@@ -182,8 +183,11 @@ def case_demographics(pdc_study_id, offset, limit):
                 size
                 }
             }
-        }""")
-    return template.substitute(pdc_study_id=pdc_study_id, offset=str(offset), limit=str(limit))
+        }"""
+    )
+    return template.substitute(
+        pdc_study_id=pdc_study_id, offset=str(offset), limit=str(limit)
+    )
 
 
 def case_diagnoses(pdc_study_id, offset, limit):
@@ -269,8 +273,11 @@ def case_diagnoses(pdc_study_id, offset, limit):
                 size
                 }
             }
-        }""")
-    return template.substitute(pdc_study_id=pdc_study_id, offset=str(offset), limit=str(limit))
+        }"""
+    )
+    return template.substitute(
+        pdc_study_id=pdc_study_id, offset=str(offset), limit=str(limit)
+    )
 
 
 def case_samples(pdc_study_id, offset, limit):
@@ -338,5 +345,20 @@ def case_samples(pdc_study_id, offset, limit):
         size
         }
     }
-    }""")
-    return template.substitute(pdc_study_id=pdc_study_id, offset=str(offset), limit=str(limit))
+    }"""
+    )
+    return template.substitute(
+        pdc_study_id=pdc_study_id, offset=str(offset), limit=str(limit)
+    )
+
+
+def specimen_taxon(pdc_study_id):
+    template = Template(
+        """{
+        biospecimenPerStudy (pdc_study_id: "$pdc_study_id" acceptDUA: true) {
+        case_id
+        taxon
+        }
+        }"""
+    )
+    return template.substitute(pdc_study_id=pdc_study_id)

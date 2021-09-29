@@ -3,8 +3,7 @@ from typing import Dict, Set, Callable, Any, Mapping, Union, List, Optional
 
 
 class NamedValue:
-
-    def __init__(self, value: Any,  name: Optional[str] = None) -> None:
+    def __init__(self, value: Any, name: Optional[str] = None) -> None:
         self._name = name
         self.value = value
 
@@ -52,16 +51,23 @@ class LogValidation:
         :param fields: the fields that should match for all records
         :param table: a table to find the fields in
         """
-        other = self._matching_fields.get(record_id)
-        if other:
-            for field in fields:
-                if field in table:
-                    other[field].add(NamedValue(table.get(field)))
-        else:
+        other = self._matching_fields.get(record_id, None)
+        open("agree_id.txt", "a+").write(record_id + "\n")
+        open("agree_id.txt", "a+").write(str(other) + str(type(other)) + "\n")
+        if other is None:
+            open("steps_in_agree.txt", "a+").write(record_id + " first other \n")
             self._matching_fields[record_id] = {}
             for field in fields:
                 if field in table:
-                    self._matching_fields[record_id][field] = {NamedValue(table.get(field))}
+                    self._matching_fields[record_id][field] = {
+                        NamedValue(table.get(field))
+                    }
+
+        else:
+            open("steps_in_agree.txt", "a+").write(record_id + " second other \n")
+            for field in fields:
+                if field in table:
+                    other[field].add(NamedValue(table.get(field)))
 
     def agree_sources(
         self,
@@ -88,8 +94,9 @@ class LogValidation:
                 self._matching_fields[record_id] = {}
                 for field in fields:
                     if field in table:
-                        self._matching_fields[record_id][field] = \
-                            {NamedValue(table.get(field), name)}
+                        self._matching_fields[record_id][field] = {
+                            NamedValue(table.get(field), name)
+                        }
 
     def validate(
         self,
@@ -112,18 +119,15 @@ class LogValidation:
                 self._invalid_fields[field_name] = value
 
     def generate_report(self, logger) -> None:
-
         # Note that set output is sorted for legibility and to get consistent results for testing.
 
         logger.info("==== Validation Report ====")
-
         for name, values in self._distinct_fields.items():
             if len(values) != 0:
                 logger.info(f"Distinct FIELD:{name} VALUES:{':'.join(sorted(values))}")
-
         for id, fields in self._matching_fields.items():
             for field, values in fields.items():
-                if len({nv.value for nv in values}) > 1:
+                if isinstance(values, set) and len({nv.value for nv in values}) > 1:
                     values_data = sorted([str(v) for v in values])
                     logger.warning(
                         f"Conflict ID:{id} FIELD:{field} VALUES:{':'.join(values_data)}"

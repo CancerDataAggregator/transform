@@ -10,8 +10,19 @@ import pathlib
 
 from cdatransform.lib import get_case_ids
 from .lib import retry_get
-from .pdc_query_lib import query_all_cases, query_files_bulk, query_files_paginated, make_all_programs_query
-from .pdc_query_lib import make_study_query, case_demographics, case_diagnoses, case_samples
+from .pdc_query_lib import (
+    query_all_cases,
+    query_files_bulk,
+    query_files_paginated,
+    make_all_programs_query,
+)
+from .pdc_query_lib import (
+    make_study_query,
+    case_demographics,
+    case_diagnoses,
+    case_samples,
+    specimen_taxon,
+)
 
 
 class PDC:
@@ -27,17 +38,21 @@ class PDC:
         # if case_ids is None:
         #    case_ids = self.get_case_id_list()
 
-        jData = retry_get(self.endpoint, params={'query': make_all_programs_query()})
-        AllPrograms = jData.json()['data']['allPrograms']
+        jData = retry_get(self.endpoint, params={"query": make_all_programs_query()})
+        AllPrograms = jData.json()["data"]["allPrograms"]
         out = []
         for program in AllPrograms:
-            for project in program['projects']:
-                added_info = dict({'project_submitter_id': project['project_submitter_id']})
-                for study in project['studies']:
+            for project in program["projects"]:
+                added_info = dict(
+                    {"project_submitter_id": project["project_submitter_id"]}
+                )
+                for study in project["studies"]:
                     # get study_id and embargo_date, and other info for study
-                    pdc_study_id = study['pdc_study_id']
-                    study_info = retry_get(self.endpoint, params={'query': make_study_query(pdc_study_id)})
-                    study_rec = study_info.json()['data']['study'][0]
+                    pdc_study_id = study["pdc_study_id"]
+                    study_info = retry_get(
+                        self.endpoint, params={"query": make_study_query(pdc_study_id)}
+                    )
+                    study_rec = study_info.json()["data"]["study"][0]
                     study_rec.update(study)
                     # Get demographic info
                     dem = self.demographics_for_study(pdc_study_id, 100)
@@ -55,7 +70,10 @@ class PDC:
                     samp = self.samples_for_study(pdc_study_id, 100)
                     if case_ids is not None:
                         samp = self.filter_cases(samp, case_ids)
-                    out = agg_cases_info_for_study(study_rec, dem, diag, samp, added_info)
+                    taxon = self.taxon_for_study(pdc_study_id)
+                    out = agg_cases_info_for_study(
+                        study_rec, dem, diag, samp, taxon, added_info
+                    )
                     for case in out:
                         yield case
         # for case_id in case_ids:
@@ -83,11 +101,15 @@ class PDC:
                         sample["sample_id"]
                     )
                     case["samples"][index]["files"] = samples_files_list
-                    for index_aliquot, aliquot in enumerate(case["samples"][index]["aliquots"]):
-                        case["samples"][index]["aliquots"][index_aliquot]["files"] = self._files_per_sample_dict.get(
-                            aliquot["aliquot_id"]
-                        )
-                case["files"] = list({v['file_id']: v for v in samples_files_list}.values())
+                    for index_aliquot, aliquot in enumerate(
+                        case["samples"][index]["aliquots"]
+                    ):
+                        case["samples"][index]["aliquots"][index_aliquot][
+                            "files"
+                        ] = self._files_per_sample_dict.get(aliquot["aliquot_id"])
+                case["files"] = list(
+                    {v["file_id"]: v for v in samples_files_list}.values()
+                )
                 writer.write(case)
                 n += 1
                 if n % 100 == 0:
@@ -97,7 +119,7 @@ class PDC:
     def filter_cases(self, records, case_ids):
         out = []
         for rec in records:
-            if rec['case_id'] in case_ids:
+            if rec["case_id"] in case_ids:
                 out.append(rec)
         return out
 
@@ -146,7 +168,9 @@ class PDC:
     def _files_chunk(self):
         totalfiles = self._get_total_files()
         for page in range(0, totalfiles, 1000):
-            sys.stderr.write(f"<< Processing page {int(page/1000) + 1}/{ceil(totalfiles/1000)} >>\n")
+            sys.stderr.write(
+                f"<< Processing page {int(page/1000) + 1}/{ceil(totalfiles/1000)} >>\n"
+            )
             result = retry_get(
                 self.endpoint, params={"query": query_files_bulk(page, 1000)}
             )
@@ -160,16 +184,23 @@ class PDC:
         page = 1
         offset = 0
         demo_info = retry_get(
-                    self.endpoint, params={"query": case_demographics(study_id, offset, limit)}
-                )
-        out = demo_info.json()['data']['paginatedCaseDemographicsPerStudy']['caseDemographicsPerStudy']
-        total_pages = demo_info.json()['data']['paginatedCaseDemographicsPerStudy']['pagination']['pages']
+            self.endpoint, params={"query": case_demographics(study_id, offset, limit)}
+        )
+        out = demo_info.json()["data"]["paginatedCaseDemographicsPerStudy"][
+            "caseDemographicsPerStudy"
+        ]
+        total_pages = demo_info.json()["data"]["paginatedCaseDemographicsPerStudy"][
+            "pagination"
+        ]["pages"]
         while page < total_pages:
             offset += limit
             demo_info = retry_get(
-                    self.endpoint, params={"query": case_demographics(study_id, offset, limit)}
-                )
-            out += demo_info.json()['data']['paginatedCaseDemographicsPerStudy']['caseDemographicsPerStudy']
+                self.endpoint,
+                params={"query": case_demographics(study_id, offset, limit)},
+            )
+            out += demo_info.json()["data"]["paginatedCaseDemographicsPerStudy"][
+                "caseDemographicsPerStudy"
+            ]
             page += 1
         return out
 
@@ -177,16 +208,22 @@ class PDC:
         page = 1
         offset = 0
         diag_info = retry_get(
-                    self.endpoint, params={"query": case_diagnoses(study_id, offset, limit)}
-                )
-        out = diag_info.json()['data']['paginatedCaseDiagnosesPerStudy']['caseDiagnosesPerStudy']
-        total_pages = diag_info.json()['data']['paginatedCaseDiagnosesPerStudy']['pagination']['pages']
+            self.endpoint, params={"query": case_diagnoses(study_id, offset, limit)}
+        )
+        out = diag_info.json()["data"]["paginatedCaseDiagnosesPerStudy"][
+            "caseDiagnosesPerStudy"
+        ]
+        total_pages = diag_info.json()["data"]["paginatedCaseDiagnosesPerStudy"][
+            "pagination"
+        ]["pages"]
         while page < total_pages:
             offset += limit
             diag_info = retry_get(
-                    self.endpoint, params={"query": case_diagnoses(study_id, offset, limit)}
-                )
-            out += diag_info.json()['data']['paginatedCaseDiagnosesPerStudy']['caseDiagnosesPerStudy']
+                self.endpoint, params={"query": case_diagnoses(study_id, offset, limit)}
+            )
+            out += diag_info.json()["data"]["paginatedCaseDiagnosesPerStudy"][
+                "caseDiagnosesPerStudy"
+            ]
             page += 1
         return out
 
@@ -194,17 +231,40 @@ class PDC:
         page = 1
         offset = 0
         samp_info = retry_get(
-                    self.endpoint, params={"query": case_samples(study_id, offset, limit)})
-        out = samp_info.json()['data']['paginatedCasesSamplesAliquots']['casesSamplesAliquots']
-        total_pages = samp_info.json()['data']['paginatedCasesSamplesAliquots']['pagination']['pages']
+            self.endpoint, params={"query": case_samples(study_id, offset, limit)}
+        )
+        out = samp_info.json()["data"]["paginatedCasesSamplesAliquots"][
+            "casesSamplesAliquots"
+        ]
+        total_pages = samp_info.json()["data"]["paginatedCasesSamplesAliquots"][
+            "pagination"
+        ]["pages"]
         while page < total_pages:
             offset += limit
             samp_info = retry_get(
-                    self.endpoint, params={"query": case_samples(study_id, offset, limit)}
-                )
-            out += samp_info.json()['data']['paginatedCasesSamplesAliquots']['casesSamplesAliquots']
+                self.endpoint, params={"query": case_samples(study_id, offset, limit)}
+            )
+            out += samp_info.json()["data"]["paginatedCasesSamplesAliquots"][
+                "casesSamplesAliquots"
+            ]
             page += 1
         return out
+
+    def taxon_for_study(self, study_id):
+        taxon_info = retry_get(
+            self.endpoint, params={"query": specimen_taxon(study_id)}
+        )
+        out = taxon_info.json()["data"]["biospecimenPerStudy"]
+        # print(type(out))
+        seen = dict({})
+        for case_taxon in out:
+            if case_taxon["case_id"] not in seen:
+                seen[case_taxon["case_id"]] = case_taxon["taxon"]
+            else:
+                if case_taxon["taxon"] != seen[case_taxon["case_id"]]:
+                    print("taxon does not match for case_id:")
+                    print(case_taxon["case_id"])
+        return seen
 
 
 def get_file_metadata(file_metadata_record) -> dict:
@@ -225,21 +285,22 @@ def get_file_metadata(file_metadata_record) -> dict:
     }
 
 
-def agg_cases_info_for_study(study, demo, diag, sample, added_info):
+def agg_cases_info_for_study(study, demo, diag, sample, taxon, added_info):
     out = []
     for demo_case in demo:
-        case_id = demo_case['case_id']
+        case_id = demo_case["case_id"]
         demo_case.update(added_info)
+        demo_case["taxon"] = taxon[case_id]
         for diag_ind in range(len(diag)):
-            if diag[diag_ind]['case_id'] == case_id:
-                demo_case['diagnoses'] = diag.pop(diag_ind)['diagnoses']
+            if diag[diag_ind]["case_id"] == case_id:
+                demo_case["diagnoses"] = diag.pop(diag_ind)["diagnoses"]
                 break
         for sample_index in range(len(sample)):
-            if sample[sample_index]['case_id'] == case_id:
-                demo_case['samples'] = sample[sample_index]['samples'].copy()
+            if sample[sample_index]["case_id"] == case_id:
+                demo_case["samples"] = sample[sample_index]["samples"].copy()
                 sample.pop(sample_index)
                 break
-        demo_case['study'] = study
+        demo_case["study"] = study
         out.append(demo_case)
     return out
 

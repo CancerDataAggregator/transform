@@ -5,10 +5,16 @@
 ####################################################
 
 id: "TARGET-10-PATCNI"
+identifier:
+  - value: "TARGET-10-PATCNI"
+    system: "GDC"
 ethnicity:
 sex:
 race:
 days_to_birth:
+subject_associated_project:
+  - "TARGET-ALL-P3"
+species: "Homo sapiens"
 File: []
 ResearchSubject:
   # id should represent unique identifier across all systems
