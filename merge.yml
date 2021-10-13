@@ -52,6 +52,9 @@ ResearchSubject_merge:
     Specimen:
         merge_type: "append_field_vals"
         default_value: []
+    File:
+        merge_type: "append_field_vals"
+        default_value: []
 
 File_merge:
     id:
