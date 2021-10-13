@@ -125,6 +125,9 @@ def main():
                 merged_entry["ResearchSubject"], how_to_merge["ResearchSubject_merge"]
             )
             for RS in merged_entry["ResearchSubject"]:
+                RS["File"] = merge_entities_with_same_id(
+                    RS["File"], how_to_merge["File_merge"]
+                )
                 RS["Diagnosis"] = merge_entities_with_same_id(
                     RS["Diagnosis"], how_to_merge["Diagnosis_merge"]
                 )
