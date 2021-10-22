@@ -5,11 +5,17 @@
 ####################################################
 
 id: "TARGET-10-PATCNI"
+identifier:
+  - value: "TARGET-10-PATCNI"
+    system: "GDC"
 ethnicity:
 sex:
 race:
 days_to_birth:
-
+subject_associated_project:
+  - "TARGET-ALL-P3"
+species: "Homo sapiens"
+File: []
 ResearchSubject:
   # id should represent unique identifier across all systems
   # for ResearchSubject we don't have anything better than the case_id
@@ -21,7 +27,7 @@ ResearchSubject:
     primary_disease_type: "Lymphoid Leukemias"
     primary_disease_site: "Hematopoietic and reticuloendothelial systems"
     associated_project: "TARGET-ALL-P3"
-
+    File: []
     Specimen:
       # id should represent unique identifier across all systems
       - id: "37789082-b4bb-4f18-9a3d-aca1a65c2ced"
@@ -39,7 +45,7 @@ ResearchSubject:
         # Added to the specimen as well; as per CCDH data model
         associated_project: "TARGET-ALL-P3"
         # renamed; Kathy says that this should be null for the sample:
-        derived_from_specimen: Initial sample
+        derived_from_specimen: initial specimen
         File: []  # This sample has no files
 
       # From portions
