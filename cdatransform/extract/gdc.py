@@ -21,16 +21,26 @@ cases_fields = [
     "demographic.gender",
     "demographic.race",
     "demographic.days_to_birth",
+    "demographic.days_to_death",
+    "demographic.cause_of_death",
+    "demographic.vital_status",
     "diagnoses.diagnosis_id",
     "diagnoses.age_at_diagnosis",
     "diagnoses.tumor_grade",
     "diagnoses.tumor_stage",
     "diagnoses.morphology",
     "diagnoses.primary_diagnosis",
+    "diagnoses.method_of_diagnosis"
     "diagnoses.treatments.treatment_outcome",
     "diagnoses.treatments.treatment_type",
     "diagnoses.treatments.treatment_id",
     "diagnoses.treatments.days_to_treatment",
+    "diagnoses.treatments.days_to_treatment_end",
+    "diagnoses.treatments.therapeutic_agents",
+    "diagnoses.treatments.treatment_anatomic_site",
+    "diagnoses.treatments.treatment_effect",
+    "diagnoses.treatments.reason_treatment_ended",
+    "diagnoses.treatments.number_of_cycles",
     "samples.sample_id",
     "samples.submitter_id",
     "samples.sample_type",
@@ -79,7 +89,7 @@ files_fields = [
     "cases.samples.portions.analytes.aliquots.aliquot_id",
 ]
 # What is the significance of cases.samples.sample_id vs cases.sample_ids?
-# Answer: cases.sample_ids is not returned by GDC API
+# Answer: cases.sample_ids is not returned by GDC API 
 gdc_files_page_size = 10000
 
 

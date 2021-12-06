@@ -8,13 +8,16 @@ id: "TARGET-10-PATCNI"
 identifier:
   - value: "TARGET-10-PATCNI"
     system: "GDC"
-ethnicity:
-sex:
-race:
-days_to_birth:
 subject_associated_project:
   - "TARGET-ALL-P3"
+sex:
+race:
+ethnicity:
+days_to_birth:
 species: "Homo sapiens"
+age_at_death: 
+cause_of_death:
+vital_status: 
 File: []
 ResearchSubject:
   # id should represent unique identifier across all systems
@@ -24,9 +27,10 @@ ResearchSubject:
     identifier:
       - value: "7eeced68-1717-4116-bcee-328ac70a9682"
         system: "GDC"
-    primary_disease_type: "Lymphoid Leukemias"
-    primary_disease_site: "Hematopoietic and reticuloendothelial systems"
-    associated_project: "TARGET-ALL-P3"
+    member_of_research_project: "TARGET-ALL-P3"
+    primary_diagnosis_condition: "Lymphoid Leukemias"
+    primary_diagnosis_site: "Hematopoietic and reticuloendothelial systems"
+    
     File: []
     Specimen:
       # id should represent unique identifier across all systems
