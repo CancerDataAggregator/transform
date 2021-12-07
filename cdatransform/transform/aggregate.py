@@ -32,8 +32,8 @@ def prep_log_merge_error(entities, merge_field_dict):
             patient_id = val.get("id")
             break
     for source, val in entities.items():
-        if val.get("ResearchSubject")[0].get("associated_project") is not None:
-            project = val.get("ResearchSubject")[0].get("associated_project")
+        if val.get("ResearchSubject")[0].get("member_of_research_project") is not None:
+            project = val.get("ResearchSubject")[0].get("member_of_research_project")
             break
     return coal_fields, ret_dat, patient_id, project
 
