@@ -23,6 +23,15 @@ Patient_merge:
     subject_associated_project:
         merge_type: "append_field_vals"
         default_value: []
+    vital_status:
+        merge_type: "coalesce"
+        default_value: null
+    age_at_death:
+        merge_type: "coalesce"
+        default_value: null
+    cause_of_death:
+        merge_type: "coalesce"
+        default_value: null
     ResearchSubject:
         merge_type: "append_field_vals"
         default_value: []
@@ -37,13 +46,13 @@ ResearchSubject_merge:
     identifier:
         merge_type: "coalesce"
         default_value: ""
-    primary_disease_site:
+    primary_diagnosis_site:
         merge_type: "coalesce"
         default_value: ""
-    primary_disease_type:
+    primary_diagnosis_condition:
         merge_type: "coalesce"
         default_value: ""
-    associated_project:
+    member_of_research_project:
         merge_type: "coalesce"
         default_value: ""
     Diagnosis:
@@ -87,7 +96,12 @@ File_merge:
     file_format:
         merge_type: "coalesce"
         default_value: ""
-
+    data_modality:
+        merge_type: "coalesce"
+        default_value: null
+    imaging_modality:
+        merge_type: "coalesce"
+        default_value: null
 Diagnosis_merge:
     id:
         merge_type: "coalesce"
