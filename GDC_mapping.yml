@@ -10,9 +10,10 @@ Patient:
         ethnicity: 'cases.demographic.ethnicity'
         days_to_birth: 'cases.demographic.days_to_birth'
         subject_associated_project: 'cases.project.project_id'
+        vital_status: 'cases.demographic.vital_status'
         age_at_death: 'cases.demographic.days_to_death'
         cause_of_death: 'cases.demographic.cause_of_death'
-        vital_status: 'cases.demographic.vital_status'
+        
     Transformations:
         subject_associated_project:
             - ['str_to_list', [] ]
@@ -108,7 +109,7 @@ File:
         byte_size: 'files.file_size'
         checksum: 'files.md5sum'
         data_modality: 'Genomic'
-        imaging_modality: 
+        imaging_modality: 'cases.NOT_APPLICABLE'
         dbgap_accession_number:
     Transformations:
         drs_uri: 
