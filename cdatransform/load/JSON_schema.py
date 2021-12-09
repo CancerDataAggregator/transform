@@ -89,10 +89,21 @@ class Schema:
                 "data_modality",
                 "imaging_modality",
                 "primary_disease_type",
+                "member_of_research_project",
+                "vital_status",
+                "cause_of_death",
+                "primary_diagnosis_condition",
+                "primary_diagnosis_site",
+                "dbgap_accession_number",
+                "method_of_diagnosis",
+                "therapeutic_agent",
+                "treatment_anatomic_site",
+                "treatment_effect",
+                "treatment_end_reason",
             ]:
                 field_dict["type"] = "STRING"
                 field_dict["mode"] = "NULLABLE"
-            if field in ["days_to_treatment_start", "days_to_treatment_end"]:
+            if field in ["days_to_treatment_start", "days_to_treatment_end", "age_at_death", "number_of_cycles"]:
                 field_dict["type"] = "INTEGER"
                 field_dict["mode"] = "NULLABLE"
             if field == "subject_associated_project":

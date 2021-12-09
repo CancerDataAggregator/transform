@@ -4,12 +4,15 @@ Patient:
         identifier:
             system: 'IDC'
             value: 'files.PatientID'    
+        species: 'files.tcia_species'
         sex: 'NULL'
         race: 'NULL'
         ethnicity: 'NULL'
         days_to_birth: null
-        species: 'files.tcia_species'
         subject_associated_project: 'files.collection_id'
+        vital_status: 'NULL'
+        age_at_death: null
+        cause_of_death: 'NULL'
     
     Transformations:
         species: 
@@ -23,14 +26,15 @@ File:
             value: 'files.crdc_instance_uuid'
         label: 'files.gcs_url'
         data_category: 'Imaging'
-        data_type: 'files.Modality'
+        data_type: 'NULL'
         file_format: 'DICOM'
         associated_project: 'files.collection_id'
         drs_uri: 'files.gcs_url'
         byte_size: null
         checksum: 'NULL'
-        #data_modality: 'Imaging'
-        #imaging_modality: ''
+        data_modality: 'Imaging'
+        imaging_modality: 'files.Modality'
+        dbgap_accession_number: 'NULL'
     Transformations:
         label: 
         - ['idc_substr', ['STRING',15] ]

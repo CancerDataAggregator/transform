@@ -12,7 +12,7 @@ Patient:
         subject_associated_project: 'cases.project_submitter_id'
         age_at_death: 'cases.demographics.days_to_death'
         cause_of_death: 'cases.demographics.cause_of_death'
-        vital_status: 'cases.demographics.vital_status'
+        #vital_status: 'cases.demographics.vital_status'
         
     Transformations:
         race:
