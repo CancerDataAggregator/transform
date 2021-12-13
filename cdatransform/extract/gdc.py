@@ -17,6 +17,7 @@ cases_fields = [
     "disease_type",
     "primary_site",
     "project.project_id",
+    "project.dbgap_accession_number",
     "demographic.ethnicity",
     "demographic.gender",
     "demographic.race",

@@ -110,7 +110,7 @@ File:
         checksum: 'files.md5sum'
         data_modality: 'Genomic'
         imaging_modality: 'cases.NOT_APPLICABLE'
-        dbgap_accession_number:
+        dbgap_accession_number: 'cases.project.dbgap_accession_number'
     Transformations:
         drs_uri: 
             - ['format_drs', [] ]
