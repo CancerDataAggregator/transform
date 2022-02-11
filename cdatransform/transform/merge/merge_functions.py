@@ -35,7 +35,7 @@ def merge_fields_level(data_commons_fields_dict, how_to_merge, source_hierarchy)
         hierarchy = source_hierarchy
         if "source_hierarchy" in how_to_merge[field]:
             hierarchy = how_to_merge[field]["source_hierarchy"]
-        if how_to_merge[field]["merge_type"] == "append_field_vals":
+        if how_to_merge[field]["merge_type"] in ["append_field_vals", "append_linkers"] :
             dat_list = []
             for source in hierarchy:
                 if (
@@ -43,7 +43,12 @@ def merge_fields_level(data_commons_fields_dict, how_to_merge, source_hierarchy)
                     and field in data_commons_fields_dict[source]
                 ):
                     dat_list.append(data_commons_fields_dict[source][field])
-            dat[field] = append_field_vals_to_single_list(dat_list)
+            if how_to_merge[field]["merge_type"] == "append_linkers":
+                print("attempting to add linkers")
+                dat[field] = append_field_vals_to_single_list(dat_list, unique_strings=True)
+            else:
+                dat[field] = append_field_vals_to_single_list(dat_list)
+
         elif (
             how_to_merge[field]["merge_type"] == "coalesce"
         ):  # Needs a data dictionary, not list
@@ -88,7 +93,7 @@ def merge_codeable_concept(data_commons_fields_dict, default_value, source_hiera
     return [dat]
 
 
-def append_field_vals_to_single_list(field_vals_list_of_lists):
+def append_field_vals_to_single_list(field_vals_list_of_lists, **kwargs):
     # strictly appends values from multiple data sources in one list. Does nothing to
     # examine matching data types (one string and one list, etc.).
     dat = []
@@ -96,11 +101,12 @@ def append_field_vals_to_single_list(field_vals_list_of_lists):
         for i in field_vals_list_of_lists:
             if i != []:
                 if isinstance(i, list):
-                    dat = dat + i
+                    dat.extend(i)
                 else:
                     dat.append(i)
+    if kwargs.get('unique_strings') == True:
+        dat = list(set(dat))
     return dat
-
 
 def coalesce_field_values(data_dictionary, default_value, source_hierarchy):
     dat_return = default_value
@@ -124,7 +130,7 @@ def merge_identifiers(data_dictionary):
                     ):
                         found = True
                         break
-                if found == False:
+                if found is False:
                     dat_identifiers.append(identifier)
             else:
                 dat_identifiers.append(identifier)

@@ -24,6 +24,9 @@ def query_single_case(case_id):
       gender
       race
       days_to_birth
+      days_to_death
+      cause_of_death
+      vital_status
     }
     samples {
       sample_id
@@ -42,6 +45,7 @@ def query_single_case(case_id):
       tumor_stage
       morphology
       primary_diagnosis
+      method_of_diagnosis
     }
   }
 }
@@ -70,6 +74,7 @@ def query_files_bulk(offset, limit):
       sample_id
       aliquot_id
       case_id
+      case_submitter_id
     }
   }
 }"""
@@ -100,9 +105,6 @@ def make_all_programs_query():
             program_id
             program_submitter_id
             name
-            start_date
-            end_date
-            program_manager
             projects {
                 project_id
                 project_submitter_id
@@ -311,10 +313,8 @@ def case_samples(pdc_study_id, offset, limit):
             freezing_method
             initial_weight
             intermediate_dimension
-            is_ffpe
             longest_dimension
             method_of_sample_procurement
-            oct_embedded
             pathology_report_uuid
             preservation_method
             sample_type_id

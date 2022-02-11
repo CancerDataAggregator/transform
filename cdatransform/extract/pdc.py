@@ -28,7 +28,9 @@ from .pdc_query_lib import (
 class PDC:
     def __init__(self, cache_file, endpoint="https://pdc.cancer.gov/graphql") -> None:
         self.endpoint = endpoint
+        self.temp_files_file = 'temp_cache.jsonl.gz'
         self._files_per_sample_dict = self._fetch_file_data_from_cache(cache_file)
+
 
     def cases(
         self,
@@ -37,7 +39,6 @@ class PDC:
 
         # if case_ids is None:
         #    case_ids = self.get_case_id_list()
-
         jData = retry_get(self.endpoint, params={"query": make_all_programs_query()})
         AllPrograms = jData.json()["data"]["allPrograms"]
         out = []
@@ -58,10 +59,8 @@ class PDC:
                     dem = self.demographics_for_study(pdc_study_id, 100)
                     if case_ids is not None:
                         dem = self.filter_cases(dem, case_ids)
-                        # print(dem)
                         if dem == []:
                             continue
-                        # print(dem1)
                     # Get diagnosis info
                     diag = self.diagnoses_for_study(pdc_study_id, 100)
                     if case_ids is not None:
@@ -97,9 +96,10 @@ class PDC:
                 for index, sample in enumerate(case["samples"]):
                     # Based on the PDC data model, all files in PDC are associated
                     # with samples/aliquots. Can append all samples files
-                    samples_files_list += self._files_per_sample_dict.get(
-                        sample["sample_id"]
-                    )
+                    if self._files_per_sample_dict.get(sample["sample_id"]) is not None:
+                        samples_files_list += self._files_per_sample_dict.get(
+                            sample["sample_id"]
+                        )
                     case["samples"][index]["files"] = samples_files_list
                     for index_aliquot, aliquot in enumerate(
                         case["samples"][index]["aliquots"]
@@ -124,15 +124,20 @@ class PDC:
         return out
 
     def _fetch_file_data_from_cache(self, cache_file):
-        if not cache_file.exists():
+        if not (cache_file.exists()):
             sys.stderr.write(f"Cache file {cache_file} not found. Generating.\n")
-            files_per_sample_dict = self._get_files_per_sample_dict()
-            with gzip.open(cache_file, "wt") as f_out:
-                json.dump(files_per_sample_dict, f_out)
+            files_per_sample_dict = self._get_files_per_sample_dict(cache_file)
         else:
-            sys.stderr.write(f"Loading files metadata from cache file {cache_file}.\n")
+            sys.stderr.write(f"Loading files linkages from file {cache_file}.\n")
+            files_per_sample_dict = {}
             with gzip.open(cache_file, "r") as f_in:
-                files_per_sample_dict = json.load(f_in)
+                for f in f_in:
+                    aliquots = f.get("aliquots")
+                    if aliquots:
+                        for aliquot in aliquots:
+                            files_per_sample_dict[aliquot["sample_id"]].append({'file_id': f.get('file_id')})
+                            files_per_sample_dict[aliquot["aliquot_id"]].append({'file_id': f.get('file_id')})
+                #files_per_sample_dict = json.load(f_in)
         return files_per_sample_dict
 
     def _get_files_per_sample_dict(self) -> dict:
@@ -140,20 +145,21 @@ class PDC:
         n = 0
         files_per_sample = defaultdict(list)
         sys.stderr.write("Started collecting files.\n")
-
-        for fc in self._files_chunk():
-            for f in fc:
-                aliquots = f.get("aliquots")
-                file_metadata = get_file_metadata(f)
-                if aliquots:
-                    for aliquot in aliquots:
-                        files_per_sample[aliquot["sample_id"]].append(file_metadata)
-                        n += 1
-                        files_per_sample[aliquot["aliquot_id"]].append(file_metadata)
-                        n += 1
-            sys.stderr.write(
-                f"Chunk completed. Wrote {n} sample-file pairs in {time.time() - t0}s\n"
-            )
+        with gzip.open(self.temp_files_file, "wt") as f_out:
+            writer = jsonlines.Writer(f_out)
+            for fc in self._files_chunk():
+                for f in fc:
+                    aliquots = f.get("aliquots")
+                    if aliquots:
+                        for aliquot in aliquots:
+                            files_per_sample[aliquot["sample_id"]].append({'file_id': f.get('file_id')})
+                            n += 1
+                            files_per_sample[aliquot["aliquot_id"]].append({'file_id': f.get('file_id')})
+                            n += 1
+                    writer.write(f)
+                sys.stderr.write(
+                    f"Chunk completed. Wrote {n} sample-file pairs in {time.time() - t0}s\n"
+                )
         sys.stderr.write(f"Wrote {n} sample-file pairs in {time.time() - t0}s\n")
 
         t1 = time.time()
@@ -167,12 +173,13 @@ class PDC:
 
     def _files_chunk(self):
         totalfiles = self._get_total_files()
-        for page in range(0, totalfiles, 1000):
+        limit = 750
+        for page in range(0, totalfiles, limit):
             sys.stderr.write(
-                f"<< Processing page {int(page/1000) + 1}/{ceil(totalfiles/1000)} >>\n"
+                f"<< Processing page {int(page/limit) + 1}/{ceil(totalfiles/limit)} >>\n"
             )
             result = retry_get(
-                self.endpoint, params={"query": query_files_bulk(page, 1000)}
+                self.endpoint, params={"query": query_files_bulk(page, limit)}
             )
             yield result.json()["data"]["fileMetadata"]
 
@@ -255,7 +262,6 @@ class PDC:
             self.endpoint, params={"query": specimen_taxon(study_id)}
         )
         out = taxon_info.json()["data"]["biospecimenPerStudy"]
-        # print(type(out))
         seen = dict({})
         for case_taxon in out:
             if case_taxon["case_id"] not in seen:
@@ -266,6 +272,31 @@ class PDC:
                     print(case_taxon["case_id"])
         return seen
 
+    def add_case_info_to_files(self, out_file, cache_file):
+        # Make a dictionary where keys are case_id's and values are associated projects
+        # Get info from the recently written cases info file (output_file)
+        cases_and_associated_projects = {}
+        with gzip.open(out_file, "r") as fp:
+            reader = jsonlines.Reader(fp)
+            for case in reader:
+                if case['case_id'] in cases_and_associated_projects:
+                    cases_and_associated_projects[case['case_id']].append(case['project_submitter_id'])
+                else:
+                    cases_and_associated_projects[case['case_id']] = [case['project_submitter_id']]
+        for case,val in cases_and_associated_projects.items():
+            cases_and_associated_projects[case] = list(set(cases_and_associated_projects[case]))
+        # Have dictionary, now we can scan through files info and write new one with associated project
+        sys.stderr.write(f"Got case_associated_projects\n")
+        with gzip.open(self.temp_files_file, "r") as fr:
+            reader = jsonlines.Reader(fr)
+            with gzip.open(cache_file, "wb") as fw:
+                writer = jsonlines.Writer(fw)
+                for file in reader:
+                    file["project_submitter_id"] = []      
+                    for aliquot in file["aliquots"]:
+                        file["project_submitter_id"].extend(cases_and_associated_projects[aliquot["case_id"]])
+                    file["project_submitter_id"] = list(set(file["project_submitter_id"]))
+                    writer.write(file)
 
 def get_file_metadata(file_metadata_record) -> dict:
     return {
@@ -281,6 +312,7 @@ def get_file_metadata(file_metadata_record) -> dict:
             "data_category",
             "experiment_type",
             "md5sum",
+            "dbgap_control_number",
         ]
     }
 
@@ -309,17 +341,18 @@ def main():
     parser = argparse.ArgumentParser(description="Pull case data from PDC API.")
     parser.add_argument("out_file", help="Out file name. Should end with .gz")
     parser.add_argument("cache_file", help="Use (or generate if missing) cache file.")
+    parser.add_argument("file_linkage", help="Used to link files and specimens/cases")
     parser.add_argument("--case", help="Extract just this case")
     parser.add_argument(
         "--cases", help="Optional file with list of case ids (one to a line)"
     )
     args = parser.parse_args()
 
-    pdc = PDC(pathlib.Path(args.cache_file))
-    pdc.save_cases(
-        args.out_file, case_ids=get_case_ids(case=args.case, case_list_file=args.cases)
-    )
-
+    pdc = PDC(pathlib.Path(args.cache_file), pathlib.Path(args.file_linkage))
+    #pdc.save_cases(
+    ##    args.out_file, case_ids=get_case_ids(case=args.case, case_list_file=args.cases)
+    #)
+    pdc.add_case_info_to_files(args.out_file, args.cache_file)
 
 if __name__ == "__main__":
     main()

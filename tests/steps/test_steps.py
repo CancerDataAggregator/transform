@@ -47,4 +47,8 @@ def test_transform(transform, DC, case, expected):
             if diff != {}:
                 print("difference found")
                 print(diff.pretty())
+                with open("steps/gdc_TARGET_case2.test.H.json", "w") as outfile:
+                    json.dump(transformed, outfile)
                 assert False, "output didn't match expected"
+                
+

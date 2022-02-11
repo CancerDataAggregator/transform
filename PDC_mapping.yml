@@ -23,6 +23,8 @@ Patient:
             - ['lower_case', [] ]
         subject_associated_project:
             - ['str_to_list', [] ]
+    Linkers:
+        Files: 'cases.files.file_id'
 
 ResearchSubject:
     Mapping:
@@ -33,6 +35,8 @@ ResearchSubject:
         member_of_research_project: 'cases.project_submitter_id'
         primary_diagnosis_condition: 'cases.disease_type'
         primary_diagnosis_site: 'cases.primary_site'
+    Linkers:
+        Files: 'cases.files.file_id'
         
             
 Diagnosis:
@@ -87,6 +91,10 @@ Specimen:
             samples: 'initial specimen'
             aliquots: 'cases.samples.sample_id'
         derived_from_subject: 'cases.case_submitter_id'
+    Linkers:
+        Files:
+            aliquots: 'cases.samples.aliquots.files.file_id'
+            samples: 'cases.samples.files.file_id'
 
 File:
     Mapping:
@@ -98,18 +106,26 @@ File:
         data_category: 'files.data_category'
         data_type: 'files.file_type'
         file_format: 'files.file_format'
-        associated_project: 'cases.project_submitter_id'
+        associated_project: 'files.project_submitter_id' #this mapping is created in the extraction process
         drs_uri: 'files.file_id'
         byte_size: 'files.file_size'
         checksum: 'files.md5sum'
         data_modality: 'Proteomic'
-        imaging_modality: 'cases.NOT_APPLICABLE'
+        imaging_modality: 'files.NOT_APPLICABLE'
         dbgap_accession_number: 'files.dbgap_control_number' 
     Transformations:
         drs_uri:
             - ['format_drs',  [] ]
-        #associated_project:
-        #    - ['str_to_list', [] ]
+        associated_project:
+            - ['str_to_list', [] ]
+    Linkers:
+        Specimens: 
+            - 'files.aliquots.aliquot_id'
+            - 'files.aliquots.sample_id'
+            #aliquots: 'files.aliquots.aliquot_id'
+            #samples: 'files.aliquots.sample_id'
+        Subjects: 'files.aliquots.case_submitter_id'
+        ResearchSubjects: 'files.aliquots.case_id'
 
 Study:
     Mapping:

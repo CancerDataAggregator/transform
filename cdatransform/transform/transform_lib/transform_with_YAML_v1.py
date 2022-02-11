@@ -7,8 +7,8 @@ def add_Specimen_rec(orig, MandT, DC, **kwargs):
     cur_path = kwargs.get("cur_path", ["cases", "samples"])
     spec_type = kwargs.get("spec_type", "samples")
     rel_path = kwargs.get("rel_path", "cases.samples")
+    endpoint = kwargs.get("endpoint", "cases")
     spec = []
-
     tree = kwargs.get("tree", ruy.det_tree_to_collapse(MandT, "Specimen"))
     if ruy.simp_read(orig, rel_path, cur_path, DC) is not None:
         for spec_rec_ind in range(len(ruy.simp_read(orig, rel_path, cur_path, DC))):
@@ -17,9 +17,12 @@ def add_Specimen_rec(orig, MandT, DC, **kwargs):
             spec_rec = ruy.read_entry(
                 orig, MandT, "Specimen", cur_path=spec_path, spec_type=spec_type
             )
-            spec_rec["File"] = add_File_rec(
-                orig, MandT, DC, cur_path=spec_path, rel_path=rel_path
-            )
+            #spec_rec["File"] = add_File_rec(
+            #    orig, MandT, DC, cur_path=spec_path, rel_path=rel_path
+            #)
+            linkers = ruy.add_linkers(orig, MandT, 'Specimen', DC, linker=True, 
+                              cur_path=spec_path ,endpoint=endpoint)
+            spec_rec.update(linkers)
             spec_rec = [spec_rec]
             branches_dict = tree.get(spec_type)
             if branches_dict is not None:
@@ -122,24 +125,37 @@ class Transform:
     def __call__(self, orig, MandT, DC, **kwargs):
         # list or dict as return? - if Patient - dict, else, list
         # where do I read from? - Need cur_path and general path
-        cur_path = kwargs.get("cur_path", ["cases"])
+        #cur_path = kwargs.get("cur_path", ["cases"])
+        endpoint = kwargs.get("endpoint","cases")
         # path_to_read = kwargs.get("path_to_read", 'cases')
+        if endpoint == "cases":
+            return self.cases_transform(orig, MandT, DC, endpoint)
+        elif endpoint == "files":
+            return self.files_transform(orig, MandT, DC, endpoint)
+    def cases_transform(self, orig, MandT, DC, endpoint):
+        cur_path = ["cases"]
         tip = ruy.read_entry(orig, MandT, "Patient", DC=DC)
         tip = entity_value_transforms(tip, "Patient", MandT)
-        tip["File"] = add_File_rec(orig, MandT, DC)
+        linkers = ruy.add_linkers(orig, MandT, 'Patient', DC, linker=True, 
+                              cur_path=cur_path, rel_path='cases',endpoint=endpoint)
+        tip.update(linkers)
+        #tip["File"] = add_File_rec(orig, MandT, DC)
         for field in ["ethnicity", "sex", "race"]:
             self._validate.distinct(tip, field)
         self._validate.agree(tip, tip["id"], ["ethnicity", "sex", "race"])
         RS = ruy.read_entry(orig, MandT, "ResearchSubject", DC=DC)
         RS = entity_value_transforms(RS, "ResearchSubject", MandT)
-        for field in ["primary_disease_type", "primary_disease_site"]:
+        linkers = ruy.add_linkers(orig, MandT, 'ResearchSubject', DC, linker=True, 
+                              cur_path=cur_path, rel_path='cases',endpoint=endpoint)
+        RS.update(linkers)
+        for field in ["primary_diagnosis_condition", "primary_diagnosis_site"]:
             self._validate.distinct(RS, field)
         self._validate.agree(
             RS,
             RS["id"],
-            ["primary_disease_type", "primary_disease_site"],
+            ["primary_diagnosis_condition", "primary_diagnosis_site"],
         )
-        RS["File"] = add_File_rec(orig, MandT, DC)
+        #RS["File"] = add_File_rec(orig, MandT, DC)
         RS["Diagnosis"] = []
         diag_path = MandT["Diagnosis"]["Mapping"]["id"]
         diag_path = diag_path.split(".")
@@ -211,10 +227,17 @@ class Transform:
             )
         # if 'Study' in MandT:
         #    study_path = MandT['Study']['Mapping']['id']
-        ##    study_path = study_path.split('.')
+        #    study_path = study_path.split('.')
         #   study_path.pop()
         #   study_path = '.'.join(study_path)
         #   cur_path = study_path.split('.')
         #   RS['Study'] = [ruy.read_entry(orig, MandT, 'Study', cur_path=cur_path)]
         tip["ResearchSubject"] = [RS]
+        return tip
+    def files_transform(self, orig, MandT, DC, endpoint):
+        tip = ruy.read_entry(orig, MandT, 'File', DC=DC, endpoint=endpoint)
+        tip = entity_value_transforms(tip, "File", MandT)
+        linkers = ruy.add_linkers(orig, MandT, 'File', DC, linker=True, 
+                                    cur_path=[endpoint], rel_path=endpoint, endpoint=endpoint)
+        tip.update(linkers)
         return tip

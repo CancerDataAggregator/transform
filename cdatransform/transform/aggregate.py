@@ -118,26 +118,26 @@ def main():
                     entities, case_ids, how_to_merge["Patient_merge"], log
                 )
 
-            merged_entry["File"] = merge_entities_with_same_id(
-                merged_entry["File"], how_to_merge["File_merge"]
-            )
+            #merged_entry["File"] = merge_entities_with_same_id(
+            #    merged_entry["File"], how_to_merge["File_merge"]
+            #)
             merged_entry["ResearchSubject"] = merge_entities_with_same_id(
                 merged_entry["ResearchSubject"], how_to_merge["ResearchSubject_merge"]
             )
             for RS in merged_entry["ResearchSubject"]:
-                RS["File"] = merge_entities_with_same_id(
-                    RS["File"], how_to_merge["File_merge"]
-                )
+                #RS["File"] = merge_entities_with_same_id(
+                #    RS["File"], how_to_merge["File_merge"]
+                #)
                 RS["Diagnosis"] = merge_entities_with_same_id(
                     RS["Diagnosis"], how_to_merge["Diagnosis_merge"]
                 )
                 RS["Specimen"] = merge_entities_with_same_id(
                     RS["Specimen"], how_to_merge["Specimen_merge"]
                 )
-                for specimen in RS["Specimen"]:
-                    specimen["File"] = merge_entities_with_same_id(
-                        specimen["File"], how_to_merge["File_merge"]
-                    )
+                #for specimen in RS["Specimen"]:
+                #    specimen["File"] = merge_entities_with_same_id(
+                #        specimen["File"], how_to_merge["File_merge"]
+                #    )
             writeDC.write(merged_entry)
         log.generate_report(logging.getLogger("test"))
 

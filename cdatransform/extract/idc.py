@@ -14,9 +14,12 @@ class IDC:
         gsa_info=None,
         patients_file=None,
         patient=None,
+        files_file=None,
+        file=None,
         dest_table_id="gdc-bq-sample.idc_test.dicom_pivot_v3",
-        mapping=yaml.load(open("IDC_mapping.yml", "r"), Loader=Loader),
+        mapping=None, #yaml.load(open("IDC_mapping.yml", "r"), Loader=Loader),
         source_table="canceridc-data.idc_v3.dicom_pivot_v3",
+        endpoint=None
         # dest_bucket='gdc-bq-sample-bucket',
         # dest_bucket_file_name='druth/idc-extract.jsonl.gz',
         # out_file='idc-test.jsonl.gz'
@@ -24,12 +27,14 @@ class IDC:
         self.gsa_key = gsa_key
         self.gsa_info = gsa_info
         self.dest_table_id = dest_table_id
+        self.endpoint = endpoint
         # self.dest_bucket = dest_bucket
         # self.out_file = out_file
         # self.dest_bucket_file_name = dest_bucket_file_name
         self.service_account_cred = self._service_account_cred()
         self.mapping = self._init_mapping(mapping)
         self.patient_ids = get_case_ids(case=patient, case_list_file=patients_file)
+        self.file_ids = get_case_ids(case=file, case_list_file=files_file)
         self.source_table = source_table
         self.transform_query = self._query_build()
 
@@ -182,6 +187,13 @@ class IDC:
             where = """WHERE PatientID in ("""
             where += """','""".join(self.patient_ids) + """')"""
         return where
+    
+    def build_where_files(self):
+        where = ""
+        if self.file_ids is not None:
+            where = """WHERE crdc_instance_uuid in ("""
+            where += """','""".join(self.file_ids) + """')"""
+        return where
 
     def create_udf_str(self, func_desc):
         out = (
@@ -209,20 +221,41 @@ class IDC:
                         if function[0] not in functions_added:
                             all_udfs = all_udfs + self.create_udf_str(function)
         return all_udfs
+    def add_linkers(self, entity):
+        linkers_str = """ """
+        keys = list(self.mapping[entity]["Linkers"].keys())
+        for index in range(len(self.mapping[entity]["Linkers"].keys())):
+            if self.mapping[entity]["Linkers"][keys[index]] is not None:
+                field = self.mapping[entity]["Linkers"][keys[index]]
+                field = field.split('.')
+                field = field.pop()
+                field = str(field)
+                linkers_str += """ARRAY_AGG(""" + field + """) as """ + keys[index]
+            else:
+                linkers_str += """ARRAY<STRING>[] as """ + keys[index]
+            if index < len(keys) - 1:
+                linkers_str += """, """
+        return linkers_str
 
     def _query_build(self, **kwargs):
         query = self.create_all_udfs()
         query += """ SELECT """
-        query += self.add_entity_fields("Patient")
-        query += """, """
-        # add File record structure to query
-        query += """ARRAY_AGG(STRUCT("""
-        query += self.add_entity_fields("File")
-        query += """)) as File """
-        # add WHERE statement if just looking for specific patients
-        query += """FROM `""" + self.source_table + """`"""
-        query += self.build_where_patients()
-        query += """ GROUP by id, species, collection_id"""
+        if self.endpoint == "Patient":
+            query += self.add_entity_fields("Patient")
+            query += """, """
+            query += self.add_linkers("Patient")
+            # add WHERE statement if just looking for specific patients
+            query += """ FROM `""" + self.source_table + """`"""
+            query += self.build_where_patients()
+            query += """ GROUP by id, species, collection_id"""
+        elif self.endpoint == "File":
+            query += self.add_entity_fields("File")
+            query += """, """
+            query += self.add_linkers("File")
+            # add WHERE statement if just looking for specific patients
+            query += """ FROM `""" + self.source_table + """`"""
+            query += self.build_where_files()
+            query += """ GROUP by id, gcs_url, Modality, collection_id"""
         print(query)
         return query
 
@@ -238,14 +271,21 @@ def main():
     parser.add_argument(
         "--source_table",
         help="IDC source table to be queried",
-        default="canceridc-data.idc_v3.dicom_pivot_v3",
+        default="canceridc-data.idc_v4.dicom_pivot_v4",
     )
     parser.add_argument("--gsa_key", help="Location of user GSA key")
+    parser.add_argument("--endpoint", help="Patient of File endpoint")
     parser.add_argument("--gsa_info", help="json content of GSA key or github.secret")
     parser.add_argument("--patient", help="Extract just this patient", default=None)
     parser.add_argument(
         "--patients",
         help="Optional file with list of patient ids (one to a line)",
+        default=None,
+    )
+    parser.add_argument("--file", help="Extract just this file", default=None)
+    parser.add_argument(
+        "--files",
+        help="Optional file with list of file ids (one to a line)",
         default=None,
     )
     parser.add_argument(
@@ -285,8 +325,11 @@ def main():
         dest_table_id=args.dest_table_id,
         patients_file=args.patients,
         patient=args.patient,
+        files_file=args.files,
+        file=args.file,
         mapping=mapping,
-        source_table=args.source_table
+        source_table=args.source_table,
+        endpoint=args.endpoint
         # dest_bucket=args.dest_bucket,
         # dest_bucket_file_name=args.dest_bucket_file_name,
         # out_file=out_file,

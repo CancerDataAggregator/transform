@@ -17,7 +17,8 @@ Patient:
     Transformations:
         species: 
         - ['idc_species_mapping', ['STRING'] ]
-
+    Linkers:
+        Files: 'files.crdc_instance_uuid'
 File:
     Mapping:
         id: 'files.crdc_instance_uuid'
@@ -28,7 +29,7 @@ File:
         data_category: 'Imaging'
         data_type: 'NULL'
         file_format: 'DICOM'
-        associated_project: 'files.collection_id'
+        associated_project: 'files.[collection_id]'
         drs_uri: 'files.gcs_url'
         byte_size: null
         checksum: 'NULL'
@@ -38,6 +39,11 @@ File:
     Transformations:
         label: 
         - ['idc_substr', ['STRING',15] ]
+
+    Linkers:
+        Specimens: 
+        ResearchSubjects: 
+        Subjects: 'files.PatientID'
 # 'NULL' ensures a string type for the field, but null
 # null ensures an integer type for the field, but null
             

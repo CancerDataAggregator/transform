@@ -35,8 +35,8 @@ Patient_merge:
     ResearchSubject:
         merge_type: "append_field_vals"
         default_value: []
-    File:
-        merge_type: "append_field_vals"
+    Files:
+        merge_type: "append_linkers"
         default_value: []
 
 ResearchSubject_merge:
@@ -61,8 +61,8 @@ ResearchSubject_merge:
     Specimen:
         merge_type: "append_field_vals"
         default_value: []
-    File:
-        merge_type: "append_field_vals"
+    Files:
+        merge_type: "append_linkers"
         default_value: []
 
 File_merge:
@@ -102,6 +102,16 @@ File_merge:
     imaging_modality:
         merge_type: "coalesce"
         default_value: null
+    Subjects:
+        merge_type: "append_linkers"
+        default_value: []
+    ResearchSubjects:
+        merge_type: "append_linkers"
+        default_value: []
+    Specimens:
+        merge_type: "append_linkers"
+        default_value: []
+
 Diagnosis_merge:
     id:
         merge_type: "coalesce"
@@ -153,8 +163,8 @@ Specimen_merge:
     derived_from_specimen:
         merge_type: "coalesce"
         default_value: ""
-    File:
-        merge_type: "append_field_vals"
+    Files:
+        merge_type: "append_linkers"
         default_value: []
 
 # Future extension

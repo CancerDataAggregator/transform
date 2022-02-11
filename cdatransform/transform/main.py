@@ -40,11 +40,13 @@ def main():
     parser.add_argument("output", help="Output data file.")
     parser.add_argument("map_trans", help="Mapping and Transformations file.")
     parser.add_argument("DC", help="Data Commons source. (GDC, PDC, etc.)")
+    parser.add_argument("--endpoint", help="endpoint from which the file was generated. e.g. cases")
     parser.add_argument("--log", default="transform.log", help="Name of log file.")
     parser.add_argument("--case", help="Transform just this case")
     parser.add_argument(
         "--cases", help="Optional file with list of case ids (one to a line)"
     )
+    #parser.add_argument("endpoint", help="endpoint from which the file was generated. e.g. cases")
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -74,7 +76,7 @@ def main():
             reader = jsonlines.Reader(infp)
             writer = jsonlines.Writer(outfp)
             for case in filter_cases(reader, case_list=case_list):
-                writer.write(transform(case, MandT, args.DC))
+                writer.write(transform(case, MandT, args.DC, endpoint=args.endpoint))
                 count += 1
                 if count % 5000 == 0:
                     sys.stderr.write(f"Processed {count} cases ({time.time() - t0}).\n")

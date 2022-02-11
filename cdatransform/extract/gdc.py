@@ -83,11 +83,20 @@ case_fields_to_use = [
 files_fields = [
     "file_id",
     "cases.case_id",
+    "cases.submitter_id",
     "cases.samples.sample_id",
     "cases.samples.portions.portion_id",
     "cases.samples.portions.slides.slide_id",
     "cases.samples.portions.analytes.analyte_id",
     "cases.samples.portions.analytes.aliquots.aliquot_id",
+    "cases.project.project_id",
+    "cases.project.dbgap_accession_number",
+    "data_category",
+    "data_type",
+    "file_name",
+    "file_size",
+    "md5sum",
+    "data_format",
 ]
 # What is the significance of cases.samples.sample_id vs cases.sample_ids?
 # Answer: cases.sample_ids is not returned by GDC API 
@@ -280,7 +289,6 @@ class GDC:
                                     file_meta.get("file_id")
                                 ]
 
-        print(files_per_sample_dict["12cfe700-d1b4-4b88-b509-b8dfaf12ecdf"])
         return files_per_sample_dict
 
     def _get_gdc_files(self):
@@ -310,6 +318,10 @@ def main():
     parser.add_argument("--case", help="Extract just this case")
     parser.add_argument(
         "--cases", help="Optional file with list of case ids (one to a line)"
+    )
+    parser.add_argument("--file", help="Extract just this file")
+    parser.add_argument(
+        "--files", help="Optional file with list of file ids (one to a line)"
     )
     parser.add_argument("--cache", help="Use cached files.", action="store_true")
     args = parser.parse_args()

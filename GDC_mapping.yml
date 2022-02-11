@@ -17,7 +17,9 @@ Patient:
     Transformations:
         subject_associated_project:
             - ['str_to_list', [] ]
-        
+    
+    Linkers:
+        Files: 'cases.files.file_id'
 
 ResearchSubject:
     Mapping:
@@ -28,6 +30,9 @@ ResearchSubject:
         member_of_research_project: 'cases.project.project_id'
         primary_diagnosis_condition: 'cases.disease_type'
         primary_diagnosis_site: 'cases.primary_site'
+
+    Linkers:
+        Files: 'cases.files.file_id'
             
 Diagnosis:
     Mapping:
@@ -94,6 +99,14 @@ Specimen:
             aliquots: 'cases.samples.portions.analytes.analyte_id'
         derived_from_subject: 'cases.submitter_id'
 
+    Linkers:
+        Files:
+            samples: 'cases.samples.files.file_id'
+            portions: 'cases.samples.portions.files.file_id'
+            slides: 'cases.samples.portions.slides.files.file_id'
+            analytes: 'cases.samples.portions.analytes.files.file_id'
+            aliquots: 'cases.samples.portions.analytes.aliquots.files.file_id'
+
 File:
     Mapping:
         id: 'files.file_id'
@@ -104,16 +117,27 @@ File:
         data_category: 'files.data_category'
         data_type: 'files.data_type'
         file_format: 'files.data_format'
-        associated_project: 'cases.project.project_id'
+        associated_project: 'files.cases.project.project_id'
         drs_uri: 'files.file_id'
         byte_size: 'files.file_size'
         checksum: 'files.md5sum'
         data_modality: 'Genomic'
-        imaging_modality: 'cases.NOT_APPLICABLE'
-        dbgap_accession_number: 'cases.project.dbgap_accession_number'
+        imaging_modality: 'files.NOT_APPLICABLE'
+        dbgap_accession_number: 'files.cases.project.dbgap_accession_number'
     Transformations:
         drs_uri: 
             - ['format_drs', [] ]
-        #associated_project:
-        #    - ['str_to_list', [] ]
+        associated_project:
+            - ['str_to_list', [] ]
+    
+    Linkers:
+        Specimens:
+            samples: 'files.cases.samples.sample_id'
+            portions: 'files.cases.samples.portions.portion_id'
+            slides: 'files.cases.samples.portions.slides.slide_id'
+            analytes: 'files.cases.samples.portions.analytes.analyte_id'
+            aliquots: 'files.cases.samples.portions.analytes.aliquots.aliquot_id'
+        ResearchSubjects: 'files.cases.case_id'
+        Subjects: 'files.cases.submitter_id'
+        
             
