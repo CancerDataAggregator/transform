@@ -139,6 +139,26 @@ class GDC:
                     sys.stderr.write(f"Wrote {n} cases in {time.time() - t0}s\n")
         sys.stderr.write(f"Wrote {n} cases in {time.time() - t0}s\n")
 
+    def save_files(self, out_file, cache_file, file_ids=None):
+        t0 = time.time()
+        n = 0
+        with gzip.open(out_file, "wb") as fp:
+            writer = jsonlines.Writer(fp)
+            print(cache_file)
+            with gzip.open(cache_file, "r") as fr:
+                reader = jsonlines.Reader(fr)
+                if file_ids:
+                    print(file_ids)
+                    for file in reader:
+                        if file.get('file_id') in file_ids:
+                            writer.write(file)
+                            n += 1
+                else:
+                    for file in reader:
+                        writer.write(file)
+                        n += 1
+        sys.stderr.write(f"Extracted {n} files from cache in {time.time() - t0}s\n")
+
     def _cases(
         self,
         case_ids=None,
@@ -327,10 +347,14 @@ def main():
     args = parser.parse_args()
 
     gdc = GDC(cache_file=pathlib.Path(args.cache_file))
-    gdc.save_cases(
-        args.out_file, case_ids=get_case_ids(case=args.case, case_list_file=args.cases)
-    )
-
+    if args.case or args.cases:
+        gdc.save_cases(
+            args.out_file, case_ids=get_case_ids(case=args.case, case_list_file=args.cases)
+        )
+    if args.file or args.files:
+        gdc.save_files(
+            args.out_file, args.cache_file, file_ids=get_case_ids(case=args.file, case_list_file=args.files)
+        )
 
 if __name__ == "__main__":
     main()

@@ -10,6 +10,8 @@ from deepdiff.helper import CannotCompare
 import cdatransform.transform.transform_lib.transform_with_YAML_v1 as tr
 from cdatransform.transform.validate import LogValidation
 
+# DeepDiff strictly ignoring order is now confusing two specimens.
+# Add this function to look at entities with the same id
 def compare_func(x, y, level=None):
     try:
         return x['id'] == y['id']
