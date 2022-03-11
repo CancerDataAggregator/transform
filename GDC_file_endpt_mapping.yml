@@ -21,7 +21,7 @@ File:
         #associated_project:
         #    - ['str_to_list', [] ]
     
-Subject:
+Patient:
     Mapping:
         id: 'files.cases.submitter_id'
         identifier:

@@ -6,8 +6,7 @@ label: "fc24fe78-54e7-4d08-be0c-cd923aa6ada9.wxs.aliquot_ensemble_masked.maf.gz"
 data_category: "Simple Nucleotide Variation"
 data_type: "Masked Somatic Mutation"
 file_format: "MAF"
-associated_project: 
-  - "TARGET-ALL-P2"
+associated_project: "TARGET-ALL-P2"
 drs_uri: drs://dg.4DFC:6892c6ba-66aa-4083-a13e-845ae272700a
 byte_size: 4122
 checksum: "c033145e2e6c30d5a0771e977eacefff"

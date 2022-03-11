@@ -6,8 +6,7 @@ label: "d6215803-3ddd-4585-b759-274016a3d7c6.wxs.MuTect2.somatic_annotation.vcf.
 data_category: "Simple Nucleotide Variation"
 data_type: "Annotated Somatic Mutation"
 file_format: "VCF"
-associated_project: 
-  - "TARGET-ALL-P2"
+associated_project: "TARGET-ALL-P2"
 drs_uri: drs://dg.4DFC:eb66f012-158d-409c-b79b-c4cc605eebb3
 byte_size: 1617007
 checksum: "46f0263f550f0399df15356f8b16fe57"
