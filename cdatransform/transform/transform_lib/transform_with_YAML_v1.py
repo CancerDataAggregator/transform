@@ -10,11 +10,6 @@ def add_Specimen_rec(orig, MandT, DC, **kwargs):
     endpoint = kwargs.get("endpoint", "cases")
     spec = []
     tree = kwargs.get("tree", ruy.det_tree_to_collapse(MandT, "Specimen"))
-    print("add Specimen tree:" + str(tree))
-    print("spec_type: "+spec_type)
-    print("rel_path: "+rel_path)
-    print("cur_path: "+ str(cur_path))
-    print(str(ruy.simp_read(orig, rel_path, cur_path, DC)))
     if ruy.simp_read(orig, rel_path, cur_path, DC) is not None:
         for spec_rec_ind in range(len(ruy.simp_read(orig, rel_path, cur_path, DC))):
             spec_path = cur_path.copy()
@@ -22,7 +17,6 @@ def add_Specimen_rec(orig, MandT, DC, **kwargs):
             spec_rec = ruy.read_entry(
                 orig, MandT, "Specimen", cur_path=spec_path, spec_type=spec_type
             )
-            print('Spec_rec: ' + str(spec_rec))
             #spec_rec["File"] = add_File_rec(
             #    orig, MandT, DC, cur_path=spec_path, rel_path=rel_path
             #)
@@ -34,7 +28,6 @@ def add_Specimen_rec(orig, MandT, DC, **kwargs):
             if "cases" in tree:
                 tree = tree["cases"]
             branches_dict = tree.get(spec_type)
-            print("branches_dict: "+str(branches_dict))
             if branches_dict is not None:
                 for k in branches_dict:
                     nest_path = spec_path.copy() + [k]
@@ -279,11 +272,9 @@ class Transform:
                 orig, MandT, "ResearchSubject", cur_path=RS_current_path
             )
             RS = entity_value_transforms(RS, "ResearchSubject", MandT)
-            print(RS_current_path+["samples"])
             spec_rel_path = MandT['Specimen']['Mapping']['id']['samples'].split('.')
             spec_rel_path.pop()
             spec_rel_path = '.'.join(spec_rel_path)
-            print(spec_rel_path)
             tip['Specimen'] += add_Specimen_rec(orig, MandT, DC, cur_path=RS_current_path+["samples"],
             rel_path=spec_rel_path, endpoint='files')
             diag_path = MandT["Diagnosis"]["Mapping"]["id"]
@@ -292,7 +283,6 @@ class Transform:
             #diag_path = ".".join(diag_path)
             diagcur_path = RS_current_path + [diag_path[-1]]
             diag_path = ".".join(diag_path)
-            print("cur_path: "+str(diagcur_path))
             RS['Diagnosis'] = []
             ent_rec = ruy.simp_read(orig, diag_path, diagcur_path, DC)
             if isinstance(ent_rec, list):
@@ -306,8 +296,6 @@ class Transform:
                     #diag_path = ".".join(diag_path)
                     treatcur_path = diagcur_path + [diag_rec]+[treat_path[-1]]
                     treat_path = ".".join(treat_path)
-                    print("treatcur_path: "+str(treatcur_path))
-                    print("treat_path:" + treat_path)
                     temp_diag['Treatment'] = []
                     treat_recs = ruy.simp_read(orig, treat_path, treatcur_path, DC)
                     if isinstance(treat_recs, list) and treat_recs != []:
@@ -315,7 +303,7 @@ class Transform:
                         for treat in range(len(treat_recs)):
                             temp_diag["Treatment"].append(
                                 ruy.read_entry(
-                                    orig, MandT, "Treatment", cur_path=treat_path + [treat]
+                                    orig, MandT, "Treatment", cur_path=treatcur_path + [treat]
                                 )
                             )
                     elif isinstance(treat_recs, dict):
@@ -333,7 +321,6 @@ class Transform:
                 #diag_path = ".".join(diag_path)
                 treatcur_path = diagcur_path +[treat_path[-1]]
                 treat_path = ".".join(treat_path)
-                print("cur_path: "+str(treatcur_path))
                 temp_diag['Treatment'] = []
                 treat_rec = ruy.simp_read(orig, diag_path, treatcur_path, DC)
                 if isinstance(treat_rec, list) and treat_rec != []:

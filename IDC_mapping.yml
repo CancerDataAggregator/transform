@@ -29,7 +29,7 @@ File:
         data_category: 'Imaging'
         data_type: 'NULL'
         file_format: 'DICOM'
-        associated_project: 'files.[collection_id]'
+        associated_project: 'files.collection_id'
         drs_uri: 'files.gcs_url'
         byte_size: null
         checksum: 'NULL'

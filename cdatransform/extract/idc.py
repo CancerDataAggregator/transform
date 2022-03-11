@@ -5,7 +5,9 @@ from google.cloud import bigquery, storage
 from google.oauth2 import service_account
 from cdatransform.lib import get_case_ids
 import cdatransform.transform.transform_lib.transform_with_YAML_v1 as tr
-
+import jsonlines
+import gzip
+import os
 
 class IDC:
     def __init__(
@@ -19,18 +21,18 @@ class IDC:
         dest_table_id="gdc-bq-sample.idc_test.dicom_pivot_v3",
         mapping=None, #yaml.load(open("IDC_mapping.yml", "r"), Loader=Loader),
         source_table="canceridc-data.idc_v3.dicom_pivot_v3",
-        endpoint=None
-        # dest_bucket='gdc-bq-sample-bucket',
-        # dest_bucket_file_name='druth/idc-extract.jsonl.gz',
-        # out_file='idc-test.jsonl.gz'
+        endpoint=None,
+        dest_bucket='gdc-bq-sample-bucket',
+        dest_bucket_file_name='druth/idc-extract.jsonl.gz',
+        out_file='idc-test.jsonl.gz'
     ) -> None:
         self.gsa_key = gsa_key
         self.gsa_info = gsa_info
         self.dest_table_id = dest_table_id
         self.endpoint = endpoint
-        # self.dest_bucket = dest_bucket
-        # self.out_file = out_file
-        # self.dest_bucket_file_name = dest_bucket_file_name
+        self.dest_bucket = dest_bucket
+        self.out_file = out_file
+        self.dest_bucket_file_name = dest_bucket_file_name
         self.service_account_cred = self._service_account_cred()
         self.mapping = self._init_mapping(mapping)
         self.patient_ids = get_case_ids(case=patient, case_list_file=patients_file)
@@ -85,15 +87,18 @@ class IDC:
     def table_to_bucket(self):
         # Save destination table to GCS bucket
         bucket_name = self.dest_bucket
-        dataset_id = "idc_test"
-        table = "dicom_pivot_wave1"
+        dataset_id = self.dest_table_id.split('.')[1]
+        table = self.dest_table_id.split('.')[2]
         credentials = self.service_account_cred
         project = credentials.project_id
         client = bigquery.Client(
             credentials=credentials,
             project=credentials.project_id,
         )
-        destination_uri = "gs://{}/{}".format(bucket_name, "idc-test.jsonl.gz")
+        #dest_bucket_file_name = self.dest_bucket_file_name.split('.')
+        #dest_bucket_file_name.insert(-2,'*')
+        #dest_bucket_file_name='.'.join(dest_bucket_file_name)
+        destination_uri = "gs://{}/{}".format(bucket_name, self.dest_bucket_file_name)
         dataset_ref = bigquery.DatasetReference(project, dataset_id)
         table_ref = dataset_ref.table(table)
         job_config = bigquery.job.ExtractJobConfig()
@@ -109,7 +114,8 @@ class IDC:
             # Location must match that of the source table.
             location="US",
         )  # API request
-        extract_job.result()  # Waits for job to complete.
+        print(extract_job.result())
+        print(str(extract_job.destination_uris))  # Waits for job to complete.
 
     def download_blob(self):
         """Downloads a blob from the bucket."""
@@ -123,8 +129,34 @@ class IDC:
         except Exception:
             storage_client = storage.Client.from_service_account_json(key_path)
         bucket = storage_client.bucket(bucket_name)
-        blob = bucket.blob(source_blob_name)
-        blob.download_to_filename(destination_file_name)
+        prefix = source_blob_name.split('*')
+        if len(prefix) > 1:
+            # concatenate files together. One big file downloads faster than many small ones
+            # Find all 'wildcard' named files
+            blobs = bucket.list_blobs(prefix=prefix[0])
+            # Put them together
+            bucket.blob(destination_file_name).compose(blobs) 
+            # Download big file
+            blob = bucket.blob(destination_file_name)
+            blob.download_to_filename(destination_file_name)
+            # Delete smaller files from bucket
+            for blob in blobs:
+                blob.delete()
+            #blob_names = []
+            #for blob in blobs:
+            #    blob_names.append(blob.name)
+            #    blob.download_to_filename(blob.name)
+            #with gzip.open(destination_file_name, 'w') as outfile:
+            #    writer = jsonlines.Writer(outfile)
+            #    for fname in blob_names:
+            #        with gzip.open(fname, 'r') as infile:
+            #            reader = jsonlines.Reader(infile)
+            #            for line in reader:
+            #                writer.write(line)
+            #        os.remove(fname)
+        else:
+            blob = bucket.blob(source_blob_name)
+            blob.download_to_filename(destination_file_name)
 
         print(
             "Blob {} downloaded to {}.".format(source_blob_name, destination_file_name)
@@ -250,12 +282,12 @@ class IDC:
             query += """ GROUP by id, species, collection_id"""
         elif self.endpoint == "File":
             query += self.add_entity_fields("File")
-            query += """, """
-            query += self.add_linkers("File")
+            query += """, [STRUCT("""
+            query += self.add_entity_fields("Patient")
             # add WHERE statement if just looking for specific patients
-            query += """ FROM `""" + self.source_table + """`"""
+            query += """)] AS Subject FROM `""" + self.source_table + """`"""
             query += self.build_where_files()
-            query += """ GROUP by id, gcs_url, Modality, collection_id"""
+            query += """ GROUP by id, gcs_url, Modality, collection_id, PatientID, tcia_species"""
         print(query)
         return query
 
@@ -329,16 +361,16 @@ def main():
         file=args.file,
         mapping=mapping,
         source_table=args.source_table,
-        endpoint=args.endpoint
-        # dest_bucket=args.dest_bucket,
-        # dest_bucket_file_name=args.dest_bucket_file_name,
-        # out_file=out_file,
+        endpoint=args.endpoint,
+        dest_bucket=args.dest_bucket,
+        dest_bucket_file_name=args.dest_bucket_file_name,
+        out_file=args.out_file,
     )
     if make_bq_table:
         idc.query_idc_to_table()
-    # if make_bucket_file:
-    #    idc.table_to_bucket()
-    # idc.download_blob()
+    if args.make_bucket_file:
+        idc.table_to_bucket()
+    idc.download_blob()
 
 
 if __name__ == "__main__":

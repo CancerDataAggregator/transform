@@ -381,14 +381,17 @@ def main():
         "--files", help="Optional file with list of file ids (one to a line)"
     )
     parser.add_argument("--cache", help="Use cached files.", action="store_true")
+    parser.add_argument(
+        "--endpoint", help="Extract all from 'files' or 'cases' endpoint "
+    )
     args = parser.parse_args()
 
     gdc = GDC(cache_file=pathlib.Path(args.cache_file))
-    if args.case or args.cases:
+    if args.case or args.cases or args.endpoint=='cases':
         gdc.save_cases(
             args.out_file, case_ids=get_case_ids(case=args.case, case_list_file=args.cases)
         )
-    if args.file or args.files:
+    if args.file or args.files or args.endpoint=='files':
         gdc.save_files(
             args.out_file, args.cache_file, file_ids=get_case_ids(case=args.file, case_list_file=args.files)
         )

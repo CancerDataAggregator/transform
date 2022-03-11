@@ -81,7 +81,7 @@ def main():
                 if count % 5000 == 0:
                     sys.stderr.write(f"Processed {count} cases ({time.time() - t0}).\n")
 
-    sys.stderr.write(f"Processed {count} cases ({time.time() - t0}).\n")
+    sys.stderr.write(f"Processed {count} {args.endpoint} ({time.time() - t0}).\n")
 
     validate.generate_report(logger)
 

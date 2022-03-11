@@ -110,6 +110,7 @@ class Schema:
                 "treatment_anatomic_site",
                 "treatment_effect",
                 "treatment_end_reason",
+                "associated_project",
             ]:
                 field_dict["type"] = "STRING"
                 field_dict["mode"] = "NULLABLE"
@@ -133,7 +134,7 @@ class Schema:
         print("attempted to run build json")
         if self.endpoint == "Patient":
             # Patient table procedure
-            Patient = self.make_entity_schema("Patient")
+            Patient = self.make_entity_schema("Subject")
             RS = self.make_entity_schema("ResearchSubject")
             Diag = self.make_entity_schema("Diagnosis")
             Treat = self.make_entity_schema("Treatment")
@@ -147,6 +148,14 @@ class Schema:
         # File table procedure
         elif self.endpoint == "File":
             File = self.make_entity_schema("File")
+            Patient = self.make_entity_schema("Subject")
+            RS = self.make_entity_schema("ResearchSubject")
+            Diag = self.make_entity_schema("Diagnosis")
+            Treat = self.make_entity_schema("Treatment")
+            Spec = self.make_entity_schema("Specimen")
+            Diag["fields"].append(Treat)
+            RS["fields"].append(Diag)
+            File["fields"].extend([Patient, RS, Spec])
             with open(self.outfile, "w") as outfile:
                 json.dump(File["fields"], outfile)
 

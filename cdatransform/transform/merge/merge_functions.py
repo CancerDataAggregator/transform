@@ -44,7 +44,6 @@ def merge_fields_level(data_commons_fields_dict, how_to_merge, source_hierarchy)
                 ):
                     dat_list.append(data_commons_fields_dict[source][field])
             if how_to_merge[field]["merge_type"] == "append_linkers":
-                print("attempting to add linkers")
                 dat[field] = append_field_vals_to_single_list(dat_list, unique_strings=True)
             else:
                 dat[field] = append_field_vals_to_single_list(dat_list)
