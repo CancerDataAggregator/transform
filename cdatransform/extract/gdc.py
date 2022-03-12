@@ -317,7 +317,7 @@ class GDC:
                     gdc_files_metadata += [_meta]
         else:
             sys.stderr.write(f"Loading files metadata from cache file {cache_file}.\n")
-            with gzip.open(cache_file, "r") as f_in:
+            with gzip.open(cache_file, "rb") as f_in:
                 reader = jsonlines.Reader(f_in)
                 gdc_files_metadata = [f for f in reader]
 
