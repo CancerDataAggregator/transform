@@ -130,7 +130,7 @@ class PDC:
         else:
             sys.stderr.write(f"Loading files linkages from file {cache_file}.\n")
             files_per_sample_dict = defaultdict(list)
-            with gzip.open(cache_file, "r") as f_in:
+            with gzip.open(cache_file, "rb") as f_in:
                 reader = jsonlines.Reader(f_in)
                 for f in reader:
                     aliquots = f.get("aliquots")
@@ -146,7 +146,7 @@ class PDC:
         n = 0
         files_per_sample = defaultdict(list)
         sys.stderr.write("Started collecting files.\n")
-        with gzip.open(cache_file, "wt") as f_out:
+        with gzip.open(cache_file, "wb") as f_out:
             writer = jsonlines.Writer(f_out)
             for fc in self._files_chunk():
                 for f in fc:
@@ -408,7 +408,6 @@ def remove_dups_from_dict_of_list_of_dicts(records):
 def main():
     parser = argparse.ArgumentParser(description="Pull case data from PDC API.")
     parser.add_argument("cases_out_file", help="Out cases endpoint file name. Should end with .gz")
-    parser.add_argument("files_out_file", help="Out files endpoint file name. Should end with .gz")
     parser.add_argument("cache_file", help="Use (or generate if missing) cache file.")
     #parser.add_argument("file_linkage", help="Used to link files and specimens/cases")
     parser.add_argument("--case", help="Extract just this case")
@@ -419,13 +418,14 @@ def main():
     parser.add_argument(
         "--files", help="Optional file with list of file ids (one to a line)"
     )
+    parser.add_argument("--files_out_file", help="Out files endpoint file name. Should end with .gz")
     args = parser.parse_args()
 
     pdc = PDC(pathlib.Path(args.cache_file))
-    #pdc.save_cases(
-    #    args.cases_out_file, case_ids=get_case_ids(case=args.case, case_list_file=args.cases)
-    #)
-    pdc.add_case_info_to_files(get_case_ids(case=args.file, case_list_file=args.files), args.cases_out_file, args.files_out_file, args.cache_file)
+    pdc.save_cases(
+        args.cases_out_file, case_ids=get_case_ids(case=args.case, case_list_file=args.cases)
+    )
+    #pdc.add_case_info_to_files(get_case_ids(case=args.file, case_list_file=args.files), args.cases_out_file, args.files_out_file, args.cache_file)
 
 if __name__ == "__main__":
     main()
