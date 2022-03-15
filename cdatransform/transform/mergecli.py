@@ -79,7 +79,12 @@ def merge_subjects(output_file, how_to_merge_file, **kwargs):
     with open(how_to_merge_file) as file:
         how_to_merge = yaml.full_load(file)
     # Need all info from the files, and dictionary listing patient_ids and sources found.
-    input_file_dict = dict({"gdc": kwargs.get('gdc'), "pdc": kwargs.get('pdc'), "idc": kwargs.get('idc')})
+    input_file_dict = {"gdc": kwargs.get('gdc'), "pdc": kwargs.get('pdc'), "idc": kwargs.get('idc')}
+    
+    for dc, val in list(input_file_dict.items()):
+        if val is None:
+            del input_file_dict[dc]
+            
     All_endpoints_sources, All_Entries_All_DCs = get_endpoint_info_all_DCs(
         input_file_dict
     )
@@ -120,6 +125,9 @@ def merge_files(output_file, merged_subjects_input, how_to_merge_file, **kwargs)
         how_to_merge = yaml.full_load(file)
     # Need all info from the files, and dictionary listing file_ids and sources found.
     input_file_dict = dict({"gdc": kwargs.get('gdc'), "pdc": kwargs.get('pdc'), "idc": kwargs.get('idc')})
+    for dc, val in list(input_file_dict.items()):
+        if val is None:
+            del input_file_dict[dc]
     #All_endpoints_sources, All_Entries_All_DCs = get_endpoint_info_all_DCs(
     #    input_file_dict
     #)
@@ -143,6 +151,7 @@ def merge_files(output_file, merged_subjects_input, how_to_merge_file, **kwargs)
         count = 0
         log = LogValidation()
         for source, files in input_file_dict.items():
+            print(files)
             with gzip.open(files, "rb") as file_recs:
                 reader = jsonlines.Reader(file_recs)
                 for file_rec in reader:

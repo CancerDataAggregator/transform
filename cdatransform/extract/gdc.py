@@ -310,14 +310,14 @@ class GDC:
         if not cache_file.exists():
             sys.stderr.write(f"Cache file {cache_file} not found. Generating.\n")
             gdc_files_metadata = []
-            with gzip.open(cache_file, "w") as f_out:
+            with gzip.open(cache_file, "wt") as f_out:
                 writer = jsonlines.Writer(f_out)
                 for _meta in self._get_gdc_files():
                     writer.write(_meta)
                     gdc_files_metadata += [_meta]
         else:
             sys.stderr.write(f"Loading files metadata from cache file {cache_file}.\n")
-            with gzip.open(cache_file, "rb") as f_in:
+            with gzip.open(cache_file, "rt") as f_in:
                 reader = jsonlines.Reader(f_in)
                 gdc_files_metadata = [f for f in reader]
 

@@ -278,6 +278,7 @@ class PDC:
         # Get info from the recently written cases info file (output_file)
         case_recs = defaultdict(list)
         sample_recs = defaultdict(list)
+        print(str(file_ids))
         with gzip.open(cases_out_file, "r") as fp:
             reader = jsonlines.Reader(fp)
             for case in reader:
@@ -422,10 +423,13 @@ def main():
     args = parser.parse_args()
 
     pdc = PDC(pathlib.Path(args.cache_file))
-    pdc.save_cases(
-        args.cases_out_file, case_ids=get_case_ids(case=args.case, case_list_file=args.cases)
-    )
-    #pdc.add_case_info_to_files(get_case_ids(case=args.file, case_list_file=args.files), args.cases_out_file, args.files_out_file, args.cache_file)
+    if not pathlib.Path(args.cases_out_file).exists():
+        pdc.save_cases(
+            args.cases_out_file, case_ids=get_case_ids(case=args.case, case_list_file=args.cases)
+        )
+    if args.files_out_file is not None:
+        print("making files file")
+        pdc.add_case_info_to_files(get_case_ids(case=args.file, case_list_file=args.files), args.cases_out_file, args.files_out_file, args.cache_file)
 
 if __name__ == "__main__":
     main()

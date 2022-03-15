@@ -1,0 +1,114 @@
+Patient:
+    Mapping:
+        id: 'cases.case_submitter_id'
+        identifier:
+            system: 'PDC'
+            value: 'cases.case_submitter_id'
+        species: 'cases.taxon'
+        sex: 'cases.demographics.gender'
+        race: 'cases.demographics.race'
+        ethnicity: 'cases.demographics.ethnicity'
+        days_to_birth: 'cases.demographics.days_to_birth'
+        subject_associated_project: 'cases.project_submitter_id'
+        age_at_death: 'cases.demographics.days_to_death'
+        cause_of_death: 'cases.demographics.cause_of_death'
+        vital_status: 'cases.demographics.vital_status'
+        
+    Transformations:
+        race:
+            - ['lower_case', [] ]
+        ethnicity:
+            - ['lower_case', [] ]
+        sex:
+            - ['lower_case', [] ]
+        subject_associated_project:
+            - ['str_to_list', [] ]
+    Linkers:
+        Files: 'cases.files.file_id'
+
+ResearchSubject:
+    Mapping:
+        id: 'cases.case_id'
+        identifier:
+            system: 'PDC'
+            value: 'cases.case_id'
+        member_of_research_project: 'cases.project_submitter_id'
+        primary_diagnosis_condition: 'cases.disease_type'
+        primary_diagnosis_site: 'cases.primary_site'
+    Linkers:
+        Files: 'cases.files.file_id'
+        
+            
+Diagnosis:
+    Mapping:
+        id: 'cases.diagnoses.diagnosis_id'
+        identifier:
+            system: 'PDC'
+            value: 'cases.diagnoses.diagnosis_id'
+        primary_diagnosis: 'cases.diagnoses.primary_diagnosis'
+        age_at_diagnosis: 'cases.diagnoses.age_at_diagnosis'
+        morphology: 'cases.diagnoses.morphology'
+        stage: 'cases.diagnoses.tumor_stage'
+        grade: 'cases.diagnoses.tumor_grade'
+        method_of_diagnosis: 'cases.diagnoses.method_of_diagnosis'
+        
+
+Treatment:
+    Mapping:
+        id: 'cases.diagnoses.treatments.treatment_id'
+        identifier:
+            system: 'PDC'
+            value: 'cases.diagnoses.treatments.treatment_id'
+        treatment_outcome: 'cases.diagnoses.treatments.treatment_outcome'
+        treatment_type: 'cases.diagnoses.treatments.treatment_type'
+        days_to_treatment_start: 'cases.diagnoses.treatments.days_to_treatment_start'
+        days_to_treatment_end: 'cases.diagnoses.treatments.days_to_treatment_end'
+        therapeutic_agent: 'cases.diagnoses.treatments.therapeutic_agents'
+        treatment_anatomic_site: 'cases.diagnoses.treatments.treatment_anatomic_site'
+        treatment_effect: 'cases.diagnoses.treatments.treatment_effect'
+        treatment_end_reason: 'cases.diagnoses.treatments.reason_treatment_ended'
+        number_of_cycles: 'cases.diagnoses.treatments.number_of_cycles'
+
+Specimen:
+    Mapping:
+        id:
+            samples: 'cases.samples.sample_id'
+            aliquots: 'cases.samples.aliquots.aliquot_id'
+        identifier:
+            system: 'PDC'
+            value:
+                samples: 'cases.samples.sample_id'
+                aliquots: 'cases.samples.aliquots.aliquot_id'
+        associated_project: 'cases.project_submitter_id'
+        age_at_collection: 'cases.demographics.days_to_birth'
+        primary_disease_type: 'cases.disease_type'
+        anatomical_site: 'cases.samples.biospecimen_anatomic_site'
+        source_material_type: 'cases.samples.sample_type'
+        specimen_type:
+            samples: 'sample'
+            aliquots: 'aliquot'
+        derived_from_specimen:
+            samples: 'initial specimen'
+            aliquots: 'cases.samples.sample_id'
+        derived_from_subject: 'cases.case_submitter_id'
+    Linkers:
+        Files:
+            aliquots: 'cases.samples.aliquots.files.file_id'
+            samples: 'cases.samples.files.file_id'
+
+Study:
+    Mapping:
+        id: 'cases.study.study_id'
+        identifier:
+            value: 'cases.study.study_id'
+            system: 'PDC'
+        pdc_study_id: 'cases.study.pdc_study_id'
+        study_name: 'cases.study.study_name'
+        study_submitter_id: 'cases.study.study_submitter_id'
+        analytical_fraction: 'cases.study.analytical_fraction'
+        experiment_type: 'cases.study.experiment_type'
+        primary_disease_type: 'cases.study.disease_types'
+        primary_disease_site: 'cases.study.primary_sites'
+        embargo_date: 'cases.study.embargo_date'
+        submitter_id_name: 'cases.study.submitter_id_name'
+        acquisition_type: 'cases.study.acquisition_type'

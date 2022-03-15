@@ -1,0 +1,111 @@
+File:
+    Mapping:
+        id: 'files.file_id'
+        identifier:
+            system: 'PDC'
+            value: 'files.file_id'
+        label: 'files.file_name'
+        data_category: 'files.data_category'
+        data_type: 'files.file_type'
+        file_format: 'files.file_format'
+        associated_project: 'files.project_submitter_id' #this mapping is created in the extraction process
+        drs_uri: 'files.file_id'
+        byte_size: 'files.file_size'
+        checksum: 'files.md5sum'
+        data_modality: 'Proteomic'
+        imaging_modality: 'files.NOT_APPLICABLE'
+        dbgap_accession_number: 'files.dbgap_control_number' 
+    Transformations:
+        drs_uri:
+            - ['format_drs',  [] ]
+        #associated_project:
+        #    - ['str_to_list', [] ]
+
+Patient:
+    Mapping:
+        id: 'files.cases.case_submitter_id'
+        identifier:
+            system: 'PDC'
+            value: 'files.cases.case_submitter_id'
+        species: 'files.cases.taxon'
+        sex: 'files.cases.demographics.gender'
+        race: 'files.cases.demographics.race'
+        ethnicity: 'files.cases.demographics.ethnicity'
+        days_to_birth: 'files.cases.demographics.days_to_birth'
+        subject_associated_project: 'files.cases.project_submitter_id'
+        age_at_death: 'files.cases.demographics.days_to_death'
+        cause_of_death: 'files.cases.demographics.cause_of_death'
+        #vital_status: 'cases.demographics.vital_status'
+        
+    Transformations:
+        race:
+            - ['lower_case', [] ]
+        ethnicity:
+            - ['lower_case', [] ]
+        sex:
+            - ['lower_case', [] ]
+        subject_associated_project:
+            - ['str_to_list', [] ]
+
+ResearchSubject:
+    Mapping:
+        id: 'files.cases.case_id'
+        identifier:
+            system: 'PDC'
+            value: 'files.cases.case_id'
+        member_of_research_project: 'files.cases.project_submitter_id'
+        primary_diagnosis_condition: 'files.cases.disease_type'
+        primary_diagnosis_site: 'files.cases.primary_site'      
+            
+Diagnosis:
+    Mapping:
+        id: 'files.cases.diagnoses.diagnosis_id'
+        identifier:
+            system: 'PDC'
+            value: 'files.cases.diagnoses.diagnosis_id'
+        primary_diagnosis: 'files.cases.diagnoses.primary_diagnosis'
+        age_at_diagnosis: 'files.cases.diagnoses.age_at_diagnosis'
+        morphology: 'files.cases.diagnoses.morphology'
+        stage: 'files.cases.diagnoses.tumor_stage'
+        grade: 'files.cases.diagnoses.tumor_grade'
+        method_of_diagnosis: 'files.cases.diagnoses.method_of_diagnosis'
+       
+
+Treatment:
+    Mapping:
+        id: 'files.cases.diagnoses.treatments.treatment_id'
+        identifier:
+            system: 'PDC'
+            value: 'files.cases.diagnoses.treatments.treatment_id'
+        treatment_outcome: 'files.cases.diagnoses.treatments.treatment_outcome'
+        treatment_type: 'files.cases.diagnoses.treatments.treatment_type'
+        days_to_treatment_start: 'files.cases.diagnoses.treatments.days_to_treatment_start'
+        days_to_treatment_end: 'files.cases.diagnoses.treatments.days_to_treatment_end'
+        therapeutic_agent: 'files.cases.diagnoses.treatments.therapeutic_agents'
+        treatment_anatomic_site: 'files.cases.diagnoses.treatments.treatment_anatomic_site'
+        treatment_effect: 'files.cases.diagnoses.treatments.treatment_effect'
+        treatment_end_reason: 'files.cases.diagnoses.treatments.reason_treatment_ended'
+        number_of_cycles: 'files.cases.diagnoses.treatments.number_of_cycles'
+
+Specimen:
+    Mapping:
+        id:
+            samples: 'files.cases.samples.sample_id'
+            aliquots: 'files.cases.samples.aliquots.aliquot_id'
+        identifier:
+            system: 'PDC'
+            value:
+                samples: 'files.cases.samples.sample_id'
+                aliquots: 'files.cases.samples.aliquots.aliquot_id'
+        associated_project: 'files.cases.project_submitter_id'
+        age_at_collection: 'files.cases.demographics.days_to_birth'
+        primary_disease_type: 'files.cases.disease_type'
+        anatomical_site: 'files.cases.samples.biospecimen_anatomic_site'
+        source_material_type: 'files.cases.samples.sample_type'
+        specimen_type:
+            samples: 'sample'
+            aliquots: 'aliquot'
+        derived_from_specimen:
+            samples: 'initial specimen'
+            aliquots: 'files.cases.samples.sample_id'
+        derived_from_subject: 'files.cases.case_submitter_id'
