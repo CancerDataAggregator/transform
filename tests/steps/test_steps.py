@@ -21,28 +21,28 @@ def compare_func(x, y, level=None):
     "transform,DC,case,expected,endpoint",
     [
         pytest.param(
-            "../GDC_subject_endpt_mapping.yml",
+            "../GDC_subject_endpoint_mapping.yml",
             "GDC",
             "steps/gdc_TARGET_case1.json",
             "steps/gdc_TARGET_case1_harmonized.yaml",
             "cases",
         ),
         pytest.param(
-            "../GDC_subject_endpt_mapping.yml",
+            "../GDC_subject_endpoint_mapping.yml",
             "GDC",
             "steps/gdc_TARGET_case2.json",
             "steps/gdc_TARGET_case2_harmonized.yaml",
             "cases",
         ),
         pytest.param(
-            "../GDC_file_endpt_mapping.yml",
+            "../GDC_file_endpoint_mapping.yml",
             "GDC",
             "steps/gdc_TARGET_file1.json",
             "steps/gdc_TARGET_file1_harmonized.yaml",
             "files",
         ),
         pytest.param(
-            "../GDC_file_endpt_mapping.yml",
+            "../GDC_file_endpoint_mapping.yml",
             "GDC",
             "steps/gdc_TARGET_file2.json",
             "steps/gdc_TARGET_file2_harmonized.yaml",
