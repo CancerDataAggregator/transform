@@ -181,11 +181,9 @@ class GDC:
         n = 0
         with gzip.open(out_file, "wb") as fp:
             writer = jsonlines.Writer(fp)
-            print(cache_file)
             with gzip.open(cache_file, "r") as fr:
                 reader = jsonlines.Reader(fr)
                 if file_ids:
-                    print(file_ids)
                     for file in reader:
                         if file.get('file_id') in file_ids:
                             writer.write(file)
