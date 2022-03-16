@@ -5,8 +5,9 @@ import json
 
 
 class Schema:
-    def __init__(self, mapping, data_model_dir, outfile) -> None:
+    def __init__(self, mapping, data_model_dir, outfile, endpoint) -> None:
         self.outfile = outfile
+        self.endpoint = endpoint
         self.mapping = yaml.load(open(mapping, "r"), Loader=Loader)
         self.data_model = self._init_data_model(data_model_dir)
 
@@ -37,10 +38,20 @@ class Schema:
             fields.append(field_dict)
         return fields
 
+    def add_linkers(self, entity):
+        fields = []
+        for field in list(self.mapping[entity]["Linkers"].keys()):
+            field_dict = dict({})
+            field_dict["description"] = " ".join(["List of ids of",field[:-1],"entities associated with the",entity])
+            field_dict["name"] = field
+            field_dict["type"] = "STRING"
+            field_dict["mode"] = "REPEATED"
+            fields.append(field_dict)
+        return fields
+
     def make_entity_schema(self, entity):
         print("Ran with entity:")
         print(entity)
-
         entity_dict = dict({})
         entity_dict["name"] = entity
         entity_dict["description"] = self.data_model[entity].get("description", "")
@@ -83,7 +94,6 @@ class Schema:
                 ):
                     field_dict["type"] = "STRING"
             if field in [
-                "associated_project",
                 "species",
                 "drs_uri",
                 "data_modality",
@@ -100,6 +110,7 @@ class Schema:
                 "treatment_anatomic_site",
                 "treatment_effect",
                 "treatment_end_reason",
+                "associated_project",
             ]:
                 field_dict["type"] = "STRING"
                 field_dict["mode"] = "NULLABLE"
@@ -115,25 +126,38 @@ class Schema:
             if field_dict["type"].lower() == "number":
                 field_dict["type"] = "INTEGER"
             entity_dict["fields"].append(field_dict)
+        if self.mapping[entity].get("Linkers"):
+            entity_dict["fields"].extend(self.add_linkers(entity))
         return entity_dict
 
     def write_json_schema(self):
         print("attempted to run build json")
-        Patient = self.make_entity_schema("Patient")
-        RS = self.make_entity_schema("ResearchSubject")
-        Diag = self.make_entity_schema("Diagnosis")
-        Treat = self.make_entity_schema("Treatment")
-        Spec = self.make_entity_schema("Specimen")
-        File = self.make_entity_schema("File")
-        Spec["fields"].append(File)
-        Diag["fields"].append(Treat)
-        RS["fields"].append(Diag)
-        RS["fields"].append(File)
-        RS["fields"].append(Spec)
-        Patient["fields"].append(File)
-        Patient["fields"].append(RS)
-        with open(self.outfile, "w") as outfile:
-            json.dump(Patient["fields"], outfile)
+        if self.endpoint == "Patient":
+            # Patient table procedure
+            Patient = self.make_entity_schema("Subject")
+            RS = self.make_entity_schema("ResearchSubject")
+            Diag = self.make_entity_schema("Diagnosis")
+            Treat = self.make_entity_schema("Treatment")
+            Spec = self.make_entity_schema("Specimen")
+            Diag["fields"].append(Treat)
+            RS["fields"].append(Diag)
+            RS["fields"].append(Spec)
+            Patient["fields"].append(RS)
+            with open(self.outfile, "w") as outfile:
+                json.dump(Patient["fields"], outfile)
+        # File table procedure
+        elif self.endpoint == "File":
+            File = self.make_entity_schema("File")
+            Patient = self.make_entity_schema("Subject")
+            RS = self.make_entity_schema("ResearchSubject")
+            Diag = self.make_entity_schema("Diagnosis")
+            Treat = self.make_entity_schema("Treatment")
+            Spec = self.make_entity_schema("Specimen")
+            Diag["fields"].append(Treat)
+            RS["fields"].append(Diag)
+            File["fields"].extend([Patient, RS, Spec])
+            with open(self.outfile, "w") as outfile:
+                json.dump(File["fields"], outfile)
 
 
 def main():
@@ -146,12 +170,14 @@ def main():
         "data_model_dir",
         help="location of directory containing cda-data-model json schemas",
     )
+    parser.add_argument("endpoint", help="Either File or Patient")
     args = parser.parse_args()
 
     schema = Schema(
         mapping=args.mapping_file,
         data_model_dir=args.data_model_dir,
         outfile=args.out_file,
+        endpoint=args.endpoint
     )
     schema.write_json_schema()
 

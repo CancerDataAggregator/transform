@@ -1,0 +1,182 @@
+id: "eb66f012-158d-409c-b79b-c4cc605eebb3"
+identifier:
+  - system: GDC
+    value: "eb66f012-158d-409c-b79b-c4cc605eebb3"
+label: "d6215803-3ddd-4585-b759-274016a3d7c6.wxs.MuTect2.somatic_annotation.vcf.gz"
+data_category: "Simple Nucleotide Variation"
+data_type: "Annotated Somatic Mutation"
+file_format: "VCF"
+associated_project: "TARGET-ALL-P2"
+drs_uri: drs://dg.4DFC:eb66f012-158d-409c-b79b-c4cc605eebb3
+byte_size: 1617007
+checksum: "46f0263f550f0399df15356f8b16fe57"
+data_modality: 'Genomic'
+imaging_modality:
+dbgap_accession_number: "phs000464"
+ResearchSubject:
+  - id: "9e229e56-f7e1-58f9-984b-a9453be5dc9a"
+    # identifier represents a list of IDs within each system
+    identifier:
+      - value: "9e229e56-f7e1-58f9-984b-a9453be5dc9a"
+        system: "GDC"
+    member_of_research_project: "TARGET-ALL-P2"
+    primary_diagnosis_condition: "Lymphoid Leukemias"
+    primary_diagnosis_site: "Hematopoietic and reticuloendothelial systems"
+    Diagnosis:
+      - id: "63c6c7a2-c3e6-5e2b-9dd6-03bfabef5178"
+        identifier:
+          - value: "63c6c7a2-c3e6-5e2b-9dd6-03bfabef5178"
+            system: "GDC"
+        age_at_diagnosis: 1682
+        primary_diagnosis: "T lymphoblastic leukemia/lymphoma"
+        grade: "Not Reported"
+        stage:
+        morphology: "9837/3"
+        method_of_diagnosis:
+        Treatment: []
+Subject:
+  - id: "TARGET-10-PATCNI"
+    identifier:
+      - value: "TARGET-10-PATCNI"
+        system: "GDC"
+    species: "Homo sapiens"
+    sex: "female"
+    race: "black or african american"
+    ethnicity: "not hispanic or latino"
+    days_to_birth:
+    subject_associated_project:
+      - "TARGET-ALL-P2"
+    vital_status: Alive
+    age_at_death:
+    cause_of_death:
+    days_to_birth:
+Specimen:
+  - id: "96666e88-de93-5416-8694-75ae5e9dec7e"
+    # identifier represents a list of IDs within each system
+    identifier:
+      - value: "96666e88-de93-5416-8694-75ae5e9dec7e"
+        system: "GDC"
+    derived_from_subject: "TARGET-10-PATCNI"
+    source_material_type: "Primary Blood Derived Cancer - Bone Marrow"
+    anatomical_site:
+    # from days_to_birth
+    age_at_collection:
+    primary_disease_type: "Lymphoid Leukemias"
+    specimen_type: "sample"
+    # Added to the specimen as well; as per CCDH data model
+    associated_project: "TARGET-ALL-P2"
+    # renamed; Kathy says that this should be null for the sample:
+    derived_from_specimen: initial specimen
+  - id: "ff999b52-a9bc-5d6d-ac39-aa2d8ad1f78d"
+    # identifier represents a list of IDs within each system
+    identifier:
+      - value: "ff999b52-a9bc-5d6d-ac39-aa2d8ad1f78d"
+        system: "GDC"
+    derived_from_subject: "TARGET-10-PATCNI"
+    source_material_type: "Primary Blood Derived Cancer - Bone Marrow"
+    anatomical_site:
+    # from days_to_birth
+    age_at_collection:
+    primary_disease_type: "Lymphoid Leukemias"
+    specimen_type: "portion"
+    # Added to the specimen as well; as per CCDH data model
+    associated_project: "TARGET-ALL-P2"
+    # renamed; Kathy says that this should be null for the sample:
+    derived_from_specimen: 96666e88-de93-5416-8694-75ae5e9dec7e
+  - id: "ee3dc079-4b9c-56b5-87f7-3cb2cad9394f"
+    # identifier represents a list of IDs within each system
+    identifier:
+      - value: "ee3dc079-4b9c-56b5-87f7-3cb2cad9394f"
+        system: "GDC"
+    derived_from_subject: "TARGET-10-PATCNI"
+    source_material_type: "Primary Blood Derived Cancer - Bone Marrow"
+    anatomical_site:
+    # from days_to_birth
+    age_at_collection:
+    primary_disease_type: "Lymphoid Leukemias"
+    specimen_type: "analyte"
+    # Added to the specimen as well; as per CCDH data model
+    associated_project: "TARGET-ALL-P2"
+    # renamed; Kathy says that this should be null for the sample:
+    derived_from_specimen: ff999b52-a9bc-5d6d-ac39-aa2d8ad1f78d #analyte
+  - id: "920bf2a0-2ba0-5d46-9e0b-ef02f10030d8"
+    # identifier represents a list of IDs within each system
+    identifier:
+      - value: "920bf2a0-2ba0-5d46-9e0b-ef02f10030d8"
+        system: "GDC"
+    derived_from_subject: "TARGET-10-PATCNI"
+    source_material_type: "Primary Blood Derived Cancer - Bone Marrow"
+    anatomical_site:
+    # from days_to_birth
+    age_at_collection:
+    primary_disease_type: "Lymphoid Leukemias"
+    specimen_type: "aliquot"
+    # Added to the specimen as well; as per CCDH data model
+    associated_project: "TARGET-ALL-P2"
+    # renamed; Kathy says that this should be null for the sample:
+    derived_from_specimen: ee3dc079-4b9c-56b5-87f7-3cb2cad9394f
+  - id: "3d5bcc5c-dca3-5253-b25b-3351c9ef95f6"
+    # identifier represents a list of IDs within each system
+    identifier:
+      - value: "3d5bcc5c-dca3-5253-b25b-3351c9ef95f6"
+        system: "GDC"
+    derived_from_subject: "TARGET-10-PATCNI"
+    source_material_type: "Blood Derived Normal"
+    anatomical_site:
+    # from days_to_birth
+    age_at_collection:
+    primary_disease_type: "Lymphoid Leukemias"
+    specimen_type: "sample"
+    # Added to the specimen as well; as per CCDH data model
+    associated_project: "TARGET-ALL-P2"
+    # renamed; Kathy says that this should be null for the sample:
+    derived_from_specimen: initial specimen
+  - id: "38d9ca12-8d1e-5310-b5cb-7db6065f60b4"
+    # identifier represents a list of IDs within each system
+    identifier:
+      - value: "38d9ca12-8d1e-5310-b5cb-7db6065f60b4"
+        system: "GDC"
+    derived_from_subject: "TARGET-10-PATCNI"
+    source_material_type: "Blood Derived Normal"
+    anatomical_site:
+    # from days_to_birth
+    age_at_collection:
+    primary_disease_type: "Lymphoid Leukemias"
+    specimen_type: "portion"
+    # Added to the specimen as well; as per CCDH data model
+    associated_project: "TARGET-ALL-P2"
+    # renamed; Kathy says that this should be null for the sample:
+    derived_from_specimen: 3d5bcc5c-dca3-5253-b25b-3351c9ef95f6
+  - id: "e9986bda-b087-5f50-8a6d-63a673454dba"
+    # identifier represents a list of IDs within each system
+    identifier:
+      - value: "e9986bda-b087-5f50-8a6d-63a673454dba"
+        system: "GDC"
+    derived_from_subject: "TARGET-10-PATCNI"
+    source_material_type: "Blood Derived Normal"
+    anatomical_site:
+    # from days_to_birth
+    age_at_collection:
+    primary_disease_type: "Lymphoid Leukemias"
+    specimen_type: "analyte"
+    # Added to the specimen as well; as per CCDH data model
+    associated_project: "TARGET-ALL-P2"
+    # renamed; Kathy says that this should be null for the sample:
+    derived_from_specimen: 38d9ca12-8d1e-5310-b5cb-7db6065f60b4
+  - id: "3c6c93c2-224e-5532-a449-5db9e1058b46"
+    # identifier represents a list of IDs within each system
+    identifier:
+      - value: "3c6c93c2-224e-5532-a449-5db9e1058b46"
+        system: "GDC"
+    derived_from_subject: "TARGET-10-PATCNI"
+    source_material_type: "Blood Derived Normal"
+    anatomical_site:
+    # from days_to_birth
+    age_at_collection:
+    primary_disease_type: "Lymphoid Leukemias"
+    specimen_type: "aliquot"
+    # Added to the specimen as well; as per CCDH data model
+    associated_project: "TARGET-ALL-P2"
+    # renamed; Kathy says that this should be null for the sample:
+    derived_from_specimen: e9986bda-b087-5f50-8a6d-63a673454dba
+    

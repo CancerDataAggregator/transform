@@ -82,12 +82,58 @@ case_fields_to_use = [
 
 files_fields = [
     "file_id",
+    "data_category",
+    "data_type",
+    "file_name",
+    "file_size",
+    "md5sum",
+    "data_format",
     "cases.case_id",
+    "cases.submitter_id",
+    "cases.project.project_id",
+    "cases.project.dbgap_accession_number",
+    "cases.disease_type",
+    "cases.primary_site",
+    "cases.demographic.ethnicity",
+    "cases.demographic.gender",
+    "cases.demographic.race",
+    "cases.demographic.days_to_birth",
+    "cases.demographic.days_to_death",
+    "cases.demographic.cause_of_death",
+    "cases.demographic.vital_status",
+    "cases.diagnoses.diagnosis_id",
+    "cases.diagnoses.age_at_diagnosis",
+    "cases.diagnoses.tumor_grade",
+    "cases.diagnoses.tumor_stage",
+    "cases.diagnoses.morphology",
+    "cases.diagnoses.primary_diagnosis",
+    "cases.diagnoses.treatments.treatment_outcome",
+    "cases.diagnoses.treatments.treatment_type",
+    "cases.diagnoses.treatments.treatment_id",
+    "cases.diagnoses.treatments.days_to_treatment",
+    "cases.diagnoses.treatments.days_to_treatment_end",
+    "cases.diagnoses.treatments.therapeutic_agents",
+    "cases.diagnoses.treatments.treatment_anatomic_site",
+    "cases.diagnoses.treatments.treatment_effect",
+    "cases.diagnoses.treatments.reason_treatment_ended",
+    "cases.diagnoses.treatments.number_of_cycles",
     "cases.samples.sample_id",
+    "cases.samples.submitter_id",
+    "cases.samples.sample_type",
+    "cases.samples.current_weight",
+    "cases.samples.initial_weight",
+    "cases.samples.days_to_collection",
+    "cases.samples.days_to_sample_procurement",
+    "cases.samples.passage_count",
+    "cases.samples.biospecimen_anatomic_site",
     "cases.samples.portions.portion_id",
+    "cases.samples.portions.submitter_id",
     "cases.samples.portions.slides.slide_id",
+    "cases.samples.portions.slides.submitter_id",
     "cases.samples.portions.analytes.analyte_id",
+    "cases.samples.portions.analytes.submitter_id",
     "cases.samples.portions.analytes.aliquots.aliquot_id",
+    "cases.samples.portions.analytes.aliquots.submitter_id",
 ]
 # What is the significance of cases.samples.sample_id vs cases.sample_ids?
 # Answer: cases.sample_ids is not returned by GDC API 
@@ -129,6 +175,24 @@ class GDC:
                 if n % page_size == 0:
                     sys.stderr.write(f"Wrote {n} cases in {time.time() - t0}s\n")
         sys.stderr.write(f"Wrote {n} cases in {time.time() - t0}s\n")
+
+    def save_files(self, out_file, cache_file, file_ids=None):
+        t0 = time.time()
+        n = 0
+        with gzip.open(out_file, "wb") as fp:
+            writer = jsonlines.Writer(fp)
+            with gzip.open(cache_file, "r") as fr:
+                reader = jsonlines.Reader(fr)
+                if file_ids:
+                    for file in reader:
+                        if file.get('file_id') in file_ids:
+                            writer.write(file)
+                            n += 1
+                else:
+                    for file in reader:
+                        writer.write(file)
+                        n += 1
+        sys.stderr.write(f"Extracted {n} files from cache in {time.time() - t0}s\n")
 
     def _cases(
         self,
@@ -244,14 +308,14 @@ class GDC:
         if not cache_file.exists():
             sys.stderr.write(f"Cache file {cache_file} not found. Generating.\n")
             gdc_files_metadata = []
-            with gzip.open(cache_file, "w") as f_out:
+            with gzip.open(cache_file, "wt") as f_out:
                 writer = jsonlines.Writer(f_out)
                 for _meta in self._get_gdc_files():
                     writer.write(_meta)
                     gdc_files_metadata += [_meta]
         else:
             sys.stderr.write(f"Loading files metadata from cache file {cache_file}.\n")
-            with gzip.open(cache_file, "rb") as f_in:
+            with gzip.open(cache_file, "rt") as f_in:
                 reader = jsonlines.Reader(f_in)
                 gdc_files_metadata = [f for f in reader]
 
@@ -280,7 +344,6 @@ class GDC:
                                     file_meta.get("file_id")
                                 ]
 
-        print(files_per_sample_dict["12cfe700-d1b4-4b88-b509-b8dfaf12ecdf"])
         return files_per_sample_dict
 
     def _get_gdc_files(self):
@@ -311,14 +374,25 @@ def main():
     parser.add_argument(
         "--cases", help="Optional file with list of case ids (one to a line)"
     )
+    parser.add_argument("--file", help="Extract just this file")
+    parser.add_argument(
+        "--files", help="Optional file with list of file ids (one to a line)"
+    )
     parser.add_argument("--cache", help="Use cached files.", action="store_true")
+    parser.add_argument(
+        "--endpoint", help="Extract all from 'files' or 'cases' endpoint "
+    )
     args = parser.parse_args()
 
     gdc = GDC(cache_file=pathlib.Path(args.cache_file))
-    gdc.save_cases(
-        args.out_file, case_ids=get_case_ids(case=args.case, case_list_file=args.cases)
-    )
-
+    if args.case or args.cases or args.endpoint=='cases':
+        gdc.save_cases(
+            args.out_file, case_ids=get_case_ids(case=args.case, case_list_file=args.cases)
+        )
+    if args.file or args.files or args.endpoint=='files':
+        gdc.save_files(
+            args.out_file, args.cache_file, file_ids=get_case_ids(case=args.file, case_list_file=args.files)
+        )
 
 if __name__ == "__main__":
     main()

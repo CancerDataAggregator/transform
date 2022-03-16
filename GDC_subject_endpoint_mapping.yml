@@ -106,38 +106,5 @@ Specimen:
             slides: 'cases.samples.portions.slides.files.file_id'
             analytes: 'cases.samples.portions.analytes.files.file_id'
             aliquots: 'cases.samples.portions.analytes.aliquots.files.file_id'
-
-File:
-    Mapping:
-        id: 'files.file_id'
-        identifier:
-            system: 'GDC'
-            value: 'files.file_id'
-        label: 'files.file_name'
-        data_category: 'files.data_category'
-        data_type: 'files.data_type'
-        file_format: 'files.data_format'
-        associated_project: 'files.cases.project.project_id'
-        drs_uri: 'files.file_id'
-        byte_size: 'files.file_size'
-        checksum: 'files.md5sum'
-        data_modality: 'Genomic'
-        imaging_modality: 'files.NOT_APPLICABLE'
-        dbgap_accession_number: 'files.cases.project.dbgap_accession_number'
-    Transformations:
-        drs_uri: 
-            - ['format_drs', [] ]
-        associated_project:
-            - ['str_to_list', [] ]
-    
-    Linkers:
-        Specimens:
-            samples: 'files.cases.samples.sample_id'
-            portions: 'files.cases.samples.portions.portion_id'
-            slides: 'files.cases.samples.portions.slides.slide_id'
-            analytes: 'files.cases.samples.portions.analytes.analyte_id'
-            aliquots: 'files.cases.samples.portions.analytes.aliquots.aliquot_id'
-        ResearchSubjects: 'files.cases.case_id'
-        Subjects: 'files.cases.submitter_id'
         
             

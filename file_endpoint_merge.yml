@@ -1,70 +1,3 @@
-Patient_merge:
-    id:
-        merge_type: "coalesce"
-        default_value: ""
-    identifier:
-        merge_type: "merge_identifiers"
-        default_value: "[]"
-    race:
-        merge_type: "coalesce"
-        default_value: null
-    ethnicity:
-        merge_type: "coalesce"
-        default_value: null
-    sex:
-        merge_type: "coalesce"
-        default_value: null
-    days_to_birth:
-        merge_type: "coalesce"
-        default_value: null
-    species:
-        merge_type: "coalesce"
-        default_value: null
-    subject_associated_project:
-        merge_type: "append_field_vals"
-        default_value: []
-    vital_status:
-        merge_type: "coalesce"
-        default_value: null
-    age_at_death:
-        merge_type: "coalesce"
-        default_value: null
-    cause_of_death:
-        merge_type: "coalesce"
-        default_value: null
-    ResearchSubject:
-        merge_type: "append_field_vals"
-        default_value: []
-    Files:
-        merge_type: "append_linkers"
-        default_value: []
-
-ResearchSubject_merge:
-    id:
-        merge_type: "coalesce"
-        default_value: ""
-    identifier:
-        merge_type: "coalesce"
-        default_value: ""
-    primary_diagnosis_site:
-        merge_type: "coalesce"
-        default_value: ""
-    primary_diagnosis_condition:
-        merge_type: "coalesce"
-        default_value: ""
-    member_of_research_project:
-        merge_type: "coalesce"
-        default_value: ""
-    Diagnosis:
-        merge_type: "append_field_vals"
-        default_value: []
-    Specimen:
-        merge_type: "append_field_vals"
-        default_value: []
-    Files:
-        merge_type: "append_linkers"
-        default_value: []
-
 File_merge:
     id:
         merge_type: "coalesce"
@@ -102,14 +35,69 @@ File_merge:
     imaging_modality:
         merge_type: "coalesce"
         default_value: null
-    Subjects:
-        merge_type: "append_linkers"
+    Subject:
+        merge_type: "append_field_vals"
         default_value: []
-    ResearchSubjects:
-        merge_type: "append_linkers"
+    ResearchSubject:
+        merge_type: "append_field_vals"
         default_value: []
-    Specimens:
-        merge_type: "append_linkers"
+    Specimen:
+        merge_type: "append_field_vals"
+        default_value: []
+
+Patient_merge:
+    id:
+        merge_type: "coalesce"
+        default_value: ""
+    identifier:
+        merge_type: "merge_identifiers"
+        default_value: "[]"
+    race:
+        merge_type: "coalesce"
+        default_value: null
+    ethnicity:
+        merge_type: "coalesce"
+        default_value: null
+    sex:
+        merge_type: "coalesce"
+        default_value: null
+    days_to_birth:
+        merge_type: "coalesce"
+        default_value: null
+    species:
+        merge_type: "coalesce"
+        default_value: null
+    subject_associated_project:
+        merge_type: "append_field_vals"
+        default_value: []
+    vital_status:
+        merge_type: "coalesce"
+        default_value: null
+    age_at_death:
+        merge_type: "coalesce"
+        default_value: null
+    cause_of_death:
+        merge_type: "coalesce"
+        default_value: null
+
+ResearchSubject_merge:
+    id:
+        merge_type: "coalesce"
+        default_value: ""
+    identifier:
+        merge_type: "coalesce"
+        default_value: ""
+    primary_diagnosis_site:
+        merge_type: "coalesce"
+        default_value: ""
+    primary_diagnosis_condition:
+        merge_type: "coalesce"
+        default_value: ""
+    member_of_research_project:
+        merge_type: "coalesce"
+        default_value: ""
+    Diagnosis:
+        merge_type: "append_field_vals"
         default_value: []
 
 Diagnosis_merge:
@@ -163,23 +151,3 @@ Specimen_merge:
     derived_from_specimen:
         merge_type: "coalesce"
         default_value: ""
-    Files:
-        merge_type: "append_linkers"
-        default_value: []
-
-# Future extension
-#
-#   Specimen:
-#     merge_type: "append_field_vals"
-#     default_value: []
-
-# Demographic_merge:
-#   race:
-#     merge_type: "coalesce"
-#     default_value: ""
-#   ethnicity:
-#     merge_type: "coalesce"
-#     default_value: ""
-#   sex:
-#     merge_type: "coalesce"
-#     default_value: ""

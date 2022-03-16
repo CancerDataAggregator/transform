@@ -5,7 +5,9 @@ from google.cloud import bigquery, storage
 from google.oauth2 import service_account
 from cdatransform.lib import get_case_ids
 import cdatransform.transform.transform_lib.transform_with_YAML_v1 as tr
-
+import jsonlines
+import gzip
+import os
 
 class IDC:
     def __init__(
@@ -14,22 +16,27 @@ class IDC:
         gsa_info=None,
         patients_file=None,
         patient=None,
+        files_file=None,
+        file=None,
         dest_table_id="gdc-bq-sample.idc_test.dicom_pivot_v3",
-        mapping=yaml.load(open("IDC_mapping.yml", "r"), Loader=Loader),
+        mapping=None, #yaml.load(open("IDC_mapping.yml", "r"), Loader=Loader),
         source_table="canceridc-data.idc_v3.dicom_pivot_v3",
-        # dest_bucket='gdc-bq-sample-bucket',
-        # dest_bucket_file_name='druth/idc-extract.jsonl.gz',
-        # out_file='idc-test.jsonl.gz'
+        endpoint=None,
+        dest_bucket='gdc-bq-sample-bucket',
+        dest_bucket_file_name='druth/idc-extract.jsonl.gz',
+        out_file='idc-test.jsonl.gz'
     ) -> None:
         self.gsa_key = gsa_key
         self.gsa_info = gsa_info
         self.dest_table_id = dest_table_id
-        # self.dest_bucket = dest_bucket
-        # self.out_file = out_file
-        # self.dest_bucket_file_name = dest_bucket_file_name
+        self.endpoint = endpoint
+        self.dest_bucket = dest_bucket
+        self.out_file = out_file
+        self.dest_bucket_file_name = dest_bucket_file_name
         self.service_account_cred = self._service_account_cred()
         self.mapping = self._init_mapping(mapping)
         self.patient_ids = get_case_ids(case=patient, case_list_file=patients_file)
+        self.file_ids = get_case_ids(case=file, case_list_file=files_file)
         self.source_table = source_table
         self.transform_query = self._query_build()
 
@@ -80,15 +87,18 @@ class IDC:
     def table_to_bucket(self):
         # Save destination table to GCS bucket
         bucket_name = self.dest_bucket
-        dataset_id = "idc_test"
-        table = "dicom_pivot_wave1"
+        dataset_id = self.dest_table_id.split('.')[1]
+        table = self.dest_table_id.split('.')[2]
         credentials = self.service_account_cred
         project = credentials.project_id
         client = bigquery.Client(
             credentials=credentials,
             project=credentials.project_id,
         )
-        destination_uri = "gs://{}/{}".format(bucket_name, "idc-test.jsonl.gz")
+        #dest_bucket_file_name = self.dest_bucket_file_name.split('.')
+        #dest_bucket_file_name.insert(-2,'*')
+        #dest_bucket_file_name='.'.join(dest_bucket_file_name)
+        destination_uri = "gs://{}/{}".format(bucket_name, self.dest_bucket_file_name)
         dataset_ref = bigquery.DatasetReference(project, dataset_id)
         table_ref = dataset_ref.table(table)
         job_config = bigquery.job.ExtractJobConfig()
@@ -104,7 +114,8 @@ class IDC:
             # Location must match that of the source table.
             location="US",
         )  # API request
-        extract_job.result()  # Waits for job to complete.
+        print(extract_job.result())
+        print(str(extract_job.destination_uris))  # Waits for job to complete.
 
     def download_blob(self):
         """Downloads a blob from the bucket."""
@@ -118,8 +129,34 @@ class IDC:
         except Exception:
             storage_client = storage.Client.from_service_account_json(key_path)
         bucket = storage_client.bucket(bucket_name)
-        blob = bucket.blob(source_blob_name)
-        blob.download_to_filename(destination_file_name)
+        prefix = source_blob_name.split('*')
+        if len(prefix) > 1:
+            # concatenate files together. One big file downloads faster than many small ones
+            # Find all 'wildcard' named files
+            blobs = bucket.list_blobs(prefix=prefix[0])
+            # Put them together
+            bucket.blob(destination_file_name).compose(blobs) 
+            # Download big file
+            blob = bucket.blob(destination_file_name)
+            blob.download_to_filename(destination_file_name)
+            # Delete smaller files from bucket
+            for blob in blobs:
+                blob.delete()
+            #blob_names = []
+            #for blob in blobs:
+            #    blob_names.append(blob.name)
+            #    blob.download_to_filename(blob.name)
+            #with gzip.open(destination_file_name, 'w') as outfile:
+            #    writer = jsonlines.Writer(outfile)
+            #    for fname in blob_names:
+            #        with gzip.open(fname, 'r') as infile:
+            #            reader = jsonlines.Reader(infile)
+            #            for line in reader:
+            #                writer.write(line)
+            #        os.remove(fname)
+        else:
+            blob = bucket.blob(source_blob_name)
+            blob.download_to_filename(destination_file_name)
 
         print(
             "Blob {} downloaded to {}.".format(source_blob_name, destination_file_name)
@@ -182,6 +219,13 @@ class IDC:
             where = """WHERE PatientID in ("""
             where += """','""".join(self.patient_ids) + """')"""
         return where
+    
+    def build_where_files(self):
+        where = ""
+        if self.file_ids is not None:
+            where = """WHERE crdc_instance_uuid in ("""
+            where += """','""".join(self.file_ids) + """')"""
+        return where
 
     def create_udf_str(self, func_desc):
         out = (
@@ -209,20 +253,41 @@ class IDC:
                         if function[0] not in functions_added:
                             all_udfs = all_udfs + self.create_udf_str(function)
         return all_udfs
+    def add_linkers(self, entity):
+        linkers_str = """ """
+        keys = list(self.mapping[entity]["Linkers"].keys())
+        for index in range(len(self.mapping[entity]["Linkers"].keys())):
+            if self.mapping[entity]["Linkers"][keys[index]] is not None:
+                field = self.mapping[entity]["Linkers"][keys[index]]
+                field = field.split('.')
+                field = field.pop()
+                field = str(field)
+                linkers_str += """ARRAY_AGG(""" + field + """) as """ + keys[index]
+            else:
+                linkers_str += """ARRAY<STRING>[] as """ + keys[index]
+            if index < len(keys) - 1:
+                linkers_str += """, """
+        return linkers_str
 
     def _query_build(self, **kwargs):
         query = self.create_all_udfs()
         query += """ SELECT """
-        query += self.add_entity_fields("Patient")
-        query += """, """
-        # add File record structure to query
-        query += """ARRAY_AGG(STRUCT("""
-        query += self.add_entity_fields("File")
-        query += """)) as File """
-        # add WHERE statement if just looking for specific patients
-        query += """FROM `""" + self.source_table + """`"""
-        query += self.build_where_patients()
-        query += """ GROUP by id, species, collection_id"""
+        if self.endpoint == "Patient":
+            query += self.add_entity_fields("Patient")
+            query += """, """
+            query += self.add_linkers("Patient")
+            # add WHERE statement if just looking for specific patients
+            query += """ FROM `""" + self.source_table + """`"""
+            query += self.build_where_patients()
+            query += """ GROUP by id, species, collection_id"""
+        elif self.endpoint == "File":
+            query += self.add_entity_fields("File")
+            query += """, [STRUCT("""
+            query += self.add_entity_fields("Patient")
+            # add WHERE statement if just looking for specific patients
+            query += """)] AS Subject FROM `""" + self.source_table + """`"""
+            query += self.build_where_files()
+            query += """ GROUP by id, gcs_url, Modality, collection_id, PatientID, tcia_species"""
         print(query)
         return query
 
@@ -238,14 +303,21 @@ def main():
     parser.add_argument(
         "--source_table",
         help="IDC source table to be queried",
-        default="canceridc-data.idc_v3.dicom_pivot_v3",
+        default="canceridc-data.idc_v4.dicom_pivot_v4",
     )
     parser.add_argument("--gsa_key", help="Location of user GSA key")
+    parser.add_argument("--endpoint", help="Patient of File endpoint")
     parser.add_argument("--gsa_info", help="json content of GSA key or github.secret")
     parser.add_argument("--patient", help="Extract just this patient", default=None)
     parser.add_argument(
         "--patients",
         help="Optional file with list of patient ids (one to a line)",
+        default=None,
+    )
+    parser.add_argument("--file", help="Extract just this file", default=None)
+    parser.add_argument(
+        "--files",
+        help="Optional file with list of file ids (one to a line)",
         default=None,
     )
     parser.add_argument(
@@ -285,17 +357,20 @@ def main():
         dest_table_id=args.dest_table_id,
         patients_file=args.patients,
         patient=args.patient,
+        files_file=args.files,
+        file=args.file,
         mapping=mapping,
-        source_table=args.source_table
-        # dest_bucket=args.dest_bucket,
-        # dest_bucket_file_name=args.dest_bucket_file_name,
-        # out_file=out_file,
+        source_table=args.source_table,
+        endpoint=args.endpoint,
+        dest_bucket=args.dest_bucket,
+        dest_bucket_file_name=args.dest_bucket_file_name,
+        out_file=args.out_file,
     )
     if make_bq_table:
         idc.query_idc_to_table()
-    # if make_bucket_file:
-    #    idc.table_to_bucket()
-    # idc.download_blob()
+    if args.make_bucket_file:
+        idc.table_to_bucket()
+    idc.download_blob()
 
 
 if __name__ == "__main__":

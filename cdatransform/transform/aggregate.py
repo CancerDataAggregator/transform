@@ -68,7 +68,7 @@ def merge_entities_with_same_id(entity_recs, how_to_merge_entity):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Aggregate cases data from DC to Patient level."
+        description="Aggregate data from DC to Subject/File level."
     )
     parser.add_argument(
         "merge_file", help="file name for how to merge fields. Should end with .yml"
@@ -79,6 +79,7 @@ def main():
     )
     parser.add_argument("output_file", help="Out file name. Should end with .gz")
     parser.add_argument("--log", default="aggregate.log", help="Name of log file.")
+    parser.add_argument("--endpoint", default="subjects", help="endpoint you are aggregating. files or subjects")
     args = parser.parse_args()
     logging.basicConfig(
         filename=args.log,
@@ -89,57 +90,78 @@ def main():
     logger.info("Starting aggregate run")
     logger.info("----------------------")
     # yaml.load(open(transform_file, "r"), Loader=Loader)
+    endpoint = args.endpoint
     with open(args.merge_file) as file:
         how_to_merge = yaml.full_load(file)
     with gzip.open(args.input_file, "r") as infp:
         readDC = jsonlines.Reader(infp)
-        patient_case_mapping = DefaultDict(list)
-        for case in readDC:
-            patient_id = case.get("id")
-            patient_case_mapping[patient_id] += [case]
+        entity_rec_mapping = DefaultDict(list)
+        for rec in readDC:
+            id = rec.get("id")
+            entity_rec_mapping[id] += [rec]
 
     with gzip.open(args.output_file, "w") as outfp:
         writeDC = jsonlines.Writer(outfp)
         log = LogValidation()
-        for patient_id, patients in patient_case_mapping.items():
-            if len(patients) == 1:
-                merged_entry = patients[0]
+        for id, records in entity_rec_mapping.items():
+            if len(records) == 1:
+                merged_entry = records[0]
             else:
-                entities = {k: patient for k, patient in enumerate(patients)}
-                lines_cases = list(range(len(patients)))
-                merged_entry = mf.merge_fields_level(
-                    entities, how_to_merge["Patient_merge"], lines_cases
-                )
-                case_ids = [
-                    patient.get("ResearchSubject")[0].get("id") for patient in patients
-                ]
-                # file_ids = [file.get('id') for patient in patients for file in patient.get('File')]
-                log = log_merge_error(
-                    entities, case_ids, how_to_merge["Patient_merge"], log
-                )
+                entities = {k: patient for k, patient in enumerate(records)}
+                lines_cases = list(range(len(records)))
+                if endpoint=="subjects":
+                    merged_entry = mf.merge_fields_level(
+                        entities, how_to_merge["Patient_merge"], lines_cases
+                    )
+                    case_ids = [
+                        record.get("ResearchSubject")[0].get("id") for record in records
+                    ]
+                    # file_ids = [file.get('id') for patient in patients for file in patient.get('File')]
+                    log = log_merge_error(
+                        entities, case_ids, how_to_merge["Patient_merge"], log
+                    )
+                else:
+                    merged_entry = mf.merge_fields_level(
+                        entities, how_to_merge["File_merge"], lines_cases
+                    )
+                    file_ids = [
+                        record.get("id") for record in records
+                    ]
+                    # file_ids = [file.get('id') for patient in patients for file in patient.get('File')]
+                    log = log_merge_error(
+                        entities, file_ids, how_to_merge["File_merge"], log
+                    )
 
-            merged_entry["File"] = merge_entities_with_same_id(
-                merged_entry["File"], how_to_merge["File_merge"]
-            )
+            #merged_entry["File"] = merge_entities_with_same_id(
+            #    merged_entry["File"], how_to_merge["File_merge"]
+            #)
             merged_entry["ResearchSubject"] = merge_entities_with_same_id(
                 merged_entry["ResearchSubject"], how_to_merge["ResearchSubject_merge"]
             )
             for RS in merged_entry["ResearchSubject"]:
-                RS["File"] = merge_entities_with_same_id(
-                    RS["File"], how_to_merge["File_merge"]
-                )
+                #RS["File"] = merge_entities_with_same_id(
+                #    RS["File"], how_to_merge["File_merge"]
+                #)
                 RS["Diagnosis"] = merge_entities_with_same_id(
                     RS["Diagnosis"], how_to_merge["Diagnosis_merge"]
                 )
-                RS["Specimen"] = merge_entities_with_same_id(
-                    RS["Specimen"], how_to_merge["Specimen_merge"]
-                )
-                for specimen in RS["Specimen"]:
-                    specimen["File"] = merge_entities_with_same_id(
-                        specimen["File"], how_to_merge["File_merge"]
+                if endpoint == 'subjects':
+                    RS["Specimen"] = merge_entities_with_same_id(
+                        RS["Specimen"], how_to_merge["Specimen_merge"]
                     )
+                #for specimen in RS["Specimen"]:
+                #    specimen["File"] = merge_entities_with_same_id(
+                #        specimen["File"], how_to_merge["File_merge"]
+                #    )
+            if endpoint == 'files':
+                merged_entry["Specimen"] = merge_entities_with_same_id(
+                    merged_entry["Specimen"], how_to_merge["Specimen_merge"]
+                )
+                merged_entry["Subject"] = merge_entities_with_same_id(
+                    merged_entry["Subject"], how_to_merge["Patient_merge"]
+                )
             writeDC.write(merged_entry)
-        log.generate_report(logging.getLogger("test"))
+        #log.generate_report(logging.getLogger("test"))
 
 
 if __name__ == "__main__":

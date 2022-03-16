@@ -18,7 +18,7 @@ species: "Homo sapiens"
 age_at_death: 
 cause_of_death:
 vital_status: 
-File: []
+Files: []
 ResearchSubject:
   # id should represent unique identifier across all systems
   # for ResearchSubject we don't have anything better than the case_id
@@ -31,7 +31,7 @@ ResearchSubject:
     primary_diagnosis_condition: "Lymphoid Leukemias"
     primary_diagnosis_site: "Hematopoietic and reticuloendothelial systems"
     
-    File: []
+    Files: []
     Specimen:
       # id should represent unique identifier across all systems
       - id: "37789082-b4bb-4f18-9a3d-aca1a65c2ced"
@@ -50,7 +50,7 @@ ResearchSubject:
         associated_project: "TARGET-ALL-P3"
         # renamed; Kathy says that this should be null for the sample:
         derived_from_specimen: initial specimen
-        File: []  # This sample has no files
+        Files: []  # This sample has no files
 
       # From portions
       - id: "6388f3ec-eccc-5df4-8558-50bf416b16fa"
@@ -69,7 +69,7 @@ ResearchSubject:
         associated_project: "TARGET-ALL-P3"
         # renamed; Kathy says that this should be null for the sample:
         derived_from_specimen: 37789082-b4bb-4f18-9a3d-aca1a65c2ced
-        File: []  # This sample has no files
+        Files: []  # This sample has no files
 
       # From analytes
       - id: "7de4ade2-dc5c-53f6-9815-8e42f2182b59"
@@ -88,7 +88,7 @@ ResearchSubject:
         associated_project: "TARGET-ALL-P3"
         # renamed; Kathy says that this should be null for the sample:
         derived_from_specimen: 6388f3ec-eccc-5df4-8558-50bf416b16fa
-        File: []  # This sample has no files
+        Files: []  # This sample has no files
 
       # From aliquots
       - id: "12cfe700-d1b4-4b88-b509-b8dfaf12ecdf"
@@ -107,6 +107,6 @@ ResearchSubject:
         associated_project: "TARGET-ALL-P3"
         # renamed; Kathy says that this should be null for the sample:
         derived_from_specimen: 7de4ade2-dc5c-53f6-9815-8e42f2182b59
-        File: []  # This sample has no files
+        Files: []  # This sample has no files
 
     Diagnosis: []
