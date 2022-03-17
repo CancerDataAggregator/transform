@@ -36,7 +36,12 @@ jobs:
         python-version: [3.7]
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
+    - id: 'auth'
+      name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v0'
+      with:
+        credentials_json: '${{ secrets.GOOGLE_CREDENTIALS }}'
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
       with:
@@ -49,6 +54,7 @@ jobs:
       run: |
         pip install pytest
         cd tests
+        extract-idc ../IDC_mapping.yml --gsa_info GOOGLE_APPLICATION_CREDENTIALS --make_bq_table True
         py.test
 
   integration-test:
@@ -71,7 +77,6 @@ jobs:
     - name: Integration tests
       run: |
         cd data
-        sh get-cache-files.sh
         cd ../tests/integration
         sh test.sh
         sh test-fail.sh
