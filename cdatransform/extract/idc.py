@@ -9,6 +9,7 @@ import jsonlines
 import gzip
 import os
 
+
 class IDC:
     def __init__(
         self,
@@ -19,12 +20,12 @@ class IDC:
         files_file=None,
         file=None,
         dest_table_id="gdc-bq-sample.idc_test.dicom_pivot_v3",
-        mapping=None, #yaml.load(open("IDC_mapping.yml", "r"), Loader=Loader),
+        mapping=None,  # yaml.load(open("IDC_mapping.yml", "r"), Loader=Loader),
         source_table="canceridc-data.idc_v3.dicom_pivot_v3",
         endpoint=None,
-        dest_bucket='gdc-bq-sample-bucket',
-        dest_bucket_file_name='druth/idc-extract.jsonl.gz',
-        out_file='idc-test.jsonl.gz'
+        dest_bucket="gdc-bq-sample-bucket",
+        dest_bucket_file_name="druth/idc-extract.jsonl.gz",
+        out_file="idc-test.jsonl.gz",
     ) -> None:
         self.gsa_key = gsa_key
         self.gsa_info = gsa_info
@@ -87,17 +88,17 @@ class IDC:
     def table_to_bucket(self):
         # Save destination table to GCS bucket
         bucket_name = self.dest_bucket
-        dataset_id = self.dest_table_id.split('.')[1]
-        table = self.dest_table_id.split('.')[2]
+        dataset_id = self.dest_table_id.split(".")[1]
+        table = self.dest_table_id.split(".")[2]
         credentials = self.service_account_cred
         project = credentials.project_id
         client = bigquery.Client(
             credentials=credentials,
             project=credentials.project_id,
         )
-        #dest_bucket_file_name = self.dest_bucket_file_name.split('.')
-        #dest_bucket_file_name.insert(-2,'*')
-        #dest_bucket_file_name='.'.join(dest_bucket_file_name)
+        # dest_bucket_file_name = self.dest_bucket_file_name.split('.')
+        # dest_bucket_file_name.insert(-2,'*')
+        # dest_bucket_file_name='.'.join(dest_bucket_file_name)
         destination_uri = "gs://{}/{}".format(bucket_name, self.dest_bucket_file_name)
         dataset_ref = bigquery.DatasetReference(project, dataset_id)
         table_ref = dataset_ref.table(table)
@@ -129,24 +130,24 @@ class IDC:
         except Exception:
             storage_client = storage.Client.from_service_account_json(key_path)
         bucket = storage_client.bucket(bucket_name)
-        prefix = source_blob_name.split('*')
+        prefix = source_blob_name.split("*")
         if len(prefix) > 1:
             # concatenate files together. One big file downloads faster than many small ones
             # Find all 'wildcard' named files
             blobs = bucket.list_blobs(prefix=prefix[0])
             # Put them together
-            bucket.blob(destination_file_name).compose(blobs) 
+            bucket.blob(destination_file_name).compose(blobs)
             # Download big file
             blob = bucket.blob(destination_file_name)
             blob.download_to_filename(destination_file_name)
             # Delete smaller files from bucket
             for blob in blobs:
                 blob.delete()
-            #blob_names = []
-            #for blob in blobs:
+            # blob_names = []
+            # for blob in blobs:
             #    blob_names.append(blob.name)
             #    blob.download_to_filename(blob.name)
-            #with gzip.open(destination_file_name, 'w') as outfile:
+            # with gzip.open(destination_file_name, 'w') as outfile:
             #    writer = jsonlines.Writer(outfile)
             #    for fname in blob_names:
             #        with gzip.open(fname, 'r') as infile:
@@ -219,7 +220,7 @@ class IDC:
             where = """WHERE PatientID in ("""
             where += """','""".join(self.patient_ids) + """')"""
         return where
-    
+
     def build_where_files(self):
         where = ""
         if self.file_ids is not None:
@@ -253,13 +254,14 @@ class IDC:
                         if function[0] not in functions_added:
                             all_udfs = all_udfs + self.create_udf_str(function)
         return all_udfs
+
     def add_linkers(self, entity):
         linkers_str = """ """
         keys = list(self.mapping[entity]["Linkers"].keys())
         for index in range(len(self.mapping[entity]["Linkers"].keys())):
             if self.mapping[entity]["Linkers"][keys[index]] is not None:
                 field = self.mapping[entity]["Linkers"][keys[index]]
-                field = field.split('.')
+                field = field.split(".")
                 field = field.pop()
                 field = str(field)
                 linkers_str += """ARRAY_AGG(""" + field + """) as """ + keys[index]
@@ -298,7 +300,7 @@ def main():
     parser.add_argument(
         "--dest_table_id",
         help="Permanent table destination after querying IDC",
-        default="gdc-bq-sample.idc_test.dicom_pivot_v3",
+        default="gdc-bq-sample.dev.idc_patient_testing",
     )
     parser.add_argument(
         "--source_table",
