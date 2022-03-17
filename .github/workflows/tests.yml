@@ -58,7 +58,7 @@ jobs:
       run: |
         pip install pytest
         cd tests
-        extract-idc ../IDC_mapping.yml --gsa_key $GOOGLE_APPLICATION_CREDENTIALS --make_bq_table True --endpoint Patient
+        extract-idc ../IDC_mapping.yml --make_bq_table True --endpoint Patient
         py.test
 
   integration-test:
