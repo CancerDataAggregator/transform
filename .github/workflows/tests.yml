@@ -49,7 +49,7 @@ jobs:
     - id: 'gsutil'
       name: 'gsutil'
       run: |-
-        gsutil cp gs://gdc-bq-sample/broad-cda-dev/pdc.files-specimens-cases.jsonl.gz data/pdc.files-specimens-cases.jsonl.gz
+        gsutil cp gs://broad-cda-dev/public/pdc.files-specimens-cases.jsonl.gz data/pdc.files-specimens-cases.jsonl.gz
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v1
