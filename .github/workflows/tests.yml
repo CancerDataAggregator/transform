@@ -54,7 +54,7 @@ jobs:
       run: |
         pip install pytest
         cd tests
-        extract-idc ../IDC_mapping.yml --gsa_info GOOGLE_APPLICATION_CREDENTIALS --make_bq_table True
+        extract-idc ../IDC_mapping.yml --gsa_info $GOOGLE_APPLICATION_CREDENTIALS --make_bq_table True
         py.test
 
   integration-test:
