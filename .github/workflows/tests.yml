@@ -59,7 +59,12 @@ jobs:
       run: |
         pip install pytest
         cd tests
-        extract-idc ../IDC_mapping.yml --make_bq_table True --endpoint Patient --gsa_key $GOOGLE_APPLICATION_CREDENTIALS --dest_table_id broad-cda-dev.github_testing.idc_patient
+        extract-idc ../IDC_mapping.yml --make_bq_table True \
+          --endpoint Patient \
+          --gsa_key $GOOGLE_APPLICATION_CREDENTIALS \
+          --dest_table_id broad-cda-dev.github_testing.idc_patient \
+          --source_table_id broad-cda-dev.github_testing.dicom_pivot_v4_copy
+          --patient HNSCC-01-0010
         py.test
 
   integration-test:
