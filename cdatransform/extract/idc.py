@@ -82,7 +82,9 @@ class IDC:
         sql = self.transform_query
 
         # Start the query, passing in the extra configuration.
-        query_job = client.query(sql, job_config=job_config)  # Make an API request.
+        query_job = client.query(
+            sql, location="US", job_config=job_config
+        )  # Make an API request.
         query_job.result()  # Wait for the job to complete.
 
     def table_to_bucket(self):
