@@ -217,7 +217,7 @@ class IDC:
     def build_where_patients(self):
         where = ""
         if self.patient_ids is not None:
-            where = """WHERE PatientID in ("""
+            where = """ WHERE PatientID in ('"""
             where += """','""".join(self.patient_ids) + """')"""
         return where
 
@@ -300,7 +300,7 @@ def main():
     parser.add_argument(
         "--dest_table_id",
         help="Permanent table destination after querying IDC",
-        default="gdc-bq-sample.dev.idc_patient_testing",
+        default="broad-cda-dev.github_testing.idc_patient_testing",
     )
     parser.add_argument(
         "--source_table",
@@ -340,13 +340,11 @@ def main():
         default=False,
         type=bool,
     )
-    parser.add_argument(
-        "--dest_bucket", help="GCS bucket", default="gdc-bq-sample-bucket"
-    )
+    parser.add_argument("--dest_bucket", help="GCS bucket", default="broad-cda-dev")
     parser.add_argument(
         "--dest_bucket_file_name",
         help="GCS bucket file name",
-        default="idc-test.jsonl.gz",
+        default="public/idc-test.jsonl.gz",
     )
     args = parser.parse_args()
     make_bq_table = args.make_bq_table
