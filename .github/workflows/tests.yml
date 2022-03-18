@@ -43,6 +43,7 @@ jobs:
       with:
         credentials_json: '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}'
     # Install gcloud, `setup-gcloud` automatically picks up authentication from `auth`.
+    
     - name: 'Set up Cloud SDK'
       uses: 'google-github-actions/setup-gcloud@v0'
 
@@ -58,7 +59,7 @@ jobs:
       run: |
         pip install pytest
         cd tests
-        extract-idc ../IDC_mapping.yml --make_bq_table True --endpoint Patient
+        extract-idc ../IDC_mapping.yml --make_bq_table True --endpoint Patient --gsa_key $GOOGLE_APPLICATION_CREDENTIALS
         py.test
 
   integration-test:
