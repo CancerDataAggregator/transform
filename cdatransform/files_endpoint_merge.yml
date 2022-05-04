@@ -1,0 +1,78 @@
+File_merge:
+    id:
+        merge_type: "coalesce"
+        default_value: ""
+    identifier:
+        merge_type: "coalesce"
+        default_value: ""
+    label:
+        merge_type: "coalesce"
+        default_value: ""
+    data_type:
+        merge_type: "coalesce"
+        default_value: ""
+    data_category:
+        merge_type: "coalesce"
+        default_value: ""
+    byte_size:
+        merge_type: "coalesce"
+        default_value: ""
+    checksum:
+        merge_type: "coalesce"
+        default_value: ""
+    associated_project:
+        merge_type: "coalesce"
+        default_value: ""
+    drs_uri:
+        merge_type: "coalesce"
+        default_value: ""
+    file_format:
+        merge_type: "coalesce"
+        default_value: ""
+    data_modality:
+        merge_type: "coalesce"
+        default_value: null
+    imaging_modality:
+        merge_type: "coalesce"
+        default_value: null
+    Subjects:
+        merge_type: "append_field_vals"
+        default_value: []
+    ResearchSubjects:
+        merge_type: "append_field_vals"
+        default_value: []
+    Specimens:
+        merge_type: "append_field_vals"
+        default_value: []
+
+Specimen_merge:
+    id:
+        merge_type: "coalesce"
+        default_value: ""
+    identifier:
+        merge_type: "coalesce"
+        default_value: ""
+    derived_from_subject:
+        merge_type: "coalesce"
+        default_value: ""
+    specimen_type:
+        merge_type: "coalesce"
+        default_value: ""
+    primary_disease_type:
+        merge_type: "coalesce"
+        default_value: ""
+    source_material_type:
+        merge_type: "coalesce"
+        default_value: ""
+    anatomical_site:
+        merge_type: "coalesce"
+        default_value: ""
+    age_at_collection:
+        merge_type: "coalesce"
+        default_value: ""
+    associated_project:
+        merge_type: "coalesce"
+        default_value: ""
+    derived_from_specimen:
+        merge_type: "coalesce"
+        default_value: ""

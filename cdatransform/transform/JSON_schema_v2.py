@@ -5,14 +5,18 @@ import json
 
 
 class Schema:
-    def __init__(self, mapping, data_model_dir, outfile, endpoint) -> None:
+    def __init__(
+        self,
+        mapping,
+        data_model_dir,
+        outfile,
+    ) -> None:
         self.outfile = outfile
-        self.endpoint = endpoint
         self.mapping = yaml.load(open(mapping, "r"), Loader=Loader)
         self.data_model = self._init_data_model(data_model_dir)
 
     def _init_data_model(self, data_model_dir):
-        print("ran _init_data_model")
+        print("ran init data model")
         data_model = dict({})
         for entity in list(self.mapping.keys()):
             f = open(
@@ -38,37 +42,20 @@ class Schema:
             fields.append(field_dict)
         return fields
 
-    def add_linkers(self, entity):
-        fields = []
-        for field in list(self.mapping[entity]["Linkers"].keys()):
-            field_dict = dict({})
-            field_dict["description"] = " ".join(["List of ids of",field[:-1],"entities associated with the",entity])
-            field_dict["name"] = field
-            field_dict["type"] = "STRING"
-            field_dict["mode"] = "REPEATED"
-            fields.append(field_dict)
-        return fields
-
     def make_entity_schema(self, entity):
         print("Ran with entity:")
         print(entity)
+
         entity_dict = dict({})
         entity_dict["name"] = entity
-        if entity == 'Subject':
-            entity_dict["description"] = self.data_model['Patient'].get("description", "")
-            entity_loop = 'Patient'
-        else:
-            entity_dict["description"] = self.data_model[entity].get("description", "")
-            entity_loop = entity
+        entity_dict["description"] = self.data_model[entity].get("description", "")
         entity_dict["type"] = "RECORD"
         entity_dict["mode"] = "REPEATED"
         entity_dict["fields"] = []
-        
-        entity_loop
-        for field in list(self.mapping[entity_loop]["Mapping"].keys()):
+        for field in list(self.mapping[entity]["Mapping"].keys()):
             field_dict = dict({})
             field_dict["description"] = (
-                self.data_model[entity_loop].get(field, dict({})).get("description", "")
+                self.data_model[entity].get(field, dict({})).get("description", "")
             )
             field_dict["name"] = field
             if field == "id":
@@ -79,12 +66,13 @@ class Schema:
             if field == "identifier":
                 field_dict["type"] = "RECORD"
                 field_dict["mode"] = "REPEATED"
-                field_dict["fields"] = self.add_identifier(entity_loop)
+                field_dict["fields"] = self.add_identifier(entity)
                 entity_dict["fields"].append(field_dict)
+                print(field_dict)
                 continue
-            if self.data_model[entity_loop].get(field, dict({})).get("oneOf") is not None:
+            if self.data_model[entity].get(field, dict({})).get("oneOf") is not None:
                 field_dict["type"] = (
-                    self.data_model[entity_loop]
+                    self.data_model[entity]
                     .get(field, dict({}))
                     .get("oneOf", [dict({"type": "string"})])[1]["type"]
                     .upper()
@@ -92,36 +80,25 @@ class Schema:
                 field_dict["mode"] = "REPEATED"
             else:
                 field_dict["type"] = (
-                    self.data_model[entity_loop].get(field, dict({})).get("type", "").upper()
+                    self.data_model[entity].get(field, dict({})).get("type", "").upper()
                 )
                 if (
                     field_dict["type"] == ""
-                    and self.data_model[entity_loop].get(field, dict({})).get("$ref", None)
+                    and self.data_model[entity].get(field, dict({})).get("$ref", None)
                     is not None
                 ):
                     field_dict["type"] = "STRING"
             if field in [
+                "associated_project",
                 "species",
                 "drs_uri",
                 "data_modality",
                 "imaging_modality",
                 "primary_disease_type",
-                "member_of_research_project",
-                "vital_status",
-                "cause_of_death",
-                "primary_diagnosis_condition",
-                "primary_diagnosis_site",
-                "dbgap_accession_number",
-                "method_of_diagnosis",
-                "therapeutic_agent",
-                "treatment_anatomic_site",
-                "treatment_effect",
-                "treatment_end_reason",
-                "associated_project",
             ]:
                 field_dict["type"] = "STRING"
                 field_dict["mode"] = "NULLABLE"
-            if field in ["days_to_treatment_start", "days_to_treatment_end", "age_at_death", "number_of_cycles"]:
+            if field in ["days_to_treatment_start", "days_to_treatment_end"]:
                 field_dict["type"] = "INTEGER"
                 field_dict["mode"] = "NULLABLE"
             if field == "subject_associated_project":
@@ -133,38 +110,29 @@ class Schema:
             if field_dict["type"].lower() == "number":
                 field_dict["type"] = "INTEGER"
             entity_dict["fields"].append(field_dict)
-        if self.mapping[entity_loop].get("Linkers"):
-            entity_dict["fields"].extend(self.add_linkers(entity_loop))
+            if field == "identifier":
+                print(field_dict)
+        print("before returning schema")
         return entity_dict
 
     def write_json_schema(self):
         print("attempted to run build json")
-        if self.endpoint == "Patient":
-            # Patient table procedure
-            Patient = self.make_entity_schema("Subject")
-            RS = self.make_entity_schema("ResearchSubject")
-            Diag = self.make_entity_schema("Diagnosis")
-            Treat = self.make_entity_schema("Treatment")
-            Spec = self.make_entity_schema("Specimen")
-            Diag["fields"].append(Treat)
-            RS["fields"].append(Diag)
-            RS["fields"].append(Spec)
-            Patient["fields"].append(RS)
-            with open(self.outfile, "w") as outfile:
-                json.dump(Patient["fields"], outfile)
-        # File table procedure
-        elif self.endpoint == "File":
-            File = self.make_entity_schema("File")
-            Patient = self.make_entity_schema("Subject")
-            RS = self.make_entity_schema("ResearchSubject")
-            Diag = self.make_entity_schema("Diagnosis")
-            Treat = self.make_entity_schema("Treatment")
-            Spec = self.make_entity_schema("Specimen")
-            Diag["fields"].append(Treat)
-            RS["fields"].append(Diag)
-            File["fields"].extend([Patient, RS, Spec])
-            with open(self.outfile, "w") as outfile:
-                json.dump(File["fields"], outfile)
+        full_schema = []
+        Patient = self.make_entity_schema("Patient")
+        RS = self.make_entity_schema("ResearchSubject")
+        Diag = self.make_entity_schema("Diagnosis")
+        Treat = self.make_entity_schema("Treatment")
+        Spec = self.make_entity_schema("Specimen")
+        File = self.make_entity_schema("File")
+        Spec["fields"].append(File)
+        Diag["fields"].append(Treat)
+        RS["fields"].append(File)
+        RS["fields"].append(Spec)
+        RS["fields"].append(Diag)
+        Patient["fields"].append(File)
+        Patient["fields"].append(RS)
+        with open(self.outfile, "w") as outfile:
+            json.dump(Patient["fields"], outfile)
 
 
 def main():
@@ -177,14 +145,12 @@ def main():
         "data_model_dir",
         help="location of directory containing cda-data-model json schemas",
     )
-    parser.add_argument("endpoint", help="Either File or Patient")
     args = parser.parse_args()
 
     schema = Schema(
         mapping=args.mapping_file,
         data_model_dir=args.data_model_dir,
         outfile=args.out_file,
-        endpoint=args.endpoint
     )
     schema.write_json_schema()
 

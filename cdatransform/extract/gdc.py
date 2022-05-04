@@ -1,4 +1,5 @@
 import json
+from typing import Iterable
 import jsonlines
 import gzip
 import sys
@@ -31,11 +32,10 @@ cases_fields = [
     "diagnoses.tumor_stage",
     "diagnoses.morphology",
     "diagnoses.primary_diagnosis",
-    "diagnoses.method_of_diagnosis"
-    "diagnoses.treatments.treatment_outcome",
+    "diagnoses.method_of_diagnosis" "diagnoses.treatments.treatment_outcome",
     "diagnoses.treatments.treatment_type",
     "diagnoses.treatments.treatment_id",
-    "diagnoses.treatments.days_to_treatment",
+    "diagnoses.treatments.days_to_treatment_start",
     "diagnoses.treatments.days_to_treatment_end",
     "diagnoses.treatments.therapeutic_agents",
     "diagnoses.treatments.treatment_anatomic_site",
@@ -66,6 +66,7 @@ cases_fields = [
     "files.file_size",
     "files.md5sum",
     "files.data_format",
+    "files.experimental_strategy",
 ]
 
 case_fields_to_use = [
@@ -88,6 +89,7 @@ files_fields = [
     "file_size",
     "md5sum",
     "data_format",
+    "experimental_strategy",
     "cases.case_id",
     "cases.submitter_id",
     "cases.project.project_id",
@@ -110,7 +112,7 @@ files_fields = [
     "cases.diagnoses.treatments.treatment_outcome",
     "cases.diagnoses.treatments.treatment_type",
     "cases.diagnoses.treatments.treatment_id",
-    "cases.diagnoses.treatments.days_to_treatment",
+    "cases.diagnoses.treatments.days_to_treatment_start",
     "cases.diagnoses.treatments.days_to_treatment_end",
     "cases.diagnoses.treatments.therapeutic_agents",
     "cases.diagnoses.treatments.treatment_anatomic_site",
@@ -136,17 +138,17 @@ files_fields = [
     "cases.samples.portions.analytes.aliquots.submitter_id",
 ]
 # What is the significance of cases.samples.sample_id vs cases.sample_ids?
-# Answer: cases.sample_ids is not returned by GDC API 
-gdc_files_page_size = 10000
+# Answer: cases.sample_ids is not returned by GDC API
+gdc_files_page_size = 8000
 
 
-def clean_fields(hit):
+def clean_fields(hit) -> dict:
     if hit.get("age_at_diagnosis") is not None:
         hit["age_at_diagnosis"] = int(hit.get("age_at_diagnosis"))
     return hit
 
 
-def get_total_number(endpoint):
+def get_total_number(endpoint) -> int:
     params = {"format": "json"}
     result = retry_get(endpoint, params=params)
     return result.json()["data"]["pagination"]["total"]
@@ -155,15 +157,17 @@ def get_total_number(endpoint):
 class GDC:
     def __init__(
         self,
-        cache_file,
-        cases_endpoint="https://api.gdc.cancer.gov/v0/cases",
-        files_endpoint="https://api.gdc.cancer.gov/v0/files",
+        cache_file: pathlib.Path,
+        cases_endpoint: str = "https://api.gdc.cancer.gov/v0/cases",
+        files_endpoint: str = "https://api.gdc.cancer.gov/v0/files",
     ) -> None:
         self.cases_endpoint = cases_endpoint
         self.files_endpoint = files_endpoint
         self._samples_per_files_dict = self._fetch_file_data_from_cache(cache_file)
 
-    def save_cases(self, out_file, case_ids=None, page_size=1000):
+    def save_cases(
+        self, out_file: str, case_ids: str = None, page_size: int = 1000
+    ) -> None:
         t0 = time.time()
         n = 0
         with gzip.open(out_file, "wb") as fp:
@@ -176,7 +180,7 @@ class GDC:
                     sys.stderr.write(f"Wrote {n} cases in {time.time() - t0}s\n")
         sys.stderr.write(f"Wrote {n} cases in {time.time() - t0}s\n")
 
-    def save_files(self, out_file, cache_file, file_ids=None):
+    def save_files(self, out_file: str, cache_file: str, file_ids: list = None) -> None:
         t0 = time.time()
         n = 0
         with gzip.open(out_file, "wb") as fp:
@@ -185,7 +189,7 @@ class GDC:
                 reader = jsonlines.Reader(fr)
                 if file_ids:
                     for file in reader:
-                        if file.get('file_id') in file_ids:
+                        if file.get("file_id") in file_ids:
                             writer.write(file)
                             n += 1
                 else:
@@ -196,10 +200,10 @@ class GDC:
 
     def _cases(
         self,
-        case_ids=None,
-        page_size=100,
-    ):
-        fields = ",".join(cases_fields)
+        case_ids: list = None,
+        page_size: int = 100,
+    ) -> Iterable:
+        fields: str = ",".join(cases_fields)
         # defining the GDC API query
         if case_ids is not None:
             filt = json.dumps(
@@ -213,7 +217,7 @@ class GDC:
         else:
             filt = None
 
-        offset = 0
+        offset: int = 0
         while True:
             params = {
                 "filters": filt,
@@ -225,10 +229,10 @@ class GDC:
 
             # How to handle errors
             result = retry_get(self.cases_endpoint, params=params)
-            hits = result.json()["data"]["hits"]
+            hits: list[dict] = result.json()["data"]["hits"]
             page = result.json()["data"]["pagination"]
-            p_no = page.get("page")
-            p_tot = page.get("pages")
+            p_no: int = page.get("page")
+            p_tot: int = page.get("pages")
 
             sys.stderr.write(f"Pulling page {p_no} / {p_tot}\n")
 
@@ -303,7 +307,7 @@ class GDC:
 
         return new_case_record
 
-    def _fetch_file_data_from_cache(self, cache_file) -> dict:
+    def _fetch_file_data_from_cache(self, cache_file: pathlib.PosixPath) -> dict:
         # The return is a dictionary sample_id: [file_ids]
         if not cache_file.exists():
             sys.stderr.write(f"Cache file {cache_file} not found. Generating.\n")
@@ -358,15 +362,15 @@ class GDC:
                 "from": offset,
                 "size": gdc_files_page_size,
             }
-            sys.stderr.write(
-                f"Pulling files page {int(offset / gdc_files_page_size) + 1}/{int(total_files / gdc_files_page_size) + 1}\n"
-            )
+            page_num = int(offset / gdc_files_page_size) + 1
+            total_page = int(total_files / gdc_files_page_size) + 1
+            sys.stderr.write(f"Pulling files page {page_num}/{total_page}\n")
             result = retry_get(self.files_endpoint, params=params)
             for hit in result.json()["data"]["hits"]:
                 yield hit
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Pull case data from GDC API.")
     parser.add_argument("out_file", help="Out file name. Should end with .gz")
     parser.add_argument("cache_file", help="Use (or generate if missing) cache file.")
@@ -385,14 +389,18 @@ def main():
     args = parser.parse_args()
 
     gdc = GDC(cache_file=pathlib.Path(args.cache_file))
-    if args.case or args.cases or args.endpoint=='cases':
+    if args.case or args.cases or args.endpoint == "cases":
         gdc.save_cases(
-            args.out_file, case_ids=get_case_ids(case=args.case, case_list_file=args.cases)
+            args.out_file,
+            case_ids=get_case_ids(case=args.case, case_list_file=args.cases),
         )
-    if args.file or args.files or args.endpoint=='files':
+    if args.file or args.files or args.endpoint == "files":
         gdc.save_files(
-            args.out_file, args.cache_file, file_ids=get_case_ids(case=args.file, case_list_file=args.files)
+            args.out_file,
+            args.cache_file,
+            file_ids=get_case_ids(case=args.file, case_list_file=args.files),
         )
+
 
 if __name__ == "__main__":
     main()

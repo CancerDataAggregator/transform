@@ -1,6 +1,7 @@
 import yaml
 from yaml import Loader
 import argparse
+from math import ceil
 from google.cloud import bigquery, storage
 from google.oauth2 import service_account
 from cdatransform.lib import get_case_ids
@@ -21,7 +22,7 @@ class IDC:
         file=None,
         dest_table_id="broad-cda-dev.github_test.dicom_pivot_v4",
         mapping=None,  # yaml.load(open("IDC_mapping.yml", "r"), Loader=Loader),
-        source_table="canceridc-data.idc_v4.dicom_pivot_v4",
+        source_table="bigquery-public-data.idc_v8.dicom_pivot_v8",
         endpoint=None,
         dest_bucket="gdc-bq-sample-bucket",
         dest_bucket_file_name="druth/idc-extract.jsonl.gz",
@@ -40,6 +41,7 @@ class IDC:
         self.file_ids = get_case_ids(case=file, case_list_file=files_file)
         self.source_table = source_table
         self.transform_query = self._query_build()
+        self.max_blobs_compose = 32 #GCS limit on how many blobs to compose together
 
     def _service_account_cred(self):
         key_path = self.gsa_key
@@ -136,7 +138,24 @@ class IDC:
         if len(prefix) > 1:
             # concatenate files together. One big file downloads faster than many small ones
             # Find all 'wildcard' named files
-            blobs = bucket.list_blobs(prefix=prefix[0])
+            blobs = []
+            for blob in bucket.list_blobs(prefix=prefix[0]):
+                blobs.append(blob)
+            if len(blobs) > self.max_blobs_compose:
+                lst_blobs = []
+                groups = ceil(len(blobs)/self.max_blobs_compose)
+                for i in range(groups):
+                    min_index = i*3
+                    max_index = min_index + self.max_blobs_compose
+                    # lst_blobs.append(blobs[min_index:max_index])
+                    bucket.blob(prefix[0] + str(i) + '.jsonl.gz').compose(blobs[min_index:max_index])
+                for blob in blobs:
+                    blob.delete()
+                blobs = []
+                for blob in bucket.list_blobs(prefix=prefix[0]):
+                    blobs.append(blob)
+            print(type(blobs))
+            print(len(blobs))
             # Put them together
             bucket.blob(destination_file_name).compose(blobs)
             # Download big file
@@ -307,7 +326,7 @@ def main():
     parser.add_argument(
         "--source_table",
         help="IDC source table to be queried",
-        default="canceridc-data.idc_v4.dicom_pivot_v4",
+        default="bigquery-public-data.idc_v8.dicom_pivot_v8",
     )
     parser.add_argument("--gsa_key", help="Location of user GSA key")
     parser.add_argument("--endpoint", help="Patient of File endpoint")
@@ -368,10 +387,10 @@ def main():
         dest_bucket_file_name=args.dest_bucket_file_name,
         out_file=args.out_file,
     )
-    if make_bq_table:
-        idc.query_idc_to_table()
-    if args.make_bucket_file:
-        idc.table_to_bucket()
+    #if make_bq_table:
+    #    idc.query_idc_to_table()
+    #if args.make_bucket_file:
+    #    idc.table_to_bucket()
     idc.download_blob()
 
 

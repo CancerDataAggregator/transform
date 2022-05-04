@@ -5,6 +5,7 @@ import yaml
 from yaml import Loader
 from deepdiff import DeepDiff
 from deepdiff.helper import CannotCompare
+import os
 
 # from cdatransform.transform.lib import Transform
 import cdatransform.transform.transform_lib.transform_with_YAML_v1 as tr
@@ -14,9 +15,11 @@ from cdatransform.transform.validate import LogValidation
 # Add this function to look at entities with the same id
 def compare_func(x, y, level=None):
     try:
-        return x['id'] == y['id']
+        return x["id"] == y["id"]
     except Exception:
         raise CannotCompare() from None
+
+
 @pytest.mark.parametrize(
     "transform,DC,case,expected,endpoint",
     [
@@ -48,10 +51,18 @@ def compare_func(x, y, level=None):
             "steps/gdc_TARGET_file2_harmonized.yaml",
             "files",
         ),
+        pytest.param(
+            "../IDC_mapping.yml",
+            "IDC",
+            "steps/idc_TARGET_Subject1.json",
+            "steps/idc_TARGET_Subject1_harmonized.yaml",
+            "Subject",
+        ),
     ],
 )
-
 def test_transform(transform, DC, case, expected, endpoint):
+    if DC == "IDC":
+        os.popopen()
     validate = LogValidation()
     # t_list = yaml.safe_load(open(transform, "r"))
     MandT = yaml.load(open(transform, "r"), Loader=Loader)
@@ -66,15 +77,17 @@ def test_transform(transform, DC, case, expected, endpoint):
         transformed = transform(json.load(case_data), MandT, DC, endpoint=endpoint)
         with open(expected) as expected_data:
             diff = DeepDiff(
-                yaml.safe_load(expected_data), transformed, ignore_order=True, iterable_compare_func=compare_func)# cutoff_distance_for_pairs=1
-            #)
+                yaml.safe_load(expected_data),
+                transformed,
+                ignore_order=True,
+                iterable_compare_func=compare_func,
+            )  # cutoff_distance_for_pairs=1
+            # )
             if diff != {}:
                 print("difference found")
                 print(diff.pretty())
-                outfilename = case.split('.').insert(-1,'testH')
-                outfilename = '.'.join(outfilename)
+                outfilename = case.split(".").insert(-1, "testH")
+                outfilename = ".".join(outfilename)
                 with open(outfilename, "w") as outfile:
                     json.dump(transformed, outfile)
                 assert False, "output didn't match expected"
-                
-

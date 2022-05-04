@@ -23,3 +23,7 @@ def idc_species_mapping():
 
 def idc_substr(val):
     return "SUBSTR(x, " + str(val[0]) + ")"
+
+
+def idc_drs_uri():
+    return """CONCAT("drs://dg.4DFC:", x)"""

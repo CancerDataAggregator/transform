@@ -8,21 +8,18 @@ def simp_read(orig, ptr, cp_o, DC):
     ptr = ptr.split(".")
     if len(ptr) == 1:
         return ptr[0]
-    #try:
-    #    cp.remove("cases")
-    #except Exception:
-    #    cp.remove("files")
     rmoved = cp.pop(0)
-    if rmoved=='cases':
-        try:
-            ptr.remove(rmoved)
-        except Exception:
-            ptr.insert(0, "samples")
-            if DC == "PDC":
-                ptr.remove("files")
-                ptr.insert(1, "File")
-    else:
-        ptr.remove(rmoved)
+    #if rmoved=='cases':
+    #    try:
+    #        ptr.remove(rmoved)
+    #    except Exception:
+    #        ptr.insert(0, "samples")
+    #        if DC == "PDC":
+    ##            ptr.remove("files")
+     #           ptr.insert(1, "File")
+    #else:
+    #    ptr.remove(rmoved)
+    ptr.remove(rmoved)
     rec = orig.copy()
     while len(ptr) > 0 and rec is not None:
         if cp != [] and ptr[0] == cp[0]:

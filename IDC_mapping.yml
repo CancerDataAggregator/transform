@@ -30,7 +30,7 @@ File:
         data_type: 'NULL'
         file_format: 'DICOM'
         associated_project: 'files.collection_id'
-        drs_uri: 'files.gcs_url'
+        drs_uri: 'files.crdc_instance_uuid'
         byte_size: null
         checksum: 'NULL'
         data_modality: 'Imaging'
@@ -39,6 +39,8 @@ File:
     Transformations:
         label: 
         - ['idc_substr', ['STRING',15] ]
+        drs_uri:
+        - ['idc_drs_uri', ['STRING']]
 
     Linkers:
         Specimens: 
