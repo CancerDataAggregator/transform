@@ -4,7 +4,7 @@ Patient:
         identifier:
             system: 'GDC'
             value: 'cases.submitter_id'
-        species: 'Homo sapiens'
+        species: 'homo sapiens'
         sex: 'cases.demographic.gender'
         race: 'cases.demographic.race'
         ethnicity: 'cases.demographic.ethnicity'
@@ -56,7 +56,7 @@ Treatment:
             value: 'cases.diagnoses.treatments.treatment_id'
         treatment_type: 'cases.diagnoses.treatments.treatment_type'
         treatment_outcome: 'cases.diagnoses.treatments.treatment_outcome'
-        days_to_treatment_start: 'cases.diagnoses.treatments.days_to_treatment'
+        days_to_treatment_start: 'cases.diagnoses.treatments.days_to_treatment_start'
         days_to_treatment_end: 'cases.diagnoses.treatments.days_to_treatment_end'
         therapeutic_agent: 'cases.diagnoses.treatments.therapeutic_agents'
         treatment_anatomic_site: 'cases.diagnoses.treatments.treatment_anatomic_site'

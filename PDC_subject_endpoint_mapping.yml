@@ -15,6 +15,8 @@ Patient:
         vital_status: 'cases.demographics.vital_status'
         
     Transformations:
+        species:
+            - ['lower_case', [] ]
         race:
             - ['lower_case', [] ]
         ethnicity:
