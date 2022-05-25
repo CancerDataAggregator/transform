@@ -16,16 +16,38 @@ Patient:
     
     Transformations:
         species: 
-        - ['idc_species_mapping', ['STRING'] ]
+        - ['idc_species_mapping', ['STRING'], 'STRING' ]
     Linkers:
         Files: 'files.crdc_instance_uuid'
+
+ResearchSubject:
+    Mapping:
+        id: 
+            - 'files.PatientID'
+            - 'files.collection_id'
+        identifier:
+            system: 'IDC'
+            value:
+                - 'files.PatientID'
+                - 'files.collection_id'
+        member_of_research_project: 'files.collection_id'
+        primary_diagnosis_condition: 'NULL'
+        primary_diagnosis_site: 'files.tcia_tumorLocation'
+
+    Transformations:
+        id: 
+        - ['idc_researchsubject_id', ['STRING', 'STRING'], 'STRING']
+        value:
+        - ['idc_researchsubject_id', ['STRING', 'STRING'], 'STRING']
 File:
     Mapping:
         id: 'files.crdc_instance_uuid'
         identifier:
             system: 'IDC'
             value: 'files.crdc_instance_uuid'
-        label: 'files.gcs_url'
+        label: 
+            - 'files.gcs_url'
+            - 15
         data_category: 'Imaging'
         data_type: 'NULL'
         file_format: 'DICOM'
@@ -38,9 +60,9 @@ File:
         dbgap_accession_number: 'NULL'
     Transformations:
         label: 
-        - ['idc_substr', ['STRING',15] ]
+        - ['idc_substr', ['STRING','INT'],'STRING']
         drs_uri:
-        - ['idc_drs_uri', ['STRING']]
+        - ['idc_drs_uri', ['STRING'], 'STRING']
 
     Linkers:
         Specimens: 

@@ -17,13 +17,17 @@ def str_to_list(val):
     return val
 
 
-def idc_species_mapping():
-    return "CASE x WHEN 'Human' THEN 'Homo sapiens' WHEN 'Canine' THEN 'Canis familiaris' WHEN 'Mouse' THEN 'Mus musculus' ELSE ''END"
+def idc_species_mapping(val):
+    return "CASE " + val[0] + " WHEN 'Human' THEN 'Homo sapiens' WHEN 'Canine' THEN 'Canis familiaris' WHEN 'Mouse' THEN 'Mus musculus' ELSE ''END"
 
 
 def idc_substr(val):
-    return "SUBSTR(x, " + str(val[0]) + ")"
+    return "SUBSTR(" + val[0] + ", " + str(val[1]) + ")"
 
 
-def idc_drs_uri():
-    return """CONCAT("drs://dg.4DFC:", x)"""
+def idc_drs_uri(val):
+    return """CONCAT("drs://dg.4DFC:", """ + val[0] + """)"""
+
+
+def idc_researchsubject_id(val):
+    return """CONCAT(""" + val[0] + """, "__", """ + val[1] + """)"""

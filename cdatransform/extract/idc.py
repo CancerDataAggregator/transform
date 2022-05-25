@@ -20,9 +20,9 @@ class IDC:
         patient=None,
         files_file=None,
         file=None,
-        dest_table_id="broad-cda-dev.github_test.dicom_pivot_v4",
+        dest_table_id="broad-cda-dev.github_test.dicom_pivot_v9",
         mapping=None,  # yaml.load(open("IDC_mapping.yml", "r"), Loader=Loader),
-        source_table="bigquery-public-data.idc_v8.dicom_pivot_v8",
+        source_table="bigquery-public-data.idc_v9.dicom_pivot_v9",
         endpoint=None,
         dest_bucket="gdc-bq-sample-bucket",
         dest_bucket_file_name="druth/idc-extract.jsonl.gz",
@@ -145,8 +145,9 @@ class IDC:
                 lst_blobs = []
                 groups = ceil(len(blobs)/self.max_blobs_compose)
                 for i in range(groups):
-                    min_index = i*3
-                    max_index = min_index + self.max_blobs_compose
+                    min_index = i*self.max_blobs_compose
+                    max_index = min(min_index + self.max_blobs_compose,len(blobs))# - 1
+                    print(str(min_index) + ':' + str(max_index))
                     # lst_blobs.append(blobs[min_index:max_index])
                     bucket.blob(prefix[0] + str(i) + '.jsonl.gz').compose(blobs[min_index:max_index])
                 for blob in blobs:
@@ -154,16 +155,16 @@ class IDC:
                 blobs = []
                 for blob in bucket.list_blobs(prefix=prefix[0]):
                     blobs.append(blob)
-            print(type(blobs))
-            print(len(blobs))
+            for blob in blobs:
+                print(blob.name)
             # Put them together
             bucket.blob(destination_file_name).compose(blobs)
             # Download big file
             blob = bucket.blob(destination_file_name)
             blob.download_to_filename(destination_file_name)
             # Delete smaller files from bucket
-            for blob in blobs:
-                blob.delete()
+            #for blob in blobs:
+            #    blob.delete()
             # blob_names = []
             # for blob in blobs:
             #    blob_names.append(blob.name)
@@ -186,11 +187,18 @@ class IDC:
 
     def add_udf_to_field_query(self, val_split, mapping_transform):
         for transform in mapping_transform:
-            val_split = transform[0].__name__ + "(" + val_split
+            temp = transform[0].__name__ + "(" 
+            if isinstance(val_split, list):
+                templst = []
+                for i in val_split:
+                    templst.append(str(i))
+                temp+=','.join(templst)
+            elif isinstance(val_split, str):
+                temp+=val_split
             # if len(transform[1]) > 1:
             #    val_split = val_split + ", [" +",".join([str(item) for item in transform[1][1:]])+"]"
-            val_split = val_split + ")"
-        return val_split
+            temp +=")"
+        return temp
 
     def field_line(self, k, val, entity):
         if isinstance(val, str):
@@ -214,12 +222,42 @@ class IDC:
         elif isinstance(val, dict):
             temp = "[STRUCT("
             keys = list(val.keys())
+            print(keys)
             for index in range(len(keys)):
                 temp += self.field_line(keys[index], val[keys[index]], entity)
                 if index < len(keys) - 1:
                     temp += ", "
             temp += ")] AS " + k
+            print('temp')
+            print(temp)
             return temp
+        elif isinstance(val, list):
+            var_splits = []
+            for var in val:
+                if isinstance(var,str):
+                    val_split = var.split(".")
+                    if len(val_split) > 1:
+                        val_split.pop(0)
+                        val_split = val_split[0]
+                    elif val_split[0] == "NULL":
+                        val_split = "STRING(NULL)"
+                    else:
+                        val_split = "'" + val_split[0] + "'"
+                else:
+                    val_split = var
+                var_splits.append(val_split)
+            print('var_splits before')
+            print(var_splits)
+            if self.mapping[entity].get("Transformations", None) is not None:
+                if self.mapping[entity]["Transformations"].get(k, None) is not None:
+                    var_splits = self.add_udf_to_field_query(
+                        var_splits, self.mapping[entity]["Transformations"][k]
+                    )
+            print('var_splits')
+            print(var_splits)
+            var_splits += " AS " + k
+            return var_splits
+
         else:
             return """Null""" + """ AS """ + k
         return val
@@ -227,7 +265,9 @@ class IDC:
     def add_entity_fields(self, entity):
         entity_string = ""
         keys = list(self.mapping[entity]["Mapping"].keys())
+        print(keys)
         for index in range(len(self.mapping[entity]["Mapping"].keys())):
+            print(index)
             entity_string += self.field_line(
                 keys[index], self.mapping[entity]["Mapping"][keys[index]], entity
             )
@@ -258,6 +298,7 @@ class IDC:
             + ") RETURNS "
         )
         out = out + func_desc[1][0] + " AS ("
+        print()
         if len(func_desc[1]) == 1:
             out = out + func_desc[0]()
         else:
@@ -265,6 +306,22 @@ class IDC:
         out = out + "); "
         return out
 
+    def create_udf_str_v2(self, func_desc):
+        var_list = ['x', 'y', 'z', 'a', 'b', 'c']
+        var_used = []
+        out = "CREATE TEMP FUNCTION " + func_desc[0].__name__ + "("
+        num_var = len(func_desc[1])
+        for var in range(num_var):
+            out += var_list[var] + ' ' + func_desc[1][var]
+            var_used 
+            if var < num_var-1:
+                out += ', '
+        out += ") RETURNS "
+        out += func_desc[2] + " AS ("
+        print()
+        out = out + func_desc[0](var_list[0:num_var])
+        out = out + "); "
+        return out
     def create_all_udfs(self):
         functions_added = []
         all_udfs = ""
@@ -273,7 +330,8 @@ class IDC:
                 for field, functions in Map_and_Trans.get("Transformations").items():
                     for function in functions:
                         if function[0] not in functions_added:
-                            all_udfs = all_udfs + self.create_udf_str(function)
+                            all_udfs = all_udfs + self.create_udf_str_v2(function)
+                            functions_added.append(function[0])
         return all_udfs
 
     def add_linkers(self, entity):
@@ -297,8 +355,12 @@ class IDC:
         query += """ SELECT """
         if self.endpoint == "Patient":
             query += self.add_entity_fields("Patient")
-            query += """, """
-            query += self.add_linkers("Patient")
+            query += """, [STRUCT("""
+            query += self.add_entity_fields("ResearchSubject")
+            query += """)] AS ResearchSubject, """
+            query += """ARRAY_AGG(STRUCT("""
+            query += self.add_entity_fields("File")
+            query += """)) as File """
             # add WHERE statement if just looking for specific patients
             query += """ FROM `""" + self.source_table + """`"""
             query += self.build_where_patients()
@@ -308,9 +370,13 @@ class IDC:
             query += """, [STRUCT("""
             query += self.add_entity_fields("Patient")
             # add WHERE statement if just looking for specific patients
-            query += """)] AS Subject FROM `""" + self.source_table + """`"""
+            query += """)] AS Subject"""
+            query += """, [STRUCT("""
+            query += self.add_entity_fields("ResearchSubject")
+            query += """)] AS ResearchSubject""" 
+            query += """ FROM `""" + self.source_table + """`"""
             query += self.build_where_files()
-            query += """ GROUP by id, gcs_url, Modality, collection_id, PatientID, tcia_species"""
+            query += """ GROUP by id, gcs_url, Modality, collection_id, PatientID, tcia_species, tcia_tumorLocation"""
         print(query)
         return query
 
@@ -326,7 +392,7 @@ def main():
     parser.add_argument(
         "--source_table",
         help="IDC source table to be queried",
-        default="bigquery-public-data.idc_v8.dicom_pivot_v8",
+        default="bigquery-public-data.idc_v9.dicom_pivot_v9",
     )
     parser.add_argument("--gsa_key", help="Location of user GSA key")
     parser.add_argument("--endpoint", help="Patient of File endpoint")
@@ -391,7 +457,7 @@ def main():
     #    idc.query_idc_to_table()
     #if args.make_bucket_file:
     #    idc.table_to_bucket()
-    idc.download_blob()
+    #idc.download_blob()
 
 
 if __name__ == "__main__":

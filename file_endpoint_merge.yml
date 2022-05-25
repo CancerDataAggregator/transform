@@ -119,6 +119,12 @@ Diagnosis_merge:
     stage:
         merge_type: "coalesce"
         default_value: ""
+    morphology:
+        merge_type: "coalesce"
+        default_value: ""
+    method_of_diagnosis:
+        merge_type: "coalesce"
+        default_value: ""
 
 Specimen_merge:
     id:
