@@ -75,6 +75,17 @@ cda-transform pdc.files.jsonl.gz pdc.files.H.jsonl.gz ../../PDC_file_endpoint_ma
 # way from the PDC API. Hooray!
 python PDCH2yaml.py pdc.files.H.jsonl.gz pdc.files.H.yml
 
+# IDC Generation
+extract-idc ../IDC_mapping.yml --make_bq_table True \
+          --endpoint Patient \
+          --gsa_key $GOOGLE_APPLICATION_CREDENTIALS \
+          --dest_table_id broad-cda-dev.github_testing.idc_patient \
+          --source_table broad-cda-dev.github_testing.dicom_pivot_v9_copy \
+          --patient HNSCC-01-0010 \
+          --make_bucket_file True
+
+python PDCH2yaml.py idc_extract.jsonl.gz idc_Subject1_harmonized.yaml
+
 gunzip -c idc_TARGET_Subject1.jsonl.gz > idc_TARGET_Subject1.json
 # Merge aggregated GDC and PDC subject
 cda-merge gdc.pdc.subjects.jsonl.gz --gdc_subjects gdc.cases.A.jsonl.gz --pdc_subjects pdc.cases.A.jsonl.gz --subject_how_to_merge_file ../../subject_endpoint_merge.yml --merge_subjects True 

@@ -55,7 +55,7 @@ def compare_func(x, y, level=None):
             "../IDC_mapping.yml",
             "IDC",
             "steps/idc_extract.json",
-            "steps/idc_TARGET_Subject1_harmonized.yaml",
+            "steps/idc_Subject1_harmonized.yaml",
             "Subject",
         ),
     ],
