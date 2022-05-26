@@ -357,10 +357,13 @@ class IDC:
             query += self.add_entity_fields("Patient")
             query += """, [STRUCT("""
             query += self.add_entity_fields("ResearchSubject")
+            query += """, """ 
+            query += self.add_linkers('ResearchSubject')
             query += """)] AS ResearchSubject, """
-            query += """ARRAY_AGG(STRUCT("""
-            query += self.add_entity_fields("File")
-            query += """)) as File """
+            query += self.add_linkers("Patient")
+            #query += """ARRAY_AGG(STRUCT("""
+            #query += self.add_entity_fields("File")
+            #query += """)) as File """
             # add WHERE statement if just looking for specific patients
             query += """ FROM `""" + self.source_table + """`"""
             query += self.build_where_patients()
@@ -453,11 +456,11 @@ def main():
         dest_bucket_file_name=args.dest_bucket_file_name,
         out_file=args.out_file,
     )
-    if make_bq_table:
-        idc.query_idc_to_table()
-    if args.make_bucket_file:
-        idc.table_to_bucket()
-    idc.download_blob()
+    #if make_bq_table:
+    #    idc.query_idc_to_table()
+    #if args.make_bucket_file:
+    #    idc.table_to_bucket()
+    #idc.download_blob()
 
 
 if __name__ == "__main__":

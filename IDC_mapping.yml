@@ -39,6 +39,8 @@ ResearchSubject:
         - ['idc_researchsubject_id', ['STRING', 'STRING'], 'STRING']
         value:
         - ['idc_researchsubject_id', ['STRING', 'STRING'], 'STRING']
+    Linkers:
+        Files: 'files.crdc_instance_uuid'
 File:
     Mapping:
         id: 'files.crdc_instance_uuid'
