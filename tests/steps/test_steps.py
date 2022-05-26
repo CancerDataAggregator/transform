@@ -61,8 +61,6 @@ def compare_func(x, y, level=None):
     ],
 )
 def test_transform(transform, DC, case, expected, endpoint):
-    if DC == "IDC":
-        os.popopen()
     validate = LogValidation()
     # t_list = yaml.safe_load(open(transform, "r"))
     MandT = yaml.load(open(transform, "r"), Loader=Loader)
@@ -74,7 +72,10 @@ def test_transform(transform, DC, case, expected, endpoint):
     transform = tr.Transform(validate)
     # transform = Transform(t_list, validate)
     with open(case) as case_data:
-        transformed = transform(json.load(case_data), MandT, DC, endpoint=endpoint)
+        if DC == "IDC":
+            transformed = json.load(case_data)
+        else:
+            transformed = transform(json.load(case_data), MandT, DC, endpoint=endpoint)
         with open(expected) as expected_data:
             diff = DeepDiff(
                 yaml.safe_load(expected_data),

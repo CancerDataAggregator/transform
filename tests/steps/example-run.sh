@@ -75,5 +75,12 @@ cda-transform pdc.files.jsonl.gz pdc.files.H.jsonl.gz ../../PDC_file_endpoint_ma
 # way from the PDC API. Hooray!
 python PDCH2yaml.py pdc.files.H.jsonl.gz pdc.files.H.yml
 
+# Generate IDC examples
+
+extract-idc IDC_mapping.yml --dest_table_id broad-cda-dev.github_testing.idc_subject --source_table \
+bigquery-public-data.idc_v9.dicom_pivot_v9 --endpoint \
+Patient --out_file idc_TARGET_Subject1.jsonl.gz --make_bq_table True --make_bucket_file True \
+--dest_bucket broad-cda-dev --dest_bucket_file_name public/idc_TARGET_Subject1.jsonl.gz
+
 # Merge aggregated GDC and PDC subject
 cda-merge gdc.pdc.subjects.jsonl.gz --gdc_subjects gdc.cases.A.jsonl.gz --pdc_subjects pdc.cases.A.jsonl.gz --subject_how_to_merge_file ../../subject_endpoint_merge.yml --merge_subjects True 
