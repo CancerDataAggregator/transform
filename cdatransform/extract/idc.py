@@ -456,11 +456,11 @@ def main():
         dest_bucket_file_name=args.dest_bucket_file_name,
         out_file=args.out_file,
     )
-    #if make_bq_table:
-    #    idc.query_idc_to_table()
-    #if args.make_bucket_file:
-    #    idc.table_to_bucket()
-    #idc.download_blob()
+    if make_bq_table:
+        idc.query_idc_to_table()
+    if args.make_bucket_file:
+        idc.table_to_bucket()
+    idc.download_blob()
 
 
 if __name__ == "__main__":
