@@ -54,7 +54,7 @@ def compare_func(x, y, level=None):
         pytest.param(
             "../IDC_mapping.yml",
             "IDC",
-            "steps/idc_TARGET_Subject1.json",
+            "steps/idc_extract.json",
             "steps/idc_TARGET_Subject1_harmonized.yaml",
             "Subject",
         ),

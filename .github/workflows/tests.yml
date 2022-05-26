@@ -63,9 +63,10 @@ jobs:
           --endpoint Patient \
           --gsa_key $GOOGLE_APPLICATION_CREDENTIALS \
           --dest_table_id broad-cda-dev.github_testing.idc_patient \
-          --source_table broad-cda-dev.github_testing.dicom_pivot_v4_copy \
+          --source_table broad-cda-dev.github_testing.dicom_pivot_v9_copy \
           --patient HNSCC-01-0010 \
           --make_bucket_file True
+        gunzip -c idc_extract.jsonl.gz > steps/idc_extract.json
         py.test
 
   integration-test:
