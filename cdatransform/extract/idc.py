@@ -364,7 +364,7 @@ class IDC:
             # add WHERE statement if just looking for specific patients
             query += """ FROM `""" + self.source_table + """`"""
             query += self.build_where_patients()
-            query += """ GROUP by id, species, collection_id"""
+            query += """ GROUP by id, species, collection_id, tcia_tumorLocation"""
         elif self.endpoint == "File":
             query += self.add_entity_fields("File")
             query += """, [STRUCT("""
