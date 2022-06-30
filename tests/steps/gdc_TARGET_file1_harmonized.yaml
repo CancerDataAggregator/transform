@@ -1,18 +1,19 @@
-id: "6892c6ba-66aa-4083-a13e-845ae272700a"
+id: "055a9c00-0a72-4005-83e2-457f56db4ad0"
 identifier:
   - system: GDC
-    value: 6892c6ba-66aa-4083-a13e-845ae272700a
-label: "fc24fe78-54e7-4d08-be0c-cd923aa6ada9.wxs.aliquot_ensemble_masked.maf.gz"
+    value: 055a9c00-0a72-4005-83e2-457f56db4ad0
+label: "b4cae59e-7128-49ed-829f-c121b4dd51de.wxs.VarScan2.aliquot.maf.gz"
 data_category: "Simple Nucleotide Variation"
-data_type: "Masked Somatic Mutation"
+data_type: "Annotated Somatic Mutation"
 file_format: "MAF"
 associated_project: "TARGET-ALL-P2"
-drs_uri: drs://dg.4DFC:6892c6ba-66aa-4083-a13e-845ae272700a
-byte_size: 4122
-checksum: "c033145e2e6c30d5a0771e977eacefff"
+drs_uri: drs://dg.4DFC:055a9c00-0a72-4005-83e2-457f56db4ad0
+byte_size: 102661
+checksum: "67fa80ad9e5a65b46df4fbe96f437b29"
 data_modality: Genomic
 imaging_modality: 
 dbgap_accession_number: "phs000464"
+imaging_series:
 ResearchSubject:
   - id: "9e229e56-f7e1-58f9-984b-a9453be5dc9a"
     # identifier represents a list of IDs within each system
@@ -39,7 +40,7 @@ Subject:
     identifier:
       - value: "TARGET-10-PATCNI"
         system: "GDC"
-    species: "Homo sapiens"
+    species: "homo sapiens"
     sex: "female"
     race: "black or african american"
     ethnicity: "not hispanic or latino"
@@ -47,7 +48,7 @@ Subject:
     subject_associated_project:
       - "TARGET-ALL-P2"
     vital_status: Alive
-    age_at_death:
+    days_to_death:
     cause_of_death:
     days_to_birth:
 Specimen:
@@ -60,7 +61,7 @@ Specimen:
     source_material_type: "Primary Blood Derived Cancer - Bone Marrow"
     anatomical_site:
     # from days_to_birth
-    age_at_collection:
+    days_to_collection:
     primary_disease_type: "Lymphoid Leukemias"
     specimen_type: "sample"
     # Added to the specimen as well; as per CCDH data model
@@ -76,7 +77,7 @@ Specimen:
     source_material_type: "Primary Blood Derived Cancer - Bone Marrow"
     anatomical_site:
     # from days_to_birth
-    age_at_collection:
+    days_to_collection:
     primary_disease_type: "Lymphoid Leukemias"
     specimen_type: "portion"
     # Added to the specimen as well; as per CCDH data model
@@ -92,7 +93,7 @@ Specimen:
     source_material_type: "Primary Blood Derived Cancer - Bone Marrow"
     anatomical_site:
     # from days_to_birth
-    age_at_collection:
+    days_to_collection:
     primary_disease_type: "Lymphoid Leukemias"
     specimen_type: "analyte"
     # Added to the specimen as well; as per CCDH data model
@@ -108,7 +109,7 @@ Specimen:
     source_material_type: "Primary Blood Derived Cancer - Bone Marrow"
     anatomical_site:
     # from days_to_birth
-    age_at_collection:
+    days_to_collection:
     primary_disease_type: "Lymphoid Leukemias"
     specimen_type: "aliquot"
     # Added to the specimen as well; as per CCDH data model
@@ -124,7 +125,7 @@ Specimen:
     source_material_type: "Blood Derived Normal"
     anatomical_site:
     # from days_to_birth
-    age_at_collection:
+    days_to_collection:
     primary_disease_type: "Lymphoid Leukemias"
     specimen_type: "sample"
     # Added to the specimen as well; as per CCDH data model
@@ -140,7 +141,7 @@ Specimen:
     source_material_type: "Blood Derived Normal"
     anatomical_site:
     # from days_to_birth
-    age_at_collection:
+    days_to_collection:
     primary_disease_type: "Lymphoid Leukemias"
     specimen_type: "portion"
     # Added to the specimen as well; as per CCDH data model
@@ -156,7 +157,7 @@ Specimen:
     source_material_type: "Blood Derived Normal"
     anatomical_site:
     # from days_to_birth
-    age_at_collection:
+    days_to_collection:
     primary_disease_type: "Lymphoid Leukemias"
     specimen_type: "analyte"
     # Added to the specimen as well; as per CCDH data model
@@ -172,7 +173,7 @@ Specimen:
     source_material_type: "Blood Derived Normal"
     anatomical_site:
     # from days_to_birth
-    age_at_collection:
+    days_to_collection:
     primary_disease_type: "Lymphoid Leukemias"
     specimen_type: "aliquot"
     # Added to the specimen as well; as per CCDH data model

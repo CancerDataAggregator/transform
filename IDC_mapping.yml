@@ -11,7 +11,7 @@ Patient:
         days_to_birth: null
         subject_associated_project: 'files.collection_id'
         vital_status: 'NULL'
-        age_at_death: null
+        days_to_death: null
         cause_of_death: 'NULL'
     
     Transformations:
@@ -60,6 +60,7 @@ File:
         data_modality: 'Imaging'
         imaging_modality: 'files.Modality'
         dbgap_accession_number: 'NULL'
+        imaging_series: 'files.crdc_series_uuid'
     Transformations:
         label: 
         - ['idc_substr', ['STRING','INT'],'STRING']

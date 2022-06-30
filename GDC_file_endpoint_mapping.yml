@@ -15,6 +15,7 @@ File:
         data_modality: 'Genomic'
         imaging_modality: 'files.NOT_APPLICABLE'
         dbgap_accession_number: 'files.cases.project.dbgap_accession_number'
+        imaging_series: 'files.NOT_APPLICABLE'
     Transformations:
         drs_uri: 
             - ['format_drs', [] ]
@@ -27,14 +28,14 @@ Patient:
         identifier:
             system: 'GDC'
             value: 'files.cases.submitter_id'
-        species: 'Homo sapiens'
+        species: 'homo sapiens'
         sex: 'files.cases.demographic.gender'
         race: 'files.cases.demographic.race'
         ethnicity: 'files.cases.demographic.ethnicity'
         days_to_birth: 'files.cases.demographic.days_to_birth'
         subject_associated_project: 'files.cases.project.project_id'
         vital_status: 'files.cases.demographic.vital_status'
-        age_at_death: 'files.cases.demographic.days_to_death'
+        days_to_death: 'files.cases.demographic.days_to_death'
         cause_of_death: 'files.cases.demographic.cause_of_death'
         
     Transformations:
@@ -98,7 +99,9 @@ Specimen:
                 analytes: 'files.cases.samples.portions.analytes.analyte_id'
                 aliquots: 'files.cases.samples.portions.analytes.aliquots.aliquot_id'
         associated_project: 'files.cases.project.project_id'
-        age_at_collection: 'files.cases.demographic.days_to_birth'
+        days_to_collection: 
+            - 'files.cases.samples.days_to_sample_procurement'
+            - 'files.cases.samples.days_to_collection'
         primary_disease_type: 'files.cases.disease_type'
         anatomical_site: 'files.cases.samples.biospecimen_anatomic_site'
         source_material_type: 'files.cases.samples.sample_type'
@@ -115,3 +118,7 @@ Specimen:
             analytes: 'files.cases.samples.portions.portion_id'
             aliquots: 'files.cases.samples.portions.analytes.analyte_id'
         derived_from_subject: 'files.cases.submitter_id'
+
+    Transformations:
+        days_to_collection:
+            - ['coalesce', [] ]

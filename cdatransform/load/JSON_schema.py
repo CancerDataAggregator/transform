@@ -5,11 +5,44 @@ import json
 
 
 class Schema:
-    def __init__(self, mapping, data_model_dir, outfile, endpoint) -> None:
+    def __init__(
+        self,
+        mapping,
+        ccdh_mapping_file,
+        missing_descriptions_file,
+        data_model_dir,
+        outfile,
+        endpoint,
+    ) -> None:
         self.outfile = outfile
         self.endpoint = endpoint
+        self.ccdh_mapping_file = ccdh_mapping_file
         self.mapping = yaml.load(open(mapping, "r"), Loader=Loader)
+        self.ccdh_mapping = self._init_ccdh_model(ccdh_mapping_file)
+        self.missing_descriptions = self._init_missing_descriptions(
+            missing_descriptions_file
+        )
         self.data_model = self._init_data_model(data_model_dir)
+
+    def _init_ccdh_model(self, ccdh_mapping_file):
+        return_dict = {}
+        with open(ccdh_mapping_file, "r") as f:
+            ccdh_mapping = json.load(f)
+        # MandT = yaml.load(open(cda_mapping_yaml, "r"), Loader=Loader)
+        for entity, MorT_dict in self.mapping.items():
+            # return_dict[entity.replace('_merge','')] = MorT_dict['Mapping']
+            return_dict[entity] = {}
+            for field in MorT_dict["Mapping"]:
+                if field in ccdh_mapping.get(entity, {}):
+                    return_dict[entity][field] = ccdh_mapping[entity][field]
+                else:
+                    return_dict[entity][field] = field
+        print(return_dict)
+        return return_dict
+
+    def _init_missing_descriptions(self, missing_descriptions_file):
+        with open(missing_descriptions_file, "r") as f:
+            return json.load(f)
 
     def _init_data_model(self, data_model_dir):
         print("ran _init_data_model")
@@ -42,7 +75,10 @@ class Schema:
         fields = []
         for field in list(self.mapping[entity]["Linkers"].keys()):
             field_dict = dict({})
-            field_dict["description"] = " ".join(["List of ids of",field[:-1],"entities associated with the",entity])
+            field_dict["description"] = " ".join(
+                ["List of ids of", field[:-1], "entities associated with the", entity]
+            )
+            field_dict["description"] + "."
             field_dict["name"] = field
             field_dict["type"] = "STRING"
             field_dict["mode"] = "REPEATED"
@@ -54,21 +90,28 @@ class Schema:
         print(entity)
         entity_dict = dict({})
         entity_dict["name"] = entity
-        if entity == 'Subject':
-            entity_dict["description"] = self.data_model['Patient'].get("description", "")
-            entity_loop = 'Patient'
+        # ccdh_map
+        if entity == "Subject":
+            entity_dict["description"] = self.data_model["Patient"].get(
+                "description", ""
+            )
+            entity_loop = "Patient"
+            # ccdh_map = self.ccdh_mapping['Patient']
         else:
+            print(self.data_model[entity])
             entity_dict["description"] = self.data_model[entity].get("description", "")
             entity_loop = entity
         entity_dict["type"] = "RECORD"
         entity_dict["mode"] = "REPEATED"
         entity_dict["fields"] = []
-        
+
         entity_loop
-        for field in list(self.mapping[entity_loop]["Mapping"].keys()):
+        for field in list(self.ccdh_mapping[entity_loop].keys()):
             field_dict = dict({})
             field_dict["description"] = (
-                self.data_model[entity_loop].get(field, dict({})).get("description", "")
+                self.data_model[entity_loop]
+                .get(self.ccdh_mapping[entity_loop][field], dict({}))
+                .get("description", "")
             )
             field_dict["name"] = field
             if field == "id":
@@ -82,24 +125,38 @@ class Schema:
                 field_dict["fields"] = self.add_identifier(entity_loop)
                 entity_dict["fields"].append(field_dict)
                 continue
-            if self.data_model[entity_loop].get(field, dict({})).get("oneOf") is not None:
+            if (
+                self.data_model[entity_loop]
+                .get(self.ccdh_mapping[entity_loop][field], dict({}))
+                .get("oneOf")
+                is not None
+            ):
                 field_dict["type"] = (
                     self.data_model[entity_loop]
-                    .get(field, dict({}))
+                    .get(self.ccdh_mapping[entity_loop][field], dict({}))
                     .get("oneOf", [dict({"type": "string"})])[1]["type"]
                     .upper()
                 )
                 field_dict["mode"] = "REPEATED"
             else:
                 field_dict["type"] = (
-                    self.data_model[entity_loop].get(field, dict({})).get("type", "").upper()
+                    self.data_model[entity_loop]
+                    .get(self.ccdh_mapping[entity_loop][field], dict({}))
+                    .get("type", "")
+                    .upper()
                 )
                 if (
                     field_dict["type"] == ""
-                    and self.data_model[entity_loop].get(field, dict({})).get("$ref", None)
+                    and self.data_model[entity_loop]
+                    .get(self.ccdh_mapping[entity_loop][field], dict({}))
+                    .get("$ref", None)
                     is not None
                 ):
                     field_dict["type"] = "STRING"
+            if field in self.missing_descriptions.get(entity_loop, {}):
+                field_dict["description"] = self.missing_descriptions[entity_loop][
+                    field
+                ]
             if field in [
                 "species",
                 "drs_uri",
@@ -118,10 +175,17 @@ class Schema:
                 "treatment_effect",
                 "treatment_end_reason",
                 "associated_project",
+                "imaging_series",
             ]:
                 field_dict["type"] = "STRING"
                 field_dict["mode"] = "NULLABLE"
-            if field in ["days_to_treatment_start", "days_to_treatment_end", "age_at_death", "number_of_cycles"]:
+            if field in [
+                "days_to_treatment_start",
+                "days_to_treatment_end",
+                "days_to_death",
+                "days_to_collection",
+                "number_of_cycles",
+            ]:
                 field_dict["type"] = "INTEGER"
                 field_dict["mode"] = "NULLABLE"
             if field == "subject_associated_project":
@@ -174,6 +238,13 @@ def main():
     parser.add_argument("out_file", help="Out file name. Should end with .json")
     parser.add_argument("mapping_file", help="Either GDC or PDC mapping file location")
     parser.add_argument(
+        "ccdh_mapping_file", help="Either GDC or PDC mapping file location"
+    )
+    parser.add_argument(
+        "missing_descriptions_file",
+        help="File of descriptions not in cda-data-model files",
+    )
+    parser.add_argument(
         "data_model_dir",
         help="location of directory containing cda-data-model json schemas",
     )
@@ -182,9 +253,11 @@ def main():
 
     schema = Schema(
         mapping=args.mapping_file,
+        ccdh_mapping_file=args.ccdh_mapping_file,
+        missing_descriptions_file=args.missing_descriptions_file,
         data_model_dir=args.data_model_dir,
         outfile=args.out_file,
-        endpoint=args.endpoint
+        endpoint=args.endpoint,
     )
     schema.write_json_schema()
 

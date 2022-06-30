@@ -4,8 +4,8 @@ set -ex
 
 extract-gdc gdc_TARGET_case1.jsonl.gz ../../data/gdc.files-specimens-cases.jsonl.gz --case 7eeced68-1717-4116-bcee-328ac70a9682
 extract-gdc gdc_TARGET_case2.jsonl.gz ../../data/gdc.files-specimens-cases.jsonl.gz --case 9e229e56-f7e1-58f9-984b-a9453be5dc9a
-extract-gdc gdc_TARGET_file1.jsonl.gz ../../data/gdc.files-specimens-cases.jsonl.gz --file 6892c6ba-66aa-4083-a13e-845ae272700a
-extract-gdc gdc_TARGET_file2.jsonl.gz ../../data/gdc.files-specimens-cases.jsonl.gz --file eb66f012-158d-409c-b79b-c4cc605eebb3
+extract-gdc gdc_TARGET_file1.jsonl.gz ../../data/gdc.files-specimens-cases.jsonl.gz --file 055a9c00-0a72-4005-83e2-457f56db4ad0
+extract-gdc gdc_TARGET_file2.jsonl.gz ../../data/gdc.files-specimens-cases.jsonl.gz --file 093a00d1-2501-4ecb-b504-95b39c61f32f
 
 gunzip -c gdc_TARGET_case1.jsonl.gz > gdc_TARGET_case1.json
 gunzip -c gdc_TARGET_case2.jsonl.gz > gdc_TARGET_case2.json
@@ -81,10 +81,14 @@ extract-idc ../IDC_mapping.yml --make_bq_table True \
           --gsa_key $GOOGLE_APPLICATION_CREDENTIALS \
           --dest_table_id broad-cda-dev.github_testing.idc_patient \
           --source_table broad-cda-dev.github_testing.dicom_pivot_v9_copy \
-          --patient HNSCC-01-0010 \
-          --make_bucket_file True
+          --patient DBT-P04255 \
+          --make_bucket_file True \
+          --out_file idc_extract.jsonl.gz \
+          --dest_bucket gdc-bq-sample-bucket \
+          --dest_bucket_file_name idc_extract.jsonl.gz
 
-python PDCH2yaml.py idc_extract.jsonl.gz idc_Subject1_harmonized.yaml
+gunzip -c idc_extract.jsonl.gz > idc_extract.json
+python PDCH2yaml.py idc_Subject1_harmonized.jsonl.gz idc_Subject1_harmonized.yaml
 
 gunzip -c idc_TARGET_Subject1.jsonl.gz > idc_TARGET_Subject1.json
 # Merge aggregated GDC and PDC subject

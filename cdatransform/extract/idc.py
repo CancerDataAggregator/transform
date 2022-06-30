@@ -75,7 +75,6 @@ class IDC:
             credentials=credentials,
             project=credentials.project_id,
         )
-
         job_config = bigquery.QueryJobConfig(
             allow_large_results=True,
             destination=dest_table_id,
@@ -111,7 +110,8 @@ class IDC:
             bigquery.DestinationFormat.NEWLINE_DELIMITED_JSON
         )
         job_config.compression = bigquery.Compression.GZIP
-
+        #job_config.destinationTableProperties = {"description": """IDC data version - v.9.0,
+        #    IDC extraction date - 05/24/2022"""}
         extract_job = client.extract_table(
             table_ref,
             destination_uri,
@@ -379,7 +379,7 @@ class IDC:
             query += """)] AS ResearchSubject""" 
             query += """ FROM `""" + self.source_table + """`"""
             query += self.build_where_files()
-            query += """ GROUP by id, gcs_url, Modality, collection_id, PatientID, tcia_species, tcia_tumorLocation"""
+            query += """ GROUP by id, gcs_url, Modality, collection_id, PatientID, tcia_species, tcia_tumorLocation, crdc_series_uuid"""
         print(query)
         return query
 

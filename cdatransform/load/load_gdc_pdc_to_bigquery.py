@@ -53,7 +53,12 @@ class Load:
             project=credentials.project_id,
         )
         # client = bigquery.Client()
-
+        table_description = """GDC data version - v33.0,
+            GDC extraction date - 06/23/2022,
+            PDC data version - v2.7,
+            PDC extraction date - 06/23/2022,
+            IDC data version - v.9.0,
+            IDC extraction date - 06/24/2022"""
         job_config = bigquery.LoadJobConfig(
             source_format=bigquery.SourceFormat.NEWLINE_DELIMITED_JSON,
             schema=self.schema,
@@ -67,6 +72,8 @@ class Load:
         job.result()  # Waits for the job to complete.
 
         table = client.get_table(dest_table_id)  # Make an API request.
+        table.description = table_description
+        table = client.update_table(table, ["description"])
         print(
             "Loaded {} rows and {} columns to {}".format(
                 table.num_rows, len(table.schema), dest_table_id
