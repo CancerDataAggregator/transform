@@ -76,12 +76,12 @@ def main():
     with gzip.open(args.input, "r") as infp:
         reader = jsonlines.Reader(infp)
         with gzip.open(args.output, "w") as outfp:
-            
+
             writer = jsonlines.Writer(outfp)
             for case in filter_cases(reader, case_list=case_list):
                 writer.write(transform(case, MandT, args.DC, endpoint=args.endpoint))
                 count += 1
-                if count % 10 == 0:
+                if count % 500 == 0:
                     sys.stderr.write(f"Processed {count} cases ({time.time() - t0}).\n")
 
     sys.stderr.write(f"Processed {count} {args.endpoint} ({time.time() - t0}).\n")
