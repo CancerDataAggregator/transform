@@ -14,11 +14,14 @@ sex:
 race:
 ethnicity:
 days_to_birth:
-species: "Homo sapiens"
-age_at_death: 
+species: "homo sapiens"
+days_to_death: 
 cause_of_death:
 vital_status: 
-Files: []
+Files: 
+  - "4ba201bd-6832-4b15-bf00-f7647bed5f3a"
+  - "7bb2674c-3d3d-4e86-90fd-22c1164ffddf"
+  - "7ca0dc32-c91a-433c-bffa-fa7004a333a7"
 ResearchSubject:
   # id should represent unique identifier across all systems
   # for ResearchSubject we don't have anything better than the case_id
@@ -30,8 +33,11 @@ ResearchSubject:
     member_of_research_project: "TARGET-ALL-P3"
     primary_diagnosis_condition: "Lymphoid Leukemias"
     primary_diagnosis_site: "Hematopoietic and reticuloendothelial systems"
+    Files:
+      - "4ba201bd-6832-4b15-bf00-f7647bed5f3a"
+      - "7bb2674c-3d3d-4e86-90fd-22c1164ffddf"
+      - "7ca0dc32-c91a-433c-bffa-fa7004a333a7"
     
-    Files: []
     Specimen:
       # id should represent unique identifier across all systems
       - id: "37789082-b4bb-4f18-9a3d-aca1a65c2ced"
@@ -43,14 +49,17 @@ ResearchSubject:
         source_material_type: "Primary Blood Derived Cancer - Bone Marrow"
         anatomical_site:
         # from days_to_birth
-        age_at_collection:
+        days_to_collection:
         primary_disease_type: "Lymphoid Leukemias"
         specimen_type: "sample"
         # Added to the specimen as well; as per CCDH data model
         associated_project: "TARGET-ALL-P3"
         # renamed; Kathy says that this should be null for the sample:
         derived_from_specimen: initial specimen
-        Files: []  # This sample has no files
+        Files: 
+          - "4ba201bd-6832-4b15-bf00-f7647bed5f3a"
+          - "7bb2674c-3d3d-4e86-90fd-22c1164ffddf"
+          - "7ca0dc32-c91a-433c-bffa-fa7004a333a7"
 
       # From portions
       - id: "6388f3ec-eccc-5df4-8558-50bf416b16fa"
@@ -62,14 +71,17 @@ ResearchSubject:
         source_material_type: "Primary Blood Derived Cancer - Bone Marrow"
         anatomical_site:
         # from days_to_birth
-        age_at_collection:
+        days_to_collection:
         primary_disease_type: "Lymphoid Leukemias"
         specimen_type: "portion"
         # Added to the specimen as well; as per CCDH data model
         associated_project: "TARGET-ALL-P3"
         # renamed; Kathy says that this should be null for the sample:
         derived_from_specimen: 37789082-b4bb-4f18-9a3d-aca1a65c2ced
-        Files: []  # This sample has no files
+        Files:  
+          - "4ba201bd-6832-4b15-bf00-f7647bed5f3a"
+          - "7bb2674c-3d3d-4e86-90fd-22c1164ffddf"
+          - "7ca0dc32-c91a-433c-bffa-fa7004a333a7"
 
       # From analytes
       - id: "7de4ade2-dc5c-53f6-9815-8e42f2182b59"
@@ -81,14 +93,17 @@ ResearchSubject:
         source_material_type: "Primary Blood Derived Cancer - Bone Marrow"
         anatomical_site:
         # from days_to_birth
-        age_at_collection:
+        days_to_collection:
         primary_disease_type: "Lymphoid Leukemias"
         specimen_type: "analyte"
         # Added to the specimen as well; as per CCDH data model
         associated_project: "TARGET-ALL-P3"
         # renamed; Kathy says that this should be null for the sample:
         derived_from_specimen: 6388f3ec-eccc-5df4-8558-50bf416b16fa
-        Files: []  # This sample has no files
+        Files:  
+          - "4ba201bd-6832-4b15-bf00-f7647bed5f3a"
+          - "7bb2674c-3d3d-4e86-90fd-22c1164ffddf"
+          - "7ca0dc32-c91a-433c-bffa-fa7004a333a7"
 
       # From aliquots
       - id: "12cfe700-d1b4-4b88-b509-b8dfaf12ecdf"
@@ -100,13 +115,16 @@ ResearchSubject:
         source_material_type: "Primary Blood Derived Cancer - Bone Marrow"
         anatomical_site:
         # from days_to_birth
-        age_at_collection:
+        days_to_collection:
         primary_disease_type: "Lymphoid Leukemias"
         specimen_type: "aliquot"
         # Added to the specimen as well; as per CCDH data model
         associated_project: "TARGET-ALL-P3"
         # renamed; Kathy says that this should be null for the sample:
         derived_from_specimen: 7de4ade2-dc5c-53f6-9815-8e42f2182b59
-        Files: []  # This sample has no files
+        Files:  
+          - "4ba201bd-6832-4b15-bf00-f7647bed5f3a"
+          - "7bb2674c-3d3d-4e86-90fd-22c1164ffddf"
+          - "7ca0dc32-c91a-433c-bffa-fa7004a333a7"
 
     Diagnosis: []

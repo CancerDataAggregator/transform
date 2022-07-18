@@ -1,0 +1,36 @@
+{
+    "id": "DBT-P04255",
+    "identifier": [
+        {
+            "system": "IDC",
+            "value": "DBT-P04255"
+        }
+    ],
+    "species": "homo sapiens",
+    "subject_associated_project": [
+        "breast_cancer_screening_dbt"
+    ],
+    "ResearchSubject": [
+        {
+            "id": "DBT-P04255__breast_cancer_screening_dbt",
+            "identifier": [
+                {
+                    "system": "IDC",
+                    "value": "DBT-P04255__breast_cancer_screening_dbt"
+                }
+            ],
+            "member_of_research_project": "breast_cancer_screening_dbt",
+            "primary_diagnosis_site": "Breast",
+            "Files": [
+                "07f77ecc-45db-4b8b-9d7e-26b0a50e6bda",
+                "d38e78b8-3780-472a-84c9-fb900a1b95d8",
+                "4080bc90-b139-4087-ae39-243acdd23f42"
+            ]
+        }
+    ],
+    "Files": [
+        "07f77ecc-45db-4b8b-9d7e-26b0a50e6bda",
+        "d38e78b8-3780-472a-84c9-fb900a1b95d8",
+        "4080bc90-b139-4087-ae39-243acdd23f42"
+    ]
+}

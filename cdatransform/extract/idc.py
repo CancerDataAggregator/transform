@@ -41,7 +41,7 @@ class IDC:
         self.file_ids = get_case_ids(case=file, case_list_file=files_file)
         self.source_table = source_table
         self.transform_query = self._query_build()
-        self.max_blobs_compose = 32 #GCS limit on how many blobs to compose together
+        self.max_blobs_compose = 32  # GCS limit on how many blobs to compose together
 
     def _service_account_cred(self):
         key_path = self.gsa_key
@@ -75,7 +75,6 @@ class IDC:
             credentials=credentials,
             project=credentials.project_id,
         )
-
         job_config = bigquery.QueryJobConfig(
             allow_large_results=True,
             destination=dest_table_id,
@@ -111,7 +110,8 @@ class IDC:
             bigquery.DestinationFormat.NEWLINE_DELIMITED_JSON
         )
         job_config.compression = bigquery.Compression.GZIP
-
+        # job_config.destinationTableProperties = {"description": """IDC data version - v.9.0,
+        #    IDC extraction date - 05/24/2022"""}
         extract_job = client.extract_table(
             table_ref,
             destination_uri,
@@ -143,13 +143,17 @@ class IDC:
                 blobs.append(blob)
             if len(blobs) > self.max_blobs_compose:
                 lst_blobs = []
-                groups = ceil(len(blobs)/self.max_blobs_compose)
+                groups = ceil(len(blobs) / self.max_blobs_compose)
                 for i in range(groups):
-                    min_index = i*self.max_blobs_compose
-                    max_index = min(min_index + self.max_blobs_compose,len(blobs))# - 1
-                    print(str(min_index) + ':' + str(max_index))
+                    min_index = i * self.max_blobs_compose
+                    max_index = min(
+                        min_index + self.max_blobs_compose, len(blobs)
+                    )  # - 1
+                    print(str(min_index) + ":" + str(max_index))
                     # lst_blobs.append(blobs[min_index:max_index])
-                    bucket.blob(prefix[0] + str(i) + '.jsonl.gz').compose(blobs[min_index:max_index])
+                    bucket.blob(prefix[0] + str(i) + ".jsonl.gz").compose(
+                        blobs[min_index:max_index]
+                    )
                 for blob in blobs:
                     blob.delete()
                 blobs = []
@@ -163,7 +167,7 @@ class IDC:
             blob = bucket.blob(destination_file_name)
             blob.download_to_filename(destination_file_name)
             # Delete smaller files from bucket
-            #for blob in blobs:
+            # for blob in blobs:
             #    blob.delete()
             # blob_names = []
             # for blob in blobs:
@@ -187,17 +191,17 @@ class IDC:
 
     def add_udf_to_field_query(self, val_split, mapping_transform):
         for transform in mapping_transform:
-            temp = transform[0].__name__ + "(" 
+            temp = transform[0].__name__ + "("
             if isinstance(val_split, list):
                 templst = []
                 for i in val_split:
                     templst.append(str(i))
-                temp+=','.join(templst)
+                temp += ",".join(templst)
             elif isinstance(val_split, str):
-                temp+=val_split
+                temp += val_split
             # if len(transform[1]) > 1:
             #    val_split = val_split + ", [" +",".join([str(item) for item in transform[1][1:]])+"]"
-            temp +=")"
+            temp += ")"
         return temp
 
     def field_line(self, k, val, entity):
@@ -228,13 +232,13 @@ class IDC:
                 if index < len(keys) - 1:
                     temp += ", "
             temp += ")] AS " + k
-            print('temp')
+            print("temp")
             print(temp)
             return temp
         elif isinstance(val, list):
             var_splits = []
             for var in val:
-                if isinstance(var,str):
+                if isinstance(var, str):
                     val_split = var.split(".")
                     if len(val_split) > 1:
                         val_split.pop(0)
@@ -246,14 +250,14 @@ class IDC:
                 else:
                     val_split = var
                 var_splits.append(val_split)
-            print('var_splits before')
+            print("var_splits before")
             print(var_splits)
             if self.mapping[entity].get("Transformations", None) is not None:
                 if self.mapping[entity]["Transformations"].get(k, None) is not None:
                     var_splits = self.add_udf_to_field_query(
                         var_splits, self.mapping[entity]["Transformations"][k]
                     )
-            print('var_splits')
+            print("var_splits")
             print(var_splits)
             var_splits += " AS " + k
             return var_splits
@@ -307,21 +311,22 @@ class IDC:
         return out
 
     def create_udf_str_v2(self, func_desc):
-        var_list = ['x', 'y', 'z', 'a', 'b', 'c']
+        var_list = ["x", "y", "z", "a", "b", "c"]
         var_used = []
         out = "CREATE TEMP FUNCTION " + func_desc[0].__name__ + "("
         num_var = len(func_desc[1])
         for var in range(num_var):
-            out += var_list[var] + ' ' + func_desc[1][var]
-            var_used 
-            if var < num_var-1:
-                out += ', '
+            out += var_list[var] + " " + func_desc[1][var]
+            var_used
+            if var < num_var - 1:
+                out += ", "
         out += ") RETURNS "
         out += func_desc[2] + " AS ("
         print()
         out = out + func_desc[0](var_list[0:num_var])
         out = out + "); "
         return out
+
     def create_all_udfs(self):
         functions_added = []
         all_udfs = ""
@@ -357,13 +362,13 @@ class IDC:
             query += self.add_entity_fields("Patient")
             query += """, [STRUCT("""
             query += self.add_entity_fields("ResearchSubject")
-            query += """, """ 
-            query += self.add_linkers('ResearchSubject')
+            query += """, """
+            query += self.add_linkers("ResearchSubject")
             query += """)] AS ResearchSubject, """
             query += self.add_linkers("Patient")
-            #query += """ARRAY_AGG(STRUCT("""
-            #query += self.add_entity_fields("File")
-            #query += """)) as File """
+            # query += """ARRAY_AGG(STRUCT("""
+            # query += self.add_entity_fields("File")
+            # query += """)) as File """
             # add WHERE statement if just looking for specific patients
             query += """ FROM `""" + self.source_table + """`"""
             query += self.build_where_patients()
@@ -376,10 +381,10 @@ class IDC:
             query += """)] AS Subject"""
             query += """, [STRUCT("""
             query += self.add_entity_fields("ResearchSubject")
-            query += """)] AS ResearchSubject""" 
+            query += """)] AS ResearchSubject"""
             query += """ FROM `""" + self.source_table + """`"""
             query += self.build_where_files()
-            query += """ GROUP by id, gcs_url, Modality, collection_id, PatientID, tcia_species, tcia_tumorLocation"""
+            query += """ GROUP by id, gcs_url, Modality, collection_id, PatientID, tcia_species, tcia_tumorLocation, crdc_series_uuid"""
         print(query)
         return query
 

@@ -26,7 +26,7 @@ Patient_merge:
     vital_status:
         merge_type: "coalesce"
         default_value: null
-    age_at_death:
+    days_to_death:
         merge_type: "coalesce"
         default_value: null
     cause_of_death:
@@ -113,9 +113,9 @@ Specimen_merge:
     anatomical_site:
         merge_type: "coalesce"
         default_value: ""
-    age_at_collection:
+    days_to_collection:
         merge_type: "coalesce"
-        default_value: ""
+        default_value: null
     associated_project:
         merge_type: "coalesce"
         default_value: ""

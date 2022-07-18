@@ -68,6 +68,10 @@ def read_entry(orig, MandT, entity, **kwargs):
                 spec_type = spec_type_from_path(cur_path)
                 path = val[spec_type]
                 samp_rec[field] = simp_read(orig, path, cur_path, DC)
+            elif isinstance(val, list):
+                samp_rec[field] = []
+                for path in val:
+                    samp_rec[field].append(simp_read(orig, path, cur_path, DC))
         else:
             samp_rec["identifier"] = dict({})
             paths = val["value"]

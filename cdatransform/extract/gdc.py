@@ -137,6 +137,9 @@ files_fields = [
     "cases.samples.portions.analytes.submitter_id",
     "cases.samples.portions.analytes.aliquots.aliquot_id",
     "cases.samples.portions.analytes.aliquots.submitter_id",
+    "associated_entities.entity_id",
+    "associated_entities.entity_submitter_id",
+    "associated_entities.entity_type",
 ]
 # What is the significance of cases.samples.sample_id vs cases.sample_ids?
 # Answer: cases.sample_ids is not returned by GDC API
@@ -327,27 +330,31 @@ class GDC:
         # Convert GDC return format to files_per_sample_dict
         files_per_sample_dict = defaultdict(list)
         for file_meta in gdc_files_metadata:
-            for case in file_meta.get("cases", []):
-                for sample in case.get("samples", []):
-                    files_per_sample_dict[sample.get("sample_id")] += [
-                        file_meta.get("file_id")
-                    ]
-                    for portion in sample.get("portions", []):
-                        files_per_sample_dict[portion.get("portion_id")] += [
-                            file_meta.get("file_id")
-                        ]
-                        for slide in portion.get("slides", []):
-                            files_per_sample_dict[slide.get("slide_id")] += [
-                                file_meta.get("file_id")
-                            ]
-                        for analyte in portion.get("analytes", []):
-                            files_per_sample_dict[analyte.get("analyte_id")] += [
-                                file_meta.get("file_id")
-                            ]
-                            for aliquot in analyte.get("aliquots", []):
-                                files_per_sample_dict[aliquot.get("aliquot_id")] += [
-                                    file_meta.get("file_id")
-                                ]
+            # associated_entities = []
+            for entity in file_meta.get("associated_entities", []):
+                # associated_entities.append(entity['entity_id'])
+                files_per_sample_dict[entity["entity_id"]].append(file_meta["file_id"])
+            # for case in file_meta.get("cases", []):
+            #    for sample in case.get("samples", []):
+            #        files_per_sample_dict[sample.get("sample_id")] += [
+            #            file_meta.get("file_id")
+            #        ]
+            #        for portion in sample.get("portions", []):
+            #            files_per_sample_dict[portion.get("portion_id")] += [
+            #                file_meta.get("file_id")
+            #            ]
+            #            for slide in portion.get("slides", []):
+            #                files_per_sample_dict[slide.get("slide_id")] += [
+            #                    file_meta.get("file_id")
+            #                ]
+            #            for analyte in portion.get("analytes", []):
+            #                files_per_sample_dict[analyte.get("analyte_id")] += [
+            #                    file_meta.get("file_id")
+            #                ]
+            #                for aliquot in analyte.get("aliquots", []):
+            #                    files_per_sample_dict[aliquot.get("aliquot_id")] += [
+            #                        file_meta.get("file_id")
+            #                    ]
 
         return files_per_sample_dict
 

@@ -77,16 +77,24 @@ def test_transform(transform, DC, case, expected, endpoint):
         else:
             transformed = transform(json.load(case_data), MandT, DC, endpoint=endpoint)
         with open(expected) as expected_data:
+            blah = yaml.safe_load(expected_data)
             diff = DeepDiff(
-                yaml.safe_load(expected_data),
+                blah,
+                # yaml.safe_load(expected_data),
                 transformed,
                 ignore_order=True,
                 iterable_compare_func=compare_func,
-            )  # cutoff_distance_for_pairs=1
-            # )
+                cutoff_distance_for_pairs=1,
+            )
             if diff != {}:
                 print("difference found")
                 print(diff.pretty())
+                # print("transformed:")
+                ##print(transformed)
+                # print("yaml file:")
+                # blah = yaml.safe_load(expected_data)
+                # print(blah)
+                print()
                 outfilename = case.split(".").insert(-1, "testH")
                 outfilename = ".".join(outfilename)
                 with open(outfilename, "w") as outfile:

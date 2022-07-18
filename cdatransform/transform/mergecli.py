@@ -75,22 +75,27 @@ def log_merge_error(entities, all_sources, fields, log):
     log.agree_sources(coal_dat, prefix, coal_fields)
     return log
 
+
 def merge_subjects(output_file, how_to_merge_file, **kwargs):
     with open(how_to_merge_file) as file:
         how_to_merge = yaml.full_load(file)
     # Need all info from the files, and dictionary listing patient_ids and sources found.
-    input_file_dict = {"gdc": kwargs.get('gdc'), "pdc": kwargs.get('pdc'), "idc": kwargs.get('idc')}
-    
+    input_file_dict = {
+        "gdc": kwargs.get("gdc"),
+        "pdc": kwargs.get("pdc"),
+        "idc": kwargs.get("idc"),
+    }
+
     for dc, val in list(input_file_dict.items()):
         if val is None:
             del input_file_dict[dc]
-            
+
     All_endpoints_sources, All_Entries_All_DCs = get_endpoint_info_all_DCs(
         input_file_dict
     )
     total_patient = len(All_endpoints_sources)
     # loop over all patient_ids, merge data if found in multiple sources
-    
+
     with gzip.open(output_file, "w") as outfp:
         writer = jsonlines.Writer(outfp)
         count = 0
@@ -106,7 +111,7 @@ def merge_subjects(output_file, how_to_merge_file, **kwargs):
                 entities = dict({})
                 for source in All_endpoints_sources[patient]:
                     entities[source] = All_Entries_All_DCs[source][patient]
-                
+
                 merged_entry = mf.merge_fields_level(
                     entities, how_to_merge["Patient_merge"], ["gdc", "pdc", "idc"]
                 )
@@ -119,23 +124,25 @@ def merge_subjects(output_file, how_to_merge_file, **kwargs):
                 sys.stderr.write(f"Processed {count} cases out of {total_patient}.\n")
         log.generate_report(logging.getLogger("test"))
 
+
 def merge_files(output_file, merged_subjects_input, how_to_merge_file, **kwargs):
-    #Read how to merge dictionary
+    # Read how to merge dictionary
     with open(how_to_merge_file) as file:
         how_to_merge = yaml.full_load(file)
     # Need all info from the files, and dictionary listing file_ids and sources found.
-    input_file_dict = dict({"gdc": kwargs.get('gdc'), "pdc": kwargs.get('pdc'), "idc": kwargs.get('idc')})
+    input_file_dict = dict(
+        {"gdc": kwargs.get("gdc"), "pdc": kwargs.get("pdc"), "idc": kwargs.get("idc")}
+    )
     for dc, val in list(input_file_dict.items()):
         if val is None:
             del input_file_dict[dc]
-    #All_endpoints_sources, All_Entries_All_DCs = get_endpoint_info_all_DCs(
+    # All_endpoints_sources, All_Entries_All_DCs = get_endpoint_info_all_DCs(
     #    input_file_dict
-    #)
-    #total_files = len(All_endpoints_sources)
-    #Make dictionary of ALL Subject entities
+    # )
+    # total_files = len(All_endpoints_sources)
+    # Make dictionary of ALL Subject entities
     all_subjects = {}
-    print(merged_subjects_input)
-    with gzip.open(merged_subjects_input, 'r') as file:
+    with gzip.open(merged_subjects_input, "r") as file:
         reader = jsonlines.Reader(file)
         for subject in reader:
             try:
@@ -143,27 +150,26 @@ def merge_files(output_file, merged_subjects_input, how_to_merge_file, **kwargs)
             except:
                 pass
             subject.pop("Files")
-            all_subjects[subject['id']] = subject
-    
+            all_subjects[subject["id"]] = subject
+
     # loop over all file_ids, merge data if found in multiple sources
     with gzip.open(output_file, "w") as outfp:
         writer = jsonlines.Writer(outfp)
         count = 0
         log = LogValidation()
         for source, files in input_file_dict.items():
-            print(files)
             with gzip.open(files, "rb") as file_recs:
                 reader = jsonlines.Reader(file_recs)
                 for file_rec in reader:
                     count += 1
                     temp_subjects = []
-                    for subject in file_rec['Subject']:
-                        temp_subjects.append(all_subjects[subject['id']])
-                    file_rec['Subject'] = temp_subjects
+                    for subject in file_rec["Subject"]:
+                        temp_subjects.append(all_subjects[subject["id"]])
+                    file_rec["Subject"] = temp_subjects
                     writer.write(file_rec)
                     if count % 50000 == 0:
                         sys.stderr.write(f"Processed {count} files.\n")
-        #for file_key, file_rec in All_endpoints_sources.items():
+        # for file_key, file_rec in All_endpoints_sources.items():
         #    # for every patient, count number of sources. If more than one, merging is needed.
         #    if len(file_rec) == 1:
         #        #find all subjects in record
@@ -179,24 +185,35 @@ def merge_files(output_file, merged_subjects_input, how_to_merge_file, **kwargs)
         #    if count % 5000 == 0:
         #        sys.stderr.write(f"Processed {count} cases out of {total_files}.\n")
 
+
 def main():
     parser = argparse.ArgumentParser(description="Merge data between DCs")
-    parser.add_argument("merged_subjects_file", help="Name of merged Subjects endpoint file.Should end with .gz")
+    parser.add_argument(
+        "merged_subjects_file",
+        help="Name of merged Subjects endpoint file.Should end with .gz",
+    )
     parser.add_argument("--gdc_subjects", help="GDC file name. Should end with .gz")
     parser.add_argument("--pdc_subjects", help="PDC file name. Should end with .gz")
     parser.add_argument("--idc_subjects", help="IDC file name. Should end with .gz")
     parser.add_argument(
-        "--subject_how_to_merge_file", help="file name for how to merge subject endpoint fields. Should end with .yml"
+        "--subject_how_to_merge_file",
+        help="file name for how to merge subject endpoint fields. Should end with .yml",
     )
     parser.add_argument("--gdc_files", help="GDC file name. Should end with .gz")
     parser.add_argument("--pdc_files", help="PDC file name. Should end with .gz")
     parser.add_argument("--idc_files", help="IDC file name. Should end with .gz")
     parser.add_argument("--log", default="merge.log", help="Name of log file.")
-    parser.add_argument("--merged_files_file", help="Name of merged Files endpoint file.Should end with .gz")
     parser.add_argument(
-        "--file_how_to_merge_file", help="file name for how to merge file endpoint fields. Should end with .yml"
+        "--merged_files_file",
+        help="Name of merged Files endpoint file.Should end with .gz",
     )
-    parser.add_argument("--merge_subjects", default=False, help="Merge Subjects endpoints.")
+    parser.add_argument(
+        "--file_how_to_merge_file",
+        help="file name for how to merge file endpoint fields. Should end with .yml",
+    )
+    parser.add_argument(
+        "--merge_subjects", default=False, help="Merge Subjects endpoints."
+    )
     parser.add_argument("--merge_files", default=False, help="Merge Files endpoints.")
     args = parser.parse_args()
     logging.basicConfig(
@@ -207,14 +224,24 @@ def main():
     logger.info("----------------------")
     logger.info("Starting merge run")
     logger.info("----------------------")
-    
+
     if args.merge_subjects:
-        merge_subjects(args.merged_subjects_file, args.subject_how_to_merge_file, 
-            gdc=args.gdc_subjects, pdc=args.pdc_subjects, idc=args.idc_subjects)
+        merge_subjects(
+            args.merged_subjects_file,
+            args.subject_how_to_merge_file,
+            gdc=args.gdc_subjects,
+            pdc=args.pdc_subjects,
+            idc=args.idc_subjects,
+        )
     if args.merge_files:
-        merge_files(args.merged_files_file, args.merged_subjects_file, args.file_how_to_merge_file,
-            gdc=args.gdc_files, pdc=args.pdc_files, idc=args.idc_files)
-    
+        merge_files(
+            args.merged_files_file,
+            args.merged_subjects_file,
+            args.file_how_to_merge_file,
+            gdc=args.gdc_files,
+            pdc=args.pdc_files,
+            idc=args.idc_files,
+        )
 
 
 if __name__ == "__main__":

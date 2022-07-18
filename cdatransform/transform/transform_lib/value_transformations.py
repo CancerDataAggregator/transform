@@ -17,8 +17,20 @@ def str_to_list(val):
     return val
 
 
+def coalesce(val):
+    if isinstance(val, list):
+        for el in val:
+            if el is not None:
+                return el
+    return None
+
+
 def idc_species_mapping(val):
-    return "CASE " + val[0] + " WHEN 'Human' THEN 'Homo sapiens' WHEN 'Canine' THEN 'Canis familiaris' WHEN 'Mouse' THEN 'Mus musculus' ELSE ''END"
+    return (
+        "CASE "
+        + val[0]
+        + " WHEN 'Human' THEN 'homo sapiens' WHEN 'Canine' THEN 'canis familiaris' WHEN 'Mouse' THEN 'mus musculus' ELSE ''END"
+    )
 
 
 def idc_substr(val):

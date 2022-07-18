@@ -28,9 +28,8 @@ from .pdc_query_lib import (
 class PDC:
     def __init__(self, cache_file, endpoint="https://pdc.cancer.gov/graphql") -> None:
         self.endpoint = endpoint
-        self.temp_files_file = 'temp_cache.jsonl.gz'
+        self.temp_files_file = "temp_cache.jsonl.gz"
         self._files_per_sample_dict = self._fetch_file_data_from_cache(cache_file)
-
 
     def cases(
         self,
@@ -96,11 +95,12 @@ class PDC:
                 for index, sample in enumerate(case["samples"]):
                     # Based on the PDC data model, all files in PDC are associated
                     # with samples/aliquots. Can append all samples files
-                    if self._files_per_sample_dict.get(sample["sample_id"]) is not None:
-                        samples_files_list += self._files_per_sample_dict.get(
-                            sample["sample_id"]
-                        )
-                    case["samples"][index]["files"] = samples_files_list
+                    samples_files_list.extend(
+                        self._files_per_sample_dict.get(sample["sample_id"], [])
+                    )
+                    case["samples"][index]["files"] = self._files_per_sample_dict.get(
+                        sample["sample_id"]
+                    )
                     for index_aliquot, aliquot in enumerate(
                         case["samples"][index]["aliquots"]
                     ):
@@ -136,9 +136,16 @@ class PDC:
                     aliquots = f.get("aliquots")
                     if aliquots:
                         for aliquot in aliquots:
-                            files_per_sample_dict[aliquot["sample_id"]].append({'file_id': f.get('file_id')})
-                            files_per_sample_dict[aliquot["aliquot_id"]].append({'file_id': f.get('file_id')})
-                #files_per_sample_dict = json.load(f_in)
+                            files_per_sample_dict[aliquot["sample_id"]].append(
+                                {"file_id": f.get("file_id")}
+                            )
+                            files_per_sample_dict[aliquot["aliquot_id"]].append(
+                                {"file_id": f.get("file_id")}
+                            )
+                # files_per_sample_dict = json.load(f_in)
+        with open("files_per_sample_dict.json", "w") as dict_out:
+            json.dump(files_per_sample_dict, dict_out)
+
         return files_per_sample_dict
 
     def _get_files_per_sample_dict(self, cache_file) -> dict:
@@ -150,14 +157,17 @@ class PDC:
             writer = jsonlines.Writer(f_out)
             for fc in self._files_chunk():
                 for f in fc:
-                    aliquots = f.get("aliquots")
-                    if aliquots:
-                        for aliquot in aliquots:
-                            files_per_sample[aliquot["sample_id"]].append({'file_id': f.get('file_id')})
-                            n += 1
-                            files_per_sample[aliquot["aliquot_id"]].append({'file_id': f.get('file_id')})
-                            n += 1
-                    writer.write(f) #Writes all file info to cache file
+                    aliquots = f.get("aliquots", [])
+                    for aliquot in aliquots:
+                        files_per_sample[aliquot["sample_id"]].append(
+                            {"file_id": f.get("file_id")}
+                        )
+                        n += 1
+                        files_per_sample[aliquot["aliquot_id"]].append(
+                            {"file_id": f.get("file_id")}
+                        )
+                        n += 1
+                    writer.write(f)  # Writes all file info to cache file
                 sys.stderr.write(
                     f"Chunk completed. Wrote {n} sample-file pairs in {time.time() - t0}s\n"
                 )
@@ -273,7 +283,9 @@ class PDC:
                     print(case_taxon["case_id"])
         return seen
 
-    def add_case_info_to_files(self, file_ids, cases_out_file, files_out_file, cache_file):
+    def add_case_info_to_files(
+        self, file_ids, cases_out_file, files_out_file, cache_file
+    ):
         # Make a dictionary where keys are case_id's and values are associated projects
         # Get info from the recently written cases info file (output_file)
         case_recs = defaultdict(list)
@@ -281,18 +293,18 @@ class PDC:
         with gzip.open(cases_out_file, "r") as fp:
             reader = jsonlines.Reader(fp)
             for case in reader:
-                case.pop('files')
-                for sample in case['samples']:
-                    sample.pop('files')
-                    for aliquot in sample['aliquots']:
-                        aliquot.pop('files')
-                    #sample_recs[sample.get('sample_id')].append(sample)
-                #samples = case['samples']
-                case_recs[case['case_id']].append(case)
-                #for sample in samples:
-                    #sample_recs[sample.get('sample_id')].append(sample)
-        #sample_recs = remove_dups_from_dict_of_list_of_dicts(sample_recs)                
-        #for case,val in cases_and_associated_projects.items():
+                case.pop("files")
+                for sample in case["samples"]:
+                    sample.pop("files")
+                    for aliquot in sample["aliquots"]:
+                        aliquot.pop("files")
+                    # sample_recs[sample.get('sample_id')].append(sample)
+                # samples = case['samples']
+                case_recs[case["case_id"]].append(case)
+                # for sample in samples:
+                # sample_recs[sample.get('sample_id')].append(sample)
+        # sample_recs = remove_dups_from_dict_of_list_of_dicts(sample_recs)
+        # for case,val in cases_and_associated_projects.items():
         #    cases_and_associated_projects[case] = list(set(cases_and_associated_projects[case]))
         # Have dictionary, now we can scan through files info and write new one with associated project
         sys.stderr.write(f"Got case_associated_projects\n")
@@ -302,45 +314,52 @@ class PDC:
             with gzip.open(files_out_file, "wb") as fw:
                 writer = jsonlines.Writer(fw)
                 for file in reader:
-                    if file_ids is not None and file['file_id'] not in file_ids:
+                    if file_ids is not None and file["file_id"] not in file_ids:
                         continue
                     file["project_submitter_id"] = []
-                    file["cases"] = []  
+                    file["cases"] = []
                     aliquot_ids = []
                     sample_ids = []
-                    case_ids = []    
+                    case_ids = []
                     for aliquot in file["aliquots"]:
-                        aliquot_ids.append(aliquot['aliquot_id'])
-                        sample_ids.append(aliquot['sample_id'])
-                        case_ids.append(aliquot['case_id'])
+                        aliquot_ids.append(aliquot["aliquot_id"])
+                        sample_ids.append(aliquot["sample_id"])
+                        case_ids.append(aliquot["case_id"])
                     aliquot_ids = list(set(aliquot_ids))
                     sample_ids = list(set(sample_ids))
                     case_ids = list(set(case_ids))
                     for case in case_ids:
                         case_copy = case_recs[case].copy()
                         for record in case_copy:
-                            file["project_submitter_id"].append(record.get('project_submitter_id'))
-                            for sample in record['samples']:
-                                if sample['sample_id'] in sample_ids:
-                                    for aliquot in sample['aliquots']:
-                                        if aliquot['aliquot_id'] not in aliquot_ids:
-                                            sample['aliquots'].remove(aliquot)
+                            file["project_submitter_id"].append(
+                                record.get("project_submitter_id")
+                            )
+                            for sample in record["samples"]:
+                                if sample["sample_id"] in sample_ids:
+                                    for aliquot in sample["aliquots"]:
+                                        if aliquot["aliquot_id"] not in aliquot_ids:
+                                            sample["aliquots"].remove(aliquot)
                                 else:
-                                    record['samples'].remove(sample)
-                        file['cases'].extend(case_copy)
-                    
-                    file["project_submitter_id"] = list(set(file["project_submitter_id"]))
+                                    record["samples"].remove(sample)
+                        file["cases"].extend(case_copy)
+
+                    file["project_submitter_id"] = list(
+                        set(file["project_submitter_id"])
+                    )
                     if len(file["project_submitter_id"]) == 1:
                         file["project_submitter_id"] = file["project_submitter_id"][0]
                     elif len(file["project_submitter_id"]) > 1:
-                        print('more than one project_submitter_id for file: ' + file['file_id'])
+                        print(
+                            "more than one project_submitter_id for file: "
+                            + file["file_id"]
+                        )
                         print(str(file["project_submitter_id"]))
-                    #sample_ids = list(set(sample_ids))
-                    #aliquot_ids = list(set(aliquot_ids))
-                    #file['samples'] = []
-                    #file['samples'] = [v[0] for k, v in sample_recs.items() if k in sample_ids]
-                    #for index in range(len(file['samples'])):
-                    #    file['samples'][index]['aliquots'] = [v for v in file['samples'][index]['aliquots'] 
+                    # sample_ids = list(set(sample_ids))
+                    # aliquot_ids = list(set(aliquot_ids))
+                    # file['samples'] = []
+                    # file['samples'] = [v[0] for k, v in sample_recs.items() if k in sample_ids]
+                    # for index in range(len(file['samples'])):
+                    #    file['samples'][index]['aliquots'] = [v for v in file['samples'][index]['aliquots']
                     #        if v['aliquot_id'] in aliquot_ids]
                     #    for aliquot in file['samples'][index]['aliquots']:
                     #        try:
@@ -351,11 +370,12 @@ class PDC:
                     #        file['samples'][index].pop('files')
                     #    except:
                     #        continue
-                    file.pop('aliquots')
+                    file.pop("aliquots")
                     writer.write(file)
-                    counter +=1
-                    if counter%500 == 0:
+                    counter += 1
+                    if counter % 500 == 0:
                         print(str(counter) + " files written")
+
 
 def get_file_metadata(file_metadata_record) -> dict:
     return {
@@ -395,21 +415,25 @@ def agg_cases_info_for_study(study, demo, diag, sample, taxon, added_info):
         out.append(demo_case)
     return out
 
+
 def remove_dups_from_dict_of_list_of_dicts(records):
     for k, vals in records.items():
-        counter = len(vals)-1
+        counter = len(vals) - 1
         while counter > 0:
             if vals[0] == vals[counter]:
                 vals.pop(counter)
             counter -= 1
-            #else:
+            # else:
     return records
+
 
 def main():
     parser = argparse.ArgumentParser(description="Pull case data from PDC API.")
-    parser.add_argument("cases_out_file", help="Out cases endpoint file name. Should end with .gz")
+    parser.add_argument(
+        "cases_out_file", help="Out cases endpoint file name. Should end with .gz"
+    )
     parser.add_argument("cache_file", help="Use (or generate if missing) cache file.")
-    #parser.add_argument("file_linkage", help="Used to link files and specimens/cases")
+    # parser.add_argument("file_linkage", help="Used to link files and specimens/cases")
     parser.add_argument("--case", help="Extract just this case")
     parser.add_argument(
         "--cases", help="Optional file with list of case ids (one to a line)"
@@ -418,17 +442,26 @@ def main():
     parser.add_argument(
         "--files", help="Optional file with list of file ids (one to a line)"
     )
-    parser.add_argument("--files_out_file", help="Out files endpoint file name. Should end with .gz")
+    parser.add_argument(
+        "--files_out_file", help="Out files endpoint file name. Should end with .gz"
+    )
     args = parser.parse_args()
 
     pdc = PDC(pathlib.Path(args.cache_file))
     if not (pathlib.Path(args.cases_out_file).exists()):
         pdc.save_cases(
-            args.cases_out_file, case_ids=get_case_ids(case=args.case, case_list_file=args.cases)
+            args.cases_out_file,
+            case_ids=get_case_ids(case=args.case, case_list_file=args.cases),
         )
     if args.files_out_file is not None:
         print("making files file")
-        pdc.add_case_info_to_files(get_case_ids(case=args.file, case_list_file=args.files), args.cases_out_file, args.files_out_file, args.cache_file)
+        pdc.add_case_info_to_files(
+            get_case_ids(case=args.file, case_list_file=args.files),
+            args.cases_out_file,
+            args.files_out_file,
+            args.cache_file,
+        )
+
 
 if __name__ == "__main__":
     main()

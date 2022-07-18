@@ -66,7 +66,7 @@ def merge_entities_with_same_id(entity_recs, how_to_merge_entity):
     return rec
 
 
-def main():
+def main(debug=False):
     parser = argparse.ArgumentParser(
         description="Aggregate data from DC to Subject/File level."
     )
@@ -79,7 +79,11 @@ def main():
     )
     parser.add_argument("output_file", help="Out file name. Should end with .gz")
     parser.add_argument("--log", default="aggregate.log", help="Name of log file.")
-    parser.add_argument("--endpoint", default="subjects", help="endpoint you are aggregating. files or subjects")
+    parser.add_argument(
+        "--endpoint",
+        default="subjects",
+        help="endpoint you are aggregating. files or subjects",
+    )
     args = parser.parse_args()
     logging.basicConfig(
         filename=args.log,
@@ -99,7 +103,7 @@ def main():
         for rec in readDC:
             id = rec.get("id")
             entity_rec_mapping[id] += [rec]
-
+    print(args.output_file)
     with gzip.open(args.output_file, "w") as outfp:
         writeDC = jsonlines.Writer(outfp)
         log = LogValidation()
@@ -109,7 +113,7 @@ def main():
             else:
                 entities = {k: patient for k, patient in enumerate(records)}
                 lines_cases = list(range(len(records)))
-                if endpoint=="subjects":
+                if endpoint == "subjects":
                     merged_entry = mf.merge_fields_level(
                         entities, how_to_merge["Patient_merge"], lines_cases
                     )
@@ -124,36 +128,34 @@ def main():
                     merged_entry = mf.merge_fields_level(
                         entities, how_to_merge["File_merge"], lines_cases
                     )
-                    file_ids = [
-                        record.get("id") for record in records
-                    ]
+                    file_ids = [record.get("id") for record in records]
                     # file_ids = [file.get('id') for patient in patients for file in patient.get('File')]
                     log = log_merge_error(
                         entities, file_ids, how_to_merge["File_merge"], log
                     )
 
-            #merged_entry["File"] = merge_entities_with_same_id(
+            # merged_entry["File"] = merge_entities_with_same_id(
             #    merged_entry["File"], how_to_merge["File_merge"]
-            #)
+            # )
             merged_entry["ResearchSubject"] = merge_entities_with_same_id(
                 merged_entry["ResearchSubject"], how_to_merge["ResearchSubject_merge"]
             )
             for RS in merged_entry["ResearchSubject"]:
-                #RS["File"] = merge_entities_with_same_id(
+                # RS["File"] = merge_entities_with_same_id(
                 #    RS["File"], how_to_merge["File_merge"]
-                #)
+                # )
                 RS["Diagnosis"] = merge_entities_with_same_id(
                     RS["Diagnosis"], how_to_merge["Diagnosis_merge"]
                 )
-                if endpoint == 'subjects':
+                if endpoint == "subjects":
                     RS["Specimen"] = merge_entities_with_same_id(
                         RS["Specimen"], how_to_merge["Specimen_merge"]
                     )
-                #for specimen in RS["Specimen"]:
+                # for specimen in RS["Specimen"]:
                 #    specimen["File"] = merge_entities_with_same_id(
                 #        specimen["File"], how_to_merge["File_merge"]
                 #    )
-            if endpoint == 'files':
+            if endpoint == "files":
                 merged_entry["Specimen"] = merge_entities_with_same_id(
                     merged_entry["Specimen"], how_to_merge["Specimen_merge"]
                 )
@@ -161,7 +163,7 @@ def main():
                     merged_entry["Subject"], how_to_merge["Patient_merge"]
                 )
             writeDC.write(merged_entry)
-        #log.generate_report(logging.getLogger("test"))
+        # log.generate_report(logging.getLogger("test"))
 
 
 if __name__ == "__main__":

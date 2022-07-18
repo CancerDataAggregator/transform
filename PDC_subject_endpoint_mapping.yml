@@ -10,7 +10,7 @@ Patient:
         ethnicity: 'cases.demographics.ethnicity'
         days_to_birth: 'cases.demographics.days_to_birth'
         subject_associated_project: 'cases.project_submitter_id'
-        age_at_death: 'cases.demographics.days_to_death'
+        days_to_death: 'cases.demographics.days_to_death'
         cause_of_death: 'cases.demographics.cause_of_death'
         vital_status: 'cases.demographics.vital_status'
         
@@ -82,7 +82,9 @@ Specimen:
                 samples: 'cases.samples.sample_id'
                 aliquots: 'cases.samples.aliquots.aliquot_id'
         associated_project: 'cases.project_submitter_id'
-        age_at_collection: 'cases.demographics.days_to_birth'
+        days_to_collection: 
+            - 'cases.samples.days_to_sample_procurement'
+            - 'cases.samples.days_to_collection'
         primary_disease_type: 'cases.disease_type'
         anatomical_site: 'cases.samples.biospecimen_anatomic_site'
         source_material_type: 'cases.samples.sample_type'
@@ -93,6 +95,9 @@ Specimen:
             samples: 'initial specimen'
             aliquots: 'cases.samples.sample_id'
         derived_from_subject: 'cases.case_submitter_id'
+    Transformations:
+        days_to_collection:
+            - ['coalesce', [] ]
     Linkers:
         Files:
             aliquots: 'cases.samples.aliquots.files.file_id'

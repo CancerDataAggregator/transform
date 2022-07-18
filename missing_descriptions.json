@@ -1,0 +1,52 @@
+{
+    "Patient": {
+        "sex": "The biologic character or quality that distinguishes male and female from one another as expressed by analysis of the person's gonadal, morphologic (internal and external), chromosomal, and hormonal characteristics.",
+        "race": "An arbitrary classification of a taxonomic group that is a division of a species. It usually arises as a consequence of geographical isolation within a species and is characterized by shared heredity, physical attributes and behavior, and in the case of humans, by common history, nationality, or geographic distribution. The provided values are based on the categories defined by the U.S. Office of Management and Business and used by the U.S. Census Bureau.",
+        "ethnicity": "An individual's self-described social and cultural grouping, specifically whether an individual describes themselves as Hispanic or Latino. The provided values are based on the categories defined by the U.S. Office of Management and Business and used by the U.S. Census Bureau.",
+        "subject_associated_project": "The list of Projects associated with the Subject.",
+        "days_to_birth": "Number of days between the date used for index and the date from a person's date of birth represented as a calculated negative number of days.",
+        "days_to_death": "Number of days between the date used for index and the date from a person's date of death represented as a calculated number of days.",
+        "cause_of_death": "Coded value indicating the circumstance or condition that results in the death of the subject.",
+        "vital_status": "Coded value indicating the state or condition of being living or deceased; also includes the case where the vital status is unknown."
+    },
+    "ResearchSubject": {
+        "member_of_research_project": "A reference to the Study(s) of which this ResearchSubject is a member.",
+        "primary_diagnosis_site": "The text term used to describe the primary site of disease, as categorized by the World Health Organization's (WHO) International Classification of Diseases for Oncology (ICD-O). This categorization groups cases into general categories.  This attribute represents the primary site of disease that qualified the subject for inclusion on the ResearchProject.",
+        "primary_diagnosis_condition": "The text term used to describe the type of malignant disease, as categorized by the World Health Organization's (WHO) International Classification of Diseases for Oncology (ICD-O).   This attribute represents the disease that qualified the subject for inclusion on the ResearchProject."
+    },
+    "Diagnosis": {
+        "primary_diagnosis": "The diagnosis instance that qualified a subject for inclusion on a ResearchProject.",
+        "age_at_diagnosis": "The age in days of the individual at the time of diagnosis.",
+        "morphology": "Code that represents the histology of the disease using the third edition of the International Classification of Diseases for Oncology, published in 2000, used principally in tumor and cancer registries for coding the site (topography) and the histology (morphology) of neoplasms.",
+        "grade": "The degree of abnormality of cancer cells, a measure of differentiation, the extent to which cancer cells are similar in appearance and function to healthy cells of the same tissue type. The degree of differentiation often relates to the clinical behavior of the particular tumor. Based on the microscopic findings, tumor grade is commonly described by one of four degrees of severity. Histopathologic grade of a tumor may be used to plan treatment and estimate the future course, outcome, and overall prognosis of disease. Certain types of cancers, such as soft tissue sarcoma, primary brain tumors, lymphomas, and breast have special grading systems.",
+        "stage": "The extent of a cancer in the body. Staging is usually based on the size of the tumor, whether lymph nodes contain cancer, and whether the cancer has spread from the original site to other parts of the body.",
+        "method_of_diagnosis": "The method used to confirm the subjects malignant diagnosis."
+    },
+    "Treatment": {
+        "treatment_type": "The treatment type including medication/therapeutics or other procedures.",
+        "treatment_outcome": "The final outcome of the treatment.",
+        "days_to_treatment_start": "The timepoint at which the treatment started.",
+        "days_to_treatment_end": " The timepoint at which the treatment ended.",
+        "therapeutic_agent": "One or more therapeutic agents as part of this treatment.",
+        "treatment_anatomic_site": "The anatomical site that the treatment targets.",
+        "treatment_effect": "The effect of a treatment on the diagnosis or tumor.",
+        "treatment_end_reason": "The reason the treatment ended.",
+        "number_of_cycles": "The number of treatment cycles the subject received."
+    },
+    "Specimen": {
+        "associated_project": "The Project associated with the specimen.",
+        "primary_disease_type": "The text term used to describe the type of malignant disease, as categorized by the World Health Organization's (WHO) International Classification of Diseases for Oncology (ICD-O).   This attribute represents the disease that qualified the subject for inclusion on the ResearchProject.",
+        "days_to_collection": "The number of days from the index date to either the date a sample was collected for a specific study or project, or the date a subject underwent a procedure (e.g. surgical resection) yielding a sample that was eventually used for research."
+    },
+    "File": {
+        "data_category": "Broad categorization of the contents of the data file.",
+        "data_type": "Specific content type of the data file.",
+        "file_format": "Format of the data files.",
+        "data_modality": "Data modality describes the biological nature of the information gathered as the result of an Activity, independent of the technology or methods used to produce the information.",
+        "imaging_modality": "An imaging modality describes the imaging equipment and/or method used to acquire certain structural or functional information about the body. These include but are not limited to computed tomography (CT) and magnetic resonance imaging (MRI). Taken from the DICOM standard.",
+        "dbgap_accession_number": "The dbgap accession number for the project.",
+        "drs_uri": "A string of characters used to identify a resource on the Data Repo Service(DRS).",
+        "imaging_series": "The 'logical' identifier of the series or grouping of imaging files in the system of record which the file is a part of.",
+        "checksum": "A digit representing the sum of the correct digits in a piece of stored or transmitted digital data, against which later comparisons can be made to detect errors in the data."
+    }
+}
