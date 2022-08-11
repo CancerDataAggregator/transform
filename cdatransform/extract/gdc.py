@@ -12,135 +12,6 @@ from cdatransform.lib import get_case_ids
 from cdatransform.extract.lib import retry_get
 
 
-cases_fields = [
-    "case_id",
-    "submitter_id",
-    "disease_type",
-    "primary_site",
-    "project.project_id",
-    "project.dbgap_accession_number",
-    "demographic.ethnicity",
-    "demographic.gender",
-    "demographic.race",
-    "demographic.days_to_birth",
-    "demographic.days_to_death",
-    "demographic.cause_of_death",
-    "demographic.vital_status",
-    "diagnoses.diagnosis_id",
-    "diagnoses.age_at_diagnosis",
-    "diagnoses.tumor_grade",
-    "diagnoses.tumor_stage",
-    "diagnoses.morphology",
-    "diagnoses.primary_diagnosis",
-    "diagnoses.method_of_diagnosis",
-    "diagnoses.treatments.treatment_outcome",
-    "diagnoses.treatments.treatment_type",
-    "diagnoses.treatments.treatment_id",
-    "diagnoses.treatments.days_to_treatment_start",
-    "diagnoses.treatments.days_to_treatment_end",
-    "diagnoses.treatments.therapeutic_agents",
-    "diagnoses.treatments.treatment_anatomic_site",
-    "diagnoses.treatments.treatment_effect",
-    "diagnoses.treatments.reason_treatment_ended",
-    "diagnoses.treatments.number_of_cycles",
-    "samples.sample_id",
-    "samples.submitter_id",
-    "samples.sample_type",
-    "samples.current_weight",
-    "samples.initial_weight",
-    "samples.days_to_collection",
-    "samples.days_to_sample_procurement",
-    "samples.passage_count",
-    "samples.biospecimen_anatomic_site",
-    "samples.portions.portion_id",
-    "samples.portions.submitter_id",
-    "samples.portions.slides.slide_id",
-    "samples.portions.slides.submitter_id",
-    "samples.portions.analytes.analyte_id",
-    "samples.portions.analytes.submitter_id",
-    "samples.portions.analytes.aliquots.aliquot_id",
-    "samples.portions.analytes.aliquots.submitter_id",
-    "files.file_id",
-    "files.data_category",
-    "files.data_type",
-    "files.file_name",
-    "files.file_size",
-    "files.md5sum",
-    "files.data_format",
-    "files.experimental_strategy",
-]
-
-case_fields_to_use = [
-    "case_id",
-    "submitter_id",
-    "disease_type",
-    "primary_site",
-    "project",
-    "demographic",
-    "diagnoses",
-    "samples",
-    "files",
-]
-
-files_fields = [
-    "file_id",
-    "data_category",
-    "data_type",
-    "file_name",
-    "file_size",
-    "md5sum",
-    "data_format",
-    "experimental_strategy",
-    "cases.case_id",
-    "cases.submitter_id",
-    "cases.project.project_id",
-    "cases.project.dbgap_accession_number",
-    "cases.disease_type",
-    "cases.primary_site",
-    "cases.demographic.ethnicity",
-    "cases.demographic.gender",
-    "cases.demographic.race",
-    "cases.demographic.days_to_birth",
-    "cases.demographic.days_to_death",
-    "cases.demographic.cause_of_death",
-    "cases.demographic.vital_status",
-    "cases.diagnoses.diagnosis_id",
-    "cases.diagnoses.age_at_diagnosis",
-    "cases.diagnoses.tumor_grade",
-    "cases.diagnoses.tumor_stage",
-    "cases.diagnoses.morphology",
-    "cases.diagnoses.primary_diagnosis",
-    "cases.diagnoses.treatments.treatment_outcome",
-    "cases.diagnoses.treatments.treatment_type",
-    "cases.diagnoses.treatments.treatment_id",
-    "cases.diagnoses.treatments.days_to_treatment_start",
-    "cases.diagnoses.treatments.days_to_treatment_end",
-    "cases.diagnoses.treatments.therapeutic_agents",
-    "cases.diagnoses.treatments.treatment_anatomic_site",
-    "cases.diagnoses.treatments.treatment_effect",
-    "cases.diagnoses.treatments.reason_treatment_ended",
-    "cases.diagnoses.treatments.number_of_cycles",
-    "cases.samples.sample_id",
-    "cases.samples.submitter_id",
-    "cases.samples.sample_type",
-    "cases.samples.current_weight",
-    "cases.samples.initial_weight",
-    "cases.samples.days_to_collection",
-    "cases.samples.days_to_sample_procurement",
-    "cases.samples.passage_count",
-    "cases.samples.biospecimen_anatomic_site",
-    "cases.samples.portions.portion_id",
-    "cases.samples.portions.submitter_id",
-    "cases.samples.portions.slides.slide_id",
-    "cases.samples.portions.slides.submitter_id",
-    "cases.samples.portions.analytes.analyte_id",
-    "cases.samples.portions.analytes.submitter_id",
-    "cases.samples.portions.analytes.aliquots.aliquot_id",
-    "cases.samples.portions.analytes.aliquots.submitter_id",
-    "associated_entities.entity_id",
-    "associated_entities.entity_submitter_id",
-    "associated_entities.entity_type",
-]
 # What is the significance of cases.samples.sample_id vs cases.sample_ids?
 # Answer: cases.sample_ids is not returned by GDC API
 gdc_files_page_size = 8000
@@ -161,13 +32,19 @@ def get_total_number(endpoint) -> int:
 class GDC:
     def __init__(
         self,
-        cache_file: pathlib.Path,
+        #cache_file: pathlib.Path,
         cases_endpoint: str = "https://api.gdc.cancer.gov/v0/cases",
         files_endpoint: str = "https://api.gdc.cancer.gov/v0/files",
+        #parent_spec: bool = True,
+        field_break: int = 100,
+        fields: list = [],
     ) -> None:
         self.cases_endpoint = cases_endpoint
         self.files_endpoint = files_endpoint
-        self._samples_per_files_dict = self._fetch_file_data_from_cache(cache_file)
+        self.field_break = field_break
+        self.fields = fields
+        #self._samples_per_files_dict = self._fetch_file_data_from_cache(cache_file)
+        #self.parent_spec = parent_spec
 
     def save_cases(
         self, out_file: str, case_ids: str = None, page_size: int = 1000
@@ -177,37 +54,44 @@ class GDC:
         with gzip.open(out_file, "wb") as fp:
             writer = jsonlines.Writer(fp)
             for case in self._cases(case_ids, page_size):
-                case_with_specimen_files = self._attach_file_metadata(case)
-                writer.write(case_with_specimen_files)
+                writer.write(case)
                 n += 1
                 if n % page_size == 0:
                     sys.stderr.write(f"Wrote {n} cases in {time.time() - t0}s\n")
         sys.stderr.write(f"Wrote {n} cases in {time.time() - t0}s\n")
 
-    def save_files(self, out_file: str, cache_file: str, file_ids: list = None) -> None:
+    def save_files(
+        self, out_file: str, file_ids: list = None, page_size: int = 5000
+    ) -> None:
         t0 = time.time()
         n = 0
         with gzip.open(out_file, "wb") as fp:
             writer = jsonlines.Writer(fp)
-            with gzip.open(cache_file, "r") as fr:
-                reader = jsonlines.Reader(fr)
-                if file_ids:
-                    for file in reader:
-                        if file.get("file_id") in file_ids:
-                            writer.write(file)
-                            n += 1
-                else:
-                    for file in reader:
-                        writer.write(file)
-                        n += 1
-        sys.stderr.write(f"Extracted {n} files from cache in {time.time() - t0}s\n")
+            for file in self._files(file_ids, page_size):
+                writer.write(file)
+                n += 1
+                if n % page_size == 0:
+                    sys.stderr.write(f"Wrote {n} files in {time.time() - t0}s\n")
+        sys.stderr.write(f"Wrote {n} files in {time.time() - t0}s\n")
+                #if file_ids:
+                #    for file in reader:
+                #        if file.get("file_id") in file_ids:
+                #            writer.write(self.prune_specimen_tree(file))
+                #            n += 1
+                #else:
+                #    for file in reader:
+                #        # add parent specimens to list of associated entities. remove cases?
+                #        if "associated_entities" not in file:
+                #            print(file)
+                #        writer.write(self.prune_specimen_tree(file))
+                #        n += 1
+        #sys.stderr.write(f"Extracted {n} files from cache in {time.time() - t0}s\n")
 
     def _cases(
         self,
         case_ids: list = None,
         page_size: int = 100,
     ) -> Iterable:
-        fields: str = ",".join(cases_fields)
         # defining the GDC API query
         if case_ids is not None:
             filt = json.dumps(
@@ -220,33 +104,93 @@ class GDC:
             )
         else:
             filt = None
-
         offset: int = 0
         while True:
+            fields = ','.join(self.fields[0:self.field_break])
+            print(fields)
             params = {
-                "filters": filt,
-                "format": "json",
-                "fields": fields,
-                "size": page_size,
-                "from": offset,
-            }
+                        "filters": filt,
+                        "format": "json",
+                        "fields": fields,
+                        "size": page_size,
+                        "from": offset,
+                    }
 
-            # How to handle errors
-            result = retry_get(self.cases_endpoint, params=params)
-            hits: list[dict] = result.json()["data"]["hits"]
+            result = retry_get(self.cases_endpoint, params = params)
+            hits = result.json()["data"]["hits"]
+            result_dict = {hit["case_id"]:hit for hit in hits}
+            params.update({'fields':','.join(["case_id"]+self.fields[self.field_break:])})
+            result = retry_get(self.cases_endpoint, params = params)
+            hits = result.json()["data"]["hits"]
             page = result.json()["data"]["pagination"]
-            p_no: int = page.get("page")
-            p_tot: int = page.get("pages")
-
+            result_dict2 = {hit["case_id"]:hit for hit in hits}
+            res_list = [result_dict[case].update(result_dict2[case]) for case in result_dict]
+            for case in res_list:
+                yield case
+            p_no = page.get("page")
+            p_tot = page.get("pages")
             sys.stderr.write(f"Pulling page {p_no} / {p_tot}\n")
-
-            for hit in hits:
-                yield clean_fields(hit)
 
             if p_no >= p_tot:
                 break
             else:
                 offset += page_size
+
+    def _files(self,
+        file_ids: list = None,
+        page_size: int = 500,
+    ) -> Iterable:
+        if file_ids is not None:
+            filt = json.dumps(
+                {
+                    "op": "and",
+                    "content": [
+                        {"op": "in", "content": {"field": "file_id", "value": file_ids}}
+                    ],
+                }
+            )
+        else:
+            filt = None
+        total_files = get_total_number(self.files_endpoint)
+        offset: int = 0
+        while True:
+            fields = ','.join(self.fields)
+            params = {
+                        "filters": filt,
+                        "format": "json",
+                        "fields": fields,
+                        "size": page_size,
+                        "from": offset,
+                        #"sort": "file_id",
+                    }
+
+            result = retry_get(self.files_endpoint, params = params)
+            page = result.json()["data"]["pagination"]
+            for hit in result.json()["data"]["hits"]:
+                yield hit
+            p_no = page.get("page")
+            p_tot = page.get("pages")
+            sys.stderr.write(f"Pulling page {p_no} / {p_tot}\n")
+
+            if p_no >= p_tot:
+                break
+            else:
+                offset += page_size
+        #for offset in range(0, total_files, page_size):
+        #    params = {
+        #        "filters": filt,
+        #        "format": "json",
+        #        "fields": fields,
+        #        "sort": "file_id",
+        #        "from": offset,
+        #        "size": page_size,
+        #    }
+        #    page_num = int(offset / gdc_files_page_size) + 1
+        #    total_page = int(total_files / gdc_files_page_size) + 1
+        #    sys.stderr.write(f"Pulling files page {page_num}/{total_page}\n")
+        #    result = retry_get(self.files_endpoint, params=params)
+        #    for hit in result.json()["data"]["hits"]:
+        #        yield hit
 
     def _attach_file_metadata(self, case_record) -> dict:
         new_case_record = {
@@ -308,6 +252,12 @@ class GDC:
                             )
                             if f_obj is not None
                         ]
+                        if self.parent_spec:
+                            analyte["files"].extend(aliquot["files"])
+                    if self.parent_spec:
+                        portion["files"].extend(analyte["files"])
+                if self.parent_spec:
+                    sample["files"].extend(portion["files"])
 
         return new_case_record
 
@@ -359,7 +309,6 @@ class GDC:
         return files_per_sample_dict
 
     def _get_gdc_files(self):
-        fields = ",".join(files_fields)
         total_files = get_total_number(self.files_endpoint)
 
         for offset in range(0, total_files, gdc_files_page_size):
@@ -377,11 +326,67 @@ class GDC:
             for hit in result.json()["data"]["hits"]:
                 yield hit
 
+    def prune_specimen_tree(self, file_rec):
+        ret = file_rec.copy()
+        associations = defaultdict(list)
+        if "associated_entities" not in file_rec:
+            if "samples" in file_rec:
+                file_rec["samples"].pop()
+            return file_rec
+        for entity in file_rec.get("associated_entities", []):
+            if entity["entity_type"] == "case":
+                associations["cases"].append(entity["entity_id"])
+            else:
+                associations["specimens"].append(entity["entity_id"])
+        cases = []
+        for case in file_rec["cases"]:
+            if len(associations["specimens"]) != 0:
+                samples = []
+                for sample in case.get("samples", []):
+                    sample_include = sample["sample_id"] in associations["specimens"]
+                    portions = []
+                    for portion in sample.get("portions", []):
+                        portion_include = (
+                            portion["portion_id"] in associations["specimens"]
+                        )
+                        slides = [
+                            slide
+                            for slide in portion.get("slides", [])
+                            if slide["slide_id"] in associations["specimens"]
+                        ]
+                        analytes = []
+                        for analyte in portion.get("analytes", []):
+                            analyte_include = (
+                                analyte["analyte_id"] in associations["specimens"]
+                            )
+                            aliquots = [
+                                aliquot
+                                for aliquot in analyte.get("aliquots", [])
+                                if aliquot["aliquot_id"] in associations["specimens"]
+                            ]
+                            if len(aliquots) > 0 or analyte_include:
+                                analyte["aliquots"] = aliquots
+                                analytes.append(analyte)
+                        if len(analytes) > 0 or len(slides) > 0 or portion_include:
+                            portion["analytes"] = analytes
+                            portion["slides"] = slides
+                            portions.append(portion)
+                    if len(portions) > 0 or sample_include:
+                        sample["portions"] = portions
+                        samples.append(sample)
+                if len(samples) > 0:
+                    case["samples"] = samples
+            else:
+                case["samples"] = []
+            cases.append(case)
+        ret["cases"] = cases
+        return ret
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Pull case data from GDC API.")
     parser.add_argument("out_file", help="Out file name. Should end with .gz")
-    parser.add_argument("cache_file", help="Use (or generate if missing) cache file.")
+    parser.add_argument("fields_list", help="list of fields for endpoint.")
     parser.add_argument("--case", help="Extract just this case")
     parser.add_argument(
         "--cases", help="Optional file with list of case ids (one to a line)"
@@ -390,13 +395,25 @@ def main() -> None:
     parser.add_argument(
         "--files", help="Optional file with list of file ids (one to a line)"
     )
-    parser.add_argument("--cache", help="Use cached files.", action="store_true")
+    
     parser.add_argument(
         "--endpoint", help="Extract all from 'files' or 'cases' endpoint "
     )
+    #parser.add_argument(
+    #    "--parent_spec", default=True,
+    #    help="Add files to parent specimens records writing/using this file.",
+    #)
     args = parser.parse_args()
-
-    gdc = GDC(cache_file=pathlib.Path(args.cache_file))
+    with open(args.fields_list) as file:
+        fields = [line.rstrip() for line in file]
+    if len(fields) == 0:
+        sys.stderr.write("You done messed up A-A-RON! You need a list of fields")
+        return
+    gdc = GDC(
+        #cache_file=pathlib.Path(args.cache_file), parent_spec=args.parent_spec, 
+        field_break=100, fields=fields
+    )
+    
     if args.case or args.cases or args.endpoint == "cases":
         gdc.save_cases(
             args.out_file,
@@ -405,7 +422,6 @@ def main() -> None:
     if args.file or args.files or args.endpoint == "files":
         gdc.save_files(
             args.out_file,
-            args.cache_file,
             file_ids=get_case_ids(case=args.file, case_list_file=args.files),
         )
 
