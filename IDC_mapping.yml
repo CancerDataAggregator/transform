@@ -47,9 +47,7 @@ File:
         identifier:
             system: 'IDC'
             value: 'files.crdc_instance_uuid'
-        label: 
-            - 'files.gcs_url'
-            - 15
+        label: 'files.gcs_url'
         data_category: 'Imaging'
         data_type: 'NULL'
         file_format: 'DICOM'
@@ -63,7 +61,7 @@ File:
         imaging_series: 'files.crdc_series_uuid'
     Transformations:
         label: 
-        - ['idc_substr', ['STRING','INT'],'STRING']
+        - ['idc_label', ['STRING'],'STRING']
         drs_uri:
         - ['idc_drs_uri', ['STRING'], 'STRING']
 
