@@ -138,7 +138,7 @@ class GDC:
             p_tot = page.get("pages")
             sys.stderr.write(f"Pulled page {p_no} / {p_tot}\n")
             result_dict2 = {hit["case_id"]:hit for hit in hits}
-            res_list = [{**result_dict[case], **result_dict2[case]} for case in result_dict]
+            res_list = [result_dict[case] | result_dict2[case] for case in result_dict]
             for case in res_list:
                 yield case
 
