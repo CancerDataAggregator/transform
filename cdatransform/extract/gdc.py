@@ -46,7 +46,7 @@ class GDC:
         self.make_spec_file = make_spec_file
 
     def save_cases(
-        self, out_file: str, case_ids: str = None, page_size: int = 1000
+        self, out_file: str, case_ids: str = None, page_size: int = 500
     ) -> None:
         t0 = time.time()
         n = 0
@@ -126,7 +126,7 @@ class GDC:
                         "size": page_size,
                         "from": offset,
                     }
-
+            {"id1": {"field 1": blah, "field2"}}
             result = retry_get(self.cases_endpoint, params = params)
             hits = result.json()["data"]["hits"]
             result_dict = {hit["case_id"]:hit for hit in hits}
@@ -134,13 +134,13 @@ class GDC:
             result = retry_get(self.cases_endpoint, params = params)
             hits = result.json()["data"]["hits"]
             page = result.json()["data"]["pagination"]
-            result_dict2 = {hit["case_id"]:hit for hit in hits}
-            res_list = [result_dict[case] | result_dict2[case] for case in result_dict]
-            for case in res_list:
-                yield case
             p_no = page.get("page")
             p_tot = page.get("pages")
-            sys.stderr.write(f"Pulling page {p_no} / {p_tot}\n")
+            sys.stderr.write(f"Pulled page {p_no} / {p_tot}\n")
+            result_dict2 = {hit["case_id"]:hit for hit in hits}
+            res_list = [{**result_dict[case], **result_dict2[case]} for case in result_dict]
+            for case in res_list:
+                yield case
 
             if p_no >= p_tot:
                 break
@@ -176,12 +176,11 @@ class GDC:
 
             result = retry_get(self.files_endpoint, params = params)
             page = result.json()["data"]["pagination"]
-            for hit in result.json()["data"]["hits"]:
-                yield hit
             p_no = page.get("page")
             p_tot = page.get("pages")
             sys.stderr.write(f"Pulling page {p_no} / {p_tot}\n")
-
+            for hit in result.json()["data"]["hits"]:
+                yield hit
             if p_no >= p_tot:
                 break
             else:
@@ -262,7 +261,7 @@ def main() -> None:
         "--endpoint", help="Extract all from 'files' or 'cases' endpoint "
     )
     parser.add_argument(
-        "--make_spec_file", help="Make the files per specimen mapping file"
+        "--make_spec_file", help="Name of file with files per specimen mapping. If None, don't make it"
     )
     #parser.add_argument(
     #    "--parent_spec", default=True,
