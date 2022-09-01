@@ -15,7 +15,7 @@ setup(
     version=version,
     packages=find_packages(),
     platforms=["POSIX", "MacOS", "Windows"],
-    python_requires=">=3.8",
+    python_requires=">=3.10",
     install_requires=[
         "requests",
         "jsonlines",
