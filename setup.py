@@ -16,17 +16,18 @@ setup(
     packages=find_packages(),
     platforms=["POSIX", "MacOS", "Windows"],
     python_requires=">=3.8",
-    # install_requires=[
-    #    "requests",
-    #    "jsonlines",
-    #    "pyyaml",
-    #    "deepdiff",
-    #    "google-cloud-storage",
-    #    "google-cloud-bigquery",
-    # ],
+    install_requires=[
+        "requests",
+        "jsonlines",
+        "pyyaml",
+        "deepdiff",
+        "google-cloud-storage",
+        "google-cloud-bigquery",
+    ],
     entry_points={
         "console_scripts": [
             "extract-gdc = cdatransform.extract.gdc:main",
+            "add-gdc-spec-files = cdatransform.extract.gdc_add_spec_files:main",
             "extract-pdc = cdatransform.extract.pdc:main",
             "extract-idc = cdatransform.extract.idc:main",
             "cda-transform = cdatransform.transform.main:main",

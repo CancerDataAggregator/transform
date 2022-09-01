@@ -222,6 +222,8 @@ def add_linkers(orig, MandT, entity, DC, **kwargs):
     for field, val in MandT[entity]["Linkers"].items():
         link_recs[field] = []
         if isinstance(val, str):
+            print(field)
+            print(val)
             temp_val = val.split('.')
             linker = temp_val.pop()
             temp_val = '.'.join(temp_val)
@@ -229,10 +231,13 @@ def add_linkers(orig, MandT, entity, DC, **kwargs):
             if isinstance(recs, list):
                 for rec in recs:
                     link_recs[field].append(rec.get(linker))
-                link_recs[field] = list(set(link_recs[field]))
+                try:
+                    link_recs[field] = list(set(link_recs[field]))
+                except:
+                    pass
             elif isinstance(recs, dict):
                 link_recs[field] = list(recs.get(linker))
-
+            print(link_recs[field])
         elif isinstance(val, dict) and endpoint == 'cases':
             spec_type = spec_type_from_path(cur_path)
             path = val[spec_type]
@@ -250,7 +255,8 @@ def add_linkers(orig, MandT, entity, DC, **kwargs):
             tree = det_tree_to_collapse(MandT, entity, linker=field)
             link_recs[field]=add_nested_linkers(orig, val,DC,
                                     tree=tree, endpt=endpoint)
-        elif isinstance(val, list):
+        elif isinstance(val, list): 
+            print(val)
             for index in range(len(val)):
                 temp_val = val[index].split('.')
                 linker = temp_val.pop()

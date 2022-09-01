@@ -20,17 +20,17 @@ def add_Specimen_rec(orig, MandT, DC, **kwargs):
             # spec_rec["File"] = add_File_rec(
             #    orig, MandT, DC, cur_path=spec_path, rel_path=rel_path
             # )
-            if endpoint == "cases":
-                linkers = ruy.add_linkers(
-                    orig,
-                    MandT,
-                    "Specimen",
-                    DC,
-                    linker=True,
-                    cur_path=spec_path,
-                    endpoint=endpoint,
-                )
-                spec_rec.update(linkers)
+            #if endpoint == "cases":
+            #    linkers = ruy.add_linkers(
+            #        orig,
+            #        MandT,
+            #        "Specimen",
+            #        DC,
+            #        linker=True,
+            #        cur_path=spec_path,
+            #        endpoint=endpoint,
+            #    )
+            #    spec_rec.update(linkers)
             spec_rec = [spec_rec]
             if "cases" in tree:
                 tree = tree["cases"]
@@ -267,121 +267,121 @@ class Transform:
     def files_transform(self, orig, MandT, DC, endpoint):
         tip = ruy.read_entry(orig, MandT, "File", DC=DC, endpoint=endpoint)
         tip = entity_value_transforms(tip, "File", MandT)
-        # linkers = ruy.add_linkers(orig, MandT, 'File', DC, linker=True,
-        #                            cur_path=[endpoint], rel_path=endpoint, endpoint=endpoint)
-        # tip.update(linkers)
-        tip["Subject"] = []
-        tip["ResearchSubject"] = []
-        tip["Specimen"] = []
-        subj_path = MandT["Patient"]["Mapping"]["id"]
-        subj_path = subj_path.split(".")
-        subj_path.pop()
-        subj_path = ".".join(subj_path)
-        cur_path = subj_path.split(".")
-        subject_rec = ruy.simp_read(orig, subj_path, cur_path, DC)
-        for index in range(len(subject_rec)):
-            temp_subject = ruy.read_entry(
-                orig, MandT, "Patient", cur_path=cur_path + [index]
-            )
-            temp_subject = entity_value_transforms(temp_subject, "Patient", MandT)
-            tip["Subject"].append(temp_subject)
+        linkers = ruy.add_linkers(orig, MandT, 'File', DC, linker=True,
+                                   cur_path=[endpoint], rel_path=endpoint, endpoint=endpoint)
+        tip.update(linkers)
+        #tip["Subject"] = []
+        #tip["ResearchSubject"] = []
+        #tip["Specimen"] = []
+        #subj_path = MandT["Patient"]["Mapping"]["id"]
+        #subj_path = subj_path.split(".")
+        #subj_path.pop()
+        #subj_path = ".".join(subj_path)
+        #cur_path = subj_path.split(".")
+        #subject_rec = ruy.simp_read(orig, subj_path, cur_path, DC)
+        #for index in range(len(subject_rec)):
+        #    temp_subject = ruy.read_entry(
+        #        orig, MandT, "Patient", cur_path=cur_path + [index]
+        #    )
+        #    temp_subject = entity_value_transforms(temp_subject, "Patient", MandT)
+        #    tip["Subject"].append(temp_subject)
 
-        rs_path = MandT["ResearchSubject"]["Mapping"]["id"]
-        rs_path = rs_path.split(".")
-        rs_path.pop()
-        rs_path = ".".join(rs_path)
-        cur_path = rs_path.split(".")
-        rs_rec = ruy.simp_read(orig, rs_path, cur_path, DC)
-        for index in range(len(rs_rec)):
-            RS_current_path = cur_path + [index]
-            RS = ruy.read_entry(
-                orig, MandT, "ResearchSubject", cur_path=RS_current_path
-            )
-            RS = entity_value_transforms(RS, "ResearchSubject", MandT)
-            spec_rel_path = MandT["Specimen"]["Mapping"]["id"]["samples"].split(".")
-            spec_rel_path.pop()
-            spec_rel_path = ".".join(spec_rel_path)
-            tip["Specimen"] += add_Specimen_rec(
-                orig,
-                MandT,
-                DC,
-                cur_path=RS_current_path + ["samples"],
-                rel_path=spec_rel_path,
-                endpoint="files",
-            )
-            for specimen in tip["Specimen"]:
-                specimen = entity_value_transforms(specimen, "Specimen", MandT)
-            diag_path = MandT["Diagnosis"]["Mapping"]["id"]
-            diag_path = diag_path.split(".")
-            diag_path.pop()
+        #rs_path = MandT["ResearchSubject"]["Mapping"]["id"]
+        #rs_path = rs_path.split(".")
+        #rs_path.pop()
+        #rs_path = ".".join(rs_path)
+        #cur_path = rs_path.split(".")
+        #rs_rec = ruy.simp_read(orig, rs_path, cur_path, DC)
+        #for index in range(len(rs_rec)):
+        #    RS_current_path = cur_path + [index]
+        #    RS = ruy.read_entry(
+        #        orig, MandT, "ResearchSubject", cur_path=RS_current_path
+        #    )
+        #    RS = entity_value_transforms(RS, "ResearchSubject", MandT)
+        #    spec_rel_path = MandT["Specimen"]["Mapping"]["id"]["samples"].split(".")
+        #    spec_rel_path.pop()
+        #    spec_rel_path = ".".join(spec_rel_path)
+        #    tip["Specimen"] += add_Specimen_rec(
+        #        orig,
+        #        MandT,
+        #        DC,
+        #        cur_path=RS_current_path + ["samples"],
+        #        rel_path=spec_rel_path,
+        #        endpoint="files",
+        #    )
+        #    for specimen in tip["Specimen"]:
+        #        specimen = entity_value_transforms(specimen, "Specimen", MandT)
+        #    diag_path = MandT["Diagnosis"]["Mapping"]["id"]
+        #    diag_path = diag_path.split(".")
+        #    diag_path.pop()
             # diag_path = ".".join(diag_path)
-            diagcur_path = RS_current_path + [diag_path[-1]]
-            diag_path = ".".join(diag_path)
-            RS["Diagnosis"] = []
-            ent_rec = ruy.simp_read(orig, diag_path, diagcur_path, DC)
-            if isinstance(ent_rec, list):
-                for diag_rec in range(len(ent_rec)):
-                    temp_diag = ruy.read_entry(
-                        orig, MandT, "Diagnosis", cur_path=diagcur_path + [diag_rec]
-                    )
-                    treat_path = MandT["Treatment"]["Mapping"]["id"]
-                    treat_path = treat_path.split(".")
-                    treat_path.pop()
+        #    diagcur_path = RS_current_path + [diag_path[-1]]
+        #    diag_path = ".".join(diag_path)
+        #    RS["Diagnosis"] = []
+        #    ent_rec = ruy.simp_read(orig, diag_path, diagcur_path, DC)
+        #    if isinstance(ent_rec, list):
+        #        for diag_rec in range(len(ent_rec)):
+        #            temp_diag = ruy.read_entry(
+        #                orig, MandT, "Diagnosis", cur_path=diagcur_path + [diag_rec]
+        #            )
+        #            treat_path = MandT["Treatment"]["Mapping"]["id"]
+        #            treat_path = treat_path.split(".")
+        #            treat_path.pop()
                     # diag_path = ".".join(diag_path)
-                    treatcur_path = diagcur_path + [diag_rec] + [treat_path[-1]]
-                    treat_path = ".".join(treat_path)
-                    temp_diag["Treatment"] = []
-                    treat_recs = ruy.simp_read(orig, treat_path, treatcur_path, DC)
-                    if isinstance(treat_recs, list) and treat_recs != []:
-                        temp_diag["Treatment"] = []
-                        for treat in range(len(treat_recs)):
-                            temp_diag["Treatment"].append(
-                                ruy.read_entry(
-                                    orig,
-                                    MandT,
-                                    "Treatment",
-                                    cur_path=treatcur_path + [treat],
-                                )
-                            )
-                    elif isinstance(treat_recs, dict):
-                        temp_diag["Treatment"] = [
-                            ruy.read_entry(
-                                orig, MandT, "Treatment", cur_path=treatcur_path
-                            )
-                        ]
+        #            treatcur_path = diagcur_path + [diag_rec] + [treat_path[-1]]
+        #            treat_path = ".".join(treat_path)
+        #            temp_diag["Treatment"] = []
+        #            treat_recs = ruy.simp_read(orig, treat_path, treatcur_path, DC)
+        #            if isinstance(treat_recs, list) and treat_recs != []:
+        #                temp_diag["Treatment"] = []
+        #                for treat in range(len(treat_recs)):
+        #                    temp_diag["Treatment"].append(
+        #                        ruy.read_entry(
+        #                            orig,
+        #                            MandT,
+        #                            "Treatment",
+        #                            cur_path=treatcur_path + [treat],
+        #                        )
+        #                    )
+        #            elif isinstance(treat_recs, dict):
+        #                temp_diag["Treatment"] = [
+        #                    ruy.read_entry(
+        #                        orig, MandT, "Treatment", cur_path=treatcur_path
+        #                    )
+        #                ]
                     # else:
                     #    temp_diag["Treatment"] = []
-                    RS["Diagnosis"].append(temp_diag)
-            elif isinstance(ent_rec, dict):
-                temp_diag = ruy.read_entry(
-                    orig, MandT, "Diagnosis", cur_path=diagcur_path
-                )
-                treat_path = MandT["Treatment"]["Mapping"]["id"]
-                treat_path = treat_path.split(".")
-                treat_path.pop()
+        #            RS["Diagnosis"].append(temp_diag)
+        #    elif isinstance(ent_rec, dict):
+        #        temp_diag = ruy.read_entry(
+        #            orig, MandT, "Diagnosis", cur_path=diagcur_path
+        #        )
+        #        treat_path = MandT["Treatment"]["Mapping"]["id"]
+        #        treat_path = treat_path.split(".")
+        #        treat_path.pop()
                 # diag_path = ".".join(diag_path)
-                treatcur_path = diagcur_path + [treat_path[-1]]
-                treat_path = ".".join(treat_path)
-                temp_diag["Treatment"] = []
-                treat_rec = ruy.simp_read(orig, diag_path, treatcur_path, DC)
-                if isinstance(treat_rec, list) and treat_rec != []:
-                    temp_diag["Treatment"] = []
-                    for treat in range(len(treat_rec)):
-                        temp_diag["Treatment"].append(
-                            ruy.read_entry(
-                                orig, MandT, "Treatment", cur_path=treat_path + [treat]
-                            )
-                        )
-                elif isinstance(treat_rec, dict):
-                    temp_diag["Treatment"] = [
-                        ruy.read_entry(orig, MandT, "Treatment", cur_path=treatcur_path)
-                    ]
-                else:
-                    temp_diag["Treatment"] = []
-                RS["Diagnosis"].append(temp_diag)
+        #        treatcur_path = diagcur_path + [treat_path[-1]]
+        #        treat_path = ".".join(treat_path)
+        #        temp_diag["Treatment"] = []
+        #        treat_rec = ruy.simp_read(orig, diag_path, treatcur_path, DC)
+        #        if isinstance(treat_rec, list) and treat_rec != []:
+        #            temp_diag["Treatment"] = []
+        #            for treat in range(len(treat_rec)):
+        #                temp_diag["Treatment"].append(
+        #                    ruy.read_entry(
+        #                        orig, MandT, "Treatment", cur_path=treat_path + [treat]
+        #                    )
+        #                )
+        #        elif isinstance(treat_rec, dict):
+        #            temp_diag["Treatment"] = [
+        #                ruy.read_entry(orig, MandT, "Treatment", cur_path=treatcur_path)
+        #            ]
+        #        else:
+        #            temp_diag["Treatment"] = []
+        #        RS["Diagnosis"].append(temp_diag)
             # else:
             #    RS["Diagnosis"] = []
 
-            tip["ResearchSubject"].append(RS)
+        #    tip["ResearchSubject"].append(RS)
 
         return tip

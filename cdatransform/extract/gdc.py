@@ -29,13 +29,33 @@ def get_total_number(endpoint) -> int:
     return result.json()["data"]["pagination"]["total"]
 
 
+def find_all_deepest_specimens(samples) -> list:
+    ids = []
+    for sample in samples:
+        try:
+            for portion in sample["portions"]:
+                if portion.get("slides") or portion.get("analytes"):
+                    ids.extend([slide["slide_id"] for slide in portion.get("slides",[])])
+                    if portion.get("analytes"):
+                        for analyte in portion["analytes"]:
+                            try:
+                                ids.extend([aliquot["aliquot_id"] for aliquot in analyte["aliquots"]])
+                            except:
+                                ids.append(analyte["analyte_id"])
+                else:
+                    ids.append(portion["portion_id"])
+        except:
+            ids.append(sample["sample_id"])
+    return ids
+
+
 class GDC:
     def __init__(
         self,
         cases_endpoint: str = "https://api.gdc.cancer.gov/v0/cases",
         files_endpoint: str = "https://api.gdc.cancer.gov/v0/files",
         #parent_spec: bool = True,
-        field_break: int = 100,
+        field_break: int = 101,
         fields: list = [],
         make_spec_file = None
     ) -> None:
@@ -74,9 +94,10 @@ class GDC:
                 if n % page_size == 0:
                     sys.stderr.write(f"Wrote {n} files in {time.time() - t0}s\n")
                 if self.make_spec_file:
-                    for entity in file["associated_entities"]:
+                    for entity in file.get("associated_entities",[]):
                         if entity["entity_type"] != "case":
                             specimen_files_dict[entity["entity_id"]].append(file["file_id"])
+
 
         sys.stderr.write(f"Wrote {n} files in {time.time() - t0}s\n")
         if self.make_spec_file:
@@ -126,7 +147,6 @@ class GDC:
                         "size": page_size,
                         "from": offset,
                     }
-            {"id1": {"field 1": blah, "field2"}}
             result = retry_get(self.cases_endpoint, params = params)
             hits = result.json()["data"]["hits"]
             result_dict = {hit["case_id"]:hit for hit in hits}

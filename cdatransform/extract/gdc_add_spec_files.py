@@ -15,7 +15,11 @@ def main() -> None:
     # Read in specimen:files mapping to dict
     with gzip.open(args.spec_files_file, "r") as s_f_map:
         spec_files = json.loads(s_f_map.read())
+    sys.stderr.write(f"Read {len(spec_files)} specimen: file mappings\n")
     # Add list of file_ids to all specimens (samples, portions, etc.)
+    t0 = time.time()
+    n = 0
+    page_size = 10000
     with gzip.open(args.out_file, "wb") as outf:
         writer = jsonlines.Writer(outf)
         with gzip.open(args.cases_file, "r") as inf:
@@ -34,6 +38,10 @@ def main() -> None:
                                 aliquot["files"] = spec_files.get(aliquot["aliquot_id"],[])
                 # Added files to all specimens in spec:file dictionary for that case. Write case
                 writer.write(out_case)
+                n += 1
+                if n % page_size == 0:
+                    sys.stderr.write(f"Wrote {n} cases w/ spec files {time.time() - t0}s\n")
+            sys.stderr.write(f"Wrote {n} cases w/ spec files in {time.time() - t0}s\n")
 
 
 if __name__ == "__main__":

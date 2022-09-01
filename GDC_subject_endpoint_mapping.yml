@@ -100,17 +100,22 @@ Specimen:
             analytes: 'cases.samples.portions.portion_id'
             aliquots: 'cases.samples.portions.analytes.analyte_id'
         derived_from_subject: 'cases.submitter_id'
-
+        Files: #All created in the extraction process
+            samples: 'cases.samples.files'
+            portions: 'cases.samples.portions.files'
+            slides: 'cases.samples.portions.slides.files'
+            analytes: 'cases.samples.portions.analytes.files'
+            aliquots: 'cases.samples.portions.analytes.aliquots.files'
     Transformations:
         days_to_collection:
             - ['coalesce', [] ]
 
-    Linkers:
-        Files:
-            samples: 'cases.samples.files.file_id'
-            portions: 'cases.samples.portions.files.file_id'
-            slides: 'cases.samples.portions.slides.files.file_id'
-            analytes: 'cases.samples.portions.analytes.files.file_id'
-            aliquots: 'cases.samples.portions.analytes.aliquots.files.file_id'
+    #Linkers:
+    #    Files:
+    #        samples: 'cases.samples.files.file_id'
+    #        portions: 'cases.samples.portions.files.file_id'
+    #        slides: 'cases.samples.portions.slides.files.file_id'
+    #        analytes: 'cases.samples.portions.analytes.files.file_id'
+    #        aliquots: 'cases.samples.portions.analytes.aliquots.files.file_id'
         
             

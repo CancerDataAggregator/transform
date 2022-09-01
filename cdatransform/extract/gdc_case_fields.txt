@@ -275,3 +275,4 @@ tissue_source_site.code
 tissue_source_site.name
 tissue_source_site.project
 tissue_source_site.tissue_source_site_id
+files.file_id
