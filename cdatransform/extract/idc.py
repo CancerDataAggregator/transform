@@ -359,13 +359,13 @@ class IDC:
         query = self.create_all_udfs()
         query += """ SELECT """
         if self.endpoint == "Patient":
-            query += self.add_entity_fields("Patient")
+            query += self.add_entity_fields("Variant_Call")
             query += """, [STRUCT("""
-            query += self.add_entity_fields("ResearchSubject")
-            query += """, """
-            query += self.add_linkers("ResearchSubject")
-            query += """)] AS ResearchSubject, """
-            query += self.add_linkers("Patient")
+            query += self.add_entity_fields("Gene")
+            # query += """, """
+            # query += self.add_linkers("ResearchSubject")
+            query += """)] AS Gene"""
+            # query += self.add_linkers("Patient")
             # query += """ARRAY_AGG(STRUCT("""
             # query += self.add_entity_fields("File")
             # query += """)) as File """
