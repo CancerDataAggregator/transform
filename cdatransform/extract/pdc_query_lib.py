@@ -261,7 +261,6 @@ def query_single_case_a(case_id):
 """
     # )
     query = template.substitute(case_id=case_id)
-    print(query)
     return query
 
 
@@ -374,7 +373,6 @@ def query_single_case_b(case_id):
     }"""
     )
     query = template.substitute(case_id=case_id)
-    print(query)
     return query
 
 
@@ -408,7 +406,7 @@ def query_files_bulk(offset, limit):
 def query_metadata_file(file_id):
     template = Template(
         """{
-  fileMetadata(file_id: $file_id acceptDUA: true) {
+  fileMetadata(file_id: "$file_id" acceptDUA: true) {
     file_id
     file_name
     file_location
@@ -459,7 +457,7 @@ def query_uifiles_paginated_total(offset, limit):
 def query_ui_file(file_id):
     template = Template(
         """{
-    getPaginatedUIFile(file_id: $file_id acceptDUA: true) {
+    getPaginatedUIFile(file_id: "$file_id" acceptDUA: true) {
         uiFiles {
             file_id
             study_id

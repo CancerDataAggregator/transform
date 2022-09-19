@@ -7,36 +7,24 @@ import sys
 import gzip
 import argparse
 import pathlib
+import shutil
 
 from cdatransform.lib import get_case_ids
 from .lib import retry_get
 from .pdc_query_lib import *
 
-# from .pdc_query_lib import (
-#    query_all_cases,
-#    query_files_bulk,
-#    query_files_paginated,
-#    make_all_programs_query,
-#    query_study_files,
-#
-# )
-# from .pdc_query_lib import (
-#    make_study_query,
-#    case_demographics,
-#    case_diagnoses,
-#    case_samples,
-#    specimen_taxon,
-# )
+
 class hashabledict(dict):
     def __hash__(self):
         return hash(tuple(sorted(self.items())))
 
 
 class PDC:
-    def __init__(self, endpoint="https://pdc.cancer.gov/graphql") -> None:
+    def __init__(
+        self, endpoint="https://pdc.cancer.gov/graphql", make_spec_file=None
+    ) -> None:
         self.endpoint = endpoint
-        self.temp_files_file = "temp_cache.jsonl.gz"
-        # self._files_per_sample_dict = self._fetch_file_data_from_cache(cache_file)
+        self.make_spec_file = make_spec_file
 
     def cases(
         self,
@@ -44,6 +32,10 @@ class PDC:
     ):
 
         if case_ids:
+            # Have one case_id or list of case_ids from a file.
+            # Get all info from the case endpoint query in PDC. Need to split fields
+            # for the queries and merge. PDC hates long query strings
+            # Note: used mostly for testing. Does not get Study info for each case
             for case_id in case_ids:
                 case_info_a = retry_get(
                     self.endpoint, params={"query": query_single_case_a(case_id)}
@@ -53,15 +45,18 @@ class PDC:
                     self.endpoint, params={"query": query_single_case_b(case_id)}
                 )
                 print("got part b")
+                # Merge two halves of case info
                 case = {
                     **case_info_a.json()["data"]["case"][0],
                     **case_info_b.json()["data"]["case"][0],
                 }
                 print("merged_dicts")
-                print(case)
-                # case = case_info_b.json()["data"]["case"]
                 yield case
         else:
+            # Downloading bulk case info. Used for populating data. PDC API is
+            # awful, and has no good way to get ALL bulk info for cases. Must
+            # loop over all programs, projects, studies and extract case demographics,
+            # diagnoses, sample/aliquot, and taxon info per study, and merge results.
             jData = retry_get(
                 self.endpoint, params={"query": make_all_programs_query()}
             )
@@ -83,31 +78,22 @@ class PDC:
                         study_rec.update(study)
                         # Get demographic info
                         dem = self.demographics_for_study(pdc_study_id, 100)
-                        if case_ids is not None:
-                            dem = self.filter_cases(dem, case_ids)
-                            if dem == []:
-                                continue
                         # Get diagnosis info
                         diag = self.diagnoses_for_study(pdc_study_id, 100)
-                        if case_ids is not None:
-                            diag = self.filter_cases(diag, case_ids)
                         # Get samples info
                         samp = self.samples_for_study(pdc_study_id, 100)
-                        if case_ids is not None:
-                            samp = self.filter_cases(samp, case_ids)
+                        # Get taxon info
                         taxon = self.taxon_for_study(pdc_study_id)
+                        # Aggregate all case info for this study
                         out = agg_cases_info_for_study(
                             study_rec, dem, diag, samp, taxon, added_info
                         )
                         for case in out:
                             yield case
-        # for case_id in case_ids:
-        #    result = retry_get(
-        #        self.endpoint, params={"query": query_single_case(case_id=case_id)}
-        #    )
-        #    yield result.json()["data"]["case"][0]
 
     def get_case_id_list(self):
+        # This function was previously used to get all case_ids in PDC, then ping PDC
+        # for every single case_id found. They did not like that
         result = retry_get(self.endpoint, params={"query": query_all_cases()})
         for case in result.json()["data"]["allCases"]:
             yield case["case_id"]
@@ -118,6 +104,7 @@ class PDC:
         with gzip.open(out_file, "wb") as fp:
             writer = jsonlines.Writer(fp)
             for case in self.cases(case_ids):
+                # Save for another script
                 # samples_files_list = []
                 # for index, sample in enumerate(case["samples"]):
                 # Based on the PDC data model, all files in PDC are associated
@@ -146,43 +133,70 @@ class PDC:
     def save_files(self, out_file, file_ids=None):
         t0 = time.time()
         n = 0
-        # Write metadata_files_chunks
-        # metadata_files = {
-        #    file["file_id"]: file
-        #    for chunk in self._metadata_files_chunk(file_ids)
-        #    for file in chunk
-        # }
-        # with gzip.open("meta_out.jsonl.gz", "wb") as fp:
-        #    writer = jsonlines.Writer(fp)
-        #    for file, rec in metadata_files.items():
-        #        if file_ids is None or file in file_ids:
-        #            writer.write(rec)
-        #        n += 1
-        #        if n % 500 == 0:
-        #            sys.stderr.write(f"Wrote {n} files in {time.time() - t0}s\n")
-        # sys.stderr.write(f"Wrote {n} metadata_files in {time.time() - t0}s\n")
-        # n = 0
-        # uifiles = {
-        #    file["file_id"]: file for chunk in self._UIfiles_chunk() for file in chunk
-        # }
-        # with gzip.open("ui_out.jsonl.gz", "wb") as fp:
-        #    writer = jsonlines.Writer(fp)
-        #    for file, rec in uifiles.items():
-        #        if file_ids is None or file in file_ids:
-        #            writer.write(rec)
-        #        n += 1
-        #        if n % 500 == 0:
-        #            sys.stderr.write(f"Wrote {n} files in {time.time() - t0}s\n")
-        # sys.stderr.write(f"Wrote {n} ui_files in {time.time() - t0}s\n")
+        # Get and write metadata_files_chunks
+        # This makes a dictionary of specimen_id: file_ids to link later on
+        specimen_files_dict = defaultdict(list)
+        metadata_files = {
+            file["file_id"]: file
+            for chunk in self._metadata_files_chunk(file_ids)
+            for file in chunk
+        }
+        with gzip.open("meta_out.jsonl.gz", "wb") as fp:
+            writer = jsonlines.Writer(fp)
+            for file, rec in metadata_files.items():
+                if file_ids is None or file in file_ids:
+                    writer.write(rec)
+                    for aliquot in rec.get("aliquots", []):
+                        specimen_files_dict[aliquot["sample_id"]].append(rec["file_id"])
+                        specimen_files_dict[aliquot["aliquot_id"]].append(
+                            rec["file_id"]
+                        )
+                n += 1
+                if n % 500 == 0:
+                    sys.stderr.write(f"Wrote {n} files in {time.time() - t0}s\n")
+        sys.stderr.write(f"Wrote {n} metadata_files in {time.time() - t0}s\n")
+        # Write specimen_files_dict to file
+        if self.make_spec_file:
+            for specimen, files in specimen_files_dict.items():
+                specimen_files_dict[specimen] = list(set(files))
+            with gzip.open(self.make_spec_file, "wt", encoding="ascii") as out:
+                json.dump(specimen_files_dict, out)
+        # Get and write UIfile chunks - PDC does not support using any UI calls, but
+        # Seven Bridges does it... so here we are. Note: CDA does not use anything from
+        # the UI files, and it is strictly for Seven Bridges benefit
+        n = 0
+        if file_ids:
+            uifiles = {
+                file["file_id"]: file
+                for chunk in self._UIfiles_chunk()
+                for file in chunk
+                if file["file_id"] in file_ids
+            }
+        else:
+            uifiles = {
+                file["file_id"]: file
+                for chunk in self._UIfiles_chunk()
+                for file in chunk
+            }
+        with gzip.open("ui_out.jsonl.gz", "wb") as fp:
+            writer = jsonlines.Writer(fp)
+            for file, rec in uifiles.items():
+                if file_ids is None or file in file_ids:
+                    writer.write(rec)
+                n += 1
+                if n % 500 == 0:
+                    sys.stderr.write(f"Wrote {n} files in {time.time() - t0}s\n")
+        sys.stderr.write(f"Wrote {n} ui_files in {time.time() - t0}s\n")
+        # Get and write files from studies. Similar to bulk cases, loop over program,
+        # project, study and extract files per study
         study_files = defaultdict(list)
-        # with gzip.open(self.study_file_out_file, "wb") as fp:
-        #    writer = jsonlines.Writer(fp)
         n = 0
         with gzip.open("studyfiles_out.jsonl.gz", "wb") as fp:
             writer = jsonlines.Writer(fp)
             for chunk in self._study_files_chunk():
                 for file in chunk:
-                    writer.write(file)
+                    if file_ids is None or file["file_id"] in file_ids:
+                        writer.write(file)
                     study_files[file["file_id"]].append(file)
                     n += 1
                     if n % 5000 == 0:
@@ -190,39 +204,10 @@ class PDC:
                             f"Pulled {n} study files in {time.time() - t0}s\n"
                         )
         sys.stderr.write(f"Pulled {n} study files in {time.time() - t0}s\n")
-        # Have metadata, UI, and study_files. Merge three dicts? First clean up study_files
-        study_files_merged = {}
-        for file, recs in study_files.items():
-            if len(recs) == 1:
-                recs = recs[0]
-            else:
-                rec_init = [{k: [v] for k, v in rec.items()} for rec in recs]
-                for rec in rec_init[1:]:
-                    for k, v in rec.items():
-                        if k in rec_init[0]:
-                            rec_init[0][k].extend(v)
-                        else:
-                            rec_init[0][k] = v
-                rec_out = {}
-                for k, v in rec_init[0].items():
-                    if isinstance(v[0], dict):
-                        v = [hashabledict(v_i) for v_i in v]
-                    dist_v = list(set(v))
-                    if len(dist_v) == 1:
-                        dist_v = dist_v[0]
-                    rec_out[k] = dist_v
-                recs = rec_out
-            study_files_merged[file] = recs
-        n = 0
-        with gzip.open("studyfiles_condensed_out.jsonl.gz", "wb") as fp:
-            writer = jsonlines.Writer(fp)
-            for file, rec in study_files_merged.items():
-                if file_ids is None or file in file_ids:
-                    writer.write(rec)
-                n += 1
-                if n % 500 == 0:
-                    sys.stderr.write(f"Wrote {n} files in {time.time() - t0}s\n")
-        sys.stderr.write(f"Wrote {n} study_files in {time.time() - t0}s\n")
+        with gzip.open(out_file, "wb") as f_out:
+            for f in ["meta_out.jsonl.gz", "studyfiles_out.jsonl.gz"]:
+                with gzip.open(f) as f_in:
+                    shutil.copyfileobj(f_in, f_out)
 
     def filter_cases(self, records, case_ids):
         out = []
@@ -297,47 +282,35 @@ class PDC:
                 result = retry_get(
                     self.endpoint, params={"query": query_metadata_file(file_id)}
                 )
-                files.append(result.json()["data"]["fileMetadata"])
+                files.extend(result.json()["data"]["fileMetadata"])
             yield files
         else:
             totalfiles = self._get_total_files()
             limit = 750
             for page in range(0, totalfiles, limit):
                 sys.stderr.write(
-                    f"<< Processing page {int(page/limit) + 1}/{ceil(totalfiles/limit)} >>\n"
+                    f"<< Processing page {int(page/limit) + 1}/{ceil(totalfiles/limit)} Metadata Files >>\n"
                 )
                 result = retry_get(
                     self.endpoint, params={"query": query_files_bulk(page, limit)}
                 )
                 yield result.json()["data"]["fileMetadata"]
 
-    def _UIfiles_chunk(self, file_ids=None):
-        if file_ids:
-            sys.stderr.write("why here?")
-            files = []
-            for file_id in file_ids:
-                result = retry_get(
-                    self.endpoint, params={"query": query_ui_file(file_id)}
-                )
-                files.append(result.json()["data"]["getPaginatedUIFile"])
-            yield files
-        else:
-            totalfiles = self._get_total_uifiles()
-            limit = 750
-            for page in range(0, totalfiles, limit):
-                sys.stderr.write(
-                    f"<< Processing page {int(page/limit) + 1}/{ceil(totalfiles/limit)} >>\n"
-                )
-                sys.stderr.write("\n")
-                sys.stderr.write(query_UIfiles_bulk(page, limit))
-                result = retry_get(
-                    self.endpoint, params={"query": query_UIfiles_bulk(page, limit)}
-                )
-                yield result.json()["data"]["getPaginatedUIFile"]["uiFiles"]
+    def _UIfiles_chunk(self):
+        totalfiles = self._get_total_uifiles()
+        limit = 750
+        for page in range(0, totalfiles, limit):
+            sys.stderr.write(
+                f"<< Processing page {int(page/limit) + 1}/{ceil(totalfiles/limit)}  UI Files >>\n"
+            )
+            sys.stderr.write("\n")
+            result = retry_get(
+                self.endpoint, params={"query": query_UIfiles_bulk(page, limit)}
+            )
+            yield result.json()["data"]["getPaginatedUIFile"]["uiFiles"]
 
     def _study_files_chunk(
         self,
-        case_ids=None,
     ):
         # loop over studies to get files
         jData = retry_get(self.endpoint, params={"query": make_all_programs_query()})
@@ -628,11 +601,13 @@ def main():
         "--files", help="Optional file with list of file ids (one to a line)"
     )
     parser.add_argument(
-        "--files_out_file", help="Out files endpoint file name. Should end with .gz"
+        "--spec_out_file",
+        help="Name of specimen_id: file_ids output file. Should end with .json.gz",
     )
     args = parser.parse_args()
+    print(str(get_case_ids(case=args.file, case_list_file=args.files)))
+    pdc = PDC(make_spec_file=args.spec_out_file)
 
-    pdc = PDC()
     if args.case or args.cases or args.endpoint == "cases":
         pdc.save_cases(
             args.out_file,

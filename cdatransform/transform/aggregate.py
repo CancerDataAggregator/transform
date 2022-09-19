@@ -18,7 +18,7 @@ def get_coalesce_field_names(merge_field_dict):
     return coal_fields
 
 
-def prep_log_merge_error(entities, merge_field_dict):
+def prep_log_merge_error(entities, merge_field_dict, endpoint):
     sources = list(entities.keys())
     coal_fields = get_coalesce_field_names(merge_field_dict)
     ret_dat = dict()
@@ -32,16 +32,27 @@ def prep_log_merge_error(entities, merge_field_dict):
             patient_id = val.get("id")
             break
     for source, val in entities.items():
-        if val.get("ResearchSubject")[0].get("member_of_research_project") is not None:
+        if endpoint == "subjects":
             project = val.get("ResearchSubject")[0].get("member_of_research_project")
+            break
+        else:
+            if val.get("associated_project") is None:
+                project = "from-metadata-query"
+            else:
+                project = val["associated_project"]
+            # metadata query from PDC has no project listed
             break
     return coal_fields, ret_dat, patient_id, project
 
 
-def log_merge_error(entities, all_sources, fields, log):
-    coal_fields, coal_dat, patient_id, project = prep_log_merge_error(entities, fields)
-    all_sources.insert(0, "patient")
-    all_sources.insert(1, patient_id)
+def log_merge_error(entities, all_sources, fields, log, endpoint):
+    coal_fields, coal_dat, id, project = prep_log_merge_error(
+        entities, fields, endpoint
+    )
+    all_sources.insert(
+        0, endpoint[:-1]
+    )  # remove the 's' at the end of the endpoint names
+    all_sources.insert(1, id)
     all_sources.insert(2, "project")
     all_sources.insert(3, project)
     log.agree_sources(coal_dat, "_".join(all_sources), coal_fields)
@@ -103,7 +114,6 @@ def main(debug=False):
         for rec in readDC:
             id = rec.get("id")
             entity_rec_mapping[id] += [rec]
-    print(args.output_file)
     with gzip.open(args.output_file, "w") as outfp:
         writeDC = jsonlines.Writer(outfp)
         log = LogValidation()
@@ -122,46 +132,42 @@ def main(debug=False):
                     ]
                     # file_ids = [file.get('id') for patient in patients for file in patient.get('File')]
                     log = log_merge_error(
-                        entities, case_ids, how_to_merge["Patient_merge"], log
+                        entities, case_ids, how_to_merge["Patient_merge"], log, endpoint
                     )
+                    for RS in merged_entry["ResearchSubject"]:
+                        # RS["File"] = merge_entities_with_same_id(
+                        #    RS["File"], how_to_merge["File_merge"]
+                        # )
+                        RS["Diagnosis"] = merge_entities_with_same_id(
+                            RS["Diagnosis"], how_to_merge["Diagnosis_merge"]
+                        )
+                        RS["Specimen"] = merge_entities_with_same_id(
+                            RS["Specimen"], how_to_merge["Specimen_merge"]
+                        )
+                        # for specimen in RS["Specimen"]:
+                        #    specimen["File"] = merge_entities_with_same_id(
+                        #        specimen["File"], how_to_merge["File_merge"]
+                        #    )
                 else:
                     merged_entry = mf.merge_fields_level(
                         entities, how_to_merge["File_merge"], lines_cases
                     )
+                    # merged_entry["Specimen"] = merge_entities_with_same_id(
+                    #    merged_entry["Specimen"], how_to_merge["Specimen_merge"]
+                    # )
+                    # merged_entry["Subject"] = merge_entities_with_same_id(
+                    #    merged_entry["Subject"], how_to_merge["Patient_merge"]
+                    # )
                     file_ids = [record.get("id") for record in records]
                     # file_ids = [file.get('id') for patient in patients for file in patient.get('File')]
                     log = log_merge_error(
-                        entities, file_ids, how_to_merge["File_merge"], log
+                        entities, file_ids, how_to_merge["File_merge"], log, endpoint
                     )
 
             # merged_entry["File"] = merge_entities_with_same_id(
             #    merged_entry["File"], how_to_merge["File_merge"]
             # )
-            merged_entry["ResearchSubject"] = merge_entities_with_same_id(
-                merged_entry["ResearchSubject"], how_to_merge["ResearchSubject_merge"]
-            )
-            for RS in merged_entry["ResearchSubject"]:
-                # RS["File"] = merge_entities_with_same_id(
-                #    RS["File"], how_to_merge["File_merge"]
-                # )
-                RS["Diagnosis"] = merge_entities_with_same_id(
-                    RS["Diagnosis"], how_to_merge["Diagnosis_merge"]
-                )
-                if endpoint == "subjects":
-                    RS["Specimen"] = merge_entities_with_same_id(
-                        RS["Specimen"], how_to_merge["Specimen_merge"]
-                    )
-                # for specimen in RS["Specimen"]:
-                #    specimen["File"] = merge_entities_with_same_id(
-                #        specimen["File"], how_to_merge["File_merge"]
-                #    )
-            if endpoint == "files":
-                merged_entry["Specimen"] = merge_entities_with_same_id(
-                    merged_entry["Specimen"], how_to_merge["Specimen_merge"]
-                )
-                merged_entry["Subject"] = merge_entities_with_same_id(
-                    merged_entry["Subject"], how_to_merge["Patient_merge"]
-                )
+
             writeDC.write(merged_entry)
         # log.generate_report(logging.getLogger("test"))
 

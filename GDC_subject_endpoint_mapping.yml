@@ -13,13 +13,13 @@ Patient:
         vital_status: 'cases.demographic.vital_status'
         days_to_death: 'cases.demographic.days_to_death'
         cause_of_death: 'cases.demographic.cause_of_death'
-        
+        #Files: 'cases.files'
     Transformations:
         subject_associated_project:
             - ['str_to_list', [] ]
     
-    Linkers:
-        Files: 'cases.files.file_id'
+    #Linkers:
+    #    Files: 'cases.files.file_id'
 
 ResearchSubject:
     Mapping:
@@ -30,9 +30,9 @@ ResearchSubject:
         member_of_research_project: 'cases.project.project_id'
         primary_diagnosis_condition: 'cases.disease_type'
         primary_diagnosis_site: 'cases.primary_site'
-
-    Linkers:
-        Files: 'cases.files.file_id'
+        #Files: 'cases.files'
+    #Linkers:
+    #    Files: 'cases.files.file_id'
             
 Diagnosis:
     Mapping:
@@ -100,12 +100,12 @@ Specimen:
             analytes: 'cases.samples.portions.portion_id'
             aliquots: 'cases.samples.portions.analytes.analyte_id'
         derived_from_subject: 'cases.submitter_id'
-        Files: #All created in the extraction process
-            samples: 'cases.samples.files'
-            portions: 'cases.samples.portions.files'
-            slides: 'cases.samples.portions.slides.files'
-            analytes: 'cases.samples.portions.analytes.files'
-            aliquots: 'cases.samples.portions.analytes.aliquots.files'
+        #Files: #All created in the extraction process
+        #    samples: 'cases.samples.files'
+        #    portions: 'cases.samples.portions.files'
+        #    slides: 'cases.samples.portions.slides.files'
+        #    analytes: 'cases.samples.portions.analytes.files'
+        #    aliquots: 'cases.samples.portions.analytes.aliquots.files'
     Transformations:
         days_to_collection:
             - ['coalesce', [] ]

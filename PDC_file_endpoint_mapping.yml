@@ -16,11 +16,17 @@ File:
         imaging_modality: 'files.NOT_APPLICABLE'
         dbgap_accession_number: 'files.dbgap_control_number'
         imaging_series: 'files.NOT_APPLICABLE'
+    
+    Linkers:
+        Subjects: 'files.aliquots.case_submitter_id'
+        ResearchSubjects: 'files.aliquots.case_id'
+        Specimens: 'files.aliquots.aliquot_id'
+
     Transformations:
         drs_uri:
             - ['format_drs',  [] ]
-        #associated_project:
-        #    - ['str_to_list', [] ]
+        associated_project:
+            - ['str_to_list', [] ]
 
 Patient:
     Mapping:

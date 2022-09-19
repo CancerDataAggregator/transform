@@ -1,6 +1,7 @@
 import cdatransform.transform.transform_lib.value_transformations as vt
 import cdatransform.transform.read_using_YAML as ruy
 from cdatransform.transform.validate import LogValidation
+import sys
 
 
 def add_Specimen_rec(orig, MandT, DC, **kwargs):
@@ -20,7 +21,7 @@ def add_Specimen_rec(orig, MandT, DC, **kwargs):
             # spec_rec["File"] = add_File_rec(
             #    orig, MandT, DC, cur_path=spec_path, rel_path=rel_path
             # )
-            #if endpoint == "cases":
+            # if endpoint == "cases":
             #    linkers = ruy.add_linkers(
             #        orig,
             #        MandT,
@@ -148,34 +149,39 @@ class Transform:
         cur_path = ["cases"]
         tip = ruy.read_entry(orig, MandT, "Patient", DC=DC)
         tip = entity_value_transforms(tip, "Patient", MandT)
-        linkers = ruy.add_linkers(
-            orig,
-            MandT,
-            "Patient",
-            DC,
-            linker=True,
-            cur_path=cur_path,
-            rel_path="cases",
-            endpoint=endpoint,
-        )
-        tip.update(linkers)
+        sys.stderr.write("Created Patient entity\n")
+        # linkers = ruy.add_linkers(
+        #    orig,
+        #    MandT,
+        #    "Patient",
+        #    DC,
+        #    linker=True,
+        #    cur_path=cur_path,
+        #    rel_path="cases",
+        #    endpoint=endpoint,
+        # )
+        # tip.update(linkers)
         # tip["File"] = add_File_rec(orig, MandT, DC)
         for field in ["ethnicity", "sex", "race"]:
             self._validate.distinct(tip, field)
+        sys.stderr.write("validate distinct eth, sex, race\n")
         self._validate.agree(tip, tip["id"], ["ethnicity", "sex", "race"])
+        sys.stderr.write("validate agreement eth, sex, race\n")
         RS = ruy.read_entry(orig, MandT, "ResearchSubject", DC=DC)
+        sys.stderr.write("Read RS entity\n")
         RS = entity_value_transforms(RS, "ResearchSubject", MandT)
-        linkers = ruy.add_linkers(
-            orig,
-            MandT,
-            "ResearchSubject",
-            DC,
-            linker=True,
-            cur_path=cur_path,
-            rel_path="cases",
-            endpoint=endpoint,
-        )
-        RS.update(linkers)
+        sys.stderr.write("applied value transformation to RS entity\n")
+        # linkers = ruy.add_linkers(
+        #    orig,
+        #    MandT,
+        #    "ResearchSubject",
+        #    DC,
+        #    linker=True,
+        #    cur_path=cur_path,
+        #    rel_path="cases",
+        #    endpoint=endpoint,
+        # )
+        # RS.update(linkers)
         for field in ["primary_diagnosis_condition", "primary_diagnosis_site"]:
             self._validate.distinct(RS, field)
         self._validate.agree(
@@ -267,32 +273,40 @@ class Transform:
     def files_transform(self, orig, MandT, DC, endpoint):
         tip = ruy.read_entry(orig, MandT, "File", DC=DC, endpoint=endpoint)
         tip = entity_value_transforms(tip, "File", MandT)
-        linkers = ruy.add_linkers(orig, MandT, 'File', DC, linker=True,
-                                   cur_path=[endpoint], rel_path=endpoint, endpoint=endpoint)
+        linkers = ruy.add_linkers(
+            orig,
+            MandT,
+            "File",
+            DC,
+            linker=True,
+            cur_path=[endpoint],
+            rel_path=endpoint,
+            endpoint=endpoint,
+        )
         tip.update(linkers)
-        #tip["Subject"] = []
-        #tip["ResearchSubject"] = []
-        #tip["Specimen"] = []
-        #subj_path = MandT["Patient"]["Mapping"]["id"]
-        #subj_path = subj_path.split(".")
-        #subj_path.pop()
-        #subj_path = ".".join(subj_path)
-        #cur_path = subj_path.split(".")
-        #subject_rec = ruy.simp_read(orig, subj_path, cur_path, DC)
-        #for index in range(len(subject_rec)):
+        # tip["Subject"] = []
+        # tip["ResearchSubject"] = []
+        # tip["Specimen"] = []
+        # subj_path = MandT["Patient"]["Mapping"]["id"]
+        # subj_path = subj_path.split(".")
+        # subj_path.pop()
+        # subj_path = ".".join(subj_path)
+        # cur_path = subj_path.split(".")
+        # subject_rec = ruy.simp_read(orig, subj_path, cur_path, DC)
+        # for index in range(len(subject_rec)):
         #    temp_subject = ruy.read_entry(
         #        orig, MandT, "Patient", cur_path=cur_path + [index]
         #    )
         #    temp_subject = entity_value_transforms(temp_subject, "Patient", MandT)
         #    tip["Subject"].append(temp_subject)
 
-        #rs_path = MandT["ResearchSubject"]["Mapping"]["id"]
-        #rs_path = rs_path.split(".")
-        #rs_path.pop()
-        #rs_path = ".".join(rs_path)
-        #cur_path = rs_path.split(".")
-        #rs_rec = ruy.simp_read(orig, rs_path, cur_path, DC)
-        #for index in range(len(rs_rec)):
+        # rs_path = MandT["ResearchSubject"]["Mapping"]["id"]
+        # rs_path = rs_path.split(".")
+        # rs_path.pop()
+        # rs_path = ".".join(rs_path)
+        # cur_path = rs_path.split(".")
+        # rs_rec = ruy.simp_read(orig, rs_path, cur_path, DC)
+        # for index in range(len(rs_rec)):
         #    RS_current_path = cur_path + [index]
         #    RS = ruy.read_entry(
         #        orig, MandT, "ResearchSubject", cur_path=RS_current_path
@@ -314,7 +328,7 @@ class Transform:
         #    diag_path = MandT["Diagnosis"]["Mapping"]["id"]
         #    diag_path = diag_path.split(".")
         #    diag_path.pop()
-            # diag_path = ".".join(diag_path)
+        # diag_path = ".".join(diag_path)
         #    diagcur_path = RS_current_path + [diag_path[-1]]
         #    diag_path = ".".join(diag_path)
         #    RS["Diagnosis"] = []
@@ -327,7 +341,7 @@ class Transform:
         #            treat_path = MandT["Treatment"]["Mapping"]["id"]
         #            treat_path = treat_path.split(".")
         #            treat_path.pop()
-                    # diag_path = ".".join(diag_path)
+        # diag_path = ".".join(diag_path)
         #            treatcur_path = diagcur_path + [diag_rec] + [treat_path[-1]]
         #            treat_path = ".".join(treat_path)
         #            temp_diag["Treatment"] = []
@@ -349,8 +363,8 @@ class Transform:
         #                        orig, MandT, "Treatment", cur_path=treatcur_path
         #                    )
         #                ]
-                    # else:
-                    #    temp_diag["Treatment"] = []
+        # else:
+        #    temp_diag["Treatment"] = []
         #            RS["Diagnosis"].append(temp_diag)
         #    elif isinstance(ent_rec, dict):
         #        temp_diag = ruy.read_entry(
@@ -359,7 +373,7 @@ class Transform:
         #        treat_path = MandT["Treatment"]["Mapping"]["id"]
         #        treat_path = treat_path.split(".")
         #        treat_path.pop()
-                # diag_path = ".".join(diag_path)
+        # diag_path = ".".join(diag_path)
         #        treatcur_path = diagcur_path + [treat_path[-1]]
         #        treat_path = ".".join(treat_path)
         #        temp_diag["Treatment"] = []
@@ -379,8 +393,8 @@ class Transform:
         #        else:
         #            temp_diag["Treatment"] = []
         #        RS["Diagnosis"].append(temp_diag)
-            # else:
-            #    RS["Diagnosis"] = []
+        # else:
+        #    RS["Diagnosis"] = []
 
         #    tip["ResearchSubject"].append(RS)
 

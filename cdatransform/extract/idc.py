@@ -204,7 +204,57 @@ class IDC:
             temp += ")"
         return temp
 
-    def field_line(self, k, val, entity):
+    def add_linkers(self, entity):
+        linkers_str = """ """
+        keys = list(self.mapping[entity]["Linkers"].keys())
+        for index in range(len(self.mapping[entity]["Linkers"].keys())):
+            if self.mapping[entity]["Linkers"][keys[index]] is not None:
+                field = self.mapping[entity]["Linkers"][keys[index]]
+                linkers_str += """ARRAY_AGG("""
+                if isinstance(field, str):
+                    field = field.split(".")
+                    field = field.pop()
+                    field = str(field)
+                elif isinstance(field, list):
+                    var_splits = []
+                    for var in field:
+                        if isinstance(var, str):
+                            val_split = var.split(".")
+                            if len(val_split) > 1:
+                                val_split.pop(0)
+                                val_split = val_split[0]
+                            elif val_split[0] == "NULL":
+                                val_split = "STRING(NULL)"
+                            else:
+                                val_split = "'" + val_split[0] + "'"
+                        else:
+                            val_split = var
+                        var_splits.append(val_split)
+                    print("var_splits before (linkers)")
+                    print(var_splits)
+                    if self.mapping[entity].get("Transformations", None) is not None:
+                        if (
+                            self.mapping[entity]["Transformations"].get(
+                                keys[index], None
+                            )
+                            is not None
+                        ):
+                            var_splits = self.add_udf_to_field_query(
+                                var_splits,
+                                self.mapping[entity]["Transformations"][keys[index]],
+                            )
+                    print("var_splits (linkers)")
+                    print(var_splits)
+                    field = var_splits
+                linkers_str += field + """) AS """ + keys[index]
+            else:
+                linkers_str += """ARRAY<STRING>[] AS """ + keys[index]
+            if index < len(keys) - 1:
+                linkers_str += """, """
+        return linkers_str
+
+    def field_line(self, k, val, entity, **kwargs):
+        # kwargs includes is_linker
         if isinstance(val, str):
             val_split = val.split(".")
             if len(val_split) > 1:
@@ -289,7 +339,7 @@ class IDC:
     def build_where_files(self):
         where = ""
         if self.file_ids is not None:
-            where = """WHERE crdc_instance_uuid in ("""
+            where = """WHERE crdc_instance_uuid in ('"""
             where += """','""".join(self.file_ids) + """')"""
         return where
 
@@ -339,32 +389,16 @@ class IDC:
                             functions_added.append(function[0])
         return all_udfs
 
-    def add_linkers(self, entity):
-        linkers_str = """ """
-        keys = list(self.mapping[entity]["Linkers"].keys())
-        for index in range(len(self.mapping[entity]["Linkers"].keys())):
-            if self.mapping[entity]["Linkers"][keys[index]] is not None:
-                field = self.mapping[entity]["Linkers"][keys[index]]
-                field = field.split(".")
-                field = field.pop()
-                field = str(field)
-                linkers_str += """ARRAY_AGG(""" + field + """) as """ + keys[index]
-            else:
-                linkers_str += """ARRAY<STRING>[] as """ + keys[index]
-            if index < len(keys) - 1:
-                linkers_str += """, """
-        return linkers_str
-
     def _query_build(self, **kwargs):
         query = self.create_all_udfs()
         query += """ SELECT """
         if self.endpoint == "Patient":
-            query += self.add_entity_fields("Variant_Call")
+            query += self.add_entity_fields("Patient")
             query += """, [STRUCT("""
-            query += self.add_entity_fields("Gene")
+            query += self.add_entity_fields("ResearchSubject")
             # query += """, """
             # query += self.add_linkers("ResearchSubject")
-            query += """)] AS Gene"""
+            query += """)] AS ResearchSubject"""  # , """
             # query += self.add_linkers("Patient")
             # query += """ARRAY_AGG(STRUCT("""
             # query += self.add_entity_fields("File")
@@ -375,13 +409,15 @@ class IDC:
             query += """ GROUP by id, species, collection_id, tcia_tumorLocation"""
         elif self.endpoint == "File":
             query += self.add_entity_fields("File")
-            query += """, [STRUCT("""
-            query += self.add_entity_fields("Patient")
+            query += ""","""
+            # query += """, [STRUCT("""
+            # query += self.add_entity_fields("Patient")
             # add WHERE statement if just looking for specific patients
-            query += """)] AS Subject"""
-            query += """, [STRUCT("""
-            query += self.add_entity_fields("ResearchSubject")
-            query += """)] AS ResearchSubject"""
+            query += self.add_linkers("File")
+            # query += """)] AS Subjects"""
+            # query += """, [STRUCT("""
+            # query += self.add_entity_fields("ResearchSubject")
+            # query += """)] AS ResearchSubject"""
             query += """ FROM `""" + self.source_table + """`"""
             query += self.build_where_files()
             query += """ GROUP by id, gcs_url, Modality, collection_id, PatientID, tcia_species, tcia_tumorLocation, crdc_series_uuid"""

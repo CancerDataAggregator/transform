@@ -1,3 +1,5 @@
+import sys
+
 # reading functions - simple read and read_entity
 def simp_read(orig, ptr, cp_o, DC):
     cp = cp_o.copy()
@@ -9,15 +11,15 @@ def simp_read(orig, ptr, cp_o, DC):
     if len(ptr) == 1:
         return ptr[0]
     rmoved = cp.pop(0)
-    #if rmoved=='cases':
+    # if rmoved=='cases':
     #    try:
     #        ptr.remove(rmoved)
     #    except Exception:
     #        ptr.insert(0, "samples")
     #        if DC == "PDC":
     ##            ptr.remove("files")
-     #           ptr.insert(1, "File")
-    #else:
+    #           ptr.insert(1, "File")
+    # else:
     #    ptr.remove(rmoved)
     ptr.remove(rmoved)
     rec = orig.copy()
@@ -49,7 +51,7 @@ def simp_read(orig, ptr, cp_o, DC):
 def read_entry(orig, MandT, entity, **kwargs):
     DC = kwargs.get("DC", "GDC")
     # spec_type = kwargs.get('spec_type', None)
-    endpoint = kwargs.get("endpoint", 'cases')
+    endpoint = kwargs.get("endpoint", "cases")
     cur_path = kwargs.get("cur_path", [endpoint])
     samp_rec = dict({})
     # if no identifier, no entry, return
@@ -57,7 +59,10 @@ def read_entry(orig, MandT, entity, **kwargs):
         if field != "identifier":
             if isinstance(val, str):
                 field_path = val
-                if field_path in ["files.cases.project.project_id", 'files.cases.project.dbgap_accession_number'] :
+                if field_path in [
+                    "files.cases.project.project_id",
+                    "files.cases.project.dbgap_accession_number",
+                ]:
                     temp_cur_path = ["files", "cases", 0]
                     samp_rec[field] = simp_read(orig, field_path, temp_cur_path, DC)
                 else:
@@ -94,11 +99,11 @@ def det_tree_to_collapse(MandT, entity, **kwargs):
         temp_dict = MandT[entity]["Linkers"][kwargs.get("linker")].copy()
     else:
         temp_dict = MandT[entity]["Mapping"]["id"].copy()
-    
+
     paths_lst = []
     for k, v in temp_dict.items():
         temp_dict[k] = temp_dict[k].split(".")
-        temp_dict[k]=temp_dict[k][1:]
+        temp_dict[k] = temp_dict[k][1:]
         temp_dict[k].pop()
         temp = None
         for path in reversed(temp_dict[k]):
@@ -214,19 +219,20 @@ def read_file_entry_v2(orig, MandT, entity, DC, **kwargs):
             file_rec["identifier"] = [file_rec["identifier"]]
     return file_rec
 
+
 def add_linkers(orig, MandT, entity, DC, **kwargs):
-    endpoint = kwargs.get("endpoint", 'cases')
+    endpoint = kwargs.get("endpoint", "cases")
     cur_path = kwargs.get("cur_path", [endpoint])
-    
+
     link_recs = dict({})
     for field, val in MandT[entity]["Linkers"].items():
         link_recs[field] = []
         if isinstance(val, str):
-            print(field)
-            print(val)
-            temp_val = val.split('.')
+            # print(field)
+            # print(val)
+            temp_val = val.split(".")
             linker = temp_val.pop()
-            temp_val = '.'.join(temp_val)
+            temp_val = ".".join(temp_val)
             recs = simp_read(orig, temp_val, cur_path, DC)
             if isinstance(recs, list):
                 for rec in recs:
@@ -237,13 +243,13 @@ def add_linkers(orig, MandT, entity, DC, **kwargs):
                     pass
             elif isinstance(recs, dict):
                 link_recs[field] = list(recs.get(linker))
-            print(link_recs[field])
-        elif isinstance(val, dict) and endpoint == 'cases':
+            # print(link_recs[field])
+        elif isinstance(val, dict) and endpoint == "cases":
             spec_type = spec_type_from_path(cur_path)
             path = val[spec_type]
-            temp_val = path.split('.')
+            temp_val = path.split(".")
             linker = temp_val.pop()
-            temp_val = '.'.join(temp_val)
+            temp_val = ".".join(temp_val)
             recs = simp_read(orig, temp_val, cur_path, DC)
             if isinstance(recs, list):
                 for rec in recs:
@@ -251,52 +257,65 @@ def add_linkers(orig, MandT, entity, DC, **kwargs):
                 link_recs[field] = list(set(link_recs[field]))
             else:
                 link_recs[field] = list(recs.get(linker))
-        elif isinstance(val, dict) and endpoint == 'files':
+        elif isinstance(val, dict) and endpoint == "files":
             tree = det_tree_to_collapse(MandT, entity, linker=field)
-            link_recs[field]=add_nested_linkers(orig, val,DC,
-                                    tree=tree, endpt=endpoint)
-        elif isinstance(val, list): 
-            print(val)
+            link_recs[field] = add_nested_linkers(
+                orig, val, DC, tree=tree, endpt=endpoint
+            )
+        elif isinstance(val, list):
+            # print(val)
             for index in range(len(val)):
-                temp_val = val[index].split('.')
+                temp_val = val[index].split(".")
                 linker = temp_val.pop()
-                temp_val = '.'.join(temp_val)
+                temp_val = ".".join(temp_val)
                 recs = simp_read(orig, temp_val, cur_path, DC)
                 if isinstance(recs, list):
                     for rec in recs:
                         link_recs[field].append(rec.get(linker))
-                    
+
                 elif isinstance(recs, dict):
                     link_recs[field].append(recs.get(linker))
             link_recs[field] = list(set(link_recs[field]))
-            
+
     return link_recs
+
+
 def add_nested_linkers(orig, linker_dict, DC, **kwargs):
     linkers = kwargs.get("linkers", [])
     tree = kwargs.get("tree")
     cur_path = kwargs.get("cur_path", None)
     rel_path = kwargs.get("rel_path", None)
-    endpt = kwargs.get('endpt')
+    endpt = kwargs.get("endpt")
     if cur_path is None:
         cur_path = []
         cur_path = [endpt]
     if rel_path is None:
         rel_path = endpt
     for branch, leaves in tree.items():
-        branch_rel_path = '.'.join([rel_path,branch])
+        branch_rel_path = ".".join([rel_path, branch])
         branch_cur_path = cur_path + [branch]
         test_read = simp_read(orig, branch_rel_path, branch_cur_path, DC)
         if test_read is None:
             test_read = []
         for branch_rec_ind in range(len(test_read)):
             if branch in linker_dict:
-                linkers.append(simp_read(orig,linker_dict[branch], 
-                    branch_cur_path + [branch_rec_ind], DC))
+                linkers.append(
+                    simp_read(
+                        orig,
+                        linker_dict[branch],
+                        branch_cur_path + [branch_rec_ind],
+                        DC,
+                    )
+                )
             if leaves is not None:
-                
-                linkers = add_nested_linkers(orig, linker_dict, DC, 
+
+                linkers = add_nested_linkers(
+                    orig,
+                    linker_dict,
+                    DC,
                     cur_path=branch_cur_path + [branch_rec_ind],
-                    rel_path='.'.join([branch_rel_path]), 
+                    rel_path=".".join([branch_rel_path]),
                     tree=tree[branch],
-                    linkers=linkers)
+                    linkers=linkers,
+                )
     return list(set(linkers))
