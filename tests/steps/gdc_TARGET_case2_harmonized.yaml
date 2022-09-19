@@ -77,27 +77,27 @@ ResearchSubject:
         associated_project: "TARGET-ALL-P2"
         # renamed; Kathy says that this should be null for the sample:
         derived_from_specimen: initial specimen
-        Files:
-          - 055a9c00-0a72-4005-83e2-457f56db4ad0
-          - 093a00d1-2501-4ecb-b504-95b39c61f32f
-          - 2284bc14-e70b-4fb4-b5cc-dd79e161b565
-          - 333216e7-fa25-4a63-870a-f549d146343b
-          - 58fe5939-17ee-4503-ac3f-54e28e15470f
-          - 5bccb172-4708-4016-bcd6-7b3d39058987
-          - 7457673c-cc14-451a-bf0d-d9caa6d47a2e
-          - 798486c0-b420-4744-805e-328135b38027
-          - 7a8bc0c9-8385-4a93-80ee-5cde58c79229
-          - 85689ecb-11fd-4b99-a878-815304f0bbf2
-          - 885a4122-86ae-4cdb-bbb5-4340c80e9d36
-          - 8e942be7-e932-4626-bbbe-a63d054cca43
-          - a04a7f5d-ea3e-4988-9085-9b312b9c2880
-          - b69eddc5-09b0-4e4b-b7e6-274be401659d
-          - b8188269-dd49-461d-9cb1-cc801a509f50
-          - bc584948-e34c-4377-9680-9266baa343eb
-          - da110c2a-55a1-41b1-a845-93488d63193a
-          - dd99679b-5daa-4008-b662-c9aa086583d7
-          - f93a9d7d-d212-4298-a097-214ae63ca5b9
-          - fdd730c4-84d8-4779-80db-a32be6b332e8
+        #Files:
+        #  - 055a9c00-0a72-4005-83e2-457f56db4ad0
+        #  - 093a00d1-2501-4ecb-b504-95b39c61f32f
+        #  - 2284bc14-e70b-4fb4-b5cc-dd79e161b565
+        #  - 333216e7-fa25-4a63-870a-f549d146343b
+        #  - 58fe5939-17ee-4503-ac3f-54e28e15470f
+        #  - 5bccb172-4708-4016-bcd6-7b3d39058987
+        #  - 7457673c-cc14-451a-bf0d-d9caa6d47a2e
+        #  - 798486c0-b420-4744-805e-328135b38027
+        #  - 7a8bc0c9-8385-4a93-80ee-5cde58c79229
+        #  - 85689ecb-11fd-4b99-a878-815304f0bbf2
+        #  - 885a4122-86ae-4cdb-bbb5-4340c80e9d36
+        #  - 8e942be7-e932-4626-bbbe-a63d054cca43
+        #  - a04a7f5d-ea3e-4988-9085-9b312b9c2880
+        #  - b69eddc5-09b0-4e4b-b7e6-274be401659d
+        #  - b8188269-dd49-461d-9cb1-cc801a509f50
+        #  - bc584948-e34c-4377-9680-9266baa343eb
+        #  - da110c2a-55a1-41b1-a845-93488d63193a
+        #  - dd99679b-5daa-4008-b662-c9aa086583d7
+        #  - f93a9d7d-d212-4298-a097-214ae63ca5b9
+        #  - fdd730c4-84d8-4779-80db-a32be6b332e8
 
       # portion
       - id: "38d9ca12-8d1e-5310-b5cb-7db6065f60b4"
@@ -116,27 +116,27 @@ ResearchSubject:
         associated_project: "TARGET-ALL-P2"
         # renamed; Kathy says that this should be null for the sample:
         derived_from_specimen: 3d5bcc5c-dca3-5253-b25b-3351c9ef95f6
-        Files:
-          - 055a9c00-0a72-4005-83e2-457f56db4ad0
-          - 093a00d1-2501-4ecb-b504-95b39c61f32f
-          - 2284bc14-e70b-4fb4-b5cc-dd79e161b565
-          - 333216e7-fa25-4a63-870a-f549d146343b
-          - 58fe5939-17ee-4503-ac3f-54e28e15470f
-          - 5bccb172-4708-4016-bcd6-7b3d39058987
-          - 7457673c-cc14-451a-bf0d-d9caa6d47a2e
-          - 798486c0-b420-4744-805e-328135b38027
-          - 7a8bc0c9-8385-4a93-80ee-5cde58c79229
-          - 85689ecb-11fd-4b99-a878-815304f0bbf2
-          - 885a4122-86ae-4cdb-bbb5-4340c80e9d36
-          - 8e942be7-e932-4626-bbbe-a63d054cca43
-          - a04a7f5d-ea3e-4988-9085-9b312b9c2880
-          - b69eddc5-09b0-4e4b-b7e6-274be401659d
-          - b8188269-dd49-461d-9cb1-cc801a509f50
-          - bc584948-e34c-4377-9680-9266baa343eb
-          - da110c2a-55a1-41b1-a845-93488d63193a
-          - dd99679b-5daa-4008-b662-c9aa086583d7
-          - f93a9d7d-d212-4298-a097-214ae63ca5b9
-          - fdd730c4-84d8-4779-80db-a32be6b332e8
+        #Files:
+        #  - 055a9c00-0a72-4005-83e2-457f56db4ad0
+        #  - 093a00d1-2501-4ecb-b504-95b39c61f32f
+        #  - 2284bc14-e70b-4fb4-b5cc-dd79e161b565
+        #  - 333216e7-fa25-4a63-870a-f549d146343b
+        #  - 58fe5939-17ee-4503-ac3f-54e28e15470f
+        #  - 5bccb172-4708-4016-bcd6-7b3d39058987
+        #  - 7457673c-cc14-451a-bf0d-d9caa6d47a2e
+        #  - 798486c0-b420-4744-805e-328135b38027
+        #  - 7a8bc0c9-8385-4a93-80ee-5cde58c79229
+        #  - 85689ecb-11fd-4b99-a878-815304f0bbf2
+        #  - 885a4122-86ae-4cdb-bbb5-4340c80e9d36
+        #  - 8e942be7-e932-4626-bbbe-a63d054cca43
+        #  - a04a7f5d-ea3e-4988-9085-9b312b9c2880
+        #  - b69eddc5-09b0-4e4b-b7e6-274be401659d
+        #  - b8188269-dd49-461d-9cb1-cc801a509f50
+        #  - bc584948-e34c-4377-9680-9266baa343eb
+        #  - da110c2a-55a1-41b1-a845-93488d63193a
+        #  - dd99679b-5daa-4008-b662-c9aa086583d7
+        #  - f93a9d7d-d212-4298-a097-214ae63ca5b9
+        #  - fdd730c4-84d8-4779-80db-a32be6b332e8
 
       # analyte
       - id: "e9986bda-b087-5f50-8a6d-63a673454dba"
@@ -155,27 +155,27 @@ ResearchSubject:
         associated_project: "TARGET-ALL-P2"
         # renamed; Kathy says that this should be null for the sample:
         derived_from_specimen: 38d9ca12-8d1e-5310-b5cb-7db6065f60b4
-        Files:
-          - 055a9c00-0a72-4005-83e2-457f56db4ad0
-          - 093a00d1-2501-4ecb-b504-95b39c61f32f
-          - 2284bc14-e70b-4fb4-b5cc-dd79e161b565
-          - 333216e7-fa25-4a63-870a-f549d146343b
-          - 58fe5939-17ee-4503-ac3f-54e28e15470f
-          - 5bccb172-4708-4016-bcd6-7b3d39058987
-          - 7457673c-cc14-451a-bf0d-d9caa6d47a2e
-          - 798486c0-b420-4744-805e-328135b38027
-          - 7a8bc0c9-8385-4a93-80ee-5cde58c79229
-          - 85689ecb-11fd-4b99-a878-815304f0bbf2
-          - 885a4122-86ae-4cdb-bbb5-4340c80e9d36
-          - 8e942be7-e932-4626-bbbe-a63d054cca43
-          - a04a7f5d-ea3e-4988-9085-9b312b9c2880
-          - b69eddc5-09b0-4e4b-b7e6-274be401659d
-          - b8188269-dd49-461d-9cb1-cc801a509f50
-          - bc584948-e34c-4377-9680-9266baa343eb
-          - da110c2a-55a1-41b1-a845-93488d63193a
-          - dd99679b-5daa-4008-b662-c9aa086583d7
-          - f93a9d7d-d212-4298-a097-214ae63ca5b9
-          - fdd730c4-84d8-4779-80db-a32be6b332e8
+        #Files:
+        #  - 055a9c00-0a72-4005-83e2-457f56db4ad0
+        #  - 093a00d1-2501-4ecb-b504-95b39c61f32f
+        #  - 2284bc14-e70b-4fb4-b5cc-dd79e161b565
+        #  - 333216e7-fa25-4a63-870a-f549d146343b
+        #  - 58fe5939-17ee-4503-ac3f-54e28e15470f
+        #  - 5bccb172-4708-4016-bcd6-7b3d39058987
+        #  - 7457673c-cc14-451a-bf0d-d9caa6d47a2e
+        #  - 798486c0-b420-4744-805e-328135b38027
+        #  - 7a8bc0c9-8385-4a93-80ee-5cde58c79229
+        #  - 85689ecb-11fd-4b99-a878-815304f0bbf2
+        #  - 885a4122-86ae-4cdb-bbb5-4340c80e9d36
+        #  - 8e942be7-e932-4626-bbbe-a63d054cca43
+        #  - a04a7f5d-ea3e-4988-9085-9b312b9c2880
+        #  - b69eddc5-09b0-4e4b-b7e6-274be401659d
+        #  - b8188269-dd49-461d-9cb1-cc801a509f50
+        #  - bc584948-e34c-4377-9680-9266baa343eb
+        #  - da110c2a-55a1-41b1-a845-93488d63193a
+        #  - dd99679b-5daa-4008-b662-c9aa086583d7
+        #  - f93a9d7d-d212-4298-a097-214ae63ca5b9
+        #  - fdd730c4-84d8-4779-80db-a32be6b332e8
 
       # aliquot
       - id: "3c6c93c2-224e-5532-a449-5db9e1058b46"
@@ -194,27 +194,27 @@ ResearchSubject:
         associated_project: "TARGET-ALL-P2"
         # renamed; Kathy says that this should be null for the sample:
         derived_from_specimen: e9986bda-b087-5f50-8a6d-63a673454dba
-        Files:
-          - 055a9c00-0a72-4005-83e2-457f56db4ad0
-          - 093a00d1-2501-4ecb-b504-95b39c61f32f
-          - 2284bc14-e70b-4fb4-b5cc-dd79e161b565
-          - 333216e7-fa25-4a63-870a-f549d146343b
-          - 58fe5939-17ee-4503-ac3f-54e28e15470f
-          - 5bccb172-4708-4016-bcd6-7b3d39058987
-          - 7457673c-cc14-451a-bf0d-d9caa6d47a2e
-          - 798486c0-b420-4744-805e-328135b38027
-          - 7a8bc0c9-8385-4a93-80ee-5cde58c79229
-          - 85689ecb-11fd-4b99-a878-815304f0bbf2
-          - 885a4122-86ae-4cdb-bbb5-4340c80e9d36
-          - 8e942be7-e932-4626-bbbe-a63d054cca43
-          - a04a7f5d-ea3e-4988-9085-9b312b9c2880
-          - b69eddc5-09b0-4e4b-b7e6-274be401659d
-          - b8188269-dd49-461d-9cb1-cc801a509f50
-          - bc584948-e34c-4377-9680-9266baa343eb
-          - da110c2a-55a1-41b1-a845-93488d63193a
-          - dd99679b-5daa-4008-b662-c9aa086583d7
-          - f93a9d7d-d212-4298-a097-214ae63ca5b9
-          - fdd730c4-84d8-4779-80db-a32be6b332e8
+        #Files:
+        #  - 055a9c00-0a72-4005-83e2-457f56db4ad0
+        #  - 093a00d1-2501-4ecb-b504-95b39c61f32f
+        #  - 2284bc14-e70b-4fb4-b5cc-dd79e161b565
+        #  - 333216e7-fa25-4a63-870a-f549d146343b
+        #  - 58fe5939-17ee-4503-ac3f-54e28e15470f
+        #  - 5bccb172-4708-4016-bcd6-7b3d39058987
+        #  - 7457673c-cc14-451a-bf0d-d9caa6d47a2e
+        #  - 798486c0-b420-4744-805e-328135b38027
+        #  - 7a8bc0c9-8385-4a93-80ee-5cde58c79229
+        #  - 85689ecb-11fd-4b99-a878-815304f0bbf2
+        #  - 885a4122-86ae-4cdb-bbb5-4340c80e9d36
+        #  - 8e942be7-e932-4626-bbbe-a63d054cca43
+        #  - a04a7f5d-ea3e-4988-9085-9b312b9c2880
+        #  - b69eddc5-09b0-4e4b-b7e6-274be401659d
+        #  - b8188269-dd49-461d-9cb1-cc801a509f50
+        #  - bc584948-e34c-4377-9680-9266baa343eb
+        #  - da110c2a-55a1-41b1-a845-93488d63193a
+        #  - dd99679b-5daa-4008-b662-c9aa086583d7
+        #  - f93a9d7d-d212-4298-a097-214ae63ca5b9
+        #  - fdd730c4-84d8-4779-80db-a32be6b332e8
       # id should represent unique identifier across all systems
       - id: "96666e88-de93-5416-8694-75ae5e9dec7e"
         # identifier represents a list of IDs within each system
@@ -232,34 +232,34 @@ ResearchSubject:
         associated_project: "TARGET-ALL-P2"
         # renamed; Kathy says that this should be null for the sample:
         derived_from_specimen: initial specimen
-        Files:
-          - 36083d02-1ad8-4f6b-bcb7-83aa0bf93244
-          - 36fd175e-3e15-496e-b1a2-27fce0afb27a
-          - 5bec15bc-30d5-4606-a3c8-f53cd25b7504
-          - 76c08b96-a64c-4cc9-86a2-54983c16278e
-          - b1a7f69d-e932-441c-ae49-c8f30d6411a0
-          - e3343cde-4881-41e7-be76-4566eb169653
-          - ff4d3dba-a7ef-47b2-91bc-cb5af68b6236
-          - 055a9c00-0a72-4005-83e2-457f56db4ad0
-          - 093a00d1-2501-4ecb-b504-95b39c61f32f
-          - 2284bc14-e70b-4fb4-b5cc-dd79e161b565
-          - 333216e7-fa25-4a63-870a-f549d146343b
-          - 36069ce1-ff28-429d-bfad-5bbac28c181d
-          - 58fe5939-17ee-4503-ac3f-54e28e15470f
-          - 5bccb172-4708-4016-bcd6-7b3d39058987
-          - 7457673c-cc14-451a-bf0d-d9caa6d47a2e
-          - 798486c0-b420-4744-805e-328135b38027
-          - 7a8bc0c9-8385-4a93-80ee-5cde58c79229
-          - 85689ecb-11fd-4b99-a878-815304f0bbf2
-          - 885a4122-86ae-4cdb-bbb5-4340c80e9d36
-          - 8e942be7-e932-4626-bbbe-a63d054cca43
-          - a04a7f5d-ea3e-4988-9085-9b312b9c2880
-          - b69eddc5-09b0-4e4b-b7e6-274be401659d
-          - b8188269-dd49-461d-9cb1-cc801a509f50
-          - bc584948-e34c-4377-9680-9266baa343eb
-          - da110c2a-55a1-41b1-a845-93488d63193a
-          - dd99679b-5daa-4008-b662-c9aa086583d7
-          - f93a9d7d-d212-4298-a097-214ae63ca5b9
+        #Files:
+        #  - 36083d02-1ad8-4f6b-bcb7-83aa0bf93244
+        #  - 36fd175e-3e15-496e-b1a2-27fce0afb27a
+        #  - 5bec15bc-30d5-4606-a3c8-f53cd25b7504
+        #  - 76c08b96-a64c-4cc9-86a2-54983c16278e
+        #  - b1a7f69d-e932-441c-ae49-c8f30d6411a0
+        #  - e3343cde-4881-41e7-be76-4566eb169653
+        #  - ff4d3dba-a7ef-47b2-91bc-cb5af68b6236
+        #  - 055a9c00-0a72-4005-83e2-457f56db4ad0
+        #  - 093a00d1-2501-4ecb-b504-95b39c61f32f
+        #  - 2284bc14-e70b-4fb4-b5cc-dd79e161b565
+        #  - 333216e7-fa25-4a63-870a-f549d146343b
+        #  - 36069ce1-ff28-429d-bfad-5bbac28c181d
+        #  - 58fe5939-17ee-4503-ac3f-54e28e15470f
+        #  - 5bccb172-4708-4016-bcd6-7b3d39058987
+        #  - 7457673c-cc14-451a-bf0d-d9caa6d47a2e
+        #  - 798486c0-b420-4744-805e-328135b38027
+        #  - 7a8bc0c9-8385-4a93-80ee-5cde58c79229
+        #  - 85689ecb-11fd-4b99-a878-815304f0bbf2
+        #  - 885a4122-86ae-4cdb-bbb5-4340c80e9d36
+        #  - 8e942be7-e932-4626-bbbe-a63d054cca43
+        #  - a04a7f5d-ea3e-4988-9085-9b312b9c2880
+        #  - b69eddc5-09b0-4e4b-b7e6-274be401659d
+        #  - b8188269-dd49-461d-9cb1-cc801a509f50
+        #  - bc584948-e34c-4377-9680-9266baa343eb
+        #  - da110c2a-55a1-41b1-a845-93488d63193a
+        #  - dd99679b-5daa-4008-b662-c9aa086583d7
+        #  - f93a9d7d-d212-4298-a097-214ae63ca5b9
     
       # Portion 1
       - id: "4a022574-c827-56e1-bd84-b8c3be07de85"
@@ -278,14 +278,14 @@ ResearchSubject:
         associated_project: "TARGET-ALL-P2"
         # renamed; Kathy says that this should be null for the sample:
         derived_from_specimen: 96666e88-de93-5416-8694-75ae5e9dec7e
-        Files:
-          - 36083d02-1ad8-4f6b-bcb7-83aa0bf93244
-          - 36fd175e-3e15-496e-b1a2-27fce0afb27a
-          - 5bec15bc-30d5-4606-a3c8-f53cd25b7504
-          - 76c08b96-a64c-4cc9-86a2-54983c16278e
-          - b1a7f69d-e932-441c-ae49-c8f30d6411a0
-          - e3343cde-4881-41e7-be76-4566eb169653
-          - ff4d3dba-a7ef-47b2-91bc-cb5af68b6236
+        #Files:
+        #  - 36083d02-1ad8-4f6b-bcb7-83aa0bf93244
+        #  - 36fd175e-3e15-496e-b1a2-27fce0afb27a
+        #  - 5bec15bc-30d5-4606-a3c8-f53cd25b7504
+        #  - 76c08b96-a64c-4cc9-86a2-54983c16278e
+        #  - b1a7f69d-e932-441c-ae49-c8f30d6411a0
+        #  - e3343cde-4881-41e7-be76-4566eb169653
+        #  - ff4d3dba-a7ef-47b2-91bc-cb5af68b6236
       
       # analyte
       - id: "3de6eb72-bc24-5713-aa32-d7568c3fe91a"
@@ -304,14 +304,14 @@ ResearchSubject:
         associated_project: "TARGET-ALL-P2"
         # renamed; Kathy says that this should be null for the sample:
         derived_from_specimen: 4a022574-c827-56e1-bd84-b8c3be07de85
-        Files:
-          - 36083d02-1ad8-4f6b-bcb7-83aa0bf93244
-          - 36fd175e-3e15-496e-b1a2-27fce0afb27a
-          - 5bec15bc-30d5-4606-a3c8-f53cd25b7504
-          - 76c08b96-a64c-4cc9-86a2-54983c16278e
-          - b1a7f69d-e932-441c-ae49-c8f30d6411a0
-          - e3343cde-4881-41e7-be76-4566eb169653
-          - ff4d3dba-a7ef-47b2-91bc-cb5af68b6236
+        #Files:
+        #  - 36083d02-1ad8-4f6b-bcb7-83aa0bf93244
+        #  - 36fd175e-3e15-496e-b1a2-27fce0afb27a
+        #  - 5bec15bc-30d5-4606-a3c8-f53cd25b7504
+        #  - 76c08b96-a64c-4cc9-86a2-54983c16278e
+        #  - b1a7f69d-e932-441c-ae49-c8f30d6411a0
+        #  - e3343cde-4881-41e7-be76-4566eb169653
+        #  - ff4d3dba-a7ef-47b2-91bc-cb5af68b6236
       # aliquot
       - id: "017a6212-fdbf-4b5e-99b6-7c84ce4bf46b"
         # identifier represents a list of IDs within each system
@@ -329,14 +329,14 @@ ResearchSubject:
         associated_project: "TARGET-ALL-P2"
         # renamed; Kathy says that this should be null for the sample:
         derived_from_specimen: 3de6eb72-bc24-5713-aa32-d7568c3fe91a
-        Files:
-          - 36083d02-1ad8-4f6b-bcb7-83aa0bf93244
-          - 36fd175e-3e15-496e-b1a2-27fce0afb27a
-          - 5bec15bc-30d5-4606-a3c8-f53cd25b7504
-          - 76c08b96-a64c-4cc9-86a2-54983c16278e
-          - b1a7f69d-e932-441c-ae49-c8f30d6411a0
-          - e3343cde-4881-41e7-be76-4566eb169653
-          - ff4d3dba-a7ef-47b2-91bc-cb5af68b6236
+        #Files:
+        #  - 36083d02-1ad8-4f6b-bcb7-83aa0bf93244
+        #  - 36fd175e-3e15-496e-b1a2-27fce0afb27a
+        #  - 5bec15bc-30d5-4606-a3c8-f53cd25b7504
+        #  - 76c08b96-a64c-4cc9-86a2-54983c16278e
+        #  - b1a7f69d-e932-441c-ae49-c8f30d6411a0
+        #  - e3343cde-4881-41e7-be76-4566eb169653
+        #  - ff4d3dba-a7ef-47b2-91bc-cb5af68b6236
 
       # Portion 2
       - id: "ff999b52-a9bc-5d6d-ac39-aa2d8ad1f78d"
@@ -355,27 +355,27 @@ ResearchSubject:
         associated_project: "TARGET-ALL-P2"
         # renamed; Kathy says that this should be null for the sample:
         derived_from_specimen: 96666e88-de93-5416-8694-75ae5e9dec7e
-        Files:
-          - 055a9c00-0a72-4005-83e2-457f56db4ad0
-          - 093a00d1-2501-4ecb-b504-95b39c61f32f
-          - 2284bc14-e70b-4fb4-b5cc-dd79e161b565
-          - 333216e7-fa25-4a63-870a-f549d146343b
-          - 36069ce1-ff28-429d-bfad-5bbac28c181d
-          - 58fe5939-17ee-4503-ac3f-54e28e15470f
-          - 5bccb172-4708-4016-bcd6-7b3d39058987
-          - 7457673c-cc14-451a-bf0d-d9caa6d47a2e
-          - 798486c0-b420-4744-805e-328135b38027
-          - 7a8bc0c9-8385-4a93-80ee-5cde58c79229
-          - 85689ecb-11fd-4b99-a878-815304f0bbf2
-          - 885a4122-86ae-4cdb-bbb5-4340c80e9d36
-          - 8e942be7-e932-4626-bbbe-a63d054cca43
-          - a04a7f5d-ea3e-4988-9085-9b312b9c2880
-          - b69eddc5-09b0-4e4b-b7e6-274be401659d
-          - b8188269-dd49-461d-9cb1-cc801a509f50
-          - bc584948-e34c-4377-9680-9266baa343eb
-          - da110c2a-55a1-41b1-a845-93488d63193a
-          - dd99679b-5daa-4008-b662-c9aa086583d7
-          - f93a9d7d-d212-4298-a097-214ae63ca5b9
+        #Files:
+        #  - 055a9c00-0a72-4005-83e2-457f56db4ad0
+        #  - 093a00d1-2501-4ecb-b504-95b39c61f32f
+        #  - 2284bc14-e70b-4fb4-b5cc-dd79e161b565
+        #  - 333216e7-fa25-4a63-870a-f549d146343b
+        #  - 36069ce1-ff28-429d-bfad-5bbac28c181d
+        #  - 58fe5939-17ee-4503-ac3f-54e28e15470f
+        #  - 5bccb172-4708-4016-bcd6-7b3d39058987
+        #  - 7457673c-cc14-451a-bf0d-d9caa6d47a2e
+        #  - 798486c0-b420-4744-805e-328135b38027
+        #  - 7a8bc0c9-8385-4a93-80ee-5cde58c79229
+        #  - 85689ecb-11fd-4b99-a878-815304f0bbf2
+        #  - 885a4122-86ae-4cdb-bbb5-4340c80e9d36
+        #  - 8e942be7-e932-4626-bbbe-a63d054cca43
+        #  - a04a7f5d-ea3e-4988-9085-9b312b9c2880
+        #  - b69eddc5-09b0-4e4b-b7e6-274be401659d
+        #  - b8188269-dd49-461d-9cb1-cc801a509f50
+        #  - bc584948-e34c-4377-9680-9266baa343eb
+        #  - da110c2a-55a1-41b1-a845-93488d63193a
+        #  - dd99679b-5daa-4008-b662-c9aa086583d7
+        #  - f93a9d7d-d212-4298-a097-214ae63ca5b9
 
       # analyte
       - id: "ee3dc079-4b9c-56b5-87f7-3cb2cad9394f"
@@ -394,27 +394,27 @@ ResearchSubject:
         associated_project: "TARGET-ALL-P2"
         # renamed; Kathy says that this should be null for the sample:
         derived_from_specimen: ff999b52-a9bc-5d6d-ac39-aa2d8ad1f78d
-        Files:
-          - 055a9c00-0a72-4005-83e2-457f56db4ad0
-          - 093a00d1-2501-4ecb-b504-95b39c61f32f
-          - 2284bc14-e70b-4fb4-b5cc-dd79e161b565
-          - 333216e7-fa25-4a63-870a-f549d146343b
-          - 36069ce1-ff28-429d-bfad-5bbac28c181d
-          - 58fe5939-17ee-4503-ac3f-54e28e15470f
-          - 5bccb172-4708-4016-bcd6-7b3d39058987
-          - 7457673c-cc14-451a-bf0d-d9caa6d47a2e
-          - 798486c0-b420-4744-805e-328135b38027
-          - 7a8bc0c9-8385-4a93-80ee-5cde58c79229
-          - 85689ecb-11fd-4b99-a878-815304f0bbf2
-          - 885a4122-86ae-4cdb-bbb5-4340c80e9d36
-          - 8e942be7-e932-4626-bbbe-a63d054cca43
-          - a04a7f5d-ea3e-4988-9085-9b312b9c2880
-          - b69eddc5-09b0-4e4b-b7e6-274be401659d
-          - b8188269-dd49-461d-9cb1-cc801a509f50
-          - bc584948-e34c-4377-9680-9266baa343eb
-          - da110c2a-55a1-41b1-a845-93488d63193a
-          - dd99679b-5daa-4008-b662-c9aa086583d7
-          - f93a9d7d-d212-4298-a097-214ae63ca5b9
+        #Files:
+        #  - 055a9c00-0a72-4005-83e2-457f56db4ad0
+        #  - 093a00d1-2501-4ecb-b504-95b39c61f32f
+        #  - 2284bc14-e70b-4fb4-b5cc-dd79e161b565
+        #  - 333216e7-fa25-4a63-870a-f549d146343b
+        #  - 36069ce1-ff28-429d-bfad-5bbac28c181d
+        #  - 58fe5939-17ee-4503-ac3f-54e28e15470f
+        #  - 5bccb172-4708-4016-bcd6-7b3d39058987
+        #  - 7457673c-cc14-451a-bf0d-d9caa6d47a2e
+        #  - 798486c0-b420-4744-805e-328135b38027
+        #  - 7a8bc0c9-8385-4a93-80ee-5cde58c79229
+        #  - 85689ecb-11fd-4b99-a878-815304f0bbf2
+        #  - 885a4122-86ae-4cdb-bbb5-4340c80e9d36
+        #  - 8e942be7-e932-4626-bbbe-a63d054cca43
+        #  - a04a7f5d-ea3e-4988-9085-9b312b9c2880
+        #  - b69eddc5-09b0-4e4b-b7e6-274be401659d
+        #  - b8188269-dd49-461d-9cb1-cc801a509f50
+        #  - bc584948-e34c-4377-9680-9266baa343eb
+        #  - da110c2a-55a1-41b1-a845-93488d63193a
+        #  - dd99679b-5daa-4008-b662-c9aa086583d7
+        #  - f93a9d7d-d212-4298-a097-214ae63ca5b9
       # aliquot
       - id: "920bf2a0-2ba0-5d46-9e0b-ef02f10030d8"
         # identifier represents a list of IDs within each system
@@ -432,27 +432,27 @@ ResearchSubject:
         associated_project: "TARGET-ALL-P2"
         # renamed; Kathy says that this should be null for the sample:
         derived_from_specimen: ee3dc079-4b9c-56b5-87f7-3cb2cad9394f
-        Files:
-          - 055a9c00-0a72-4005-83e2-457f56db4ad0
-          - 093a00d1-2501-4ecb-b504-95b39c61f32f
-          - 2284bc14-e70b-4fb4-b5cc-dd79e161b565
-          - 333216e7-fa25-4a63-870a-f549d146343b
-          - 36069ce1-ff28-429d-bfad-5bbac28c181d
-          - 58fe5939-17ee-4503-ac3f-54e28e15470f
-          - 5bccb172-4708-4016-bcd6-7b3d39058987
-          - 7457673c-cc14-451a-bf0d-d9caa6d47a2e
-          - 798486c0-b420-4744-805e-328135b38027
-          - 7a8bc0c9-8385-4a93-80ee-5cde58c79229
-          - 85689ecb-11fd-4b99-a878-815304f0bbf2
-          - 885a4122-86ae-4cdb-bbb5-4340c80e9d36
-          - 8e942be7-e932-4626-bbbe-a63d054cca43
-          - a04a7f5d-ea3e-4988-9085-9b312b9c2880
-          - b69eddc5-09b0-4e4b-b7e6-274be401659d
-          - b8188269-dd49-461d-9cb1-cc801a509f50
-          - bc584948-e34c-4377-9680-9266baa343eb
-          - da110c2a-55a1-41b1-a845-93488d63193a
-          - dd99679b-5daa-4008-b662-c9aa086583d7
-          - f93a9d7d-d212-4298-a097-214ae63ca5b9
+        #Files:
+        #  - 055a9c00-0a72-4005-83e2-457f56db4ad0
+        #  - 093a00d1-2501-4ecb-b504-95b39c61f32f
+        #  - 2284bc14-e70b-4fb4-b5cc-dd79e161b565
+        #  - 333216e7-fa25-4a63-870a-f549d146343b
+        #  - 36069ce1-ff28-429d-bfad-5bbac28c181d
+        #  - 58fe5939-17ee-4503-ac3f-54e28e15470f
+        #  - 5bccb172-4708-4016-bcd6-7b3d39058987
+        #  - 7457673c-cc14-451a-bf0d-d9caa6d47a2e
+        #  - 798486c0-b420-4744-805e-328135b38027
+        #  - 7a8bc0c9-8385-4a93-80ee-5cde58c79229
+        #  - 85689ecb-11fd-4b99-a878-815304f0bbf2
+        #  - 885a4122-86ae-4cdb-bbb5-4340c80e9d36
+        #  - 8e942be7-e932-4626-bbbe-a63d054cca43
+        #  - a04a7f5d-ea3e-4988-9085-9b312b9c2880
+        #  - b69eddc5-09b0-4e4b-b7e6-274be401659d
+        #  - b8188269-dd49-461d-9cb1-cc801a509f50
+        #  - bc584948-e34c-4377-9680-9266baa343eb
+        #  - da110c2a-55a1-41b1-a845-93488d63193a
+        #  - dd99679b-5daa-4008-b662-c9aa086583d7
+        #  - f93a9d7d-d212-4298-a097-214ae63ca5b9
 
     Diagnosis:
       - id: "63c6c7a2-c3e6-5e2b-9dd6-03bfabef5178"
@@ -466,109 +466,109 @@ ResearchSubject:
         morphology: "9837/3"
         method_of_diagnosis:
         Treatment: []
-    Files:
-      - 055a9c00-0a72-4005-83e2-457f56db4ad0
-      - 093a00d1-2501-4ecb-b504-95b39c61f32f
-      - 2284bc14-e70b-4fb4-b5cc-dd79e161b565
-      - 333216e7-fa25-4a63-870a-f549d146343b
-      - 58fe5939-17ee-4503-ac3f-54e28e15470f
-      - 5bccb172-4708-4016-bcd6-7b3d39058987
-      - 7457673c-cc14-451a-bf0d-d9caa6d47a2e
-      - 798486c0-b420-4744-805e-328135b38027
-      - 7a8bc0c9-8385-4a93-80ee-5cde58c79229
-      - 85689ecb-11fd-4b99-a878-815304f0bbf2
-      - 885a4122-86ae-4cdb-bbb5-4340c80e9d36
-      - 8e942be7-e932-4626-bbbe-a63d054cca43
-      - a04a7f5d-ea3e-4988-9085-9b312b9c2880
-      - b69eddc5-09b0-4e4b-b7e6-274be401659d
-      - b8188269-dd49-461d-9cb1-cc801a509f50
-      - bc584948-e34c-4377-9680-9266baa343eb
-      - da110c2a-55a1-41b1-a845-93488d63193a
-      - dd99679b-5daa-4008-b662-c9aa086583d7
-      - f93a9d7d-d212-4298-a097-214ae63ca5b9
-      - fdd730c4-84d8-4779-80db-a32be6b332e8
-      - 36083d02-1ad8-4f6b-bcb7-83aa0bf93244
-      - 36fd175e-3e15-496e-b1a2-27fce0afb27a
-      - 5bec15bc-30d5-4606-a3c8-f53cd25b7504
-      - 76c08b96-a64c-4cc9-86a2-54983c16278e
-      - b1a7f69d-e932-441c-ae49-c8f30d6411a0
-      - e3343cde-4881-41e7-be76-4566eb169653
-      - ff4d3dba-a7ef-47b2-91bc-cb5af68b6236
-      - 055a9c00-0a72-4005-83e2-457f56db4ad0
-      - 093a00d1-2501-4ecb-b504-95b39c61f32f
-      - 2284bc14-e70b-4fb4-b5cc-dd79e161b565
-      - 333216e7-fa25-4a63-870a-f549d146343b
-      - 36069ce1-ff28-429d-bfad-5bbac28c181d
-      - 58fe5939-17ee-4503-ac3f-54e28e15470f
-      - 5bccb172-4708-4016-bcd6-7b3d39058987
-      - 7457673c-cc14-451a-bf0d-d9caa6d47a2e
-      - 798486c0-b420-4744-805e-328135b38027
-      - 7a8bc0c9-8385-4a93-80ee-5cde58c79229
-      - 85689ecb-11fd-4b99-a878-815304f0bbf2
-      - 885a4122-86ae-4cdb-bbb5-4340c80e9d36
-      - 8e942be7-e932-4626-bbbe-a63d054cca43
-      - a04a7f5d-ea3e-4988-9085-9b312b9c2880
-      - b69eddc5-09b0-4e4b-b7e6-274be401659d
-      - b8188269-dd49-461d-9cb1-cc801a509f50
-      - bc584948-e34c-4377-9680-9266baa343eb
-      - da110c2a-55a1-41b1-a845-93488d63193a
-      - dd99679b-5daa-4008-b662-c9aa086583d7
-      - f93a9d7d-d212-4298-a097-214ae63ca5b9
-      - 798b05d1-6a9e-47f1-8bf7-6831186ddbd5
-      - f5745326-39d1-46b0-8a82-2d901096a79d
-      - 9468cd10-11d5-4120-81b2-f2b72ca78ad6
-      - ddb48316-8690-4697-91bb-2366bc021d67
-      - 27a194a2-2e07-4db4-8ae7-1152a7d6d58a
-Files:
-  - 055a9c00-0a72-4005-83e2-457f56db4ad0
-  - 093a00d1-2501-4ecb-b504-95b39c61f32f
-  - 2284bc14-e70b-4fb4-b5cc-dd79e161b565
-  - 333216e7-fa25-4a63-870a-f549d146343b
-  - 58fe5939-17ee-4503-ac3f-54e28e15470f
-  - 5bccb172-4708-4016-bcd6-7b3d39058987
-  - 7457673c-cc14-451a-bf0d-d9caa6d47a2e
-  - 798486c0-b420-4744-805e-328135b38027
-  - 7a8bc0c9-8385-4a93-80ee-5cde58c79229
-  - 85689ecb-11fd-4b99-a878-815304f0bbf2
-  - 885a4122-86ae-4cdb-bbb5-4340c80e9d36
-  - 8e942be7-e932-4626-bbbe-a63d054cca43
-  - a04a7f5d-ea3e-4988-9085-9b312b9c2880
-  - b69eddc5-09b0-4e4b-b7e6-274be401659d
-  - b8188269-dd49-461d-9cb1-cc801a509f50
-  - bc584948-e34c-4377-9680-9266baa343eb
-  - da110c2a-55a1-41b1-a845-93488d63193a
-  - dd99679b-5daa-4008-b662-c9aa086583d7
-  - f93a9d7d-d212-4298-a097-214ae63ca5b9
-  - fdd730c4-84d8-4779-80db-a32be6b332e8
-  - 36083d02-1ad8-4f6b-bcb7-83aa0bf93244
-  - 36fd175e-3e15-496e-b1a2-27fce0afb27a
-  - 5bec15bc-30d5-4606-a3c8-f53cd25b7504
-  - 76c08b96-a64c-4cc9-86a2-54983c16278e
-  - b1a7f69d-e932-441c-ae49-c8f30d6411a0
-  - e3343cde-4881-41e7-be76-4566eb169653
-  - ff4d3dba-a7ef-47b2-91bc-cb5af68b6236
-  - 055a9c00-0a72-4005-83e2-457f56db4ad0
-  - 093a00d1-2501-4ecb-b504-95b39c61f32f
-  - 2284bc14-e70b-4fb4-b5cc-dd79e161b565
-  - 333216e7-fa25-4a63-870a-f549d146343b
-  - 36069ce1-ff28-429d-bfad-5bbac28c181d
-  - 58fe5939-17ee-4503-ac3f-54e28e15470f
-  - 5bccb172-4708-4016-bcd6-7b3d39058987
-  - 7457673c-cc14-451a-bf0d-d9caa6d47a2e
-  - 798486c0-b420-4744-805e-328135b38027
-  - 7a8bc0c9-8385-4a93-80ee-5cde58c79229
-  - 85689ecb-11fd-4b99-a878-815304f0bbf2
-  - 885a4122-86ae-4cdb-bbb5-4340c80e9d36
-  - 8e942be7-e932-4626-bbbe-a63d054cca43
-  - a04a7f5d-ea3e-4988-9085-9b312b9c2880
-  - b69eddc5-09b0-4e4b-b7e6-274be401659d
-  - b8188269-dd49-461d-9cb1-cc801a509f50
-  - bc584948-e34c-4377-9680-9266baa343eb
-  - da110c2a-55a1-41b1-a845-93488d63193a
-  - dd99679b-5daa-4008-b662-c9aa086583d7
-  - f93a9d7d-d212-4298-a097-214ae63ca5b9
-  - 798b05d1-6a9e-47f1-8bf7-6831186ddbd5
-  - f5745326-39d1-46b0-8a82-2d901096a79d
-  - 9468cd10-11d5-4120-81b2-f2b72ca78ad6
-  - ddb48316-8690-4697-91bb-2366bc021d67
-  - 27a194a2-2e07-4db4-8ae7-1152a7d6d58a
+    #Files:
+    #  - 055a9c00-0a72-4005-83e2-457f56db4ad0
+    #  - 093a00d1-2501-4ecb-b504-95b39c61f32f
+    #  - 2284bc14-e70b-4fb4-b5cc-dd79e161b565
+    #  - 333216e7-fa25-4a63-870a-f549d146343b
+    #  - 58fe5939-17ee-4503-ac3f-54e28e15470f
+    #  - 5bccb172-4708-4016-bcd6-7b3d39058987
+    #  - 7457673c-cc14-451a-bf0d-d9caa6d47a2e
+    #  - 798486c0-b420-4744-805e-328135b38027
+    #  - 7a8bc0c9-8385-4a93-80ee-5cde58c79229
+    #  - 85689ecb-11fd-4b99-a878-815304f0bbf2
+    #  - 885a4122-86ae-4cdb-bbb5-4340c80e9d36
+    #  - 8e942be7-e932-4626-bbbe-a63d054cca43
+    #  - a04a7f5d-ea3e-4988-9085-9b312b9c2880
+    #  - b69eddc5-09b0-4e4b-b7e6-274be401659d
+    #  - b8188269-dd49-461d-9cb1-cc801a509f50
+    #  - bc584948-e34c-4377-9680-9266baa343eb
+    #  - da110c2a-55a1-41b1-a845-93488d63193a
+    #  - dd99679b-5daa-4008-b662-c9aa086583d7
+    #  - f93a9d7d-d212-4298-a097-214ae63ca5b9
+    #  - fdd730c4-84d8-4779-80db-a32be6b332e8
+    #  - 36083d02-1ad8-4f6b-bcb7-83aa0bf93244
+    #  - 36fd175e-3e15-496e-b1a2-27fce0afb27a
+    #  - 5bec15bc-30d5-4606-a3c8-f53cd25b7504
+    #  - 76c08b96-a64c-4cc9-86a2-54983c16278e
+    #  - b1a7f69d-e932-441c-ae49-c8f30d6411a0
+    #  - e3343cde-4881-41e7-be76-4566eb169653
+    #  - ff4d3dba-a7ef-47b2-91bc-cb5af68b6236
+    #  - 055a9c00-0a72-4005-83e2-457f56db4ad0
+    #  - 093a00d1-2501-4ecb-b504-95b39c61f32f
+    #  - 2284bc14-e70b-4fb4-b5cc-dd79e161b565
+    #  - 333216e7-fa25-4a63-870a-f549d146343b
+    #  - 36069ce1-ff28-429d-bfad-5bbac28c181d
+    #  - 58fe5939-17ee-4503-ac3f-54e28e15470f
+    #  - 5bccb172-4708-4016-bcd6-7b3d39058987
+    #  - 7457673c-cc14-451a-bf0d-d9caa6d47a2e
+    #  - 798486c0-b420-4744-805e-328135b38027
+    #  - 7a8bc0c9-8385-4a93-80ee-5cde58c79229
+    #  - 85689ecb-11fd-4b99-a878-815304f0bbf2
+    #  - 885a4122-86ae-4cdb-bbb5-4340c80e9d36
+    #  - 8e942be7-e932-4626-bbbe-a63d054cca43
+    #  - a04a7f5d-ea3e-4988-9085-9b312b9c2880
+    #  - b69eddc5-09b0-4e4b-b7e6-274be401659d
+    #  - b8188269-dd49-461d-9cb1-cc801a509f50
+    #  - bc584948-e34c-4377-9680-9266baa343eb
+    #  - da110c2a-55a1-41b1-a845-93488d63193a
+    #  - dd99679b-5daa-4008-b662-c9aa086583d7
+    #  - f93a9d7d-d212-4298-a097-214ae63ca5b9
+    #  - 798b05d1-6a9e-47f1-8bf7-6831186ddbd5
+    #  - f5745326-39d1-46b0-8a82-2d901096a79d
+    #  - 9468cd10-11d5-4120-81b2-f2b72ca78ad6
+    #  - ddb48316-8690-4697-91bb-2366bc021d67
+    #  - 27a194a2-2e07-4db4-8ae7-1152a7d6d58a
+#Files:
+#  - 055a9c00-0a72-4005-83e2-457f56db4ad0
+#  - 093a00d1-2501-4ecb-b504-95b39c61f32f
+#  - 2284bc14-e70b-4fb4-b5cc-dd79e161b565
+#  - 333216e7-fa25-4a63-870a-f549d146343b
+#  - 58fe5939-17ee-4503-ac3f-54e28e15470f
+#  - 5bccb172-4708-4016-bcd6-7b3d39058987
+#  - 7457673c-cc14-451a-bf0d-d9caa6d47a2e
+#  - 798486c0-b420-4744-805e-328135b38027
+#  - 7a8bc0c9-8385-4a93-80ee-5cde58c79229
+#  - 85689ecb-11fd-4b99-a878-815304f0bbf2
+#  - 885a4122-86ae-4cdb-bbb5-4340c80e9d36
+#  - 8e942be7-e932-4626-bbbe-a63d054cca43
+#  - a04a7f5d-ea3e-4988-9085-9b312b9c2880
+#  - b69eddc5-09b0-4e4b-b7e6-274be401659d
+#  - b8188269-dd49-461d-9cb1-cc801a509f50
+#  - bc584948-e34c-4377-9680-9266baa343eb
+#  - da110c2a-55a1-41b1-a845-93488d63193a
+#  - dd99679b-5daa-4008-b662-c9aa086583d7
+#  - f93a9d7d-d212-4298-a097-214ae63ca5b9
+#  - fdd730c4-84d8-4779-80db-a32be6b332e8
+#  - 36083d02-1ad8-4f6b-bcb7-83aa0bf93244
+#  - 36fd175e-3e15-496e-b1a2-27fce0afb27a
+#  - 5bec15bc-30d5-4606-a3c8-f53cd25b7504
+#  - 76c08b96-a64c-4cc9-86a2-54983c16278e
+#  - b1a7f69d-e932-441c-ae49-c8f30d6411a0
+#  - e3343cde-4881-41e7-be76-4566eb169653
+#  - ff4d3dba-a7ef-47b2-91bc-cb5af68b6236
+#  - 055a9c00-0a72-4005-83e2-457f56db4ad0
+#  - 093a00d1-2501-4ecb-b504-95b39c61f32f
+#  - 2284bc14-e70b-4fb4-b5cc-dd79e161b565
+#  - 333216e7-fa25-4a63-870a-f549d146343b
+#  - 36069ce1-ff28-429d-bfad-5bbac28c181d
+#  - 58fe5939-17ee-4503-ac3f-54e28e15470f
+#  - 5bccb172-4708-4016-bcd6-7b3d39058987
+#  - 7457673c-cc14-451a-bf0d-d9caa6d47a2e
+#  - 798486c0-b420-4744-805e-328135b38027
+#  - 7a8bc0c9-8385-4a93-80ee-5cde58c79229
+#  - 85689ecb-11fd-4b99-a878-815304f0bbf2
+#  - 885a4122-86ae-4cdb-bbb5-4340c80e9d36
+#  - 8e942be7-e932-4626-bbbe-a63d054cca43
+#  - a04a7f5d-ea3e-4988-9085-9b312b9c2880
+#  - b69eddc5-09b0-4e4b-b7e6-274be401659d
+#  - b8188269-dd49-461d-9cb1-cc801a509f50
+#  - bc584948-e34c-4377-9680-9266baa343eb
+#  - da110c2a-55a1-41b1-a845-93488d63193a
+#  - dd99679b-5daa-4008-b662-c9aa086583d7
+#  - f93a9d7d-d212-4298-a097-214ae63ca5b9
+#  - 798b05d1-6a9e-47f1-8bf7-6831186ddbd5
+#  - f5745326-39d1-46b0-8a82-2d901096a79d
+#  - 9468cd10-11d5-4120-81b2-f2b72ca78ad6
+#  - ddb48316-8690-4697-91bb-2366bc021d67
+#  - 27a194a2-2e07-4db4-8ae7-1152a7d6d58a

@@ -35,11 +35,18 @@ def find_all_deepest_specimens(samples) -> list:
         try:
             for portion in sample["portions"]:
                 if portion.get("slides") or portion.get("analytes"):
-                    ids.extend([slide["slide_id"] for slide in portion.get("slides",[])])
+                    ids.extend(
+                        [slide["slide_id"] for slide in portion.get("slides", [])]
+                    )
                     if portion.get("analytes"):
                         for analyte in portion["analytes"]:
                             try:
-                                ids.extend([aliquot["aliquot_id"] for aliquot in analyte["aliquots"]])
+                                ids.extend(
+                                    [
+                                        aliquot["aliquot_id"]
+                                        for aliquot in analyte["aliquots"]
+                                    ]
+                                )
                             except:
                                 ids.append(analyte["analyte_id"])
                 else:
@@ -54,10 +61,10 @@ class GDC:
         self,
         cases_endpoint: str = "https://api.gdc.cancer.gov/v0/cases",
         files_endpoint: str = "https://api.gdc.cancer.gov/v0/files",
-        #parent_spec: bool = True,
-        field_break: int = 101,
+        # parent_spec: bool = True,
+        field_break: int = 103,
         fields: list = [],
-        make_spec_file = None
+        make_spec_file=None,
     ) -> None:
         self.cases_endpoint = cases_endpoint
         self.files_endpoint = files_endpoint
@@ -84,7 +91,7 @@ class GDC:
     ) -> None:
         t0 = time.time()
         n = 0
-        #need to write dictionary of file_ids per specimen (specimen: [files])
+        # need to write dictionary of file_ids per specimen (specimen: [files])
         specimen_files_dict = defaultdict(list)
         with gzip.open(out_file, "wb") as fp:
             writer = jsonlines.Writer(fp)
@@ -94,31 +101,32 @@ class GDC:
                 if n % page_size == 0:
                     sys.stderr.write(f"Wrote {n} files in {time.time() - t0}s\n")
                 if self.make_spec_file:
-                    for entity in file.get("associated_entities",[]):
+                    for entity in file.get("associated_entities", []):
                         if entity["entity_type"] != "case":
-                            specimen_files_dict[entity["entity_id"]].append(file["file_id"])
-
+                            specimen_files_dict[entity["entity_id"]].append(
+                                file["file_id"]
+                            )
 
         sys.stderr.write(f"Wrote {n} files in {time.time() - t0}s\n")
         if self.make_spec_file:
-            for specimen,files in specimen_files_dict.items():
-                specimen_files_dict[specimen]= list(set(files))
+            for specimen, files in specimen_files_dict.items():
+                specimen_files_dict[specimen] = list(set(files))
             with gzip.open(self.make_spec_file, "wt", encoding="ascii") as out:
                 json.dump(specimen_files_dict, out)
-                #Portion of code assumes cases, specimens, etc included in File calls (they aren't)
-                #if file_ids:
+                # Portion of code assumes cases, specimens, etc included in File calls (they aren't)
+                # if file_ids:
                 #    for file in reader:
                 #        if file.get("file_id") in file_ids:
                 #            writer.write(self.prune_specimen_tree(file))
                 #            n += 1
-                #else:
+                # else:
                 #    for file in reader:
                 #        # add parent specimens to list of associated entities. remove cases?
                 #        if "associated_entities" not in file:
                 #            print(file)
                 #        writer.write(self.prune_specimen_tree(file))
                 #        n += 1
-        #sys.stderr.write(f"Extracted {n} files from cache in {time.time() - t0}s\n")
+        # sys.stderr.write(f"Extracted {n} files from cache in {time.time() - t0}s\n")
 
     def _cases(
         self,
@@ -139,25 +147,27 @@ class GDC:
             filt = None
         offset: int = 0
         while True:
-            fields = ','.join(self.fields[0:self.field_break])
+            fields = ",".join(self.fields[0 : self.field_break])
             params = {
-                        "filters": filt,
-                        "format": "json",
-                        "fields": fields,
-                        "size": page_size,
-                        "from": offset,
-                    }
-            result = retry_get(self.cases_endpoint, params = params)
+                "filters": filt,
+                "format": "json",
+                "fields": fields,
+                "size": page_size,
+                "from": offset,
+            }
+            result = retry_get(self.cases_endpoint, params=params)
             hits = result.json()["data"]["hits"]
-            result_dict = {hit["case_id"]:hit for hit in hits}
-            params.update({'fields':','.join(["case_id"]+self.fields[self.field_break:])})
-            result = retry_get(self.cases_endpoint, params = params)
+            result_dict = {hit["case_id"]: hit for hit in hits}
+            params.update(
+                {"fields": ",".join(["case_id"] + self.fields[self.field_break :])}
+            )
+            result = retry_get(self.cases_endpoint, params=params)
             hits = result.json()["data"]["hits"]
             page = result.json()["data"]["pagination"]
             p_no = page.get("page")
             p_tot = page.get("pages")
             sys.stderr.write(f"Pulled page {p_no} / {p_tot}\n")
-            result_dict2 = {hit["case_id"]:hit for hit in hits}
+            result_dict2 = {hit["case_id"]: hit for hit in hits}
             res_list = [result_dict[case] | result_dict2[case] for case in result_dict]
             for case in res_list:
                 yield case
@@ -167,7 +177,8 @@ class GDC:
             else:
                 offset += page_size
 
-    def _files(self,
+    def _files(
+        self,
         file_ids: list = None,
         page_size: int = 500,
     ) -> Iterable:
@@ -184,17 +195,17 @@ class GDC:
             filt = None
         offset: int = 0
         while True:
-            fields = ','.join(self.fields)
+            fields = ",".join(self.fields)
             params = {
-                        "filters": filt,
-                        "format": "json",
-                        "fields": fields,
-                        "size": page_size,
-                        "from": offset,
-                        #"sort": "file_id",
-                    }
+                "filters": filt,
+                "format": "json",
+                "fields": fields,
+                "size": page_size,
+                "from": offset,
+                # "sort": "file_id",
+            }
 
-            result = retry_get(self.files_endpoint, params = params)
+            result = retry_get(self.files_endpoint, params=params)
             page = result.json()["data"]["pagination"]
             p_no = page.get("page")
             p_tot = page.get("pages")
@@ -205,7 +216,6 @@ class GDC:
                 break
             else:
                 offset += page_size
-
 
     def prune_specimen_tree(self, file_rec):
         ret = file_rec.copy()
@@ -276,17 +286,18 @@ def main() -> None:
     parser.add_argument(
         "--files", help="Optional file with list of file ids (one to a line)"
     )
-    
+
     parser.add_argument(
         "--endpoint", help="Extract all from 'files' or 'cases' endpoint "
     )
     parser.add_argument(
-        "--make_spec_file", help="Name of file with files per specimen mapping. If None, don't make it"
+        "--make_spec_file",
+        help="Name of file with files per specimen mapping. If None, don't make it",
     )
-    #parser.add_argument(
+    # parser.add_argument(
     #    "--parent_spec", default=True,
     #    help="Add files to parent specimens records writing/using this file.",
-    #)
+    # )
     args = parser.parse_args()
     with open(args.fields_list) as file:
         fields = [line.rstrip() for line in file]
@@ -294,10 +305,12 @@ def main() -> None:
         sys.stderr.write("You done messed up A-A-RON! You need a list of fields")
         return
     gdc = GDC(
-        #cache_file=pathlib.Path(args.cache_file), parent_spec=args.parent_spec, 
-        field_break=100, fields=fields, make_spec_file=args.make_spec_file
+        # cache_file=pathlib.Path(args.cache_file), parent_spec=args.parent_spec,
+        field_break=104,
+        fields=fields,
+        make_spec_file=args.make_spec_file,
     )
-    
+
     if args.case or args.cases or args.endpoint == "cases":
         gdc.save_cases(
             args.out_file,

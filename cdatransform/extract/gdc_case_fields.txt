@@ -1,6 +1,8 @@
 case_id
 created_datetime
 days_to_index
+disease_type
+primary_site
 state
 submitter_aliquot_ids
 submitter_analyte_ids
@@ -35,6 +37,7 @@ demographic.submitter_id
 demographic.updated_datetime
 demographic.year_of_birth
 demographic.year_of_death
+demographic.vital_status
 diagnoses.age_at_diagnosis
 diagnoses.classification_of_tumor
 diagnoses.created_datetime
