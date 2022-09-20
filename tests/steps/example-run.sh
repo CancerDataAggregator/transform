@@ -7,8 +7,8 @@ extract-gdc gdc_TARGET_case2_.jsonl.gz ../../cdatransform/extract/gdc_case_field
 extract-gdc gdc_TARGET_file1.jsonl.gz ../../cdatransform/extract/gdc_file_fields.txt --file 055a9c00-0a72-4005-83e2-457f56db4ad0
 extract-gdc gdc_TARGET_file2.jsonl.gz ../../cdatransform/extract/gdc_file_fields.txt --file 093a00d1-2501-4ecb-b504-95b39c61f32f
 
-add-spec-files gdc_TARGET_case1_.jsonl.gz ../../data/gdc.files_per_specimen.json.gz gdc_TARGET_case1.jsonl.gz GDC
-add-spec-files gdc_TARGET_case2_.jsonl.gz ../../data/gdc.files_per_specimen.json.gz gdc_TARGET_case2.jsonl.gz GDC
+#add-spec-files gdc_TARGET_case1_.jsonl.gz ../../data/gdc.files_per_specimen.json.gz gdc_TARGET_case1.jsonl.gz GDC
+#add-spec-files gdc_TARGET_case2_.jsonl.gz ../../data/gdc.files_per_specimen.json.gz gdc_TARGET_case2.jsonl.gz GDC
 
 gunzip -c gdc_TARGET_case1.jsonl.gz > gdc_TARGET_case1.json
 gunzip -c gdc_TARGET_case2.jsonl.gz > gdc_TARGET_case2.json
@@ -58,10 +58,10 @@ gunzip -c pdc_QC1_file1.jsonl.gz > pdc_QC1_file1.json
 gunzip -c pdc_QC1_file2.jsonl.gz > pdc_QC1_file2.json
 
 cda-transform pdc_QC1_case1.jsonl.gz pdc.case1.H.json.gz ../../PDC_subject_endpoint_mapping.yml PDC --endpoint cases
-python PDCH2yaml.py pdc.case1.H.json.gz pdc.case1.H.yml
+python json2yaml.py pdc.case1.H.json.gz pdc.case1.H.yml
 
 cda-transform pdc_QC1_case2.jsonl.gz pdc.case2.H.json.gz ../../PDC_subject_endpoint_mapping.yml PDC --endpoint cases
-python PDCH2yaml.py pdc.case2.H.json.gz pdc.case2.H.yml
+python json2yaml.py pdc.case2.H.json.gz pdc.case2.H.yml
 
 cda-transform pdc_QC1_file1.jsonl.gz pdc.file1.H.json.gz ../../PDC_file_endpoint_mapping.yml PDC --endpoint files
 python PDCH2yaml.py pdc.file1.H.json.gz pdc.file1.H.yml
@@ -71,15 +71,16 @@ python PDCH2yaml.py pdc.file1.H.json.gz pdc.file1.H.yml
 
 cat pdc_QC1_case1.jsonl.gz pdc_QC1_case2.jsonl.gz > pdc.cases.jsonl.gz
 cat pdc_QC1_file1.jsonl.gz pdc_QC1_file2.jsonl.gz > pdc.files.jsonl.gz
+python PDCH2yaml.py pdc.cases.jsonl.gz pdc.cases.yml
 
 cda-transform pdc.cases.jsonl.gz pdc.cases.H.jsonl.gz ../../PDC_subject_endpoint_mapping.yml PDC --endpoint cases
+python PDCH2yaml.py pdc.cases.H.jsonl.gz pdc.cases.H.yml
+
 cda-aggregate ../../subject_endpoint_merge.yml pdc.cases.H.jsonl.gz pdc.cases.A.jsonl.gz
-python json2yaml.py pdc.cases.A.jsonl.gz pdc.cases.A.yml
 
 cda-transform pdc.files.jsonl.gz pdc.files.H.jsonl.gz ../../PDC_file_endpoint_mapping.yml PDC --endpoint files
-# Aggregation of files transformations for PDC is unnecessary. File is top level entity and extracted that 
-# way from the PDC API. Hooray!
-python PDCH2yaml.py pdc.files.H.jsonl.gz pdc.files.H.yml
+cda-aggregate ../../file_endpoint_merge.yml pdc.files.H.jsonl.gz pdc.files.A.jsonl.gz --endpoint files
+python PDCH2yaml.py pdc.files.A.jsonl.gz pdc.files.A.yml
 
 # IDC Generation
 extract-idc ../IDC_mapping.yml --make_bq_table True \
@@ -91,11 +92,11 @@ extract-idc ../IDC_mapping.yml --make_bq_table True \
           --make_bucket_file True \
           --out_file idc_extract.jsonl.gz \
           --dest_bucket gdc-bq-sample-bucket \
-          --dest_bucket_file_name idc_extract.jsonl.gz
+          --dest_bucket_file_name idc_TARGET_Subject1.jsonl.gz
 
 gunzip -c idc_extract.jsonl.gz > idc_extract.json
 python PDCH2yaml.py idc_Subject1_harmonized.jsonl.gz idc_Subject1_harmonized.yaml
 
 gunzip -c idc_TARGET_Subject1.jsonl.gz > idc_TARGET_Subject1.json
 # Merge aggregated GDC and PDC subject
-cda-merge gdc.pdc.subjects.jsonl.gz --gdc_subjects gdc.cases.A.jsonl.gz --pdc_subjects pdc.cases.A.jsonl.gz --subject_how_to_merge_file ../../subject_endpoint_merge.yml --merge_subjects True 
+cda-merge gdc.pdc.subjects.jsonl.gz --gdc_subjects gdc.cases.A.jsonl.gz --pdc_subjects pdc.cases.A.jsonl.gz --idc_subjects idc_extract.jsonl.gz --subject_how_to_merge_file ../../subject_endpoint_merge.yml --merge_subjects True 
