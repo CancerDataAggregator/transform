@@ -2,8 +2,8 @@ set -ex
 
 # Generate GDC examples
 
-extract-gdc gdc_TARGET_case1_.jsonl.gz ../../cdatransform/extract/gdc_case_fields.txt --case 7eeced68-1717-4116-bcee-328ac70a9682
-extract-gdc gdc_TARGET_case2_.jsonl.gz ../../cdatransform/extract/gdc_case_fields.txt --case 9e229e56-f7e1-58f9-984b-a9453be5dc9a
+extract-gdc gdc_TARGET_case1.jsonl.gz ../../cdatransform/extract/gdc_case_fields.txt --case 7eeced68-1717-4116-bcee-328ac70a9682
+extract-gdc gdc_TARGET_case2.jsonl.gz ../../cdatransform/extract/gdc_case_fields.txt --case 9e229e56-f7e1-58f9-984b-a9453be5dc9a
 extract-gdc gdc_TARGET_file1.jsonl.gz ../../cdatransform/extract/gdc_file_fields.txt --file 055a9c00-0a72-4005-83e2-457f56db4ad0
 extract-gdc gdc_TARGET_file2.jsonl.gz ../../cdatransform/extract/gdc_file_fields.txt --file 093a00d1-2501-4ecb-b504-95b39c61f32f
 
