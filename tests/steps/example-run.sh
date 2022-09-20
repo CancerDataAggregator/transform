@@ -83,20 +83,19 @@ cda-aggregate ../../file_endpoint_merge.yml pdc.files.H.jsonl.gz pdc.files.A.jso
 python PDCH2yaml.py pdc.files.A.jsonl.gz pdc.files.A.yml
 
 # IDC Generation
-extract-idc ../IDC_mapping.yml --make_bq_table True \
+extract-idc ../../IDC_mapping.yml --make_bq_table True \
           --endpoint Patient \
           --gsa_key $GOOGLE_APPLICATION_CREDENTIALS \
           --dest_table_id broad-cda-dev.github_testing.idc_patient \
-          --source_table broad-cda-dev.github_testing.dicom_pivot_v9_copy \
+          --source_table bigquery-public-data.idc_v10.dicom_pivot_v10 \
           --patient DBT-P04255 \
           --make_bucket_file True \
-          --out_file idc_extract.jsonl.gz \
+          --out_file idc_Subject1.jsonl.gz \
           --dest_bucket gdc-bq-sample-bucket \
           --dest_bucket_file_name idc_TARGET_Subject1.jsonl.gz
 
-gunzip -c idc_extract.jsonl.gz > idc_extract.json
-python PDCH2yaml.py idc_Subject1_harmonized.jsonl.gz idc_Subject1_harmonized.yaml
+gunzip -c idc_Subject1.jsonl.gz > idc_Subject1.json
+python PDCH2yaml.py idc_Subject1.jsonl.gz idc_Subject1_harmonized.yaml
 
-gunzip -c idc_TARGET_Subject1.jsonl.gz > idc_TARGET_Subject1.json
 # Merge aggregated GDC and PDC subject
-cda-merge gdc.pdc.subjects.jsonl.gz --gdc_subjects gdc.cases.A.jsonl.gz --pdc_subjects pdc.cases.A.jsonl.gz --idc_subjects idc_extract.jsonl.gz --subject_how_to_merge_file ../../subject_endpoint_merge.yml --merge_subjects True 
+cda-merge gdc.pdc.subjects.jsonl.gz --gdc_subjects gdc.cases.A.jsonl.gz --pdc_subjects pdc.cases.A.jsonl.gz --idc_subjects idc_Subject1.jsonl.gz --subject_how_to_merge_file ../../subject_endpoint_merge.yml --merge_subjects True 
