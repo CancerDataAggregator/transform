@@ -1,5 +1,20 @@
 set -ex
 
+# IDC Generation
+extract-idc ../../IDC_mapping.yml --make_bq_table True \
+          --endpoint Patient \
+          --gsa_key $GOOGLE_APPLICATION_CREDENTIALS \
+          --dest_table_id broad-cda-dev.github_testing.idc_patient \
+          --source_table bigquery-public-data.idc_v10.dicom_pivot_v10 \
+          --patient DBT-P04255 \
+          --make_bucket_file True \
+          --out_file idc_Subject1.jsonl.gz \
+          --dest_bucket broad-cda-dev \
+          --dest_bucket_file_name public/idc_TARGET_Subject1.jsonl.gz
+
+gunzip -c idc_Subject1.jsonl.gz > idc_Subject1.json
+python PDCH2yaml.py idc_Subject1.jsonl.gz idc_Subject1_harmonized.yaml
+
 # Generate GDC examples
 
 extract-gdc gdc_TARGET_case1.jsonl.gz ../../cdatransform/extract/gdc_case_fields.txt --case 7eeced68-1717-4116-bcee-328ac70a9682
@@ -82,20 +97,6 @@ cda-transform pdc.files.jsonl.gz pdc.files.H.jsonl.gz ../../PDC_file_endpoint_ma
 cda-aggregate ../../file_endpoint_merge.yml pdc.files.H.jsonl.gz pdc.files.A.jsonl.gz --endpoint files
 python PDCH2yaml.py pdc.files.A.jsonl.gz pdc.files.A.yml
 
-# IDC Generation
-extract-idc ../../IDC_mapping.yml --make_bq_table True \
-          --endpoint Patient \
-          --gsa_key $GOOGLE_APPLICATION_CREDENTIALS \
-          --dest_table_id broad-cda-dev.github_testing.idc_patient \
-          --source_table bigquery-public-data.idc_v10.dicom_pivot_v10 \
-          --patient DBT-P04255 \
-          --make_bucket_file True \
-          --out_file idc_Subject1.jsonl.gz \
-          --dest_bucket gdc-bq-sample-bucket \
-          --dest_bucket_file_name idc_TARGET_Subject1.jsonl.gz
-
-gunzip -c idc_Subject1.jsonl.gz > idc_Subject1.json
-python PDCH2yaml.py idc_Subject1.jsonl.gz idc_Subject1_harmonized.yaml
 
 # Merge aggregated GDC and PDC subject
 cda-merge gdc.pdc.subjects.jsonl.gz --gdc_subjects gdc.cases.A.jsonl.gz --pdc_subjects pdc.cases.A.jsonl.gz --idc_subjects idc_Subject1.jsonl.gz --subject_how_to_merge_file ../../subject_endpoint_merge.yml --merge_subjects True 
