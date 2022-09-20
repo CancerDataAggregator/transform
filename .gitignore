@@ -7,3 +7,8 @@ cdatransform.egg-info/
 # Python
 *.pyc
 **/__pycache__
+
+postgres-db
+venv
+.venv
+./logs
