@@ -41,13 +41,13 @@ File_merge:
     imaging_series:
         merge_type: "coalesce"
         default_value: null
-    Subject:
+    Subjects:
         merge_type: "append_field_vals"
         default_value: []
-    ResearchSubject:
+    ResearchSubjects:
         merge_type: "append_field_vals"
         default_value: []
-    Specimen:
+    Specimens:
         merge_type: "append_field_vals"
         default_value: []
 

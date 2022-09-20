@@ -15,7 +15,7 @@ setup(
     version=version,
     packages=find_packages(),
     platforms=["POSIX", "MacOS", "Windows"],
-    python_requires=">=3.6",
+    python_requires=">=3.10.1",
     install_requires=[
         "requests",
         "jsonlines",
@@ -27,6 +27,7 @@ setup(
     entry_points={
         "console_scripts": [
             "extract-gdc = cdatransform.extract.gdc:main",
+            "add-spec-files = cdatransform.extract.gdc_add_spec_files:main",
             "extract-pdc = cdatransform.extract.pdc:main",
             "extract-idc = cdatransform.extract.idc:main",
             "cda-transform = cdatransform.transform.main:main",

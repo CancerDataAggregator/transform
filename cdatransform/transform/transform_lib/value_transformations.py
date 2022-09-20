@@ -43,3 +43,8 @@ def idc_drs_uri(val):
 
 def idc_researchsubject_id(val):
     return """CONCAT(""" + val[0] + """, "__", """ + val[1] + """)"""
+
+
+def idc_label(val):
+    # splits gcs_url, gets last element in array for label
+    return """ARRAY_REVERSE(SPLIT(""" + val[0] + """, '/'))[OFFSET(0)]"""

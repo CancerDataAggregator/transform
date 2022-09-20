@@ -17,8 +17,8 @@ Patient:
     Transformations:
         species: 
         - ['idc_species_mapping', ['STRING'], 'STRING' ]
-    Linkers:
-        Files: 'files.crdc_instance_uuid'
+    #Linkers:
+    #    Files: 'files.crdc_instance_uuid'
 
 ResearchSubject:
     Mapping:
@@ -39,17 +39,15 @@ ResearchSubject:
         - ['idc_researchsubject_id', ['STRING', 'STRING'], 'STRING']
         value:
         - ['idc_researchsubject_id', ['STRING', 'STRING'], 'STRING']
-    Linkers:
-        Files: 'files.crdc_instance_uuid'
+    #Linkers:
+    #    Files: 'files.crdc_instance_uuid'
 File:
     Mapping:
         id: 'files.crdc_instance_uuid'
         identifier:
             system: 'IDC'
             value: 'files.crdc_instance_uuid'
-        label: 
-            - 'files.gcs_url'
-            - 15
+        label: 'files.gcs_url'
         data_category: 'Imaging'
         data_type: 'NULL'
         file_format: 'DICOM'
@@ -63,14 +61,19 @@ File:
         imaging_series: 'files.crdc_series_uuid'
     Transformations:
         label: 
-        - ['idc_substr', ['STRING','INT'],'STRING']
+        - ['idc_label', ['STRING'],'STRING']
         drs_uri:
         - ['idc_drs_uri', ['STRING'], 'STRING']
+        ResearchSubjects:
+        - ['idc_researchsubject_id', ['STRING'], 'STRING']
 
     Linkers:
-        Specimens: 
-        ResearchSubjects: 
         Subjects: 'files.PatientID'
+        ResearchSubjects: 
+        - 'files.PatientID'
+        - 'files.collection_id'
+        Specimens: 
+        
 # 'NULL' ensures a string type for the field, but null
 # null ensures an integer type for the field, but null
             
