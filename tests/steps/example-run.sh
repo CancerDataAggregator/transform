@@ -44,13 +44,13 @@ python PDCH2yaml.py gdc.files.H.jsonl.gz gdc.files.H.yml
 
 # Generate PDC examples
 
-extract-pdc pdc_QC1_case1_.jsonl.gz --case 0809987b-1fba-11e9-b7f8-0a80fada099c
-extract-pdc pdc_QC1_case2_.jsonl.gz --case df4f2aaf-8f98-11ea-b1fd-0aad30af8a83
+extract-pdc pdc_QC1_case1.jsonl.gz --case 0809987b-1fba-11e9-b7f8-0a80fada099c
+extract-pdc pdc_QC1_case2.jsonl.gz --case df4f2aaf-8f98-11ea-b1fd-0aad30af8a83
 extract-pdc pdc_QC1_file1.jsonl.gz --file 4bd2fb94-19ca-11e9-99db-005056921935
 extract-pdc pdc_QC1_file2.jsonl.gz --file 4d553670-1b42-11e9-b79b-005056921935
 
-add-spec-files pdc_QC1_case1_.jsonl.gz ../../data/pdc.files_per_specimen.json.gz pdc_QC1_case1.jsonl.gz PDC
-add-spec-files pdc_QC1_case2_.jsonl.gz ../../data/pdc.files_per_specimen.json.gz pdc_QC1_case2.jsonl.gz PDC
+#add-spec-files pdc_QC1_case1_.jsonl.gz ../../data/pdc.files_per_specimen.json.gz pdc_QC1_case1.jsonl.gz PDC
+#add-spec-files pdc_QC1_case2_.jsonl.gz ../../data/pdc.files_per_specimen.json.gz pdc_QC1_case2.jsonl.gz PDC
 
 gunzip -c pdc_QC1_case1.jsonl.gz > pdc_QC1_case1.json
 gunzip -c pdc_QC1_case2.jsonl.gz > pdc_QC1_case2.json
