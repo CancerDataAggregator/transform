@@ -72,6 +72,81 @@ class GDC:
         self.fields = fields
         self.make_spec_file = make_spec_file
 
+    def det_field_chunks(self, num_chunks) -> list:
+        field_groups = defaultdict(list)
+        field_chunks = [[] for i in range(num_chunks)]
+        for field in self.fields:
+            field_groups[field.split(".")[0]].append(field)
+        chunk = 0
+        for field_group, field_list in field_groups.items():
+            field_chunks[chunk].extend(field_list)
+            if len(field_chunks[chunk]) > len(self.fields) / num_chunks:
+                chunk += 1
+        for chunk in field_chunks:
+            if "id" not in chunk:
+                chunk.append("id")
+        return [i for i in field_chunks if len(i) > 1]
+
+    def _paginate_files_or_cases(
+        self,
+        ids: list = None,
+        endpt: str = "case",
+        page_size: int = 500,
+        num_field_chunks: int = 2,
+    ) -> Iterable:
+        if ids is not None:
+            filt = json.dumps(
+                {
+                    "op": "and",
+                    "content": [
+                        {
+                            "op": "in",
+                            "content": {"field": endpt + "_id", "value": ids},
+                        }
+                    ],
+                }
+            )
+        else:
+            filt = None
+        if endpt == "case":
+            endpt = self.cases_endpoint
+        elif endpt == "file":
+            endpt = self.files_endpoint
+        offset: int = 0
+        field_chunks = self.det_field_chunks(num_field_chunks)
+        while True:
+            all_hits_dict = defaultdict(list)
+            for field_chunk in field_chunks:
+                fields = ",".join(field_chunk)
+                params = {
+                    "filters": filt,
+                    "format": "json",
+                    "fields": fields,
+                    "size": page_size,
+                    "from": offset,
+                    # "sort": "file_id",
+                }
+                # sys.stderr.write(str(params))
+                result = retry_get(endpt, params=params)
+                hits = result.json()["data"]["hits"]
+                for hit in hits:
+                    all_hits_dict[hit["id"]].append(hit)
+                page = result.json()["data"]["pagination"]
+                p_no = page.get("page")
+                p_tot = page.get("pages")
+            sys.stderr.write(f"Pulling page {p_no} / {p_tot}\n")
+            print(all_hits_dict)
+            res_list = [
+                {key: value for record in records for key, value in record.items()}
+                for records in all_hits_dict.values()
+            ]
+            for result in res_list:
+                yield result
+            if p_no >= p_tot:
+                break
+            else:
+                offset += page_size
+
     def save_cases(
         self, out_file: str, case_ids: str = None, page_size: int = 500
     ) -> None:
@@ -79,7 +154,7 @@ class GDC:
         n = 0
         with gzip.open(out_file, "wb") as fp:
             writer = jsonlines.Writer(fp)
-            for case in self._cases(case_ids, page_size):
+            for case in self._paginate_files_or_cases(case_ids, "case", page_size, 3):
                 writer.write(case)
                 n += 1
                 if n % page_size == 0:
@@ -95,7 +170,9 @@ class GDC:
         specimen_files_dict = defaultdict(list)
         with gzip.open(out_file, "wb") as fp:
             writer = jsonlines.Writer(fp)
-            for file in self._files(file_ids, page_size):
+            for file in self._paginate_files_or_cases(
+                file_ids, "file", page_size, 2
+            ):  # _files(file_ids, page_size):
                 writer.write(file)
                 n += 1
                 if n % page_size == 0:
@@ -127,95 +204,6 @@ class GDC:
                 #        writer.write(self.prune_specimen_tree(file))
                 #        n += 1
         # sys.stderr.write(f"Extracted {n} files from cache in {time.time() - t0}s\n")
-
-    def _cases(
-        self,
-        case_ids: list = None,
-        page_size: int = 100,
-    ) -> Iterable:
-        # defining the GDC API query
-        if case_ids is not None:
-            filt = json.dumps(
-                {
-                    "op": "and",
-                    "content": [
-                        {"op": "in", "content": {"field": "case_id", "value": case_ids}}
-                    ],
-                }
-            )
-        else:
-            filt = None
-        offset: int = 0
-        while True:
-            fields = ",".join(self.fields[0 : self.field_break])
-            params = {
-                "filters": filt,
-                "format": "json",
-                "fields": fields,
-                "size": page_size,
-                "from": offset,
-            }
-            result = retry_get(self.cases_endpoint, params=params)
-            hits = result.json()["data"]["hits"]
-            result_dict = {hit["case_id"]: hit for hit in hits}
-            params.update(
-                {"fields": ",".join(["case_id"] + self.fields[self.field_break :])}
-            )
-            result = retry_get(self.cases_endpoint, params=params)
-            hits = result.json()["data"]["hits"]
-            page = result.json()["data"]["pagination"]
-            p_no = page.get("page")
-            p_tot = page.get("pages")
-            sys.stderr.write(f"Pulled page {p_no} / {p_tot}\n")
-            result_dict2 = {hit["case_id"]: hit for hit in hits}
-            res_list = [result_dict[case] | result_dict2[case] for case in result_dict]
-            for case in res_list:
-                yield case
-
-            if p_no >= p_tot:
-                break
-            else:
-                offset += page_size
-
-    def _files(
-        self,
-        file_ids: list = None,
-        page_size: int = 500,
-    ) -> Iterable:
-        if file_ids is not None:
-            filt = json.dumps(
-                {
-                    "op": "and",
-                    "content": [
-                        {"op": "in", "content": {"field": "file_id", "value": file_ids}}
-                    ],
-                }
-            )
-        else:
-            filt = None
-        offset: int = 0
-        while True:
-            fields = ",".join(self.fields)
-            params = {
-                "filters": filt,
-                "format": "json",
-                "fields": fields,
-                "size": page_size,
-                "from": offset,
-                # "sort": "file_id",
-            }
-
-            result = retry_get(self.files_endpoint, params=params)
-            page = result.json()["data"]["pagination"]
-            p_no = page.get("page")
-            p_tot = page.get("pages")
-            sys.stderr.write(f"Pulling page {p_no} / {p_tot}\n")
-            for hit in result.json()["data"]["hits"]:
-                yield hit
-            if p_no >= p_tot:
-                break
-            else:
-                offset += page_size
 
     def prune_specimen_tree(self, file_rec):
         ret = file_rec.copy()
