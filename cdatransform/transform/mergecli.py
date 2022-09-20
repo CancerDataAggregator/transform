@@ -139,10 +139,10 @@ def merge_files(output_file, merged_subjects_input, how_to_merge_file, **kwargs)
     for dc, val in list(input_file_dict.items()):
         if val is None:
             del input_file_dict[dc]
-    All_endpoints_sources, All_Entries_All_DCs = get_endpoint_info_all_DCs(
-        input_file_dict
-    )
-    total_files = len(All_endpoints_sources)
+    # All_endpoints_sources, All_Entries_All_DCs = get_endpoint_info_all_DCs(
+    #    input_file_dict
+    ##)
+    # total_files = len(All_endpoints_sources)
 
     # loop over all file_ids, merge data if found in multiple sources
     with gzip.open(output_file, "w") as outfp:
@@ -154,10 +154,6 @@ def merge_files(output_file, merged_subjects_input, how_to_merge_file, **kwargs)
                 reader = jsonlines.Reader(file_recs)
                 for file_rec in reader:
                     count += 1
-                    temp_subjects = []
-                    for subject in file_rec["Subject"]:
-                        temp_subjects.append(all_subjects[subject["id"]])
-                    file_rec["Subject"] = temp_subjects
                     writer.write(file_rec)
                     if count % 50000 == 0:
                         sys.stderr.write(f"Processed {count} files.\n")
