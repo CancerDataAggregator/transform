@@ -8,7 +8,7 @@ import argparse
 from collections import defaultdict
 import pathlib
 
-from cdatransform.lib import get_case_ids
+from cdatransform.lib import get_ids
 from cdatransform.extract.lib import retry_get
 
 
@@ -61,14 +61,11 @@ class GDC:
         self,
         cases_endpoint: str = "https://api.gdc.cancer.gov/v0/cases",
         files_endpoint: str = "https://api.gdc.cancer.gov/v0/files",
-        # parent_spec: bool = True,
-        field_break: int = 103,
         fields: list = [],
         make_spec_file=None,
     ) -> None:
         self.cases_endpoint = cases_endpoint
         self.files_endpoint = files_endpoint
-        self.field_break = field_break
         self.fields = fields
         self.make_spec_file = make_spec_file
 
@@ -135,7 +132,6 @@ class GDC:
                 p_no = page.get("page")
                 p_tot = page.get("pages")
             sys.stderr.write(f"Pulling page {p_no} / {p_tot}\n")
-            print(all_hits_dict)
             res_list = [
                 {key: value for record in records for key, value in record.items()}
                 for records in all_hits_dict.values()
@@ -294,7 +290,6 @@ def main() -> None:
         return
     gdc = GDC(
         # cache_file=pathlib.Path(args.cache_file), parent_spec=args.parent_spec,
-        field_break=104,
         fields=fields,
         make_spec_file=args.make_spec_file,
     )
@@ -302,12 +297,12 @@ def main() -> None:
     if args.case or args.cases or args.endpoint == "cases":
         gdc.save_cases(
             args.out_file,
-            case_ids=get_case_ids(case=args.case, case_list_file=args.cases),
+            case_ids=get_ids(id=args.case, id_list_file=args.cases),
         )
     if args.file or args.files or args.endpoint == "files":
         gdc.save_files(
             args.out_file,
-            file_ids=get_case_ids(case=args.file, case_list_file=args.files),
+            file_ids=get_ids(id=args.file, id_list_file=args.files),
         )
 
 
