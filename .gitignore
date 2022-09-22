@@ -12,3 +12,6 @@ postgres-db
 venv
 .venv
 ./logs
+.env
+venv
+logs

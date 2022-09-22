@@ -1,9 +1,10 @@
-import jsonlines
-import json
+import argparse
 import gzip
+import json
 import sys
 import time
-import argparse
+
+import jsonlines
 
 
 def main() -> None:

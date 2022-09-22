@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Dict, Set, Callable, Any, Mapping, Union, List, Optional
+from typing import Any, Callable, Dict, List, Mapping, Optional, Set, Union
 
 
 class NamedValue:

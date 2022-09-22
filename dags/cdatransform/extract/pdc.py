@@ -1,15 +1,16 @@
-import json
-from collections import defaultdict
-from math import ceil
-import jsonlines
-import time
-import sys
-import gzip
 import argparse
+import gzip
+import json
 import pathlib
 import shutil
+import sys
+import time
+from collections import defaultdict
+from math import ceil
 
+import jsonlines
 from cdatransform.lib import get_case_ids
+
 from .lib import retry_get
 from .pdc_query_lib import *
 

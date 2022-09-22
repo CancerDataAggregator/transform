@@ -4,7 +4,6 @@ Transforms specific to PDC data structures
 from cdatransform.transform.commonlib import constrain_research_subject, lower
 from cdatransform.transform.validate import LogValidation
 
-
 # pdc.patient ------------------------------------------
 
 

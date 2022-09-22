@@ -1,7 +1,8 @@
 import argparse
+import json
+
 import yaml
 from yaml import Loader
-import json
 
 
 class Schema:

@@ -1,14 +1,15 @@
-import yaml
-from yaml import Loader
 import argparse
-from math import ceil
-from google.cloud import bigquery, storage
-from google.oauth2 import service_account
-from cdatransform.lib import get_case_ids
-import cdatransform.transform.transform_lib.transform_with_YAML_v1 as tr
-import jsonlines
 import gzip
 import os
+from math import ceil
+
+import cdatransform.transform.transform_lib.transform_with_YAML_v1 as tr
+import jsonlines
+import yaml
+from cdatransform.lib import get_case_ids
+from google.cloud import bigquery, storage
+from google.oauth2 import service_account
+from yaml import Loader
 
 
 class IDC:

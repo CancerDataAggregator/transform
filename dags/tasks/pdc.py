@@ -1,19 +1,22 @@
 from airflow.decorators import task
 
-@task(task_id='pdc_extract')
+
+@task(task_id="pdc_extract")
 def pdc_extract(**kwargs):
-  print('Extracting PDC')
+    print("Extracting PDC")
 
-  return 'pdc_file.jsonl.gz'
+    return "pdc_file.jsonl.gz"
 
-@task(task_id='pdc_transform')
+
+@task(task_id="pdc_transform")
 def pdc_transform(extraction_result: str, **kwargs):
-  print('Transforming PDC')
+    print("Transforming PDC")
 
-  return 'pdc_transformed.jsonl.gz'
+    return "pdc_transformed.jsonl.gz"
 
-@task(task_id='pdc_load')
+
+@task(task_id="pdc_load")
 def pdc_load(transform_result: str, **kwargs):
-  print('Loading PDC')
+    print("Loading PDC")
 
-  return 'pdc_loaded.jsonl.gz'
+    return "pdc_loaded.jsonl.gz"

@@ -1,5 +1,6 @@
 import sys
 
+
 # reading functions - simple read and read_entity
 def simp_read(orig, ptr, cp_o, DC):
     cp = cp_o.copy()

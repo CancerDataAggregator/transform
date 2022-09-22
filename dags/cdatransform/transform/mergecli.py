@@ -1,10 +1,11 @@
 import argparse
-import sys
-import jsonlines
-import yaml
 import gzip
 import logging
+import sys
+
 import cdatransform.transform.merge.merge_functions as mf
+import jsonlines
+import yaml
 from cdatransform.transform.validate import LogValidation
 
 logger = logging.getLogger(__name__)

@@ -4,13 +4,12 @@ import logging
 import sys
 import time
 
-import yaml
-from yaml import Loader
-import jsonlines
 import cdatransform.transform.transform_lib.transform_with_YAML_v1 as tr
+import jsonlines
+import yaml
 from cdatransform.lib import get_case_ids
 from cdatransform.transform.validate import LogValidation
-
+from yaml import Loader
 
 logger = logging.getLogger(__name__)
 
