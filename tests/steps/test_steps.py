@@ -69,13 +69,13 @@ def test_transform(transform, DC, case, expected, endpoint):
             MandT[entity]["Transformations"] = tr.functionalize_trans_dict(
                 MandT[entity]["Transformations"]
             )
-    transform = tr.Transform(validate)
+    transform = tr.Transform(MandT, DC, endpoint)
     # transform = Transform(t_list, validate)
     with open(case) as case_data:
         if DC == "IDC":
             transformed = json.load(case_data)
         else:
-            transformed = transform(json.load(case_data), MandT, DC, endpoint=endpoint)
+            transformed = transform(json.load(case_data))
         with open(expected) as expected_data:
             blah = yaml.safe_load(expected_data)
             diff = DeepDiff(

@@ -1,6 +1,5 @@
 import argparse
 import gzip
-import logging
 import sys
 import time
 
@@ -8,27 +7,7 @@ import yaml
 from yaml import Loader
 import jsonlines
 import cdatransform.transform.transform_lib.transform_with_YAML_v1 as tr
-from cdatransform.lib import get_case_ids
-from cdatransform.transform.validate import LogValidation
-
-
-logger = logging.getLogger(__name__)
-
-
-def filter_cases(reader, case_list):
-    if case_list is None:
-        cases = None
-    else:
-        cases = set(case_list)
-
-    for case in reader:
-        if cases is None:
-            yield case
-        elif len(cases) == 0:
-            break
-        elif case.get("id") in cases:
-            cases.remove(case.get("id"))
-            yield case
+from cdatransform.lib import get_ids
 
 
 def main():
@@ -44,23 +23,12 @@ def main():
         "--endpoint", help="endpoint from which the file was generated. e.g. cases"
     )
     parser.add_argument("--log", default="transform.log", help="Name of log file.")
-    parser.add_argument("--case", help="Transform just this case")
+    parser.add_argument("--id", help="Transform just this case/file")
     parser.add_argument(
-        "--cases", help="Optional file with list of case ids (one to a line)"
+        "--ids", help="Optional file with list of case/file ids (one to a line)"
     )
     # parser.add_argument("endpoint", help="endpoint from which the file was generated. e.g. cases")
     args = parser.parse_args()
-
-    logging.basicConfig(
-        filename=args.log,
-        format="%(asctime)s %(levelname)-8s %(message)s",
-        level=logging.INFO,
-    )
-    logger.info("----------------------")
-    logger.info("Starting transform run")
-    logger.info("----------------------")
-
-    validate = LogValidation()
 
     MandT = yaml.load(open(args.map_trans, "r"), Loader=Loader)
     for entity, MorT_dict in MandT.items():
@@ -68,25 +36,26 @@ def main():
             MandT[entity]["Transformations"] = tr.functionalize_trans_dict(
                 MandT[entity]["Transformations"]
             )
-    transform = tr.Transform(validate)
+    transform = tr.Transform(MandT, args.DC, args.endpoint)
     t0 = time.time()
     count = 0
-    case_list = get_case_ids(case=args.case, case_list_file=args.cases)
+    id_list = get_ids(id=args.id, id_list_file=args.ids)
 
     with gzip.open(args.input, "r") as infp:
         reader = jsonlines.Reader(infp)
         with gzip.open(args.output, "w") as outfp:
 
             writer = jsonlines.Writer(outfp)
-            for case in filter_cases(reader, case_list=case_list):
-                writer.write(transform(case, MandT, args.DC, endpoint=args.endpoint))
-                count += 1
-                if count % 500 == 0:
-                    sys.stderr.write(f"Processed {count} cases ({time.time() - t0}).\n")
+            for line in reader:
+                if id_list is None or line.get("id") in id_list:
+                    writer.write(transform(line))
+                    count += 1
+                    if count % 500 == 0:
+                        sys.stderr.write(
+                            f"Processed {count} cases ({time.time() - t0}).\n"
+                        )
 
     sys.stderr.write(f"Processed {count} {args.endpoint} ({time.time() - t0}).\n")
-
-    validate.generate_report(logger)
 
 
 if __name__ == "__main__":
