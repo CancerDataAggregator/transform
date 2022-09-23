@@ -20,7 +20,7 @@ class LogValidation:
         # map of ID -> (map of field name -> set of values)
         self._matching_fields: Dict[str, Dict[str, Set[NamedValue]]] = {}
         # map of field name -> invalid value
-        self._invalid_fields: Dict[str, str] = {}
+        self._invalid_fields: dict[str, Any] = {}
 
     def distinct(
         self, tables: Union[Mapping[str, Any], List[Mapping[str, Any]]], field_name: str

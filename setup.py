@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 current_path = pathlib.Path(__file__).parent
 
 name = "cdatransform"
-version = open("cdatransform/version.py").read().split("=")[1].strip().strip('"')
+version = open("dags/cdatransform/version.py").read().split("=")[1].strip().strip('"')
 now = datetime.utcnow()
 desc_path = pathlib.Path(current_path, "README.md")
 long_description = desc_path.open("r").read()

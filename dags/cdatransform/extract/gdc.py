@@ -1,22 +1,28 @@
 import argparse
+import asyncio
 import gzip
 import json
 import pathlib
 import sys
-import time
+from time import time
 from collections import defaultdict
 from typing import Iterable
-
+import numpy as np
 import jsonlines
+import aiohttp
 
-from ..lib import get_case_ids
+# from cdatransform.lib import get_case_ids
 from .gdc_case_fields import case_fields
 from .gdc_file_fields import file_fields
-from .lib import retry_get
+from .lib import retry_get, send_json_to_storage
 
 # What is the significance of cases.samples.sample_id vs cases.sample_ids?
 # Answer: cases.sample_ids is not returned by GDC API
 gdc_files_page_size = 8000
+
+
+def current_time_rate(t0):
+    return round(time() - t0, 2)
 
 
 def clean_fields(hit) -> dict:
@@ -89,13 +95,14 @@ class GDC:
                 chunk_array.append("id")
         return [i for i in field_chunks if len(i) > 1]
 
-    def _paginate_files_or_cases(
+    async def _paginate_files_or_cases(
         self,
-        ids: list = None,
+        ids: list | None = None,
         endpt: str = "case",
         page_size: int = 500,
         num_field_chunks: int = 2,
-    ) -> Iterable:
+        session=None,
+    ):
         if ids is not None:
             filt = json.dumps(
                 {
@@ -129,7 +136,7 @@ class GDC:
                     # "sort": "file_id",
                 }
                 # print(str(params))
-                result = retry_get(endpt, params=params)
+                result = await retry_get(session=session, endpoint=endpt, params=params)
                 hits = result.json()["data"]["hits"]
                 for hit in hits:
                     all_hits_dict[hit["id"]].append(hit)
@@ -137,8 +144,8 @@ class GDC:
                 current_page = page.get("page")
                 current_pages = page.get("pages")
 
-                print(f"Pulling page {current_page} / {current_pages}\n", flush=True)
-                print(all_hits_dict)
+                sys.stderr.write(f"Pulling page {current_page} / {current_pages}\n")
+
                 res_list = [
                     {key: value for record in records for key, value in record.items()}
                     for records in all_hits_dict.values()
@@ -150,27 +157,39 @@ class GDC:
                 else:
                     offset += page_size
 
+    async def http_call(
+        self, end_cases: list, case_ids: list | None = None, page_size: int = 500
+    ):
+        async with aiohttp.ClientSession() as session:
+            async for case in self._paginate_files_or_cases(
+                ids=case_ids,
+                endpt="case",
+                page_size=page_size,
+                num_field_chunks=3,
+                session=session,
+            ):
+                end_cases.append(case)
+                n += 1
+                if n % page_size == 0:
+                    print(f"Wrote {n} cases in {current_time_rate(t0)}s\n", flush=True)
+
     def save_cases(
         self, out_file: str, case_ids: str = None, page_size: int = 500
     ) -> None:
         self.fields = case_fields
         print("starting save cases")
-        t0 = time.time()
+        t0 = time()
         n = 0
-        with gzip.open(out_file, "wb") as fp:
-            writer = jsonlines.Writer(fp)
-            for case in self._paginate_files_or_cases(case_ids, "case", page_size, 3):
-                writer.write(case)
-                n += 1
-                if n % page_size == 0:
-                    print(f"Wrote {n} cases in {time.time() - t0}s\n", flush=True)
-        print(f"Wrote {n} cases in {time.time() - t0}s\n", flush=True)
+        end_cases = []
+        asyncio.run(self.http_call(end_cases))
+        print(f"Wrote {n} cases in {current_time_rate(t0)}s\n", flush=True)
+        # send_json_to_storage(end_cases)
 
     def save_files(
         self, out_file: str, file_ids: list = None, page_size: int = 5000
     ) -> None:
         self.fields = file_fields
-        t0 = time.time()
+        t0 = time()
         n = 0
         # need to write dictionary of file_ids per specimen (specimen: [files])
         specimen_files_dict = defaultdict(list)
@@ -182,7 +201,7 @@ class GDC:
                 writer.write(file)
                 n += 1
                 if n % page_size == 0:
-                    print(f"Wrote {n} files in {time.time() - t0}s\n", flush=True)
+                    print(f"Wrote {n} files in {current_time_rate(t0)}s\n", flush=True)
                 if self.make_spec_file:
                     for entity in file.get("associated_entities", []):
                         if entity["entity_type"] != "case":
@@ -190,7 +209,7 @@ class GDC:
                                 file["file_id"]
                             )
 
-        print(f"Wrote {n} files in {time.time() - t0}s\n", flush=True)
+        print(f"Wrote {n} files in {current_time_rate(t0)}s\n", flush=True)
         if self.make_spec_file:
             for specimen, files in specimen_files_dict.items():
                 specimen_files_dict[specimen] = list(set(files))

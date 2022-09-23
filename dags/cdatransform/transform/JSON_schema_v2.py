@@ -1,8 +1,7 @@
 import argparse
 import json
 
-import yaml
-from yaml import Loader
+from yaml import Loader, load
 
 
 class Schema:
@@ -13,7 +12,7 @@ class Schema:
         outfile,
     ) -> None:
         self.outfile = outfile
-        self.mapping = yaml.load(open(mapping, "r"), Loader=Loader)
+        self.mapping = load(open(mapping, "r"), Loader=Loader)
         self.data_model = self._init_data_model(data_model_dir)
 
     def _init_data_model(self, data_model_dir):

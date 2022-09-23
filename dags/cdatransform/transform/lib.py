@@ -1,19 +1,29 @@
 import logging
+from dags.cdatransform.transform.gdclib import (
+    research_subject as gdclib_research_subject,
+    diagnosis as gdclib_diagnosis,
+    patient as gdclib_patient,
+    entity_to_specimen as gdclib_entity_to_specimen,
+)
 
-import cdatransform.transform.gdclib as gdclib
-import cdatransform.transform.pdclib as pdclib
+from dags.cdatransform.transform.pdclib import (
+    patient as pdclib_patient,
+    diagnosis as pdclib_diagnosis,
+    entity_to_specimen as pdclib_entity_to_specimen,
+    research_subject as pdclib_research_subject,
+)
 
 logger = logging.getLogger(__name__)
 
 t_lib = {
-    "gdc.research_subject": gdclib.research_subject,
-    "gdc.diagnosis": gdclib.diagnosis,
-    "gdc.entity_to_specimen": gdclib.entity_to_specimen,
-    "gdc.patient": gdclib.patient,
-    "pdc.diagnosis": pdclib.diagnosis,
-    "pdc.entity_to_specimen": pdclib.entity_to_specimen,
-    "pdc.patient": pdclib.patient,
-    "pdc.research_subject": pdclib.research_subject,
+    "gdc.research_subject": gdclib_research_subject,
+    "gdc.diagnosis": gdclib_diagnosis,
+    "gdc.entity_to_specimen": gdclib_entity_to_specimen,
+    "gdc.patient": gdclib_patient,
+    "pdc.diagnosis": pdclib_diagnosis,
+    "pdc.entity_to_specimen": pdclib_entity_to_specimen,
+    "pdc.patient": pdclib_patient,
+    "pdc.research_subject": pdclib_research_subject,
 }
 
 
@@ -26,6 +36,9 @@ def parse_transforms(t_list, t_lib):
         return _transforms
 
     for n, xform in enumerate(t_list):
+        _f = ""
+        _p = {}
+
         if isinstance(xform, str):
             _f, _p = xform, {}
         elif isinstance(xform, dict):
