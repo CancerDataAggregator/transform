@@ -50,9 +50,9 @@ def main():
                 if id_list is None or line.get("id") in id_list:
                     writer.write(transform(line))
                     count += 1
-                    if count % 500 == 0:
+                    if count % 1000 == 0:
                         sys.stderr.write(
-                            f"Processed {count} cases ({time.time() - t0}).\n"
+                            f"Processed {count} {args.endpoint} ({time.time() - t0}).\n"
                         )
 
     sys.stderr.write(f"Processed {count} {args.endpoint} ({time.time() - t0}).\n")

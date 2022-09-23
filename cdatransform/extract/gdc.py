@@ -16,66 +16,38 @@ from cdatransform.extract.lib import retry_get
 # Answer: cases.sample_ids is not returned by GDC API
 gdc_files_page_size = 8000
 
-
-def clean_fields(hit) -> dict:
-    if hit.get("age_at_diagnosis") is not None:
-        hit["age_at_diagnosis"] = int(hit.get("age_at_diagnosis"))
-    return hit
-
-
-def get_total_number(endpoint) -> int:
-    params = {"format": "json"}
-    result = retry_get(endpoint, params=params)
-    return result.json()["data"]["pagination"]["total"]
-
-
-def find_all_deepest_specimens(samples) -> list:
-    ids = []
-    for sample in samples:
-        try:
-            for portion in sample["portions"]:
-                if portion.get("slides") or portion.get("analytes"):
-                    ids.extend(
-                        [slide["slide_id"] for slide in portion.get("slides", [])]
-                    )
-                    if portion.get("analytes"):
-                        for analyte in portion["analytes"]:
-                            try:
-                                ids.extend(
-                                    [
-                                        aliquot["aliquot_id"]
-                                        for aliquot in analyte["aliquots"]
-                                    ]
-                                )
-                            except:
-                                ids.append(analyte["analyte_id"])
-                else:
-                    ids.append(portion["portion_id"])
-        except:
-            ids.append(sample["sample_id"])
-    return ids
-
-
 class GDC:
     def __init__(
         self,
         cases_endpoint: str = "https://api.gdc.cancer.gov/v0/cases",
         files_endpoint: str = "https://api.gdc.cancer.gov/v0/files",
-        fields: list = [],
-        make_spec_file=None,
+        fields: list[str] = [],
+        make_spec_file: str = None,
     ) -> None:
         self.cases_endpoint = cases_endpoint
         self.files_endpoint = files_endpoint
         self.fields = fields
         self.make_spec_file = make_spec_file
 
-    def det_field_chunks(self, num_chunks) -> list:
+    def det_field_chunks(self, num_chunks: int) -> list[list[str]]:
+        """This code uses a txt file with a list of fields to pull from GDC case/file
+        endpoints. Unfortunately GDC API does not let you use all of them in one query.
+        This code (usually) breaks up this list of fields into num_chunks number of 
+        chunks. Code will later query using fields from chunk 1, chunk 2, etc, and merge 
+        it all together
+
+        Args:
+            num_chunks (int): number of chunks you want to attempt to bring the field list into
+
+        Returns:
+            list: returns list of lists [ [field1, field2], [field3, field4]...]
+        """
         field_groups = defaultdict(list)
-        field_chunks = [[] for i in range(num_chunks)]
+        field_chunks: list[list[str]] = [[] for i in range(num_chunks)]
         for field in self.fields:
             field_groups[field.split(".")[0]].append(field)
         chunk = 0
-        for field_group, field_list in field_groups.items():
+        for field_list in field_groups.values():
             field_chunks[chunk].extend(field_list)
             if len(field_chunks[chunk]) > len(self.fields) / num_chunks:
                 chunk += 1
@@ -86,11 +58,30 @@ class GDC:
 
     def _paginate_files_or_cases(
         self,
-        ids: list = None,
+        ids: list[str]|None = None,
         endpt: str = "case",
         page_size: int = 500,
         num_field_chunks: int = 2,
-    ) -> Iterable:
+    ) -> Iterable[dict[str,str|int|list]]:
+        """Gets page of data, returns each hit one by one, gets next page, etc.
+
+        Args:
+            ids (list, optional): List of case or file ids. Defaults to None. If
+                None, then doing bulk download
+            endpt (str, optional): used to build filter in query and determine endpoint
+                to query. Either case_id or file_id. Defaults to "case".
+            page_size (int, optional): Number or results in paginated return from the API. 
+                Defaults to 500.
+            num_field_chunks (int, optional): List of fields pulled must be broken into chunks 
+                since the query can only be so long. This is the number of chunks you are attempting 
+                to break it into. Defaults to 2.
+
+        Returns:
+            Iterable: _description_
+
+        Yields:
+            Iterator[Iterable]: 
+        """
         if ids is not None:
             filt = json.dumps(
                 {
@@ -112,7 +103,8 @@ class GDC:
         offset: int = 0
         field_chunks = self.det_field_chunks(num_field_chunks)
         while True:
-            all_hits_dict = defaultdict(list)
+            all_hits_dict = defaultdict(list) # { id1: [{record1 - fields from chunk1}, 
+                                              #         {record2 - fields from chunk 2}]}
             for field_chunk in field_chunks:
                 fields = ",".join(field_chunk)
                 params = {
@@ -121,9 +113,7 @@ class GDC:
                     "fields": fields,
                     "size": page_size,
                     "from": offset,
-                    # "sort": "file_id",
                 }
-                # sys.stderr.write(str(params))
                 result = retry_get(endpt, params=params)
                 hits = result.json()["data"]["hits"]
                 for hit in hits:
@@ -132,10 +122,12 @@ class GDC:
                 p_no = page.get("page")
                 p_tot = page.get("pages")
             sys.stderr.write(f"Pulling page {p_no} / {p_tot}\n")
+            # Merge records of same case/file so there is one record with all desired fields
             res_list = [
                 {key: value for record in records for key, value in record.items()}
                 for records in all_hits_dict.values()
             ]
+            # return each record as a result
             for result in res_list:
                 yield result
             if p_no >= p_tot:
@@ -144,10 +136,10 @@ class GDC:
                 offset += page_size
 
     def save_cases(
-        self, out_file: str, case_ids: str = None, page_size: int = 500
+        self, out_file: str, case_ids: list[str]|None = None, page_size: int = 500
     ) -> None:
-        t0 = time.time()
-        n = 0
+        t0:float = time.time()
+        n:int = 0
         with gzip.open(out_file, "wb") as fp:
             writer = jsonlines.Writer(fp)
             for case in self._paginate_files_or_cases(case_ids, "case", page_size, 3):
@@ -158,12 +150,12 @@ class GDC:
         sys.stderr.write(f"Wrote {n} cases in {time.time() - t0}s\n")
 
     def save_files(
-        self, out_file: str, file_ids: list = None, page_size: int = 5000
+        self, out_file: str, file_ids: list[str]|None = None, page_size: int = 5000
     ) -> None:
-        t0 = time.time()
-        n = 0
+        t0:float = time.time()
+        n:int = 0
         # need to write dictionary of file_ids per specimen (specimen: [files])
-        specimen_files_dict = defaultdict(list)
+        specimen_files_dict:defaultdict[str,list[str]] = defaultdict(list)
         with gzip.open(out_file, "wb") as fp:
             writer = jsonlines.Writer(fp)
             for file in self._paginate_files_or_cases(
@@ -186,76 +178,6 @@ class GDC:
                 specimen_files_dict[specimen] = list(set(files))
             with gzip.open(self.make_spec_file, "wt", encoding="ascii") as out:
                 json.dump(specimen_files_dict, out)
-                # Portion of code assumes cases, specimens, etc included in File calls (they aren't)
-                # if file_ids:
-                #    for file in reader:
-                #        if file.get("file_id") in file_ids:
-                #            writer.write(self.prune_specimen_tree(file))
-                #            n += 1
-                # else:
-                #    for file in reader:
-                #        # add parent specimens to list of associated entities. remove cases?
-                #        if "associated_entities" not in file:
-                #            print(file)
-                #        writer.write(self.prune_specimen_tree(file))
-                #        n += 1
-        # sys.stderr.write(f"Extracted {n} files from cache in {time.time() - t0}s\n")
-
-    def prune_specimen_tree(self, file_rec):
-        ret = file_rec.copy()
-        associations = defaultdict(list)
-        if "associated_entities" not in file_rec:
-            if "samples" in file_rec:
-                file_rec["samples"].pop()
-            return file_rec
-        for entity in file_rec.get("associated_entities", []):
-            if entity["entity_type"] == "case":
-                associations["cases"].append(entity["entity_id"])
-            else:
-                associations["specimens"].append(entity["entity_id"])
-        cases = []
-        for case in file_rec["cases"]:
-            if len(associations["specimens"]) != 0:
-                samples = []
-                for sample in case.get("samples", []):
-                    sample_include = sample["sample_id"] in associations["specimens"]
-                    portions = []
-                    for portion in sample.get("portions", []):
-                        portion_include = (
-                            portion["portion_id"] in associations["specimens"]
-                        )
-                        slides = [
-                            slide
-                            for slide in portion.get("slides", [])
-                            if slide["slide_id"] in associations["specimens"]
-                        ]
-                        analytes = []
-                        for analyte in portion.get("analytes", []):
-                            analyte_include = (
-                                analyte["analyte_id"] in associations["specimens"]
-                            )
-                            aliquots = [
-                                aliquot
-                                for aliquot in analyte.get("aliquots", [])
-                                if aliquot["aliquot_id"] in associations["specimens"]
-                            ]
-                            if len(aliquots) > 0 or analyte_include:
-                                analyte["aliquots"] = aliquots
-                                analytes.append(analyte)
-                        if len(analytes) > 0 or len(slides) > 0 or portion_include:
-                            portion["analytes"] = analytes
-                            portion["slides"] = slides
-                            portions.append(portion)
-                    if len(portions) > 0 or sample_include:
-                        sample["portions"] = portions
-                        samples.append(sample)
-                if len(samples) > 0:
-                    case["samples"] = samples
-            else:
-                case["samples"] = []
-            cases.append(case)
-        ret["cases"] = cases
-        return ret
 
 
 def main() -> None:
@@ -278,10 +200,7 @@ def main() -> None:
         "--make_spec_file",
         help="Name of file with files per specimen mapping. If None, don't make it",
     )
-    # parser.add_argument(
-    #    "--parent_spec", default=True,
-    #    help="Add files to parent specimens records writing/using this file.",
-    # )
+
     args = parser.parse_args()
     with open(args.fields_list) as file:
         fields = [line.rstrip() for line in file]
@@ -289,7 +208,6 @@ def main() -> None:
         sys.stderr.write("You done messed up A-A-RON! You need a list of fields")
         return
     gdc = GDC(
-        # cache_file=pathlib.Path(args.cache_file), parent_spec=args.parent_spec,
         fields=fields,
         make_spec_file=args.make_spec_file,
     )

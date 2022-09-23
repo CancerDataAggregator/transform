@@ -6,6 +6,7 @@
 #         data_commons_fields_dict, "Diagnosis", hierarchy
 #     )
 #     print(dat_dict)
+from collections import defaultdict
 
 
 def source_hierarchy_by_time(records_dict):
@@ -28,14 +29,32 @@ def merge_demo_records_time_hierarchy(records_dict, how_to_merge):
     return merge_fields_level(dat_dict, how_to_merge, source_hierarchy=time_hier)
 
 
+def merge_entities_with_same_id(entity_recs, how_to_merge_entity):
+    entities = defaultdict(list)
+    rec = []
+    for entity in entity_recs:
+        id = entity.get("id")
+        entities[id] += [entity]
+    for id, recs in entities.items():
+        if len(recs) == 1:
+            rec += recs
+        else:
+            entities = {k: case for k, case in enumerate(recs)}
+            lines_recs = list(range(len(recs)))
+            rec += [merge_fields_level(entities, how_to_merge_entity, lines_recs)]
+            # case_ids = [patient.get('ResearchSubject')[0].get('id') for patient in patients]
+            # log = log_merge_error(entities, case_ids, how_to_merge["Patient_merge"], log)
+    return rec
+
+
 def merge_fields_level(data_commons_fields_dict, how_to_merge, source_hierarchy):
-    dat = dict({})
+    dat = {}
     for field in how_to_merge:
         dat[field] = how_to_merge[field]["default_value"]
         hierarchy = source_hierarchy
         if "source_hierarchy" in how_to_merge[field]:
             hierarchy = how_to_merge[field]["source_hierarchy"]
-        if how_to_merge[field]["merge_type"] in ["append_field_vals", "append_linkers"] :
+        if how_to_merge[field]["merge_type"] in ["append_field_vals", "append_linkers"]:
             dat_list = []
             for source in hierarchy:
                 if (
@@ -44,7 +63,9 @@ def merge_fields_level(data_commons_fields_dict, how_to_merge, source_hierarchy)
                 ):
                     dat_list.append(data_commons_fields_dict[source][field])
             if how_to_merge[field]["merge_type"] == "append_linkers":
-                dat[field] = append_field_vals_to_single_list(dat_list, unique_strings=True)
+                dat[field] = append_field_vals_to_single_list(
+                    dat_list, unique_strings=True
+                )
             else:
                 dat[field] = append_field_vals_to_single_list(dat_list)
 
@@ -62,6 +83,13 @@ def merge_fields_level(data_commons_fields_dict, how_to_merge, source_hierarchy)
                 data_commons_fields_dict, field, hierarchy
             )
             dat[field] = merge_identifiers(dat_dict)
+        elif how_to_merge[field]["merge_type"] == "merge_entities_with_same_id":
+            dat_dict = make_dat_dict_for_transforms(
+                data_commons_fields_dict, field, hierarchy
+            )
+            dat[field] = merge_entities_with_same_id(
+                dat_dict, how_to_merge[f"{field}_merge"]
+            )
         else:  # merge_codeable_concept
             dat_dict = make_dat_dict_for_transforms(
                 data_commons_fields_dict, field, hierarchy
@@ -103,9 +131,10 @@ def append_field_vals_to_single_list(field_vals_list_of_lists, **kwargs):
                     dat.extend(i)
                 else:
                     dat.append(i)
-    if kwargs.get('unique_strings') == True:
+    if kwargs.get("unique_strings") == True:
         dat = list(set(dat))
     return dat
+
 
 def coalesce_field_values(data_dictionary, default_value, source_hierarchy):
     dat_return = default_value

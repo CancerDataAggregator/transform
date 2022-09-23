@@ -13,7 +13,7 @@ Patient:
         vital_status: 'cases.demographic.vital_status'
         days_to_death: 'cases.demographic.days_to_death'
         cause_of_death: 'cases.demographic.cause_of_death'
-        #Files: 'cases.files'
+        #Files: 'cases.files' 
     Transformations:
         subject_associated_project:
             - ['str_to_list', [] ]
