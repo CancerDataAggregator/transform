@@ -11,6 +11,7 @@ from ..read_using_YAML import (
 )
 import dags.cdatransform.transform.transform_lib.value_transformations as vt
 from dags.cdatransform.transform.validate import LogValidation
+import time
 
 
 def add_Specimen_rec(orig, MandT, DC, **kwargs):
@@ -129,27 +130,26 @@ def functionalize_trans_dict(trans_dict):
 
 
 class Transform:
-    def __init__(self, validate) -> None:
+    def __init__(self, MandT, DC, endpoint) -> None:
+        self.MandT = MandT
+        self.DC = DC
+        self.endpoint = endpoint
 
-        self._validate = validate
-
-    def __call__(self, orig, MandT, DC, **kwargs):
+    def __call__(self, orig):
         # list or dict as return? - if Patient - dict, else, list
         # where do I read from? - Need cur_path and general path
         # cur_path = kwargs.get("cur_path", ["cases"])
-        endpoint = kwargs.get("endpoint", "cases")
         # path_to_read = kwargs.get("path_to_read", 'cases')
-        if endpoint == "cases":
-            return self.cases_transform(orig, MandT, DC, endpoint)
-        elif endpoint == "files":
-            return self.files_transform(orig, MandT, DC, endpoint)
+        if self.endpoint == "cases":
+            return self.cases_transform(orig)
+        elif self.endpoint == "files":
+            return self.files_transform(orig)
 
-    def cases_transform(self, orig, MandT, DC, endpoint):
+    def cases_transform(self, orig):
         cur_path = ["cases"]
-        tip = read_entry(orig, MandT, "Patient", DC=DC)
-        tip = entity_value_transforms(tip, "Patient", MandT)
-        sys.stderr.write("Created Patient entity\n")
-        # linkers = add_linkers(
+        tip = ruy.read_entry(orig, self.MandT, "Patient", DC=self.DC)
+        tip = entity_value_transforms(tip, "Patient", self.MandT)
+        # linkers = ruy.add_linkers(
         #    orig,
         #    MandT,
         #    "Patient",
@@ -161,16 +161,16 @@ class Transform:
         # )
         # tip.update(linkers)
         # tip["File"] = add_File_rec(orig, MandT, DC)
-        for field in ["ethnicity", "sex", "race"]:
-            self._validate.distinct(tip, field)
-        sys.stderr.write("validate distinct eth, sex, race\n")
-        self._validate.agree(tip, tip["id"], ["ethnicity", "sex", "race"])
-        sys.stderr.write("validate agreement eth, sex, race\n")
-        RS = read_entry(orig, MandT, "ResearchSubject", DC=DC)
-        sys.stderr.write("Read RS entity\n")
-        RS = entity_value_transforms(RS, "ResearchSubject", MandT)
-        sys.stderr.write("applied value transformation to RS entity\n")
-        # linkers = add_linkers(
+        # t0 = time.time()
+        # for field in ["ethnicity", "sex", "race"]:
+        #    self._validate.distinct(tip, field)
+        # sys.stderr.write("Subject distinct time: " + str(t0 - time.time()))
+        # t0 = time.time()
+        # self._validate.agree(tip, tip["id"], ["ethnicity", "sex", "race"])
+        # sys.stderr.write("Subject validation time: " + str(t0 - time.time()))
+        RS = ruy.read_entry(orig, self.MandT, "ResearchSubject", DC=self.DC)
+        RS = entity_value_transforms(RS, "ResearchSubject", self.MandT)
+        # linkers = ruy.add_linkers(
         #    orig,
         #    MandT,
         #    "ResearchSubject",
@@ -181,84 +181,84 @@ class Transform:
         #    endpoint=endpoint,
         # )
         # RS.update(linkers)
-        for field in ["primary_diagnosis_condition", "primary_diagnosis_site"]:
-            self._validate.distinct(RS, field)
-        self._validate.agree(
-            RS,
-            RS["id"],
-            ["primary_diagnosis_condition", "primary_diagnosis_site"],
-        )
+        # t0 = time.time()
+        # for field in ["primary_diagnosis_condition", "primary_diagnosis_site"]:
+        #    self._validate.distinct(RS, field)  #
+        # sys.stderr.write("ResearchSubject distinct time: " + str(t0 - time.time()))
+        # t0 = time.time()
+        # self._validate.agree(
+        #    RS,
+        #    RS["id"],
+        #    ["primary_diagnosis_condition", "primary_diagnosis_site"],
+        # )
+        # sys.stderr.write("ResearchSubject validation time: " + str(t0 - time.time()))
         # RS["File"] = add_File_rec(orig, MandT, DC)
         RS["Diagnosis"] = []
-        diag_path = MandT["Diagnosis"]["Mapping"]["id"]
+        diag_path = self.MandT["Diagnosis"]["Mapping"]["id"]
         diag_path = diag_path.split(".")
         diag_path.pop()
         diag_path = ".".join(diag_path)
         cur_path = diag_path.split(".")
-        ent_rec = simp_read(orig, diag_path, cur_path, DC)
+        ent_rec = ruy.simp_read(orig, diag_path, cur_path, self.DC)
         if isinstance(ent_rec, list):
             for diag_rec in range(len(ent_rec)):
-                temp_diag = read_entry(
-                    orig, MandT, "Diagnosis", cur_path=cur_path + [diag_rec]
+                temp_diag = ruy.read_entry(
+                    orig, self.MandT, "Diagnosis", cur_path=cur_path + [diag_rec]
                 )
                 """ may need transformation step when Diagnosis records eventually have
                 transformations"""
 
                 treat_path = cur_path + [diag_rec, "treatments"]
-                treat_gen_path = MandT["Treatment"]["Mapping"]["id"]
+                treat_gen_path = self.MandT["Treatment"]["Mapping"]["id"]
                 treat_gen_path = treat_gen_path.split(".")
                 treat_gen_path.pop()
                 treat_gen_path = ".".join(treat_gen_path)
-                treat_recs = simp_read(orig, treat_gen_path, treat_path, DC)
+                treat_recs = ruy.simp_read(orig, treat_gen_path, treat_path, self.DC)
                 if isinstance(treat_recs, list) and treat_recs != []:
                     temp_diag["Treatment"] = []
                     for treat in range(len(treat_recs)):
                         temp_diag["Treatment"].append(
-                            read_entry(
-                                orig, MandT, "Treatment", cur_path=treat_path + [treat]
+                            ruy.read_entry(
+                                orig,
+                                self.MandT,
+                                "Treatment",
+                                cur_path=treat_path + [treat],
                             )
                         )
                 elif isinstance(treat_recs, dict):
                     temp_diag["Treatment"] = [
-                        read_entry(orig, MandT, "Treatment", cur_path=treat_path)
+                        ruy.read_entry(
+                            orig, self.MandT, "Treatment", cur_path=treat_path
+                        )
                     ]
                 else:
                     temp_diag["Treatment"] = []
                 RS["Diagnosis"].append(temp_diag)
         elif isinstance(ent_rec, dict):
-            temp_diag = read_entry(orig, MandT, "Diagnosis", cur_path=cur_path)
+            temp_diag = ruy.read_entry(orig, self.MandT, "Diagnosis", cur_path=cur_path)
             treat_path = cur_path + ["Treatment"]
-            treat_rec = simp_read(orig, diag_path, cur_path, DC)
+            treat_rec = ruy.simp_read(orig, diag_path, cur_path, self.DC)
             if isinstance(treat_rec, list) and treat_rec != []:
                 temp_diag["Treatment"] = []
                 for treat in range(len(treat_rec)):
                     temp_diag["Treatment"].append(
-                        read_entry(
-                            orig, MandT, "Treatment", cur_path=treat_path + [treat]
+                        ruy.read_entry(
+                            orig, self.MandT, "Treatment", cur_path=treat_path + [treat]
                         )
                     )
             elif isinstance(treat_rec, dict):
                 temp_diag["Treatment"] = [
-                    read_entry(orig, MandT, "Treatment", cur_path=treat_path)
+                    ruy.read_entry(orig, self.MandT, "Treatment", cur_path=treat_path)
                 ]
             else:
                 temp_diag["Treatment"] = []
             RS["Diagnosis"].append(temp_diag)
         else:
             RS["Diagnosis"] = []
-        RS["Specimen"] = add_Specimen_rec(orig, MandT, DC)
+        RS["Specimen"] = add_Specimen_rec(orig, self.MandT, self.DC)
         for specimen in RS["Specimen"]:
-            specimen = entity_value_transforms(specimen, "Specimen", MandT)
-            for field in [
-                "primary_disease_type",
-                "source_material_type",
-                "anatomical_site",
-            ]:
-                self._validate.distinct(specimen, field)
-            # days to birth is negative days from birth until diagnosis. 73000 days is 200 years.
-            self._validate.validate(
-                specimen, "days_to_birth", lambda x: not x or -73000 < x < 0
-            )
+            specimen = entity_value_transforms(specimen, "Specimen", self.MandT)
+
         # if 'Study' in MandT:
         #    study_path = MandT['Study']['Mapping']['id']
         #    study_path = study_path.split('.')
@@ -269,18 +269,20 @@ class Transform:
         tip["ResearchSubject"] = [RS]
         return tip
 
-    def files_transform(self, orig, MandT, DC, endpoint):
-        tip = read_entry(orig, MandT, "File", DC=DC, endpoint=endpoint)
-        tip = entity_value_transforms(tip, "File", MandT)
-        linkers = add_linkers(
+    def files_transform(self, orig):
+        tip = ruy.read_entry(
+            orig, self.MandT, "File", DC=self.DC, endpoint=self.endpoint
+        )
+        tip = entity_value_transforms(tip, "File", self.MandT)
+        linkers = ruy.add_linkers(
             orig,
-            MandT,
+            self.MandT,
             "File",
-            DC,
+            self.DC,
             linker=True,
-            cur_path=[endpoint],
-            rel_path=endpoint,
-            endpoint=endpoint,
+            cur_path=[self.endpoint],
+            rel_path=self.endpoint,
+            endpoint=self.endpoint,
         )
         tip.update(linkers)
         # tip["Subject"] = []

@@ -1,12 +1,12 @@
 """Program wide utility functions and classes."""
 
 
-def get_case_ids(case=None, case_list_file=None):
-    if case is not None:
-        return [case]
+def get_ids(id:str=None, id_list_file:list[str]=None)->list[str] | None:
+    if id is not None:
+        return [id]
 
-    if case_list_file is None:
+    if id_list_file is None:
         return None
     else:
-        with open(case_list_file, "r") as fp:
+        with open(id_list_file, "r") as fp:
             return [line.strip() for line in fp.readlines()]

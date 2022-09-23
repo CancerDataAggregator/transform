@@ -1,11 +1,10 @@
 import argparse
-import gzip
-import os
-from math import ceil
 
+
+from cdatransform.lib import get_ids
 import cdatransform.transform.transform_lib.transform_with_YAML_v1 as tr
+from math import ceil
 import jsonlines
-import yaml
 from cdatransform.lib import get_case_ids
 from google.cloud import bigquery, storage
 from google.oauth2 import service_account
@@ -38,8 +37,8 @@ class IDC:
         self.dest_bucket_file_name = dest_bucket_file_name
         self.service_account_cred = self._service_account_cred()
         self.mapping = self._init_mapping(mapping)
-        self.patient_ids = get_case_ids(case=patient, case_list_file=patients_file)
-        self.file_ids = get_case_ids(case=file, case_list_file=files_file)
+        self.patient_ids = get_ids(id=patient, id_list_file=patients_file)
+        self.file_ids = get_ids(id=file, id_list_file=files_file)
         self.source_table = source_table
         self.transform_query = self._query_build()
         self.max_blobs_compose = 32  # GCS limit on how many blobs to compose together

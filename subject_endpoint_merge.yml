@@ -35,9 +35,6 @@ Patient_merge:
     ResearchSubject:
         merge_type: "append_field_vals"
         default_value: []
-    Files:
-        merge_type: "append_linkers"
-        default_value: []
 
 ResearchSubject_merge:
     id:
@@ -60,9 +57,6 @@ ResearchSubject_merge:
         default_value: []
     Specimen:
         merge_type: "append_field_vals"
-        default_value: []
-    Files:
-        merge_type: "append_linkers"
         default_value: []
 
 Diagnosis_merge:
@@ -122,9 +116,6 @@ Specimen_merge:
     derived_from_specimen:
         merge_type: "coalesce"
         default_value: ""
-    Files:
-        merge_type: "append_linkers"
-        default_value: []
 
 # Future extension
 #

@@ -4,7 +4,7 @@ import gzip
 import jsonlines
 import argparse
 
-from cdatransform.lib import get_case_ids
+from cdatransform.lib import get_ids
 
 
 def check_case_375436b3(d):
@@ -32,7 +32,7 @@ def main():
     parser.add_argument("id_file", help="list of ids pulled")
     args = parser.parse_args()
 
-    ids = set(get_case_ids(case=None, case_list_file=args.id_file))
+    ids = set(get_ids(id=None, id_list_file=args.id_file))
 
     with gzip.open(args.pulled_file, "rb") as f_in:
         reader = jsonlines.Reader(f_in)

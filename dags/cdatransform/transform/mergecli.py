@@ -7,63 +7,68 @@ import cdatransform.transform.merge.merge_functions as mf
 import jsonlines
 import yaml
 from cdatransform.transform.validate import LogValidation
+from collections import defaultdict
 
 logger = logging.getLogger(__name__)
 
 
 def get_patient_info_1_DC(input_file):
-    All_Patients = []
-    All_Entries = dict({})
+    All_IDs:list = []
+    All_Entries:dict = {}
     with gzip.open(input_file, "r") as infp:
         readDC = jsonlines.Reader(infp)
-        for case in readDC:
-            patient = case.get("id")
-            All_Patients.append(patient)
-            All_Entries[patient] = case
-    return All_Patients, All_Entries
+        for line in readDC:
+            All_IDs.append(line["id"])
+            All_Entries[line["id"]] = line
+    return All_IDs, All_Entries
 
 
 def get_endpoint_info_all_DCs(input_file_dict):
-    All_Patient_ids = dict({})
-    All_Entries_All_DCs = dict({})
+    All_ID_Sources = defaultdict(list) # {'TARGET1': ['GDC', 'PDC']}
+    All_Entries_All_DCs:dict = {} #{'GDC': {'TARGET1': {GDC target1 record}, 'TARGET2': ... },
+                                #   'PDC': {'TARGET2': {PDC target2 record}, ... } }
     for source in input_file_dict:
-        source_patient_list, All_Entries_All_DCs[source] = get_patient_info_1_DC(
+        source_ID_list, All_Entries_All_DCs[source] = get_patient_info_1_DC(
             input_file_dict[source]
         )
-        for patient in source_patient_list:
-            if patient in All_Patient_ids:
-                All_Patient_ids[patient].append(source)
-            else:
-                All_Patient_ids[patient] = [source]
-    return All_Patient_ids, All_Entries_All_DCs
+        for id in source_ID_list:
+            All_ID_Sources[id].append(source)
+        #for id in source_ID_list:
+        #    if id in All_ID_Sources:
+        #        All_ID_Sources[id].append(source)
+        #    else:
+        #        All_ID_Sources[id] = [source]
+    return All_ID_Sources, All_Entries_All_DCs
 
 
-def get_coalesce_field_names(merge_field_dict):
-    coal_fields = []
-    for key, val in merge_field_dict.items():
-        if val.get("merge_type") == "coalesce":
-            coal_fields.append(key)
+def get_coalesce_field_names(merge_field_dict)->list:
+    coal_fields:list = [key for key, val in merge_field_dict.items() if val.get("merge_type") == "coalesce"]
+    #coal_fields:list = []
+    #for key, val in merge_field_dict.items():
+    #    if val.get("merge_type") == "coalesce":
+    #        coal_fields.append(key)
     return coal_fields
 
 
 def prep_log_merge_error(entities, merge_field_dict):
-    sources = list(entities.keys())
-    coal_fields = get_coalesce_field_names(merge_field_dict)
-    ret_dat = dict()
+    sources:list = list(entities.keys())
+    coal_fields:list = get_coalesce_field_names(merge_field_dict)
+    ret_dat:dict = {}
     for source in sources:
-        temp = dict()
-        for field in coal_fields:
-            temp[field] = entities.get(source).get(field)
+        temp_dict:dict = {field: entities.get(source).get(field) for field in coal_fields}
+        temp:dict = {}
+        #for field in coal_fields:
+        #    temp[field] = entities.get(source).get(field)
         ret_dat[source] = temp
+        
     for source, val in entities.items():
-        if val.get("id") is not None:
-            patient_id = val.get("id")
-            break
+        id:str = val["id"]
+        break
     for source, val in entities.items():
         if val.get("ResearchSubject")[0].get("member_of_research_project") is not None:
-            project = val.get("ResearchSubject")[0].get("member_of_research_project")
+            project:str = val.get("ResearchSubject")[0].get("member_of_research_project")
             break
-    return coal_fields, ret_dat, patient_id, project
+    return coal_fields, ret_dat, id, project
 
 
 def log_merge_error(entities, all_sources, fields, log):
@@ -79,17 +84,9 @@ def log_merge_error(entities, all_sources, fields, log):
 
 def merge_subjects(output_file, how_to_merge_file, **kwargs):
     with open(how_to_merge_file) as file:
-        how_to_merge = yaml.full_load(file)
+        how_to_merge:dict = yaml.full_load(file)
     # Need all info from the files, and dictionary listing patient_ids and sources found.
-    input_file_dict = {
-        "gdc": kwargs.get("gdc"),
-        "pdc": kwargs.get("pdc"),
-        "idc": kwargs.get("idc"),
-    }
-
-    for dc, val in list(input_file_dict.items()):
-        if val is None:
-            del input_file_dict[dc]
+    input_file_dict:dict = {source: kwargs[source] for source in ["gdc", "pdc", "idc"] if kwargs.get(source)}
 
     All_endpoints_sources, All_Entries_All_DCs = get_endpoint_info_all_DCs(
         input_file_dict
@@ -109,9 +106,10 @@ def merge_subjects(output_file, how_to_merge_file, **kwargs):
                 )
             else:
                 # make entities - - - - {'gdc': gdc data for patient, 'pdc': pdc data for patient}
-                entities = dict({})
-                for source in All_endpoints_sources[patient]:
-                    entities[source] = All_Entries_All_DCs[source][patient]
+                entities:dict = {source: All_Entries_All_DCs[source][patient] for source in All_endpoints_sources[patient]}
+                #entities:dict = {}
+                #for source in All_endpoints_sources[patient]:
+                #    entities[source] = All_Entries_All_DCs[source][patient]
 
                 merged_entry = mf.merge_fields_level(
                     entities, how_to_merge["Patient_merge"], ["gdc", "pdc", "idc"]
@@ -126,32 +124,19 @@ def merge_subjects(output_file, how_to_merge_file, **kwargs):
         log.generate_report(logging.getLogger("test"))
 
 
+# As of 9-20-2022, CDA assumes each file_id is a UUID, and each file can only originate/be stored
+# at one DC. merge_files can be edited to be able to work like merge_subjects. Until then, only
+# concatenate files together.
 def merge_files(output_file, merged_subjects_input, how_to_merge_file, **kwargs):
     # Read how to merge dictionary
     with open(how_to_merge_file) as file:
         how_to_merge = yaml.full_load(file)
     # Need all info from the files, and dictionary listing file_ids and sources found.
-    input_file_dict = dict(
-        {"gdc": kwargs.get("gdc"), "pdc": kwargs.get("pdc"), "idc": kwargs.get("idc")}
-    )
-    for dc, val in list(input_file_dict.items()):
-        if val is None:
-            del input_file_dict[dc]
+    input_file_dict:dict = {source: kwargs[source] for source in ["gdc", "pdc", "idc"] if kwargs.get(source)}
     # All_endpoints_sources, All_Entries_All_DCs = get_endpoint_info_all_DCs(
     #    input_file_dict
-    # )
+    ##)
     # total_files = len(All_endpoints_sources)
-    # Make dictionary of ALL Subject entities
-    all_subjects = {}
-    with gzip.open(merged_subjects_input, "r") as file:
-        reader = jsonlines.Reader(file)
-        for subject in reader:
-            try:
-                subject.pop("ResearchSubject")
-            except:
-                pass
-            subject.pop("Files")
-            all_subjects[subject["id"]] = subject
 
     # loop over all file_ids, merge data if found in multiple sources
     with gzip.open(output_file, "w") as outfp:
@@ -163,10 +148,6 @@ def merge_files(output_file, merged_subjects_input, how_to_merge_file, **kwargs)
                 reader = jsonlines.Reader(file_recs)
                 for file_rec in reader:
                     count += 1
-                    temp_subjects = []
-                    for subject in file_rec["Subject"]:
-                        temp_subjects.append(all_subjects[subject["id"]])
-                    file_rec["Subject"] = temp_subjects
                     writer.write(file_rec)
                     if count % 50000 == 0:
                         sys.stderr.write(f"Processed {count} files.\n")

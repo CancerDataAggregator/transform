@@ -1,19 +1,19 @@
-from string import Template
+"""This is a library of functions to return the strings needed to query PDC API.
+These functions are used by pdc.py for extracting info from PDC.
+"""
 
 
 def query_all_cases():
-    query = """{
+    return """{
   allCases(acceptDUA: true) {
     case_id
   }
 }"""
-    return query
 
 
 def query_single_case_a(case_id):
-    template = Template(
-        """{
-    case(case_id: "$case_id" acceptDUA: true) {
+    return f"""{{
+    case(case_id: "{case_id}" acceptDUA: true) {{
         case_id
         case_submitter_id
         project_submitter_id
@@ -24,7 +24,7 @@ def query_single_case_a(case_id):
         primary_site
         consent_type
         days_to_consent
-        demographics { 
+        demographics {{ 
             demographic_id
             ethnicity gender
             demographic_submitter_id
@@ -41,8 +41,8 @@ def query_single_case_a(case_id):
             cause_of_death_source
             occupation_duration_years
             country_of_residence_at_enrollment
-            } 
-        samples { 
+            }} 
+        samples {{ 
             sample_id
             sample_submitter_id
             sample_type
@@ -75,20 +75,20 @@ def query_single_case_a(case_id):
             growth_rate passage_count
             sample_ordinal
             tissue_collection_type
-            diagnoses { 
+            diagnoses {{ 
                 diagnosis_id
                 diagnosis_submitter_id
                 annotation
-            } 
-            aliquots { 
+            }} 
+            aliquots {{ 
                 aliquot_id
                 aliquot_submitter_id
                 analyte_type
-                aliquot_run_metadata {
+                aliquot_run_metadata {{
                     aliquot_run_metadata_id
-                } 
-            } 
-        } diagnoses { 
+                }} 
+            }} 
+        }} diagnoses {{ 
             diagnosis_id
             tissue_or_organ_of_origin
             age_at_diagnosis
@@ -213,63 +213,21 @@ def query_single_case_a(case_id):
             tumor_depth
             who_cns_grade
             who_nte_grade
-            samples { 
+            samples {{ 
                 sample_id
                 sample_submitter_id
                 annotation
-            } 
-        } 
-    }
-    }"""
-    )
-
-    blah = """case_id
-    case_submitter_id
-    disease_type
-    primary_site
-    project_submitter_id
-    demographics {
-      ethnicity
-      gender
-      race
-      days_to_birth
-      days_to_death
-      cause_of_death
-      vital_status
-    }
-    samples {
-      sample_id
-      sample_submitter_id
-      biospecimen_anatomic_site
-      sample_type
-      aliquots {
-          aliquot_id
-          aliquot_submitter_id
-      }
-    }
-    diagnoses {
-      age_at_diagnosis
-      diagnosis_id
-      tumor_grade
-      tumor_stage
-      morphology
-      primary_diagnosis
-      method_of_diagnosis
-    }
-  }
-}
-"""
-    # )
-    query = template.substitute(case_id=case_id)
-    return query
+            }} 
+        }} 
+    }}
+    }}"""
 
 
 def query_single_case_b(case_id):
-    template = Template(
-        """{
-    case(case_id: "$case_id" acceptDUA: true) {
+    return f"""{{
+    case(case_id: "{case_id}" acceptDUA: true) {{
         case_id
-        exposures { 
+        exposures {{ 
             exposure_id 
             exposure_submitter_id 
             alcohol_days_per_week 
@@ -301,8 +259,8 @@ def query_single_case_b(case_id):
             secondhand_smoke_as_child 
             smokeless_tobacco_quit_age 
             tobacco_use_per_day
-            } 
-        follow_ups {
+            }} 
+        follow_ups {{
             follow_up_id 
             follow_up_submitter_id
             adverse_event 
@@ -368,18 +326,14 @@ def query_single_case_b(case_id):
             undescended_testis_corrected_method 
             undescended_testis_history 
             undescended_testis_history_laterality
-            }
-        }
-    }"""
-    )
-    query = template.substitute(case_id=case_id)
-    return query
+            }}
+        }}
+    }}"""
 
 
 def query_files_bulk(offset, limit):
-    template = Template(
-        """{
-  fileMetadata(offset: $offset limit: $limit acceptDUA: true) {
+    return f"""{{
+  fileMetadata(offset: {offset} limit: {limit} acceptDUA: true) {{
     file_id
     file_name
     file_location
@@ -390,23 +344,19 @@ def query_files_bulk(offset, limit):
     file_type
     file_format
     experiment_type
-    aliquots {
+    aliquots {{
       sample_id
       aliquot_id
       case_id
       case_submitter_id
-    }
-  }
-}"""
-    )
-    query = template.substitute(offset=offset, limit=limit)
-    return query
+    }}
+  }}
+}}"""
 
 
 def query_metadata_file(file_id):
-    template = Template(
-        """{
-  fileMetadata(file_id: "$file_id" acceptDUA: true) {
+    return f"""{{
+  fileMetadata(file_id: "{file_id}" acceptDUA: true) {{
     file_id
     file_name
     file_location
@@ -417,48 +367,36 @@ def query_metadata_file(file_id):
     file_type
     file_format
     experiment_type
-    aliquots {
+    aliquots {{
       sample_id
       aliquot_id
       case_id
       case_submitter_id
-    }
-  }
-}"""
-    )
-    query = template.substitute(file_id=file_id)
-    return query
+    }}
+  }}
+}}"""
 
 
 def query_files_paginated(offset, limit):
-    template = Template(
-        """{
-  getPaginatedFiles(offset: $offset limit: $limit acceptDUA: true) {
+    return f"""{{
+  getPaginatedFiles(offset: {offset} limit: {limit} acceptDUA: true) {{
     total
-  }
-}"""
-    )
-    query = template.substitute(offset=offset, limit=limit)
-    return query
+  }}
+}}"""
 
 
 def query_uifiles_paginated_total(offset, limit):
-    template = Template(
-        """{
-  getPaginatedUIFile(offset: $offset limit: $limit) {
+    return f"""{{
+  getPaginatedUIFile(offset: {offset} limit: {limit}) {{
     total
-  }
-}"""
-    )
-    query = template.substitute(offset=offset, limit=limit)
-    return query
+  }}
+}}"""
 
 
 def query_ui_file(file_id):
-    template = Template(
-        """{
-    getPaginatedUIFile(file_id: "$file_id" acceptDUA: true) {
-        uiFiles {
+    return f"""{{
+    getPaginatedUIFile(file_id: "{file_id}" acceptDUA: true) {{
+        uiFiles {{
             file_id
             study_id
             pdc_study_id
@@ -474,19 +412,15 @@ def query_ui_file(file_id):
             access
             md5sum
             file_size
-        }
-    }
-    }"""
-    )
-    query = template.substitute(file_id=file_id)
-    return query
+        }}
+    }}
+    }}"""
 
 
 def query_UIfiles_bulk(offset, limit):
-    template = Template(
-        """{
-    getPaginatedUIFile(offset: $offset limit: $limit) {
-        uiFiles {
+    return f"""{{
+    getPaginatedUIFile(offset: {offset} limit: {limit}) {{
+        uiFiles {{
             file_id
             study_id
             pdc_study_id
@@ -502,17 +436,13 @@ def query_UIfiles_bulk(offset, limit):
             access
             md5sum
             file_size
-        }
-    }
-    }"""
-    )
-    query = template.substitute(offset=offset, limit=limit)
-    return query
+        }}
+    }}
+    }}"""
 
 
 def query_study_files(pdc_study_id):
-    template = Template(
-        """{ filesPerStudy (pdc_study_id: "$pdc_study_id" acceptDUA: true) {
+    return f"""{{ filesPerStudy (pdc_study_id: "{pdc_study_id}" acceptDUA: true) {{
             study_id
             pdc_study_id
             study_submitter_id
@@ -525,13 +455,10 @@ def query_study_files(pdc_study_id):
             file_size
             data_category
             file_format
-            signedUrl {
-                url}
-            } 
-        }
-"""
-    )
-    return template.substitute(pdc_study_id=pdc_study_id)
+            signedUrl {{
+                url}}
+            }} 
+        }}"""
 
 
 def make_all_programs_query():
@@ -541,32 +468,6 @@ def make_all_programs_query():
     """
 
     return """{allPrograms (acceptDUA: true) {program_id program_submitter_id name projects {project_id project_submitter_id name studies {pdc_study_id study_id study_submitter_id submitter_id_name analytical_fraction study_name disease_types primary_sites embargo_date experiment_type acquisition_type} }}}"""
-    blah = """
-    {
-        allPrograms (acceptDUA: true) {
-            program_id
-            program_submitter_id
-            name
-            projects {
-                project_id
-                project_submitter_id
-                name
-                studies {
-                    pdc_study_id
-                    study_id
-                    study_submitter_id
-                    submitter_id_name
-                    analytical_fraction
-                    experiment_type
-                    acquisition_type
-                    embargo_date
-                    study_name
-                    disease_types
-                    primary_sites
-                }
-            }
-        }
-    }"""
 
 
 def make_study_query(pdc_study_id):
@@ -574,9 +475,8 @@ def make_study_query(pdc_study_id):
     Creates a graphQL string for querying the PDC API's study endpoint.
     :return: GraphQL query string
     """
-    template = Template(
-        """{
-        study (pdc_study_id: "$pdc_study_id" acceptDUA: true) {
+    return f"""{{
+        study (pdc_study_id: "{pdc_study_id}" acceptDUA: true) {{
             study_id
             pdc_study_id
             study_name
@@ -586,24 +486,21 @@ def make_study_query(pdc_study_id):
             disease_type
             primary_site
             embargo_date
-        }
-    }"""
-    )
-    return template.substitute(pdc_study_id=pdc_study_id)
+        }}
+    }}"""
 
 
 def case_demographics(pdc_study_id, offset, limit):
-    template = Template(
-        """{
-        paginatedCaseDemographicsPerStudy (pdc_study_id: "$pdc_study_id" offset: $offset limit:
-        $limit acceptDUA: true) {
+    return f"""{{
+        paginatedCaseDemographicsPerStudy (pdc_study_id: "{pdc_study_id}" offset: {offset} limit:
+        {limit} acceptDUA: true) {{
         total
-        caseDemographicsPerStudy {
+        caseDemographicsPerStudy {{
             case_id
             case_submitter_id
             disease_type
             primary_site
-            demographics {
+            demographics {{
                 demographic_id
                 ethnicity
                 gender
@@ -615,9 +512,9 @@ def case_demographics(pdc_study_id, offset, limit):
                 vital_status
                 year_of_birth
                 year_of_death
-                }
-            }
-            pagination {
+                }}
+            }}
+            pagination {{
                 count
                 sort
                 from
@@ -625,27 +522,22 @@ def case_demographics(pdc_study_id, offset, limit):
                 total
                 pages
                 size
-                }
-            }
-        }"""
-    )
-    return template.substitute(
-        pdc_study_id=pdc_study_id, offset=str(offset), limit=str(limit)
-    )
+                }}
+            }}
+        }}"""
 
 
 def case_diagnoses(pdc_study_id, offset, limit):
-    template = Template(
-        """{
-        paginatedCaseDiagnosesPerStudy (pdc_study_id: "$pdc_study_id" offset: $offset limit:
-        $limit acceptDUA: true) {
+    return f"""{{
+        paginatedCaseDiagnosesPerStudy (pdc_study_id: "{pdc_study_id}" offset: {offset} limit:
+        {limit} acceptDUA: true) {{
         total
-        caseDiagnosesPerStudy {
+        caseDiagnosesPerStudy {{
             case_id
             case_submitter_id
             disease_type
             primary_site
-            diagnoses {
+            diagnoses {{
                 diagnosis_id
                 tissue_or_organ_of_origin
                 age_at_diagnosis
@@ -705,9 +597,9 @@ def case_diagnoses(pdc_study_id, offset, limit):
                 icd_10_code
                 synchronous_malignancy
                 tumor_largest_dimension_diameter
-                }
-            }
-            pagination {
+                }}
+            }}
+            pagination {{
                 count
                 sort
                 from
@@ -715,23 +607,18 @@ def case_diagnoses(pdc_study_id, offset, limit):
                 total
                 pages
                 size
-                }
-            }
-        }"""
-    )
-    return template.substitute(
-        pdc_study_id=pdc_study_id, offset=str(offset), limit=str(limit)
-    )
+                }}
+            }}
+        }}"""
 
 
 def case_samples(pdc_study_id, offset, limit):
-    template = Template(
-        """ {
-    paginatedCasesSamplesAliquots(pdc_study_id: "$pdc_study_id" offset: $offset limit:
-    $limit acceptDUA: true)
-    {
+    return f"""{{
+    paginatedCasesSamplesAliquots(pdc_study_id: "{pdc_study_id}" offset: {offset} limit:
+    {limit} acceptDUA: true)
+    {{
     total
-    casesSamplesAliquots {
+    casesSamplesAliquots {{
         case_id
         case_submitter_id
         days_to_lost_to_followup
@@ -739,7 +626,7 @@ def case_samples(pdc_study_id, offset, limit):
         index_date
         lost_to_followup
         primary_site
-        samples {
+        samples {{
             sample_id
             sample_submitter_id
             sample_type
@@ -767,17 +654,17 @@ def case_samples(pdc_study_id, offset, limit):
             tumor_code
             tumor_code_id
             tumor_descriptor
-            aliquots {
+            aliquots {{
                 aliquot_id
                 aliquot_submitter_id
                 analyte_type
-                aliquot_run_metadata {
+                aliquot_run_metadata {{
                     aliquot_run_metadata_id
-                    }
-                }
-            }
-        }
-    pagination {
+                    }}
+                }}
+            }}
+        }}
+    pagination {{
         count
         sort
         from
@@ -785,22 +672,15 @@ def case_samples(pdc_study_id, offset, limit):
         total
         pages
         size
-        }
-    }
-    }"""
-    )
-    return template.substitute(
-        pdc_study_id=pdc_study_id, offset=str(offset), limit=str(limit)
-    )
+        }}
+    }}
+    }}"""
 
 
 def specimen_taxon(pdc_study_id):
-    template = Template(
-        """{
-        biospecimenPerStudy (pdc_study_id: "$pdc_study_id" acceptDUA: true) {
+    return f"""{{
+        biospecimenPerStudy (pdc_study_id: "{pdc_study_id}" acceptDUA: true) {{
         case_id
         taxon
-        }
-        }"""
-    )
-    return template.substitute(pdc_study_id=pdc_study_id)
+        }}
+        }}"""
