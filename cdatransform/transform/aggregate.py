@@ -22,8 +22,9 @@ def prep_log_merge_error(entities, merge_field_dict, endpoint)->tuple [list, dic
         temp:dict = {field: entities.get(source).get(field) for field in coal_fields}
         ret_dat[source] = temp
     for source, val in entities.items():
-        id:str = val["id"]
-        break
+        if val.get("id") is not None:
+            id:str = val["id"]
+            break
     for source, val in entities.items():
         if endpoint == "subjects":
             project:str = val.get("ResearchSubject")[0].get("member_of_research_project")
