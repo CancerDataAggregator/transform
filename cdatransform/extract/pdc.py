@@ -251,7 +251,7 @@ class PDC:
         )
         return result.json()["data"]["getPaginatedUIFile"]["total"]
 
-    def demographics_for_study(self, study_id, limit)->:
+    def demographics_for_study(self, study_id, limit):
         page = 1
         offset = 0
         demo_info = retry_get(
