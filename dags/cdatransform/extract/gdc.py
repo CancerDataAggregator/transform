@@ -6,7 +6,7 @@ import pathlib
 import sys
 from time import time
 from collections import defaultdict
-from typing import Iterable
+from typing import Iterable, Optional
 import numpy as np
 import jsonlines
 import aiohttp
@@ -128,7 +128,7 @@ class GDC:
             for field_chunk in field_chunks:
                 fields = ",".join(field_chunk)
                 params = {
-                    "filters": filt,
+                    "filters": filt or "",
                     "format": "json",
                     "fields": fields,
                     "size": page_size,
@@ -137,10 +137,10 @@ class GDC:
                 }
                 # print(str(params))
                 result = await retry_get(session=session, endpoint=endpt, params=params)
-                hits = result.json()["data"]["hits"]
+                hits = result["data"]["hits"]
                 for hit in hits:
                     all_hits_dict[hit["id"]].append(hit)
-                page = result.json()["data"]["pagination"]
+                page = result["data"]["pagination"]
                 current_page = page.get("page")
                 current_pages = page.get("pages")
 
@@ -157,9 +157,7 @@ class GDC:
                 else:
                     offset += page_size
 
-    async def http_call(
-        self, end_cases: list, case_ids: list | None = None, page_size: int = 500
-    ):
+    async def http_call(self, end_cases: list, case_ids=None, page_size: int = 500):
         async with aiohttp.ClientSession() as session:
             async for case in self._paginate_files_or_cases(
                 ids=case_ids,
@@ -168,6 +166,8 @@ class GDC:
                 num_field_chunks=3,
                 session=session,
             ):
+                n = 0
+                t0 = time()
                 end_cases.append(case)
                 n += 1
                 if n % page_size == 0:

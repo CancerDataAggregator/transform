@@ -9,14 +9,12 @@ import aiohttp
 
 async def retry_get(session, endpoint, params, base_retry_interval=180.0):
     retry_interval = base_retry_interval
-    async with session.get(
-        url=endpoint, params=params, timeout=retry_interval
-    ) as response:
+    async with session.get(url=endpoint, params=params) as response:
         while True:
             try:
                 result = response
                 if result.ok:
-                    return result
+                    return await result.json()
                 else:
                     sys.stderr.write(str(result.content))
                     sys.stderr.write(
