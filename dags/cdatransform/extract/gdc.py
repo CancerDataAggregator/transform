@@ -6,7 +6,7 @@ import pathlib
 import sys
 from time import time
 from collections import defaultdict
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Union
 import numpy as np
 import jsonlines
 import aiohttp
@@ -159,7 +159,19 @@ class GDC:
 
                 offset += page_size
 
-    async def http_call(self, end_cases: list, case_ids=None, page_size: int = 500):
+    async def http_call_save_cases(
+        self, end_cases: Union[list, None] = None, case_ids=None, page_size: int = 500
+    ):
+        """
+        this will call the case api asynchronously and write the each case to a array
+        Args:
+            end_cases (Union[list, None], optional): _description_. Defaults to None.
+            case_ids (_type_, optional): _description_. Defaults to None.
+            page_size (int, optional): _description_. Defaults to 500.
+        """
+        n = 0
+        t0 = time()
+        end_cases = end_cases or []
         async with aiohttp.ClientSession() as session:
             async for case in self._paginate_files_or_cases(
                 ids=case_ids,
@@ -168,8 +180,7 @@ class GDC:
                 num_field_chunks=3,
                 session=session,
             ):
-                n = 0
-                t0 = time()
+
                 end_cases.append(case)
                 n += 1
                 if n % page_size == 0:
@@ -182,10 +193,10 @@ class GDC:
         print("starting save cases")
         t0 = time()
         n = 0
-        end_cases = []
-        asyncio.run(self.http_call(end_cases))
+        end_cases = 
+        asyncio.run(self.http_call_save_cases())
         print(f"Wrote {n} cases in {current_time_rate(t0)}s\n", flush=True)
-        # send_json_to_storage(end_cases)
+        send_json_to_storage(end_cases)
 
     def save_files(
         self, out_file: str, file_ids: list = None, page_size: int = 5000
@@ -193,6 +204,7 @@ class GDC:
         self.fields = file_fields
         t0 = time()
         n = 0
+        asyncio.run(self.http_call_save_cases())
         # need to write dictionary of file_ids per specimen (specimen: [files])
         specimen_files_dict = defaultdict(list)
         with gzip.open(out_file, "wb") as fp:
