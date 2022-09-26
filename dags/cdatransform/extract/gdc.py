@@ -123,7 +123,8 @@ class GDC:
             endpt = self.files_endpoint
         offset: int = 0
         field_chunks = self.det_field_chunks(num_field_chunks)
-        while True:
+        break_loop = False
+        while not break_loop:
             all_hits_dict = defaultdict(list)
             for field_chunk in field_chunks:
                 fields = ",".join(field_chunk)
@@ -136,6 +137,7 @@ class GDC:
                     # "sort": "file_id",
                 }
                 # print(str(params))
+
                 result = await retry_get(session=session, endpoint=endpt, params=params)
                 hits = result["data"]["hits"]
                 for hit in hits:
@@ -143,6 +145,8 @@ class GDC:
                 page = result["data"]["pagination"]
                 current_page = page.get("page")
                 current_pages = page.get("pages")
+                if current_page >= current_pages:
+                    break_loop = True
 
                 sys.stderr.write(f"Pulling page {current_page} / {current_pages}\n")
 
@@ -150,12 +154,10 @@ class GDC:
                     {key: value for record in records for key, value in record.items()}
                     for records in all_hits_dict.values()
                 ]
-                for result in res_list:
-                    yield result
-                if current_page >= current_pages:
-                    break
-                else:
-                    offset += page_size
+                for result_from_list in res_list:
+                    yield result_from_list
+
+                offset += page_size
 
     async def http_call(self, end_cases: list, case_ids=None, page_size: int = 500):
         async with aiohttp.ClientSession() as session:

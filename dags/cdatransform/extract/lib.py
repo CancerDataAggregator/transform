@@ -1,3 +1,4 @@
+import asyncio
 import sys
 import time
 
@@ -9,7 +10,9 @@ import aiohttp
 
 async def retry_get(session, endpoint, params, base_retry_interval=180.0):
     retry_interval = base_retry_interval
-    async with session.get(url=endpoint, params=params) as response:
+    async with session.get(
+        url=endpoint, params=params, timeout=retry_interval
+    ) as response:
         while True:
             try:
                 result = response
@@ -20,13 +23,14 @@ async def retry_get(session, endpoint, params, base_retry_interval=180.0):
                     sys.stderr.write(
                         f"API call failed. Retrying in {retry_interval}s ...\n"
                     )
-                    time.sleep(retry_interval)
+                    await asyncio.sleep(retry_interval)
                     retry_interval *= 2
             except:
                 sys.stderr.write(
                     f"API call failed. Retrying in {retry_interval}s ...\n"
                 )
-                time.sleep(retry_interval)
+                await asyncio.sleep(retry_interval)
+
                 retry_interval *= 2
 
 
