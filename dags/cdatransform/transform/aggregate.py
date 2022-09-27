@@ -1,5 +1,6 @@
 import argparse
 from collections import defaultdict
+from typing_extensions import Literal
 import jsonlines
 import yaml
 import gzip
@@ -10,6 +11,7 @@ import cdatransform.transform.merge.merge_functions as mf
 import jsonlines
 import yaml
 from cdatransform.transform.validate import LogValidation
+import sys
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +22,8 @@ def get_coalesce_field_names(merge_field_dict) -> list:
         for key, val in merge_field_dict.items()
         if val.get("merge_type") == "coalesce"
     ]
+    if coal_fields is None:
+        print(merge_field_dict)
     return coal_fields
 
 
@@ -43,7 +47,11 @@ def prep_log_merge_error(
             )
             break
         else:
-            project: str = val.get("associated_project", "from-pdc-metadata-query")
+            if val.get("associated_project") is None:
+                project: Literal["from-metadata-query"] = "from-metadata-query"
+            else:
+                project: str = val["associated_project"]
+            # project:str = val.get("associated_project", "from-pdc-metadata-query")
             break
     return coal_fields, ret_dat, id, project
 
