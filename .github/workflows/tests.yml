@@ -89,9 +89,7 @@ jobs:
     
     - name: Integration tests
       run: |
-        cd data
-        sh get-cache-files.sh
-        cd ../tests/integration
+        cd tests/integration
         sh test.sh
         sh test-fail.sh
 
