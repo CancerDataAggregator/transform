@@ -6,11 +6,13 @@ import gzip
 import logging
 import cdatransform.transform.merge.merge_functions as mf
 from cdatransform.transform.validate import LogValidation
-
+import sys
 logger = logging.getLogger(__name__)
 
 def get_coalesce_field_names(merge_field_dict)->list:
     coal_fields:list = [key for key, val in merge_field_dict.items() if val.get("merge_type") == "coalesce"]
+    if coal_fields is None:
+        print(merge_field_dict)
     return coal_fields
 
 
@@ -30,7 +32,11 @@ def prep_log_merge_error(entities, merge_field_dict, endpoint)->tuple [list, dic
             project:str = val.get("ResearchSubject")[0].get("member_of_research_project")
             break
         else:
-            project:str = val.get("associated_project", "from-pdc-metadata-query")
+            if val.get("associated_project") is None:
+                project = "from-metadata-query"
+            else:
+                project = val["associated_project"]
+            #project:str = val.get("associated_project", "from-pdc-metadata-query")
             break
     return coal_fields, ret_dat, id, project
 
