@@ -18,7 +18,6 @@ def main():
     parser.add_argument("input", help="Input data file.")
     parser.add_argument("output", help="Output data file.")
     parser.add_argument("map_trans", help="Mapping and Transformations file.")
-    parser.add_argument("DC", help="Data Commons source. (GDC, PDC, etc.)")
     parser.add_argument(
         "--endpoint", help="endpoint from which the file was generated. e.g. cases"
     )
@@ -30,13 +29,13 @@ def main():
     # parser.add_argument("endpoint", help="endpoint from which the file was generated. e.g. cases")
     args = parser.parse_args()
 
-    MandT = yaml.load(open(args.map_trans, "r"), Loader=Loader)
+    MandT:dict = yaml.load(open(args.map_trans, "r"), Loader=Loader)
     for entity, MorT_dict in MandT.items():
         if "Transformations" in MorT_dict:
             MandT[entity]["Transformations"] = tr.functionalize_trans_dict(
                 MandT[entity]["Transformations"]
             )
-    transform = tr.Transform(MandT, args.DC, args.endpoint)
+    transform = tr.Transform(MandT, args.endpoint)
     t0 = time.time()
     count = 0
     id_list = get_ids(id=args.id, id_list_file=args.ids)
