@@ -1,48 +1,44 @@
 import argparse
-from typing import DefaultDict
+from collections import defaultdict
 import jsonlines
 import yaml
 import gzip
 import logging
 import cdatransform.transform.merge.merge_functions as mf
 from cdatransform.transform.validate import LogValidation
-
+import sys
 logger = logging.getLogger(__name__)
 
-
-def get_coalesce_field_names(merge_field_dict):
-    coal_fields = []
-    for key, val in merge_field_dict.items():
-        if val.get("merge_type") == "coalesce":
-            coal_fields.append(key)
+def get_coalesce_field_names(merge_field_dict)->list:
+    coal_fields:list = [key for key, val in merge_field_dict.items() if val.get("merge_type") == "coalesce"]
+    if coal_fields is None:
+        print(merge_field_dict)
     return coal_fields
 
 
-def prep_log_merge_error(entities, merge_field_dict, endpoint):
+def prep_log_merge_error(entities, merge_field_dict, endpoint)->tuple [list, dict, str, str]:
     sources = list(entities.keys())
-    coal_fields = get_coalesce_field_names(merge_field_dict)
-    ret_dat = dict()
+    coal_fields:list = get_coalesce_field_names(merge_field_dict)
+    ret_dat:dict = {}
     for source in sources:
-        temp = dict()
-        for field in coal_fields:
-            temp[field] = entities.get(source).get(field)
+        temp:dict = {field: entities.get(source).get(field) for field in coal_fields}
         ret_dat[source] = temp
     for source, val in entities.items():
         if val.get("id") is not None:
-            patient_id = val.get("id")
+            id:str = val["id"]
             break
     for source, val in entities.items():
         if endpoint == "subjects":
-            project = val.get("ResearchSubject")[0].get("member_of_research_project")
+            project:str = val.get("ResearchSubject")[0].get("member_of_research_project")
             break
         else:
             if val.get("associated_project") is None:
                 project = "from-metadata-query"
             else:
                 project = val["associated_project"]
-            # metadata query from PDC has no project listed
+            #project:str = val.get("associated_project", "from-pdc-metadata-query")
             break
-    return coal_fields, ret_dat, patient_id, project
+    return coal_fields, ret_dat, id, project
 
 
 def log_merge_error(entities, all_sources, fields, log, endpoint):
@@ -57,24 +53,6 @@ def log_merge_error(entities, all_sources, fields, log, endpoint):
     all_sources.insert(3, project)
     log.agree_sources(coal_dat, "_".join(all_sources), coal_fields)
     return log
-
-
-def merge_entities_with_same_id(entity_recs, how_to_merge_entity):
-    entities = DefaultDict(list)
-    rec = []
-    for entity in entity_recs:
-        id = entity.get("id")
-        entities[id] += [entity]
-    for id, recs in entities.items():
-        if len(recs) == 1:
-            rec += recs
-        else:
-            entities = {k: case for k, case in enumerate(recs)}
-            lines_recs = list(range(len(recs)))
-            rec += [mf.merge_fields_level(entities, how_to_merge_entity, lines_recs)]
-            # case_ids = [patient.get('ResearchSubject')[0].get('id') for patient in patients]
-            # log = log_merge_error(entities, case_ids, how_to_merge["Patient_merge"], log)
-    return rec
 
 
 def main(debug=False):
@@ -104,16 +82,16 @@ def main(debug=False):
     logger.info("----------------------")
     logger.info("Starting aggregate run")
     logger.info("----------------------")
-    # yaml.load(open(transform_file, "r"), Loader=Loader)
+ 
     endpoint = args.endpoint
     with open(args.merge_file) as file:
         how_to_merge = yaml.full_load(file)
     with gzip.open(args.input_file, "r") as infp:
         readDC = jsonlines.Reader(infp)
-        entity_rec_mapping = DefaultDict(list)
+        entity_rec_mapping = defaultdict(list)
         for rec in readDC:
-            id = rec.get("id")
-            entity_rec_mapping[id] += [rec]
+            id = rec["id"]
+            entity_rec_mapping[id].append(rec)
     with gzip.open(args.output_file, "w") as outfp:
         writeDC = jsonlines.Writer(outfp)
         log = LogValidation()
@@ -122,54 +100,29 @@ def main(debug=False):
                 merged_entry = records[0]
             else:
                 entities = {k: patient for k, patient in enumerate(records)}
-                lines_cases = list(range(len(records)))
+                lines_ids = list(range(len(records)))
                 if endpoint == "subjects":
                     merged_entry = mf.merge_fields_level(
-                        entities, how_to_merge["Patient_merge"], lines_cases
+                        entities, how_to_merge["Patient_merge"], lines_ids
                     )
                     case_ids = [
                         record.get("ResearchSubject")[0].get("id") for record in records
                     ]
-                    # file_ids = [file.get('id') for patient in patients for file in patient.get('File')]
                     log = log_merge_error(
                         entities, case_ids, how_to_merge["Patient_merge"], log, endpoint
                     )
-                    for RS in merged_entry["ResearchSubject"]:
-                        # RS["File"] = merge_entities_with_same_id(
-                        #    RS["File"], how_to_merge["File_merge"]
-                        # )
-                        RS["Diagnosis"] = merge_entities_with_same_id(
-                            RS["Diagnosis"], how_to_merge["Diagnosis_merge"]
-                        )
-                        RS["Specimen"] = merge_entities_with_same_id(
-                            RS["Specimen"], how_to_merge["Specimen_merge"]
-                        )
-                        # for specimen in RS["Specimen"]:
-                        #    specimen["File"] = merge_entities_with_same_id(
-                        #        specimen["File"], how_to_merge["File_merge"]
-                        #    )
-                else:
+
+                else: #Assume files endpoint
                     merged_entry = mf.merge_fields_level(
-                        entities, how_to_merge["File_merge"], lines_cases
+                        entities, how_to_merge["File_merge"], lines_ids
                     )
-                    # merged_entry["Specimen"] = merge_entities_with_same_id(
-                    #    merged_entry["Specimen"], how_to_merge["Specimen_merge"]
-                    # )
-                    # merged_entry["Subject"] = merge_entities_with_same_id(
-                    #    merged_entry["Subject"], how_to_merge["Patient_merge"]
-                    # )
                     file_ids = [record.get("id") for record in records]
-                    # file_ids = [file.get('id') for patient in patients for file in patient.get('File')]
                     log = log_merge_error(
                         entities, file_ids, how_to_merge["File_merge"], log, endpoint
                     )
 
-            # merged_entry["File"] = merge_entities_with_same_id(
-            #    merged_entry["File"], how_to_merge["File_merge"]
-            # )
-
             writeDC.write(merged_entry)
-        # log.generate_report(logging.getLogger("test"))
+        log.generate_report(logging.getLogger("test"))
 
 
 if __name__ == "__main__":

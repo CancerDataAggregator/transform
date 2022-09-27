@@ -493,7 +493,7 @@ def make_study_query(pdc_study_id):
 def case_demographics(pdc_study_id, offset, limit):
     return f"""{{
         paginatedCaseDemographicsPerStudy (pdc_study_id: "{pdc_study_id}" offset: {offset} limit:
-        $limit acceptDUA: true) {{
+        {limit} acceptDUA: true) {{
         total
         caseDemographicsPerStudy {{
             case_id
@@ -615,7 +615,7 @@ def case_diagnoses(pdc_study_id, offset, limit):
 def case_samples(pdc_study_id, offset, limit):
     return f"""{{
     paginatedCasesSamplesAliquots(pdc_study_id: "{pdc_study_id}" offset: {offset} limit:
-    $limit acceptDUA: true)
+    {limit} acceptDUA: true)
     {{
     total
     casesSamplesAliquots {{

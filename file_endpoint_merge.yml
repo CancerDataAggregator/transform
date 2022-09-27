@@ -3,7 +3,7 @@ File_merge:
         merge_type: "coalesce"
         default_value: ""
     identifier:
-        merge_type: "coalesce"
+        merge_type: "merge_identifiers"
         default_value: ""
     label:
         merge_type: "coalesce"
@@ -21,8 +21,8 @@ File_merge:
         merge_type: "coalesce"
         default_value: ""
     associated_project:
-        merge_type: "coalesce"
-        default_value: ""
+        merge_type: "append_linkers"
+        default_value: []
     drs_uri:
         merge_type: "coalesce"
         default_value: ""
