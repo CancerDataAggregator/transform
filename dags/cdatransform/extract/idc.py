@@ -1,4 +1,5 @@
 import argparse
+from typing import Union
 
 
 from cdatransform.lib import get_ids
@@ -36,7 +37,7 @@ class IDC:
         self.out_file = out_file
         self.dest_bucket_file_name = dest_bucket_file_name
         self.service_account_cred = self._service_account_cred()
-        self.mapping = self._init_mapping(mapping)
+        self.mapping: dict = self._init_mapping(mapping)
         self.patient_ids = get_ids(id=patient, id_list_file=patients_file)
         self.file_ids = get_ids(id=file, id_list_file=files_file)
         self.source_table = source_table
@@ -59,7 +60,7 @@ class IDC:
                 )
         return credentials
 
-    def _init_mapping(self, mapping):
+    def _init_mapping(self, mapping) -> dict:
         for entity, MorT_dict in mapping.items():
             if "Transformations" in MorT_dict:
                 mapping[entity]["Transformations"] = tr.functionalize_trans_dict(
@@ -209,12 +210,11 @@ class IDC:
         keys = list(self.mapping[entity]["Linkers"].keys())
         for index in range(len(self.mapping[entity]["Linkers"].keys())):
             if self.mapping[entity]["Linkers"][keys[index]] is not None:
-                field = self.mapping[entity]["Linkers"][keys[index]]
+                field: Union[str, list] = self.mapping[entity]["Linkers"][keys[index]]
                 linkers_str += """ARRAY_AGG("""
                 if isinstance(field, str):
-                    field = field.split(".")
-                    field = field.pop()
-                    field = str(field)
+                    _field: list[str] = field.split(".")
+                    field: str = str(_field.pop())
                 elif isinstance(field, list):
                     var_splits = []
                     for var in field:
