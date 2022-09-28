@@ -66,14 +66,14 @@ def merge_fields_level(data_commons_fields_dict, how_to_merge, source_hierarchy)
                 data_commons_fields_dict, field, hierarchy
             )
             dat[field] = merge_identifiers(dat_dict)
-        elif how_to_merge[field]["merge_type"] == "merge_entities_with_same_id":
-            dat_dict = make_dat_dict_for_transforms(
-                data_commons_fields_dict, field, hierarchy
-            )
-            print(how_to_merge)
-            dat[field] = merge_entities_with_same_id(
-                dat_dict, full_merge[f"{field}_merge"]
-            )
+        # elif how_to_merge[field]["merge_type"] == "merge_entities_with_same_id":
+        #    dat_dict = make_dat_dict_for_transforms(
+        #        data_commons_fields_dict, field, hierarchy
+        #    )
+        #    print(how_to_merge)
+        #    dat[field] = merge_entities_with_same_id(
+        #        dat_dict, full_merge[f"{field}_merge"]
+        #    )
         else:  # merge_codeable_concept
             dat_dict = make_dat_dict_for_transforms(
                 data_commons_fields_dict, field, hierarchy
