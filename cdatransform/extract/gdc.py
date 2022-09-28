@@ -16,6 +16,7 @@ from cdatransform.extract.lib import retry_get
 # Answer: cases.sample_ids is not returned by GDC API
 gdc_files_page_size = 8000
 
+
 class GDC:
     def __init__(
         self,
@@ -32,8 +33,8 @@ class GDC:
     def det_field_chunks(self, num_chunks: int) -> list[list[str]]:
         """This code uses a txt file with a list of fields to pull from GDC case/file
         endpoints. Unfortunately GDC API does not let you use all of them in one query.
-        This code (usually) breaks up this list of fields into num_chunks number of 
-        chunks. Code will later query using fields from chunk 1, chunk 2, etc, and merge 
+        This code (usually) breaks up this list of fields into num_chunks number of
+        chunks. Code will later query using fields from chunk 1, chunk 2, etc, and merge
         it all together
 
         Args:
@@ -58,11 +59,11 @@ class GDC:
 
     def _paginate_files_or_cases(
         self,
-        ids: list[str]|None = None,
+        ids: list[str] | None = None,
         endpt: str = "case",
         page_size: int = 500,
         num_field_chunks: int = 2,
-    ) -> Iterable[dict[str,str|int|list]]:
+    ) -> Iterable[dict[str, str | int | list]]:
         """Gets page of data, returns each hit one by one, gets next page, etc.
 
         Args:
@@ -70,17 +71,17 @@ class GDC:
                 None, then doing bulk download
             endpt (str, optional): used to build filter in query and determine endpoint
                 to query. Either case_id or file_id. Defaults to "case".
-            page_size (int, optional): Number or results in paginated return from the API. 
+            page_size (int, optional): Number or results in paginated return from the API.
                 Defaults to 500.
-            num_field_chunks (int, optional): List of fields pulled must be broken into chunks 
-                since the query can only be so long. This is the number of chunks you are attempting 
+            num_field_chunks (int, optional): List of fields pulled must be broken into chunks
+                since the query can only be so long. This is the number of chunks you are attempting
                 to break it into. Defaults to 2.
 
         Returns:
             Iterable: _description_
 
         Yields:
-            Iterator[Iterable]: 
+            Iterator[Iterable]:
         """
         if ids is not None:
             filt = json.dumps(
@@ -103,8 +104,8 @@ class GDC:
         offset: int = 0
         field_chunks = self.det_field_chunks(num_field_chunks)
         while True:
-            all_hits_dict = defaultdict(list) # { id1: [{record1 - fields from chunk1}, 
-                                              #         {record2 - fields from chunk 2}]}
+            all_hits_dict = defaultdict(list)  # { id1: [{record1 - fields from chunk1},
+            #         {record2 - fields from chunk 2}]}
             for field_chunk in field_chunks:
                 fields = ",".join(field_chunk)
                 params = {
@@ -136,10 +137,10 @@ class GDC:
                 offset += page_size
 
     def save_cases(
-        self, out_file: str, case_ids: list[str]|None = None, page_size: int = 500
+        self, out_file: str, case_ids: list[str] | None = None, page_size: int = 500
     ) -> None:
-        t0:float = time.time()
-        n:int = 0
+        t0: float = time.time()
+        n: int = 0
         with gzip.open(out_file, "wb") as fp:
             writer = jsonlines.Writer(fp)
             for case in self._paginate_files_or_cases(case_ids, "case", page_size, 3):
@@ -150,12 +151,12 @@ class GDC:
         sys.stderr.write(f"Wrote {n} cases in {time.time() - t0}s\n")
 
     def save_files(
-        self, out_file: str, file_ids: list[str]|None = None, page_size: int = 5000
+        self, out_file: str, file_ids: list[str] | None = None, page_size: int = 5000
     ) -> None:
-        t0:float = time.time()
-        n:int = 0
+        t0: float = time.time()
+        n: int = 0
         # need to write dictionary of file_ids per specimen (specimen: [files])
-        specimen_files_dict:defaultdict[str,list[str]] = defaultdict(list)
+        specimen_files_dict: defaultdict[str, list[str]] = defaultdict(list)
         with gzip.open(out_file, "wb") as fp:
             writer = jsonlines.Writer(fp)
             for file in self._paginate_files_or_cases(

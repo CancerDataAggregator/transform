@@ -6,7 +6,7 @@ import pathlib
 import sys
 from time import time
 from collections import defaultdict
-from typing import Iterable, Optional, Union
+from typing import Union, Literal
 import numpy as np
 import jsonlines
 import aiohttp
@@ -97,8 +97,8 @@ class GDC:
 
     async def _paginate_files_or_cases(
         self,
+        endpt: str,
         ids: list | None = None,
-        endpt: str = "case",
         page_size: int = 500,
         num_field_chunks: int = 2,
         session=None,
@@ -159,76 +159,101 @@ class GDC:
 
                 offset += page_size
 
-    async def http_call_save_cases(
-        self, end_cases: Union[list, None] = None, case_ids=None, page_size: int = 500
-    ):
-        """
-        this will call the case api asynchronously and write the each case to a array
-        Args:
-            end_cases (Union[list, None], optional): _description_. Defaults to None.
-            case_ids (_type_, optional): _description_. Defaults to None.
-            page_size (int, optional): _description_. Defaults to 500.
-        """
-        n = 0
-        t0 = time()
-        end_cases = end_cases or []
-        async with aiohttp.ClientSession() as session:
-            async for case in self._paginate_files_or_cases(
-                ids=case_ids,
-                endpt="case",
-                page_size=page_size,
-                num_field_chunks=3,
-                session=session,
-            ):
+        async def http_call_save_files_or_cases(
+            self,
+            endpoint: str = "",
+            end_cases: Union[list, None] = None,
+            case_ids=None,
+            page_size: int = 500,
+        ):
+            """
+            this will call the case api asynchronously and write the each case to a array
+            Args:
+                end_cases (Union[list, None], optional): _description_. Defaults to None.
+                case_ids (_type_, optional): _description_. Defaults to None.
+                page_size (int, optional): _description_. Defaults to 500.
+            """
+            n = 0
+            t0 = time()
+            end_cases = end_cases or []
+            async with aiohttp.ClientSession() as session:
+                async for case in self._paginate_files_or_cases(
+                    ids=case_ids,
+                    endpt=endpoint,
+                    page_size=page_size,
+                    num_field_chunks=3,
+                    session=session,
+                ):
 
-                end_cases.append(case)
-                n += 1
-                if n % page_size == 0:
-                    print(f"Wrote {n} cases in {current_time_rate(t0)}s\n", flush=True)
+                    end_cases.append(case)
+                    n += 1
+                    if n % page_size == 0:
+                        print(
+                            f"Wrote {n} cases in {current_time_rate(t0)}s\n", flush=True
+                        )
+            return end_cases
 
-    def save_cases(
-        self, out_file: str, case_ids: str = None, page_size: int = 500
-    ) -> None:
-        self.fields = case_fields
-        print("starting save cases")
-        t0 = time()
-        n = 0
-        end_cases = 
-        asyncio.run(self.http_call_save_cases())
-        print(f"Wrote {n} cases in {current_time_rate(t0)}s\n", flush=True)
-        send_json_to_storage(end_cases)
+        def save_cases(
+            self, out_file: str, case_ids: str = None, page_size: int = 500
+        ) -> None:
+            self.fields = case_fields
+            print("starting save cases")
+            t0: float = time()
+            loop: asyncio.AbstractEventLoop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            end_cases: list = loop.run_until_complete(
+                self.http_call_save_files_or_cases(endpoint="case")
+            )
 
-    def save_files(
-        self, out_file: str, file_ids: list = None, page_size: int = 5000
-    ) -> None:
-        self.fields = file_fields
-        t0 = time()
-        n = 0
-        asyncio.run(self.http_call_save_cases())
-        # need to write dictionary of file_ids per specimen (specimen: [files])
-        specimen_files_dict = defaultdict(list)
-        with gzip.open(out_file, "wb") as fp:
-            writer = jsonlines.Writer(fp)
-            for file in self._paginate_files_or_cases(
-                file_ids, "file", page_size, 2
-            ):  # _files(file_ids, page_size):
-                writer.write(file)
-                n += 1
-                if n % page_size == 0:
-                    print(f"Wrote {n} files in {current_time_rate(t0)}s\n", flush=True)
-                if self.make_spec_file:
-                    for entity in file.get("associated_entities", []):
-                        if entity["entity_type"] != "case":
-                            specimen_files_dict[entity["entity_id"]].append(
-                                file["file_id"]
+            with gzip.open(out_file, "wb") as fp:
+                writer: jsonlines.Writer = jsonlines.Writer(fp)
+                with writer as wri:
+                    for index, value in enumerate(end_cases):
+                        index += 1
+                        if index % 50 == 0:
+                            print(
+                                f"Wrote {index} cases in {current_time_rate(t0)}s\n",
+                                flush=True,
                             )
+                        wri.write(value)
 
-        print(f"Wrote {n} files in {current_time_rate(t0)}s\n", flush=True)
-        if self.make_spec_file:
-            for specimen, files in specimen_files_dict.items():
-                specimen_files_dict[specimen] = list(set(files))
-            with gzip.open(self.make_spec_file, "wt", encoding="ascii") as out:
-                json.dump(specimen_files_dict, out)
+        # send_json_to_storage(end_cases)
+
+        def save_files(
+            self, out_file: str, file_ids: list = None, page_size: int = 5000
+        ) -> None:
+            self.fields = file_fields
+            t0 = time()
+            n = 0
+            loop: asyncio.AbstractEventLoop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            end_cases: list = loop.run_until_complete(self.http_call_save_cases())
+            # need to write dictionary of file_ids per specimen (specimen: [files])
+            specimen_files_dict = defaultdict(list)
+            with gzip.open(out_file, "wb") as fp:
+                writer = jsonlines.Writer(fp)
+                for file in self._paginate_files_or_cases(
+                    file_ids, "file", page_size, 2
+                ):  # _files(file_ids, page_size):
+                    writer.write(file)
+                    n += 1
+                    if n % page_size == 0:
+                        print(
+                            f"Wrote {n} files in {current_time_rate(t0)}s\n", flush=True
+                        )
+                    if self.make_spec_file:
+                        for entity in file.get("associated_entities", []):
+                            if entity["entity_type"] != "case":
+                                specimen_files_dict[entity["entity_id"]].append(
+                                    file["file_id"]
+                                )
+
+            print(f"Wrote {n} files in {current_time_rate(t0)}s\n", flush=True)
+            if self.make_spec_file:
+                for specimen, files in specimen_files_dict.items():
+                    specimen_files_dict[specimen] = list(set(files))
+                with gzip.open(self.make_spec_file, "wt", encoding="ascii") as out:
+                    json.dump(specimen_files_dict, out)
 
 
 # def main() -> None:

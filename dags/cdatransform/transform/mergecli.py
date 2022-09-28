@@ -13,8 +13,8 @@ logger = logging.getLogger(__name__)
 
 
 def get_patient_info_1_DC(input_file):
-    All_IDs:list = []
-    All_Entries:dict = {}
+    All_IDs: list = []
+    All_Entries: dict = {}
     with gzip.open(input_file, "r") as infp:
         readDC = jsonlines.Reader(infp)
         for line in readDC:
@@ -24,16 +24,18 @@ def get_patient_info_1_DC(input_file):
 
 
 def get_endpoint_info_all_DCs(input_file_dict):
-    All_ID_Sources = defaultdict(list) # {'TARGET1': ['GDC', 'PDC']}
-    All_Entries_All_DCs:dict = {} #{'GDC': {'TARGET1': {GDC target1 record}, 'TARGET2': ... },
-                                #   'PDC': {'TARGET2': {PDC target2 record}, ... } }
+    All_ID_Sources = defaultdict(list)  # {'TARGET1': ['GDC', 'PDC']}
+    All_Entries_All_DCs: dict = (
+        {}
+    )  # {'GDC': {'TARGET1': {GDC target1 record}, 'TARGET2': ... },
+    #   'PDC': {'TARGET2': {PDC target2 record}, ... } }
     for source in input_file_dict:
         source_ID_list, All_Entries_All_DCs[source] = get_patient_info_1_DC(
             input_file_dict[source]
         )
         for id in source_ID_list:
             All_ID_Sources[id].append(source)
-        #for id in source_ID_list:
+        # for id in source_ID_list:
         #    if id in All_ID_Sources:
         #        All_ID_Sources[id].append(source)
         #    else:
@@ -41,32 +43,40 @@ def get_endpoint_info_all_DCs(input_file_dict):
     return All_ID_Sources, All_Entries_All_DCs
 
 
-def get_coalesce_field_names(merge_field_dict)->list:
-    coal_fields:list = [key for key, val in merge_field_dict.items() if val.get("merge_type") == "coalesce"]
-    #coal_fields:list = []
-    #for key, val in merge_field_dict.items():
+def get_coalesce_field_names(merge_field_dict) -> list:
+    coal_fields: list = [
+        key
+        for key, val in merge_field_dict.items()
+        if val.get("merge_type") == "coalesce"
+    ]
+    # coal_fields:list = []
+    # for key, val in merge_field_dict.items():
     #    if val.get("merge_type") == "coalesce":
     #        coal_fields.append(key)
     return coal_fields
 
 
 def prep_log_merge_error(entities, merge_field_dict):
-    sources:list = list(entities.keys())
-    coal_fields:list = get_coalesce_field_names(merge_field_dict)
-    ret_dat:dict = {}
+    sources: list = list(entities.keys())
+    coal_fields: list = get_coalesce_field_names(merge_field_dict)
+    ret_dat: dict = {}
     for source in sources:
-        temp_dict:dict = {field: entities.get(source).get(field) for field in coal_fields}
-        temp:dict = {}
-        #for field in coal_fields:
+        temp_dict: dict = {
+            field: entities.get(source).get(field) for field in coal_fields
+        }
+        temp: dict = {}
+        # for field in coal_fields:
         #    temp[field] = entities.get(source).get(field)
         ret_dat[source] = temp
-        
+
     for source, val in entities.items():
-        id:str = val["id"]
+        id: str = val["id"]
         break
     for source, val in entities.items():
         if val.get("ResearchSubject")[0].get("member_of_research_project") is not None:
-            project:str = val.get("ResearchSubject")[0].get("member_of_research_project")
+            project: str = val.get("ResearchSubject")[0].get(
+                "member_of_research_project"
+            )
             break
     return coal_fields, ret_dat, id, project
 
@@ -84,9 +94,11 @@ def log_merge_error(entities, all_sources, fields, log):
 
 def merge_subjects(output_file, how_to_merge_file, **kwargs):
     with open(how_to_merge_file) as file:
-        how_to_merge:dict = yaml.full_load(file)
+        how_to_merge: dict = yaml.full_load(file)
     # Need all info from the files, and dictionary listing patient_ids and sources found.
-    input_file_dict:dict = {source: kwargs[source] for source in ["gdc", "pdc", "idc"] if kwargs.get(source)}
+    input_file_dict: dict = {
+        source: kwargs[source] for source in ["gdc", "pdc", "idc"] if kwargs.get(source)
+    }
 
     All_endpoints_sources, All_Entries_All_DCs = get_endpoint_info_all_DCs(
         input_file_dict
@@ -106,9 +118,12 @@ def merge_subjects(output_file, how_to_merge_file, **kwargs):
                 )
             else:
                 # make entities - - - - {'gdc': gdc data for patient, 'pdc': pdc data for patient}
-                entities:dict = {source: All_Entries_All_DCs[source][patient] for source in All_endpoints_sources[patient]}
-                #entities:dict = {}
-                #for source in All_endpoints_sources[patient]:
+                entities: dict = {
+                    source: All_Entries_All_DCs[source][patient]
+                    for source in All_endpoints_sources[patient]
+                }
+                # entities:dict = {}
+                # for source in All_endpoints_sources[patient]:
                 #    entities[source] = All_Entries_All_DCs[source][patient]
 
                 merged_entry = mf.merge_fields_level(
@@ -132,7 +147,9 @@ def merge_files(output_file, merged_subjects_input, how_to_merge_file, **kwargs)
     with open(how_to_merge_file) as file:
         how_to_merge = yaml.full_load(file)
     # Need all info from the files, and dictionary listing file_ids and sources found.
-    input_file_dict:dict = {source: kwargs[source] for source in ["gdc", "pdc", "idc"] if kwargs.get(source)}
+    input_file_dict: dict = {
+        source: kwargs[source] for source in ["gdc", "pdc", "idc"] if kwargs.get(source)
+    }
     # All_endpoints_sources, All_Entries_All_DCs = get_endpoint_info_all_DCs(
     #    input_file_dict
     ##)
