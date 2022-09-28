@@ -7,6 +7,7 @@
 #     )
 #     print(dat_dict)
 from collections import defaultdict
+from typing import Union
 
 
 def source_hierarchy_by_time(records_dict):
@@ -29,19 +30,40 @@ def merge_demo_records_time_hierarchy(records_dict, how_to_merge):
     return merge_fields_level(dat_dict, how_to_merge, source_hierarchy=time_hier)
 
 
-def merge_entities_with_same_id(entity_recs, how_to_merge_entity):
-    entities = defaultdict(list)
+def merge_entities_with_same_id(entity_recs, how_to_merge_entity, **kwargs):
+    entities = defaultdict(list[dict])
     rec = []
-    for entity in entity_recs:
-        id = entity.get("id")
-        entities[id] += [entity]
+    print(entity_recs)
+    for source, recs in entity_recs.items():
+        for entity in recs:
+            id = entity.get("id")
+            entities[id].append({source: entity})
+    entities_pivot = {id: defaultdict(list) for id in entities.keys()}
     for id, recs in entities.items():
-        if len(recs) == 1:
-            rec += recs
+        for rec_ in recs:
+            entities_pivot[id][list(rec_.keys())[0]].append(rec_)
+    ent_pivot_v2 = entities_pivot.copy()
+    for id, sources in entities_pivot.items():
+        for source, source_recs in sources.items():
+            if len(source_recs) > 1:
+                lines_recs = list(range(len(source_recs)))
+                ent_pivot_v2[id][source] = merge_fields_level(
+                    source_recs, how_to_merge_entity, lines_recs, lines_recs
+                )
+            else:
+                ent_pivot_v2[id][source] = ent_pivot_v2[id][source][0]
+    for id, sources in ent_pivot_v2.items():
+        if len(sources) == 1:
+            rec.extend(sources.values())
         else:
-            entities = {k: case for k, case in enumerate(recs)}
-            lines_recs = list(range(len(recs)))
-            rec += [merge_fields_level(entities, how_to_merge_entity, lines_recs)]
+            entities = {k: case for k, case in enumerate(sources)}
+            lines_recs = list(range(len(sources)))
+            source_hierarchy = kwargs.get("source_hierarchy", lines_recs)
+            rec.append(
+                merge_fields_level(
+                    entities, how_to_merge_entity, lines_recs, source_hierarchy
+                )
+            )
             # case_ids = [patient.get('ResearchSubject')[0].get('id') for patient in patients]
             # log = log_merge_error(entities, case_ids, how_to_merge["Patient_merge"], log)
     return rec
@@ -87,8 +109,9 @@ def merge_fields_level(data_commons_fields_dict, how_to_merge, source_hierarchy)
             dat_dict = make_dat_dict_for_transforms(
                 data_commons_fields_dict, field, hierarchy
             )
+            print(how_to_merge)
             dat[field] = merge_entities_with_same_id(
-                dat_dict, how_to_merge[f"{field}_merge"]
+                dat_dict, full_merge[f"{field}_merge"]
             )
         else:  # merge_codeable_concept
             dat_dict = make_dat_dict_for_transforms(
@@ -136,8 +159,25 @@ def append_field_vals_to_single_list(field_vals_list_of_lists, **kwargs):
     return dat
 
 
-def coalesce_field_values(data_dictionary, default_value, source_hierarchy):
-    dat_return = default_value
+def coalesce_field_values(
+    data_dictionary: dict[
+        Union[str, int], Union[str, int, list[str], list[int], list[dict]]
+    ],
+    default_value: Union[str, int, list[str], list[int]],
+    source_hierarchy: list[Union[str, int]],
+) -> Union[str, int, list[str], list[int], list[dict]]:
+    """Given {source1:value1, source2,value2...} and source hierarchy = ['source1, source2...]
+    return value1 if value1 is none, or value2 if value1 is none and value2 is not none... etc
+
+    Args:
+        data_dictionary (dict[ Union[str, int], Union[str, int, list[str], list[int], list[dict]] ]): _description_
+        default_value (Union[str, int, list[str], list[int]]): _description_
+        source_hierarchy (list[Union[str, int]]): _description_
+
+    Returns:
+        Union[str, int, list[str], list[int], list[dict]]: _description_
+    """
+    dat_return: Union[str, int, list[str], list[int], list[dict]] = default_value
     for source in source_hierarchy:
         if source in data_dictionary and data_dictionary[source] is not None:
             dat_return = data_dictionary[source]
@@ -145,9 +185,15 @@ def coalesce_field_values(data_dictionary, default_value, source_hierarchy):
     return dat_return
 
 
-def merge_identifiers(data_dictionary):
-    dat_identifiers = []
-    for source, identifiers in data_dictionary.items():
+def merge_identifiers(
+    data_dictionary: dict[
+        Union[str, int], Union[str, int, list[str], list[int], list[dict]]
+    ]
+) -> list[dict[str, str]]:
+    dat_identifiers: list[dict[str, str]] = []
+    for identifiers in data_dictionary.values():
+        # identifiers is list of dicts. Loop over all lists of dicts and append to dat_identifiers if
+        # it has not been added already
         for identifier in identifiers:
             if dat_identifiers != []:
                 found = False

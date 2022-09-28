@@ -3,15 +3,20 @@ import cdatransform.transform.read_using_YAML as ruy
 from cdatransform.transform.validate import LogValidation
 import sys
 import time
-from typing import Union
+from typing import Union, Callable
 
-def add_Specimen_rec(orig, MandT, **kwargs)->list[dict[str,Union[str,list,int]]]:
-    cur_path:list[str] = kwargs.get("cur_path", ["cases", "samples"])
-    spec_type:str = kwargs.get("spec_type", "samples")
-    rel_path:str = kwargs.get("rel_path", "cases.samples")
-    endpoint:str = kwargs.get("endpoint", "cases")
-    spec:list = []
-    tree:dict[str, Union[dict,None]] = kwargs.get("tree", ruy.det_tree_to_collapse(MandT, "Specimen"))
+
+def add_Specimen_rec(
+    orig, MandT, **kwargs
+) -> list[dict[str, Union[str, int, list[str], dict, list[dict], None]]]:
+    cur_path: list[Union[str, int]] = kwargs.get("cur_path", ["cases", "samples"])
+    spec_type: str = kwargs.get("spec_type", "samples")
+    rel_path: str = kwargs.get("rel_path", "cases.samples")
+    endpoint: str = kwargs.get("endpoint", "cases")
+    spec: list = []
+    tree: dict[str, Union[dict[str, Union[dict, None]], None]] = kwargs.get(
+        "tree", ruy.det_tree_to_collapse(MandT, "Specimen")
+    )
     if ruy.simp_read(orig, rel_path, cur_path) is not None:
         for spec_rec_ind in range(len(ruy.simp_read(orig, rel_path, cur_path))):
             spec_path = cur_path.copy()
@@ -45,12 +50,10 @@ def add_Specimen_rec(orig, MandT, **kwargs)->list[dict[str,Union[str,list,int]]]
 def add_File_rec(orig, MandT, **kwargs):
     File_recs = []
     file_rec_name = "files"
-    cur_path = kwargs.get("cur_path", ["cases"])
+    cur_path: list[Union[str, int]] = kwargs.get("cur_path", ["cases"])
     rel_path = kwargs.get("rel_path", "cases")
     file_rel_path = rel_path + "." + file_rec_name
-    if isinstance(
-        ruy.simp_read(orig, file_rel_path, cur_path + [file_rec_name]), list
-    ):
+    if isinstance(ruy.simp_read(orig, file_rel_path, cur_path + [file_rec_name]), list):
         for file_ind in range(
             len(ruy.simp_read(orig, file_rel_path, cur_path + [file_rec_name]))
         ):
@@ -66,25 +69,37 @@ def add_File_rec(orig, MandT, **kwargs):
 
 
 # Functions to apply the transforms to relevant fields and functionalize Transformation dictionary
-def entity_value_transforms(tip, entity, MandT):
+def entity_value_transforms(
+    tip: dict[str, Union[str, int, list[str], dict, list[dict], None]],
+    entity: str,
+    MandT: dict[str, dict[str, dict[str, Union[str, dict[str, str], list]]]],
+) -> dict[str, Union[str, int, list[str], dict, list[dict], None]]:
     if (
         "Transformations" in MandT[entity]
         and MandT[entity]["Transformations"] is not None
     ):
-        trans_dict = MandT[entity]["Transformations"]
+        trans_dict: dict[str, list[list[Union[Callable, list]]]] = MandT[entity][
+            "Transformations"
+        ]
         tip = apply_transformations(tip, trans_dict)
     return tip
 
 
-def apply_transformations(tip, trans_dict):
+def apply_transformations(
+    tip: dict[str, Union[str, int, list]],
+    trans_dict: dict[str, Union[None, list[list[Union[Callable, list]]]]],
+) -> dict[str, Union[str, int, list[str], dict, list[dict], None]]:
     for field_name, trans in trans_dict.items():
-        excluded_field = trans == "exclude"
-        if not excluded_field:
-            tip[field_name] = apply_list_of_lists(tip[field_name], trans)
+        # excluded_field = trans == "exclude"
+        # if not excluded_field:
+        tip[field_name] = apply_list_of_lists(tip[field_name], trans)
     return tip
 
 
-def apply_list_of_lists(data, list_trans):
+def apply_list_of_lists(
+    data: Union[str, int, list],
+    list_trans: Union[None, list[list[Union[Callable, list]]]],
+) -> Union[str, int, list]:
     temp = data
     if list_trans is not None:
         for lists in list_trans:
@@ -95,8 +110,28 @@ def apply_list_of_lists(data, list_trans):
     return temp
 
 
-def functionalize_trans_dict(trans_dict)->dict:
-    temp = trans_dict.copy()
+def functionalize_trans_dict(
+    trans_dict: dict[str, list[list[Union[Callable, str, list]]]]
+) -> dict[str, list[list[Union[Callable, str, list]]]]:
+    """Takes a transformation dictionary from MandT loaded yaml, and replaces the string
+    denoting a function call, with an actual callable. Searches local for function with name of
+    the string
+    Transformations:
+        species:
+            - ['lower_case', [] ]
+        race:
+            - ['lower_case', [] ]
+        ethnicity:
+            - ['lower_case', [] ]
+    Replaces 'lower_case' str with the callable lower_case() function, as defined in the
+    transform_lib/value_transformations.py file
+
+    Args:
+        trans_dict (dict[str, list[list[Union[str, list]]]]): The transformation dict as seen above
+    Returns:
+        dict[str, list[list[Union[Callable,str, list]]]]:
+    """
+    temp: dict[str, list[list[Union[Callable, str, list]]]] = trans_dict.copy()
     for field_name, trans_vals in trans_dict.items():
         if trans_vals != "exclude":
             for trans in range(len(trans_vals)):
@@ -112,19 +147,21 @@ class Transform:
         self.MandT = MandT
         self.endpoint = endpoint
 
-    def __call__(self, orig):
-        # list or dict as return? - if Patient - dict, else, list
-        # where do I read from? - Need cur_path and general path
-        # cur_path = kwargs.get("cur_path", ["cases"])
-        # path_to_read = kwargs.get("path_to_read", 'cases')
+    def __call__(
+        self, orig: dict[str, Union[str, int, list[str], dict, list[dict], None]]
+    ) -> dict[str, Union[str, int, list[str], dict, list[dict], None]]:
         if self.endpoint == "cases":
             return self.cases_transform(orig)
-        elif self.endpoint == "files":
+        else:  # self.endpoint == "files": May add more endpoint transformations... like mutations
             return self.files_transform(orig)
 
-    def cases_transform(self, orig):
-        cur_path = ["cases"]
-        tip = ruy.read_entry(orig, self.MandT, "Patient")
+    def cases_transform(
+        self, orig: dict[str, Union[str, int, list[str], dict, list[dict], None]]
+    ) -> dict[str, Union[str, int, list[str], dict, list[dict], None]]:
+        cur_path: list[Union[str, int]] = ["cases"]
+        tip: dict[
+            str, Union[str, int, list[str], dict, list[dict], None]
+        ] = ruy.read_entry(orig, self.MandT, "Patient")
         tip = entity_value_transforms(tip, "Patient", self.MandT)
         # linkers = ruy.add_linkers(
         #    orig,
@@ -244,10 +281,10 @@ class Transform:
         tip["ResearchSubject"] = [RS]
         return tip
 
-    def files_transform(self, orig):
-        tip = ruy.read_entry(
-            orig, self.MandT, "File", endpoint=self.endpoint
-        )
+    def files_transform(
+        self, orig: dict[str, Union[str, int, list[str], dict, list[dict], None]]
+    ) -> dict[str, Union[str, int, list[str], dict, list[dict], None]]:
+        tip = ruy.read_entry(orig, self.MandT, "File", endpoint=self.endpoint)
         tip = entity_value_transforms(tip, "File", self.MandT)
         linkers = ruy.add_linkers(
             orig,
