@@ -13,7 +13,7 @@ Patient:
         days_to_death: 'cases.demographics.days_to_death'
         cause_of_death: 'cases.demographics.cause_of_death'
         vital_status: 'cases.demographics.vital_status'
-        Files: 'cases.files' #Field added before transformation process
+        #Files: 'cases.files' #Field added before transformation process
         
     Transformations:
         species:
@@ -38,7 +38,7 @@ ResearchSubject:
         member_of_research_project: 'cases.project_submitter_id'
         primary_diagnosis_condition: 'cases.disease_type'
         primary_diagnosis_site: 'cases.primary_site'
-        Files: 'cases.files' #Field added before transformation process   
+        #Files: 'cases.files' #Field added before transformation process   
     #Linkers:
     #    Files: 'cases.files.file_id'
         
@@ -97,9 +97,9 @@ Specimen:
             samples: 'initial specimen'
             aliquots: 'cases.samples.sample_id'
         derived_from_subject: 'cases.case_submitter_id'
-        Files: #Field added before transformation process
-            aliquots: 'cases.samples.aliquots.files'
-            samples: 'cases.samples.files'
+        #Files: #Field added before transformation process
+        #    aliquots: 'cases.samples.aliquots.files'
+        #    samples: 'cases.samples.files'
     Transformations:
         days_to_collection:
             - ['coalesce', [] ]

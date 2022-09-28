@@ -30,45 +30,6 @@ def merge_demo_records_time_hierarchy(records_dict, how_to_merge):
     return merge_fields_level(dat_dict, how_to_merge, source_hierarchy=time_hier)
 
 
-def merge_entities_with_same_id(entity_recs, how_to_merge_entity, **kwargs):
-    entities = defaultdict(list[dict])
-    rec = []
-    print(entity_recs)
-    for source, recs in entity_recs.items():
-        for entity in recs:
-            id = entity.get("id")
-            entities[id].append({source: entity})
-    entities_pivot = {id: defaultdict(list) for id in entities.keys()}
-    for id, recs in entities.items():
-        for rec_ in recs:
-            entities_pivot[id][list(rec_.keys())[0]].append(rec_)
-    ent_pivot_v2 = entities_pivot.copy()
-    for id, sources in entities_pivot.items():
-        for source, source_recs in sources.items():
-            if len(source_recs) > 1:
-                lines_recs = list(range(len(source_recs)))
-                ent_pivot_v2[id][source] = merge_fields_level(
-                    source_recs, how_to_merge_entity, lines_recs, lines_recs
-                )
-            else:
-                ent_pivot_v2[id][source] = ent_pivot_v2[id][source][0]
-    for id, sources in ent_pivot_v2.items():
-        if len(sources) == 1:
-            rec.extend(sources.values())
-        else:
-            entities = {k: case for k, case in enumerate(sources)}
-            lines_recs = list(range(len(sources)))
-            source_hierarchy = kwargs.get("source_hierarchy", lines_recs)
-            rec.append(
-                merge_fields_level(
-                    entities, how_to_merge_entity, lines_recs, source_hierarchy
-                )
-            )
-            # case_ids = [patient.get('ResearchSubject')[0].get('id') for patient in patients]
-            # log = log_merge_error(entities, case_ids, how_to_merge["Patient_merge"], log)
-    return rec
-
-
 def merge_fields_level(data_commons_fields_dict, how_to_merge, source_hierarchy):
     dat = {}
     for field in how_to_merge:
