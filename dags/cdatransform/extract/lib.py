@@ -1,11 +1,14 @@
 import asyncio
 import sys
 import time
+import jsonlines
+import gzip
 
 import requests
 from google.cloud import storage
 import json
 import aiohttp
+from typing import Union
 
 
 async def retry_get(session, endpoint, params, base_retry_interval=180.0):

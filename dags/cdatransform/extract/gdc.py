@@ -11,6 +11,8 @@ import numpy as np
 import jsonlines
 import aiohttp
 
+from .extractor import Extractor
+
 # from cdatransform.lib import get_case_ids
 from .gdc_case_fields import case_fields
 from .gdc_file_fields import file_fields
@@ -19,10 +21,6 @@ from .lib import retry_get, send_json_to_storage
 # What is the significance of cases.samples.sample_id vs cases.sample_ids?
 # Answer: cases.sample_ids is not returned by GDC API
 gdc_files_page_size = 8000
-
-
-def current_time_rate(t0):
-    return round(time() - t0, 2)
 
 
 def clean_fields(hit) -> dict:
@@ -64,7 +62,7 @@ def find_all_deepest_specimens(samples) -> list:
     return ids
 
 
-class GDC:
+class GDC(Extractor):
     def __init__(
         self,
         cases_endpoint: str = "https://api.gdc.cancer.gov/v0/cases",
@@ -159,63 +157,19 @@ class GDC:
 
                 offset += page_size
 
-        async def http_call_save_files_or_cases(
-            self,
-            endpoint: str = "",
-            end_cases: Union[list, None] = None,
-            case_ids=None,
-            page_size: int = 500,
-        ):
-            """
-            this will call the case api asynchronously and write the each case to a array
-            Args:
-                end_cases (Union[list, None], optional): _description_. Defaults to None.
-                case_ids (_type_, optional): _description_. Defaults to None.
-                page_size (int, optional): _description_. Defaults to 500.
-            """
-            n = 0
-            t0 = time()
-            end_cases = end_cases or []
-            async with aiohttp.ClientSession() as session:
-                async for case in self._paginate_files_or_cases(
-                    ids=case_ids,
-                    endpt=endpoint,
-                    page_size=page_size,
-                    num_field_chunks=3,
-                    session=session,
-                ):
+    def save_cases(
+        self, out_file: str, case_ids: str = None, page_size: int = 500
+    ) -> None:
+        self.fields = case_fields
+        print("starting save cases")
+        t0: float = time()
+        loop: asyncio.AbstractEventLoop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        end_cases: list = loop.run_until_complete(
+            self.http_call_save_files_or_cases(endpoint="case")
+        )
 
-                    end_cases.append(case)
-                    n += 1
-                    if n % page_size == 0:
-                        print(
-                            f"Wrote {n} cases in {current_time_rate(t0)}s\n", flush=True
-                        )
-            return end_cases
-
-        def save_cases(
-            self, out_file: str, case_ids: str = None, page_size: int = 500
-        ) -> None:
-            self.fields = case_fields
-            print("starting save cases")
-            t0: float = time()
-            loop: asyncio.AbstractEventLoop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            end_cases: list = loop.run_until_complete(
-                self.http_call_save_files_or_cases(endpoint="case")
-            )
-
-            with gzip.open(out_file, "wb") as fp:
-                writer: jsonlines.Writer = jsonlines.Writer(fp)
-                with writer as wri:
-                    for index, value in enumerate(end_cases):
-                        index += 1
-                        if index % 50 == 0:
-                            print(
-                                f"Wrote {index} cases in {current_time_rate(t0)}s\n",
-                                flush=True,
-                            )
-                        wri.write(value)
+        self.write_file(out_file, end_cases, t0)
 
         # send_json_to_storage(end_cases)
 

@@ -1,11 +1,19 @@
 from airflow.decorators import task
+from ..cdatransform.extract.pdc import PDC
+from cdatransform.lib import get_case_ids
+from datetime import datetime
 
 
 @task(task_id="pdc_extract")
 def pdc_extract(**kwargs):
     print("Extracting PDC")
-
-    return "pdc_file.jsonl.gz"
+    pdc = PDC()
+    file_name = f"pdc-save-{str(datetime.now())}.jsonl.gz"
+    pdc.save_cases(
+        file_name,
+        case_ids=get_case_ids(case=None, case_list_file=None)
+    )
+    return file_name
 
 
 @task(task_id="pdc_transform")
