@@ -30,16 +30,16 @@ gunzip -c gdc_TARGET_case2.jsonl.gz > gdc_TARGET_case2.json
 gunzip -c gdc_TARGET_file1.jsonl.gz > gdc_TARGET_file1.json
 gunzip -c gdc_TARGET_file2.jsonl.gz > gdc_TARGET_file2.json
 
-cda-transform gdc_TARGET_case1.jsonl.gz gdc.case1.H.json.gz ../../GDC_subject_endpoint_mapping.yml GDC --endpoint cases
+cda-transform gdc_TARGET_case1.jsonl.gz gdc.case1.H.json.gz ../../GDC_subject_endpoint_mapping.yml --endpoint cases
 python json2yaml.py gdc.case1.H.json.gz gdc.case1.H.yml
 
-cda-transform gdc_TARGET_case2.jsonl.gz gdc.case2.H.json.gz ../../GDC_subject_endpoint_mapping.yml GDC --endpoint cases
+cda-transform gdc_TARGET_case2.jsonl.gz gdc.case2.H.json.gz ../../GDC_subject_endpoint_mapping.yml --endpoint cases
 python json2yaml.py gdc.case2.H.json.gz gdc.case2.H.yml
 
-cda-transform gdc_TARGET_file1.jsonl.gz gdc.file1.H.json.gz ../../GDC_file_endpoint_mapping.yml GDC --endpoint files
+cda-transform gdc_TARGET_file1.jsonl.gz gdc.file1.H.json.gz ../../GDC_file_endpoint_mapping.yml --endpoint files
 python json2yaml.py gdc.file1.H.json.gz gdc.file1.H.yml
 
-cda-transform gdc_TARGET_file2.jsonl.gz gdc.file2.H.json.gz ../../GDC_file_endpoint_mapping.yml GDC --endpoint files
+cda-transform gdc_TARGET_file2.jsonl.gz gdc.file2.H.json.gz ../../GDC_file_endpoint_mapping.yml --endpoint files
 python json2yaml.py gdc.file2.H.json.gz gdc.file2.H.yml
 
 cat gdc_TARGET_case1.jsonl.gz gdc_TARGET_case2.jsonl.gz > gdc.cases.jsonl.gz
@@ -47,11 +47,11 @@ cat gdc_TARGET_file1.jsonl.gz gdc_TARGET_file2.jsonl.gz > gdc.files.jsonl.gz
 
 # Aggregation is necessary from the cases endpoint. The top level Subject entity may have more than
 # one ResearchSubject/case associated with it. Aggregate ResearchSubjects/cases of the same Subject
-cda-transform gdc.cases.jsonl.gz gdc.cases.H.jsonl.gz ../../GDC_subject_endpoint_mapping.yml GDC --endpoint cases
+cda-transform gdc.cases.jsonl.gz gdc.cases.H.jsonl.gz ../../GDC_subject_endpoint_mapping.yml --endpoint cases
 cda-aggregate ../../subject_endpoint_merge.yml gdc.cases.H.jsonl.gz gdc.cases.A.jsonl.gz
 python json2yaml.py gdc.cases.A.jsonl.gz gdc.cases.A.yml
 
-cda-transform gdc.files.jsonl.gz gdc.files.H.jsonl.gz ../../GDC_file_endpoint_mapping.yml GDC --endpoint files
+cda-transform gdc.files.jsonl.gz gdc.files.H.jsonl.gz ../../GDC_file_endpoint_mapping.yml --endpoint files
 # Aggregation of files transformations for GDC is unnecessary. File is top level entity and extracted that 
 # way from the GDC API. Hooray!
 python PDCH2yaml.py gdc.files.H.jsonl.gz gdc.files.H.yml
@@ -72,28 +72,28 @@ gunzip -c pdc_QC1_case2.jsonl.gz > pdc_QC1_case2.json
 gunzip -c pdc_QC1_file1.jsonl.gz > pdc_QC1_file1.json
 gunzip -c pdc_QC1_file2.jsonl.gz > pdc_QC1_file2.json
 
-cda-transform pdc_QC1_case1.jsonl.gz pdc.case1.H.json.gz ../../PDC_subject_endpoint_mapping.yml PDC --endpoint cases
+cda-transform pdc_QC1_case1.jsonl.gz pdc.case1.H.json.gz ../../PDC_subject_endpoint_mapping.yml --endpoint cases
 python json2yaml.py pdc.case1.H.json.gz pdc.case1.H.yml
 
-cda-transform pdc_QC1_case2.jsonl.gz pdc.case2.H.json.gz ../../PDC_subject_endpoint_mapping.yml PDC --endpoint cases
+cda-transform pdc_QC1_case2.jsonl.gz pdc.case2.H.json.gz ../../PDC_subject_endpoint_mapping.yml --endpoint cases
 python json2yaml.py pdc.case2.H.json.gz pdc.case2.H.yml
 
-cda-transform pdc_QC1_file1.jsonl.gz pdc.file1.H.json.gz ../../PDC_file_endpoint_mapping.yml PDC --endpoint files
+cda-transform pdc_QC1_file1.jsonl.gz pdc.file1.H.json.gz ../../PDC_file_endpoint_mapping.yml --endpoint files
 python PDCH2yaml.py pdc.file1.H.json.gz pdc.file1.H.yml
 
-cda-transform pdc_QC1_file2.jsonl.gz pdc.file2.H.json.gz ../../PDC_file_endpoint_mapping.yml PDC --endpoint files
+cda-transform pdc_QC1_file2.jsonl.gz pdc.file2.H.json.gz ../../PDC_file_endpoint_mapping.yml --endpoint files
 python PDCH2yaml.py pdc.file1.H.json.gz pdc.file1.H.yml
 
 cat pdc_QC1_case1.jsonl.gz pdc_QC1_case2.jsonl.gz > pdc.cases.jsonl.gz
 cat pdc_QC1_file1.jsonl.gz pdc_QC1_file2.jsonl.gz > pdc.files.jsonl.gz
 python PDCH2yaml.py pdc.cases.jsonl.gz pdc.cases.yml
 
-cda-transform pdc.cases.jsonl.gz pdc.cases.H.jsonl.gz ../../PDC_subject_endpoint_mapping.yml PDC --endpoint cases
+cda-transform pdc.cases.jsonl.gz pdc.cases.H.jsonl.gz ../../PDC_subject_endpoint_mapping.yml --endpoint cases
 python PDCH2yaml.py pdc.cases.H.jsonl.gz pdc.cases.H.yml
 
 cda-aggregate ../../subject_endpoint_merge.yml pdc.cases.H.jsonl.gz pdc.cases.A.jsonl.gz
 
-cda-transform pdc.files.jsonl.gz pdc.files.H.jsonl.gz ../../PDC_file_endpoint_mapping.yml PDC --endpoint files
+cda-transform pdc.files.jsonl.gz pdc.files.H.jsonl.gz ../../PDC_file_endpoint_mapping.yml --endpoint files
 cda-aggregate ../../file_endpoint_merge.yml pdc.files.H.jsonl.gz pdc.files.A.jsonl.gz --endpoint files
 python PDCH2yaml.py pdc.files.A.jsonl.gz pdc.files.A.yml
 

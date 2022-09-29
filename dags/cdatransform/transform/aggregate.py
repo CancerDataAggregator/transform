@@ -16,22 +16,20 @@ import sys
 logger = logging.getLogger(__name__)
 
 
-def get_coalesce_field_names(merge_field_dict) -> list:
-    coal_fields: list = [
+def get_coalesce_field_names(merge_field_dict) -> list[str]:
+    coal_fields: list[str] = [
         key
         for key, val in merge_field_dict.items()
         if val.get("merge_type") == "coalesce"
     ]
-    if coal_fields is None:
-        print(merge_field_dict)
     return coal_fields
 
 
 def prep_log_merge_error(
-    entities, merge_field_dict, endpoint
-) -> tuple[list, dict, str, str]:
+    entities: dict[str, dict], merge_field_dict, endpoint
+) -> tuple[list[str], dict, str, str]:
     sources = list(entities.keys())
-    coal_fields: list = get_coalesce_field_names(merge_field_dict)
+    coal_fields: list[str] = get_coalesce_field_names(merge_field_dict)
     ret_dat: dict = {}
     for source in sources:
         temp: dict = {field: entities.get(source).get(field) for field in coal_fields}
@@ -50,7 +48,7 @@ def prep_log_merge_error(
             if val.get("associated_project") is None:
                 project: Literal["from-metadata-query"] = "from-metadata-query"
             else:
-                project: str = val["associated_project"]
+                project = val["associated_project"]
             # project:str = val.get("associated_project", "from-pdc-metadata-query")
             break
     return coal_fields, ret_dat, id, project
@@ -68,6 +66,24 @@ def log_merge_error(entities, all_sources, fields, log, endpoint):
     all_sources.insert(3, project)
     log.agree_sources(coal_dat, "_".join(all_sources), coal_fields)
     return log
+
+
+def merge_entities_with_same_id(entity_recs, how_to_merge_entity):
+    entities = defaultdict(list)
+    rec = []
+    for entity in entity_recs:
+        id = entity.get("id")
+        entities[id] += [entity]
+    for id, recs in entities.items():
+        if len(recs) == 1:
+            rec += recs
+        else:
+            entities = {k: case for k, case in enumerate(recs)}
+            lines_recs = list(range(len(recs)))
+            rec += [mf.merge_fields_level(entities, how_to_merge_entity, lines_recs)]
+            # case_ids = [patient.get('ResearchSubject')[0].get('id') for patient in patients]
+            # log = log_merge_error(entities, case_ids, how_to_merge["Patient_merge"], log)
+    return rec
 
 
 def main(debug=False):
@@ -126,7 +142,20 @@ def main(debug=False):
                     log = log_merge_error(
                         entities, case_ids, how_to_merge["Patient_merge"], log, endpoint
                     )
-
+                    merged_entry["ResearchSubject"] = merge_entities_with_same_id(
+                        merged_entry["ResearchSubject"],
+                        how_to_merge["ResearchSubject_merge"],
+                    )
+                    for RS in merged_entry["ResearchSubject"]:
+                        # RS["File"] = merge_entities_with_same_id(
+                        #    RS["File"], how_to_merge["File_merge"]
+                        # )
+                        RS["Diagnosis"] = merge_entities_with_same_id(
+                            RS["Diagnosis"], how_to_merge["Diagnosis_merge"]
+                        )
+                        RS["Specimen"] = merge_entities_with_same_id(
+                            RS["Specimen"], how_to_merge["Specimen_merge"]
+                        )
                 else:  # Assume files endpoint
                     merged_entry = mf.merge_fields_level(
                         entities, how_to_merge["File_merge"], lines_ids

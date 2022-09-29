@@ -7,6 +7,7 @@
 #     )
 #     print(dat_dict)
 from collections import defaultdict
+from typing import Union
 
 
 def source_hierarchy_by_time(records_dict):
@@ -27,24 +28,6 @@ def source_hierarchy_by_time(records_dict):
 def merge_demo_records_time_hierarchy(records_dict, how_to_merge):
     time_hier, dat_dict = source_hierarchy_by_time(records_dict)
     return merge_fields_level(dat_dict, how_to_merge, source_hierarchy=time_hier)
-
-
-def merge_entities_with_same_id(entity_recs, how_to_merge_entity):
-    entities = defaultdict(list)
-    rec = []
-    for entity in entity_recs:
-        id = entity.get("id")
-        entities[id] += [entity]
-    for id, recs in entities.items():
-        if len(recs) == 1:
-            rec += recs
-        else:
-            entities = {k: case for k, case in enumerate(recs)}
-            lines_recs = list(range(len(recs)))
-            rec += [merge_fields_level(entities, how_to_merge_entity, lines_recs)]
-            # case_ids = [patient.get('ResearchSubject')[0].get('id') for patient in patients]
-            # log = log_merge_error(entities, case_ids, how_to_merge["Patient_merge"], log)
-    return rec
 
 
 def merge_fields_level(data_commons_fields_dict, how_to_merge, source_hierarchy):
@@ -83,13 +66,14 @@ def merge_fields_level(data_commons_fields_dict, how_to_merge, source_hierarchy)
                 data_commons_fields_dict, field, hierarchy
             )
             dat[field] = merge_identifiers(dat_dict)
-        elif how_to_merge[field]["merge_type"] == "merge_entities_with_same_id":
-            dat_dict = make_dat_dict_for_transforms(
-                data_commons_fields_dict, field, hierarchy
-            )
-            dat[field] = merge_entities_with_same_id(
-                dat_dict, how_to_merge[f"{field}_merge"]
-            )
+        # elif how_to_merge[field]["merge_type"] == "merge_entities_with_same_id":
+        #    dat_dict = make_dat_dict_for_transforms(
+        #        data_commons_fields_dict, field, hierarchy
+        #    )
+        #    print(how_to_merge)
+        #    dat[field] = merge_entities_with_same_id(
+        #        dat_dict, full_merge[f"{field}_merge"]
+        #    )
         else:  # merge_codeable_concept
             dat_dict = make_dat_dict_for_transforms(
                 data_commons_fields_dict, field, hierarchy
@@ -136,8 +120,25 @@ def append_field_vals_to_single_list(field_vals_list_of_lists, **kwargs):
     return dat
 
 
-def coalesce_field_values(data_dictionary, default_value, source_hierarchy):
-    dat_return = default_value
+def coalesce_field_values(
+    data_dictionary: dict[
+        Union[str, int], Union[str, int, list[str], list[int], list[dict]]
+    ],
+    default_value: Union[str, int, list[str], list[int]],
+    source_hierarchy: list[Union[str, int]],
+) -> Union[str, int, list[str], list[int], list[dict]]:
+    """Given {source1:value1, source2,value2...} and source hierarchy = ['source1, source2...]
+    return value1 if value1 is none, or value2 if value1 is none and value2 is not none... etc
+
+    Args:
+        data_dictionary (dict[ Union[str, int], Union[str, int, list[str], list[int], list[dict]] ]): _description_
+        default_value (Union[str, int, list[str], list[int]]): _description_
+        source_hierarchy (list[Union[str, int]]): _description_
+
+    Returns:
+        Union[str, int, list[str], list[int], list[dict]]: _description_
+    """
+    dat_return: Union[str, int, list[str], list[int], list[dict]] = default_value
     for source in source_hierarchy:
         if source in data_dictionary and data_dictionary[source] is not None:
             dat_return = data_dictionary[source]
@@ -145,9 +146,15 @@ def coalesce_field_values(data_dictionary, default_value, source_hierarchy):
     return dat_return
 
 
-def merge_identifiers(data_dictionary):
-    dat_identifiers = []
-    for source, identifiers in data_dictionary.items():
+def merge_identifiers(
+    data_dictionary: dict[
+        Union[str, int], Union[str, int, list[str], list[int], list[dict]]
+    ]
+) -> list[dict[str, str]]:
+    dat_identifiers: list[dict[str, str]] = []
+    for identifiers in data_dictionary.values():
+        # identifiers is list of dicts. Loop over all lists of dicts and append to dat_identifiers if
+        # it has not been added already
         for identifier in identifiers:
             if dat_identifiers != []:
                 found = False

@@ -60,7 +60,7 @@ def compare_func(x, y, level=None):
         ),
     ],
 )
-def test_transform(transform, DC, case, expected, endpoint):
+def test_transform(transform, DC,case, expected, endpoint):
     validate = LogValidation()
     # t_list = yaml.safe_load(open(transform, "r"))
     MandT = yaml.load(open(transform, "r"), Loader=Loader)
@@ -69,7 +69,7 @@ def test_transform(transform, DC, case, expected, endpoint):
             MandT[entity]["Transformations"] = tr.functionalize_trans_dict(
                 MandT[entity]["Transformations"]
             )
-    transform = tr.Transform(MandT, DC, endpoint)
+    transform = tr.Transform(MandT, endpoint)
     # transform = Transform(t_list, validate)
     with open(case) as case_data:
         if DC == "IDC":
