@@ -1,5 +1,5 @@
 import json
-from typing import Iterable
+from typing import Iterable, Union
 from collections import defaultdict
 from math import ceil
 import jsonlines
@@ -12,11 +12,12 @@ import json
 import pathlib
 import shutil
 import sys
-import time
 from collections import defaultdict
 from math import ceil
+import asyncio
 
-from cdatransform.lib import get_ids
+from .extractor import Extractor
+
 from .lib import retry_get
 from .pdc_query_lib import *
 
@@ -26,94 +27,152 @@ class hashabledict(dict):
         return hash(tuple(sorted(self.items())))
 
 
-class PDC:
+class PDC(Extractor):
     def __init__(
         self, endpoint="https://pdc.cancer.gov/graphql", make_spec_file=None
     ) -> None:
         self.endpoint = endpoint
         self.make_spec_file = make_spec_file
 
-    def cases(
-        self,
-        case_ids: list[str] = None,
-    ) -> Iterable[dict[str, str | int | list]]:
+    def _get_initial_results(self, query_info, page_key, study_key):
+        out = query_info["data"][page_key][study_key]
+        total_pages = query_info["data"][page_key][
+            "pagination"
+        ]["pages"]
 
-        if case_ids:
-            # Have one case_id or list of case_ids from a file.
-            # Get all info from the case endpoint query in PDC. Need to split fields
-            # for the queries and merge. PDC hates long query strings
-            # Note: used mostly for testing. Does not get Study info for each case
-            for case_id in case_ids:
-                case_info_a = retry_get(
-                    self.endpoint, params={"query": query_single_case_a(case_id)}
-                )
-                print("got part a")
-                case_info_b = retry_get(
-                    self.endpoint, params={"query": query_single_case_b(case_id)}
-                )
-                print("got part b")
-                # Merge two halves of case info
-                case: dict[str, str | int | list] = {
-                    **case_info_a.json()["data"]["case"][0],
-                    **case_info_b.json()["data"]["case"][0],
-                }
-                print("merged_dicts")
-                yield case
-        else:
-            # Downloading bulk case info. Used for populating data. PDC API is
-            # awful, and has no good way to get ALL bulk info for cases. Must
-            # loop over all programs, projects, studies and extract case demographics,
-            # diagnoses, sample/aliquot, and taxon info per study, and merge results.
-            # Determine
-            # Get list of Programs, projects per program, studies per project
-            jData = retry_get(
-                self.endpoint, params={"query": make_all_programs_query()}
+        return (out, total_pages)
+
+    def _extend_results(self, out, results, page_key, study_key):
+        for results_info in results:
+            out.extend(
+                results_info["data"][page_key][
+                    study_key
+                ]
             )
-            AllPrograms: list[dict[str, str | int | list]] = jData.json()["data"][
-                "allPrograms"
-            ]
-            # Loop over studies, and get demographics, diagnoses, samples, and taxon
-            out = []
-            for program in AllPrograms:
-                for project in program["projects"]:
-                    added_info = {
-                        "project_submitter_id": project["project_submitter_id"]
-                    }
-                    for study in project["studies"]:
-                        # get study_id and embargo_date, and other info for study
-                        pdc_study_id = study["pdc_study_id"]
-                        study_info = retry_get(
-                            self.endpoint,
-                            params={"query": make_study_query(pdc_study_id)},
-                        )
-                        study_rec = study_info.json()["data"]["study"][0]
-                        study_rec.update(study)
-                        # Get demographic info
-                        dem = self.demographics_for_study(pdc_study_id, 100)
-                        # Get diagnosis info
-                        diag = self.diagnoses_for_study(pdc_study_id, 100)
-                        # Get samples info
-                        samp = self.samples_for_study(pdc_study_id, 100)
-                        # Get taxon info
-                        taxon = self.taxon_for_study(pdc_study_id)
-                        # Aggregate all case info for this study
-                        out = agg_cases_info_for_study(
-                            study_rec, dem, diag, samp, taxon, added_info
-                        )
-                        for case in out:
-                            yield case
+
+        return out
+
+    async def _paginate_files_or_cases(
+        self,
+        endpt: str,
+        ids: list | None = None,
+        page_size: int = 500,
+        num_field_chunks: int = 2,
+        session=None,
+        loop: asyncio.AbstractEventLoop = None
+    ):
+
+        # if case_ids:
+        #     # Have one case_id or list of case_ids from a file.
+        #     # Get all info from the case endpoint query in PDC. Need to split fields
+        #     # for the queries and merge. PDC hates long query strings
+        #     # Note: used mostly for testing. Does not get Study info for each case
+        #     for case_id in case_ids:
+        #         future_a = retry_get(
+        #             self.endpoint, params={"query": query_single_case_a(case_id)}
+        #         )
+        #         print("got part a")
+        #         future_b = retry_get(
+        #             self.endpoint, params={"query": query_single_case_b(case_id)}
+        #         )
+        #         print("got part b")
+        #         case_a, case_b = await asyncio.gather(future_a, future_b)
+        #         # Merge two halves of case info
+        #         case: dict[str, str | int | list] = {
+        #             **case_a.json()["data"]["case"][0],
+        #             **case_b.json()["data"]["case"][0],
+        #         }
+        #         print("merged_dicts")
+        #         yield case
+        # else:
+        # Downloading bulk case info. Used for populating data. PDC API is
+        # awful, and has no good way to get ALL bulk info for cases. Must
+        # loop over all programs, projects, studies and extract case demographics,
+        # diagnoses, sample/aliquot, and taxon info per study, and merge results.
+        # Determine
+        # Get list of Programs, projects per program, studies per project
+        jData = await retry_get(
+            session=session, endpoint=self.endpoint, params={"query": make_all_programs_query()}
+        )
+        AllPrograms: list[dict[str, str | int | list]] = jData["data"][
+            "allPrograms"
+        ]
+        # Loop over studies, and get demographics, diagnoses, samples, and taxon
+        out = []
+        for program in AllPrograms:
+            for project in program["projects"]:
+                added_info = {
+                    "project_submitter_id": project["project_submitter_id"]
+                }
+                for study in project["studies"]:
+                    # get study_id and embargo_date, and other info for study
+                    pdc_study_id = study["pdc_study_id"]
+                    study_info_future = retry_get(
+                        session=session,
+                        endpoint=self.endpoint,
+                        params={"query": make_study_query(pdc_study_id)},
+                    )
+
+                    initial_dem_future = retry_get(
+                        session=session, endpoint=self.endpoint, params={"query": case_demographics(pdc_study_id, 0, 100)}
+                    )
+
+                    initial_diag_future = retry_get(
+                        session=session, endpoint=self.endpoint, params={"query": case_diagnoses(pdc_study_id, 0, 100)}
+                    )
+
+                    initial_samp_future = retry_get(
+                        session=session, endpoint=self.endpoint, params={"query": case_samples(pdc_study_id, 0, 100)}
+                    )
+
+                    # Get taxon info
+                    taxon_future = self.taxon_for_study(pdc_study_id, session)
+
+                    study_info, initial_dem, initial_diag, initial_samp, taxon = await asyncio.gather(*[
+                        study_info_future, initial_dem_future, initial_diag_future, initial_samp_future, taxon_future])
+
+                    dem_out, dem_total_pages = self._get_initial_results(initial_dem, "paginatedCaseDemographicsPerStudy", "caseDemographicsPerStudy")
+                    diag_out, diag_total_pages = self._get_initial_results(initial_diag, "paginatedCaseDiagnosesPerStudy", "caseDiagnosesPerStudy")
+                    samp_out, samp_total_pages = self._get_initial_results(initial_samp, "paginatedCasesSamplesAliquots", "casesSamplesAliquots")
+
+                    futures = []
+                    # Get demographic info
+                    futures.extend(self.get_all_results_async(pdc_study_id, 100, case_demographics, session, dem_total_pages))
+                    # Get diagnosis info
+                    futures.extend(self.get_all_results_async(pdc_study_id, 100, case_diagnoses, session, diag_total_pages))
+                    # Get samples info
+                    futures.extend(self.get_all_results_async(pdc_study_id, 100, case_samples, session, samp_total_pages))
+
+                    page_results = await asyncio.gather(*futures)
+
+                    for page_result in page_results:
+                        if ("paginatedCaseDemographicsPerStudy" in page_result['data']):
+                            dem_out = self._extend_results(dem_out, [page_result], "paginatedCaseDemographicsPerStudy", "caseDemographicsPerStudy")
+                        if ("paginatedCaseDiagnosesPerStudy" in page_result['data']):
+                            diag_out = self._extend_results(diag_out, [page_result], "paginatedCaseDiagnosesPerStudy", "caseDiagnosesPerStudy")
+                        if ("paginatedCasesSamplesAliquots" in page_result['data']):
+                            samp_out = self._extend_results(samp_out, [page_result], "paginatedCasesSamplesAliquots", "casesSamplesAliquots")
+
+                    study_rec = study_info["data"]["study"][0]
+                    study_rec.update(study)
+
+                    # Aggregate all case info for this study
+                    out = agg_cases_info_for_study(
+                        study_rec, dem_out, diag_out, samp_out, taxon, added_info
+                    )
+                    for case in out:
+                        yield case
 
     def save_cases(self, out_file, case_ids=None):
         t0 = time.time()
         n = 0
-        with gzip.open(out_file, "wb") as fp:
-            writer = jsonlines.Writer(fp)
-            for case in self.cases(case_ids):
-                writer.write(case)
-                n += 1
-                if n % 500 == 0:
-                    sys.stderr.write(f"Wrote {n} cases in {time.time() - t0}s\n")
-        sys.stderr.write(f"Wrote {n} cases in {time.time() - t0}s\n")
+        loop: asyncio.AbstractEventLoop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        end_cases: list = loop.run_until_complete(
+            self.http_call_save_files_or_cases(case_ids)
+        )
+
+        self.write_file(out_file, end_cases, t0)
 
     def save_files(self, out_file, file_ids=None):
         t0 = time.time()
@@ -186,11 +245,11 @@ class PDC:
                 with gzip.open(f) as f_in:
                     shutil.copyfileobj(f_in, f_out)
 
-    def _metadata_files_chunk(self, file_ids=None) -> Iterable[list[dict]]:
+    async def _metadata_files_chunk(self, file_ids=None) -> Iterable[list[dict]]:
         if file_ids:
             files = []
             for file_id in file_ids:
-                result = retry_get(
+                result = await retry_get(
                     self.endpoint, params={"query": query_metadata_file(file_id)}
                 )
                 files.extend(result.json()["data"]["fileMetadata"])
@@ -202,12 +261,12 @@ class PDC:
                 sys.stderr.write(
                     f"<< Processing page {int(page/limit) + 1}/{ceil(totalfiles/limit)} Metadata Files >>\n"
                 )
-                result = retry_get(
+                result = await retry_get(
                     self.endpoint, params={"query": query_files_bulk(page, limit)}
                 )
                 yield result.json()["data"]["fileMetadata"]
 
-    def _UIfiles_chunk(self) -> Iterable[list[dict]]:
+    async def _UIfiles_chunk(self) -> Iterable[list[dict]]:
         totalfiles = self._get_total_uifiles()
         limit = 750
         for page in range(0, totalfiles, limit):
@@ -215,16 +274,16 @@ class PDC:
                 f"<< Processing page {int(page/limit) + 1}/{ceil(totalfiles/limit)}  UI Files >>\n"
             )
             sys.stderr.write("\n")
-            result = retry_get(
+            result = await retry_get(
                 self.endpoint, params={"query": query_UIfiles_bulk(page, limit)}
             )
             yield result.json()["data"]["getPaginatedUIFile"]["uiFiles"]
 
-    def _study_files_chunk(
+    async def _study_files_chunk(
         self,
     ) -> Iterable[list[dict]]:
         # loop over studies to get files
-        jData = retry_get(self.endpoint, params={"query": make_all_programs_query()})
+        jData = await retry_get(self.endpoint, params={"query": make_all_programs_query()})
         AllPrograms = jData.json()["data"]["allPrograms"]
         for program in AllPrograms:
             for project in program["projects"]:
@@ -235,7 +294,7 @@ class PDC:
                         sys.stderr.write("WTF\n")
                         sys.stderr.write(str(project))
 
-                    study_files = retry_get(
+                    study_files = await retry_get(
                         self.endpoint, params={"query": query_study_files(pdc_study_id)}
                     )
                     files_recs = study_files.json()["data"]["filesPerStudy"]
@@ -251,93 +310,71 @@ class PDC:
                             exit()
                     yield files_recs_update
 
-    def _get_total_files(self) -> int:
-        result = retry_get(self.endpoint, params={"query": query_files_paginated(0, 1)})
+    async def _get_total_files(self) -> int:
+        result = await retry_get(self.endpoint, params={"query": query_files_paginated(0, 1)})
         return result.json()["data"]["getPaginatedFiles"]["total"]
 
-    def _get_total_uifiles(self) -> int:
-        result = retry_get(
+    async def _get_total_uifiles(self) -> int:
+        result = await retry_get(
             self.endpoint, params={"query": query_uifiles_paginated_total(0, 1)}
         )
         return result.json()["data"]["getPaginatedUIFile"]["total"]
 
-    def demographics_for_study(self, study_id, limit):
+    def get_all_results_async(self, study_id, limit, query_func, session, total_pages):
         page = 1
         offset = 0
-        demo_info = retry_get(
-            self.endpoint, params={"query": case_demographics(study_id, offset, limit)}
-        )
-        out = demo_info.json()["data"]["paginatedCaseDemographicsPerStudy"][
-            "caseDemographicsPerStudy"
-        ]
-        total_pages = demo_info.json()["data"]["paginatedCaseDemographicsPerStudy"][
-            "pagination"
-        ]["pages"]
-        while page < total_pages:
-            offset += limit
-            demo_info = retry_get(
-                self.endpoint,
-                params={"query": case_demographics(study_id, offset, limit)},
-            )
-            out.append(
-                demo_info.json()["data"]["paginatedCaseDemographicsPerStudy"][
-                    "caseDemographicsPerStudy"
-                ]
-            )
-            page += 1
-        return out
 
-    def diagnoses_for_study(self, study_id, limit):
-        page = 1
-        offset = 0
-        diag_info = retry_get(
-            self.endpoint, params={"query": case_diagnoses(study_id, offset, limit)}
-        )
-        out = diag_info.json()["data"]["paginatedCaseDiagnosesPerStudy"][
-            "caseDiagnosesPerStudy"
-        ]
-        total_pages = diag_info.json()["data"]["paginatedCaseDiagnosesPerStudy"][
-            "pagination"
-        ]["pages"]
-        while page < total_pages:
-            offset += limit
-            diag_info = retry_get(
-                self.endpoint, params={"query": case_diagnoses(study_id, offset, limit)}
-            )
-            out += diag_info.json()["data"]["paginatedCaseDiagnosesPerStudy"][
-                "caseDiagnosesPerStudy"
-            ]
-            page += 1
-        return out
+        futures = []
 
-    def samples_for_study(self, study_id, limit):
-        page = 1
-        offset = 0
-        samp_info = retry_get(
-            self.endpoint, params={"query": case_samples(study_id, offset, limit)}
-        )
-        out = samp_info.json()["data"]["paginatedCasesSamplesAliquots"][
-            "casesSamplesAliquots"
-        ]
-        total_pages = samp_info.json()["data"]["paginatedCasesSamplesAliquots"][
-            "pagination"
-        ]["pages"]
-        while page < total_pages:
+        while True:
             offset += limit
-            samp_info = retry_get(
-                self.endpoint, params={"query": case_samples(study_id, offset, limit)}
-            )
-            out += samp_info.json()["data"]["paginatedCasesSamplesAliquots"][
-                "casesSamplesAliquots"
-            ]
-            page += 1
-        return out
 
-    def taxon_for_study(self, study_id):
-        taxon_info = retry_get(
-            self.endpoint, params={"query": specimen_taxon(study_id)}
+            if (page >= total_pages):
+                break
+
+            futures.append(retry_get(
+                session=session, endpoint=self.endpoint, params={"query": query_func(study_id, offset, limit)}
+            ))
+
+            page += 1
+
+        return futures
+
+    async def demographics_for_study(self, study_id, limit, session, total_pages):
+        return await self.get_all_results_async(
+            study_id,
+            limit,
+            case_demographics,
+            "paginatedCaseDemographicsPerStudy",
+            "caseDemographicsPerStudy",
+            session,
+            total_pages)
+
+    async def diagnoses_for_study(self, study_id, limit, session, total_pages):
+        return await self.get_all_results_async(
+            study_id,
+            limit,
+            case_diagnoses,
+            "paginatedCaseDiagnosesPerStudy",
+            "caseDiagnosesPerStudy",
+            session,
+            total_pages)
+
+    async def samples_for_study(self, study_id, limit, session, total_pages):
+        return await self.get_all_results_async(
+            study_id,
+            limit,
+            case_samples,
+            "paginatedCasesSamplesAliquots",
+            "casesSamplesAliquots",
+            session,
+            total_pages)
+
+    async def taxon_for_study(self, study_id, session=None):
+        taxon_info = await retry_get(
+            session=session, endpoint=self.endpoint, params={"query": specimen_taxon(study_id)}
         )
-        out = taxon_info.json()["data"]["biospecimenPerStudy"]
+        out = taxon_info["data"]["biospecimenPerStudy"]
         seen: dict = {}
         for case_taxon in out:
             if case_taxon["case_id"] not in seen:
@@ -374,41 +411,3 @@ def agg_cases_info_for_study(
         demo_case["study"] = study
         out.append(demo_case)
     return out
-
-
-def main():
-    parser = argparse.ArgumentParser(description="Pull case data from PDC API.")
-    parser.add_argument(
-        "out_file", help="Out cases endpoint file name. Should end with .gz"
-    )
-    parser.add_argument("--endpoint", help="endpoint to extract, if bulk")
-    # parser.add_argument("file_linkage", help="Used to link files and specimens/cases")
-    parser.add_argument("--case", help="Extract just this case")
-    parser.add_argument(
-        "--cases", help="Optional file with list of case ids (one to a line)"
-    )
-    parser.add_argument("--file", help="Extract just this file")
-    parser.add_argument(
-        "--files", help="Optional file with list of file ids (one to a line)"
-    )
-    parser.add_argument(
-        "--spec_out_file",
-        help="Name of specimen_id: file_ids output file. Should end with .json.gz",
-    )
-    args = parser.parse_args()
-    pdc = PDC(make_spec_file=args.spec_out_file)
-
-    if args.case or args.cases or args.endpoint == "cases":
-        pdc.save_cases(
-            args.out_file,
-            case_ids=get_ids(id=args.case, id_list_file=args.cases),
-        )
-    if args.file or args.files or args.endpoint == "files":
-        pdc.save_files(
-            args.out_file,
-            file_ids=get_ids(id=args.file, id_list_file=args.files),
-        )
-
-
-if __name__ == "__main__":
-    main()

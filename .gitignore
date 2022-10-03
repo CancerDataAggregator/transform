@@ -16,3 +16,4 @@ venv
 venv
 logs
 .vscode
+venv*
