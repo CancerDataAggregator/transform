@@ -13,6 +13,7 @@ from typing import Union
 
 async def retry_get(session, endpoint, params, base_retry_interval=180.0):
     retry_interval = base_retry_interval
+    await asyncio.sleep(1)
     async with session.get(
         url=endpoint, params=params, timeout=retry_interval
     ) as response:

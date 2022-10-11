@@ -60,7 +60,7 @@ def compare_func(x, y, level=None):
         ),
     ],
 )
-def test_transform(transform, DC,case, expected, endpoint):
+def test_transform(transform, DC, case, expected, endpoint):
     validate = LogValidation()
     # t_list = yaml.safe_load(open(transform, "r"))
     MandT = yaml.load(open(transform, "r"), Loader=Loader)

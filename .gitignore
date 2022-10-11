@@ -17,3 +17,5 @@ venv
 logs
 .vscode
 venv*
+*.gz
+*.jsonl

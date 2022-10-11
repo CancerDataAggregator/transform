@@ -9,10 +9,7 @@ def pdc_extract(**kwargs):
     print("Extracting PDC")
     pdc = PDC()
     file_name = f"pdc-save-{str(datetime.now())}.jsonl.gz"
-    pdc.save_cases(
-        file_name,
-        case_ids=get_case_ids(case=None, case_list_file=None)
-    )
+    pdc.save_cases(file_name, case_ids=get_case_ids(case=None, case_list_file=None))
     return file_name
 
 

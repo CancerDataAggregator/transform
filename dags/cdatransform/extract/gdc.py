@@ -173,27 +173,33 @@ class GDC(Extractor):
 
         # send_json_to_storage(end_cases)
 
-        def save_files(
-            self, out_file: str, file_ids: list = None, page_size: int = 5000
-        ) -> None:
-            self.fields = file_fields
-            t0 = time()
-            n = 0
-            loop: asyncio.AbstractEventLoop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            end_cases: list = loop.run_until_complete(self.http_call_save_cases())
-            # need to write dictionary of file_ids per specimen (specimen: [files])
-            specimen_files_dict = defaultdict(list)
-            with gzip.open(out_file, "wb") as fp:
-                writer = jsonlines.Writer(fp)
-                for file in self._paginate_files_or_cases(
-                    file_ids, "file", page_size, 2
-                ):  # _files(file_ids, page_size):
+    def save_files(
+        self, out_file: str, file_ids: list = None, page_size: int = 5000
+    ) -> None:
+        self.fields = file_fields
+        t0 = time()
+        loop: asyncio.AbstractEventLoop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        end_cases: list = loop.run_until_complete(
+            self.http_call_save_files_or_cases(
+                endpoint="file",
+                page_size=page_size,
+                case_ids=file_ids,
+                num_field_chunks=2,
+            )
+        )
+        # need to write dictionary of file_ids per specimen (specimen: [files])
+        specimen_files_dict = defaultdict(list)
+        with gzip.open(out_file, "wb") as fp:
+            with jsonlines.Writer(fp) as writer:
+                for index, file in enumerate(end_cases):
+                    # _files(file_ids, page_size):
                     writer.write(file)
-                    n += 1
-                    if n % page_size == 0:
+                    index += 1
+                    if index % page_size == 0:
                         print(
-                            f"Wrote {n} files in {current_time_rate(t0)}s\n", flush=True
+                            f"Wrote {index} files in {self.current_time_rate(t0)}s\n",
+                            flush=True,
                         )
                     if self.make_spec_file:
                         for entity in file.get("associated_entities", []):
@@ -202,12 +208,12 @@ class GDC(Extractor):
                                     file["file_id"]
                                 )
 
-            print(f"Wrote {n} files in {current_time_rate(t0)}s\n", flush=True)
-            if self.make_spec_file:
-                for specimen, files in specimen_files_dict.items():
-                    specimen_files_dict[specimen] = list(set(files))
-                with gzip.open(self.make_spec_file, "wt", encoding="ascii") as out:
-                    json.dump(specimen_files_dict, out)
+        print(f"Wrote {index} files in {self.current_time_rate(t0)}s\n", flush=True)
+        if self.make_spec_file:
+            for specimen, files in specimen_files_dict.items():
+                specimen_files_dict[specimen] = list(set(files))
+            with gzip.open(self.make_spec_file, "wt", encoding="ascii") as out:
+                json.dump(specimen_files_dict, out)
 
 
 # def main() -> None:

@@ -1,0 +1,349 @@
+[
+    {
+        "description": "The 'logical' identifier of the entity in the system of record, e.g. a UUID.  This 'id' is unique within a given system. The identified entity may have a different 'id' in a different system.",
+        "name": "id",
+        "mode": "REQUIRED",
+        "type": "STRING"
+    },
+    {
+        "description": "A 'business' identifier for the entity, typically as provided by an external system or authority, that persists across implementing systems  (i.e. a  'logical' identifier). Uses a specialized, complex 'Identifier' data type to capture information about the source of the business identifier - or a URI expressed as a string to an existing entity. ",
+        "name": "identifier",
+        "type": "RECORD",
+        "mode": "REPEATED",
+        "fields": [
+            {
+                "description": "The system or namespace that defines the identifier.",
+                "name": "system",
+                "type": "STRING"
+            },
+            {
+                "description": "The value of the identifier, as defined by the system.",
+                "name": "value",
+                "type": "STRING"
+            }
+        ]
+    },
+    {
+        "description": "The taxonomic group (e.g. species) of the patient. For MVP, since taxonomy vocabulary is consistent between GDC and PDC, using text.  Ultimately, this will be a term returned by the vocabulary service.",
+        "name": "species",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "description": "The biologic character or quality that distinguishes male and female from one another as expressed by analysis of the person's gonadal, morphologic (internal and external), chromosomal, and hormonal characteristics.",
+        "name": "sex",
+        "type": "STRING"
+    },
+    {
+        "description": "An arbitrary classification of a taxonomic group that is a division of a species. It usually arises as a consequence of geographical isolation within a species and is characterized by shared heredity, physical attributes and behavior, and in the case of humans, by common history, nationality, or geographic distribution. The provided values are based on the categories defined by the U.S. Office of Management and Business and used by the U.S. Census Bureau.",
+        "name": "race",
+        "type": "STRING"
+    },
+    {
+        "description": "An individual's self-described social and cultural grouping, specifically whether an individual describes themselves as Hispanic or Latino. The provided values are based on the categories defined by the U.S. Office of Management and Business and used by the U.S. Census Bureau.",
+        "name": "ethnicity",
+        "type": "STRING"
+    },
+    {
+        "description": "Number of days between the date used for index and the date from a person's date of birth represented as a calculated negative number of days.",
+        "name": "days_to_birth",
+        "type": "INTEGER"
+    },
+    {
+        "description": "The list of Projects associated with the Subject.",
+        "name": "subject_associated_project",
+        "type": "STRING",
+        "mode": "REPEATED"
+    },
+    {
+        "description": "Coded value indicating the state or condition of being living or deceased; also includes the case where the vital status is unknown.",
+        "name": "vital_status",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "description": "Number of days between the date used for index and the date from a person's date of death represented as a calculated number of days.",
+        "name": "days_to_death",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+    },
+    {
+        "description": "Coded value indicating the circumstance or condition that results in the death of the subject.",
+        "name": "cause_of_death",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "ResearchSubject",
+        "description": "A research subject is the entity of interest in a specific research study or project, typically a human being or an animal, but can also be a device, group of humans or animals, or a tissue sample. Human research subjects are usually not traceable to a particular person to protect the subject\u2019s privacy.  This entity plays the role of the case_id in existing data.",
+        "type": "RECORD",
+        "mode": "REPEATED",
+        "fields": [
+            {
+                "description": "The 'logical' identifier of the entity in the system of record, e.g. a UUID.  This 'id' is unique within a given system. The identified entity may have a different 'id' in a different system. For CDA, this is case_id.",
+                "name": "id",
+                "mode": "REQUIRED",
+                "type": "STRING"
+            },
+            {
+                "description": "A 'business' identifier for the entity, typically as provided by an external system or authority, that persists across implementing systems  (i.e. a  'logical' identifier). Uses a specialized, complex 'Identifier' data type to capture information about the source of the business identifier - or a URI expressed as a string to an existing entity. ",
+                "name": "identifier",
+                "type": "RECORD",
+                "mode": "REPEATED",
+                "fields": [
+                    {
+                        "description": "The system or namespace that defines the identifier.",
+                        "name": "system",
+                        "type": "STRING"
+                    },
+                    {
+                        "description": "The value of the identifier, as defined by the system.",
+                        "name": "value",
+                        "type": "STRING"
+                    }
+                ]
+            },
+            {
+                "description": "A reference to the Study(s) of which this ResearchSubject is a member.",
+                "name": "member_of_research_project",
+                "type": "STRING",
+                "mode": "NULLABLE"
+            },
+            {
+                "description": "The text term used to describe the type of malignant disease, as categorized by the World Health Organization's (WHO) International Classification of Diseases for Oncology (ICD-O).   This attribute represents the disease that qualified the subject for inclusion on the ResearchProject.",
+                "name": "primary_diagnosis_condition",
+                "type": "STRING",
+                "mode": "NULLABLE"
+            },
+            {
+                "description": "The text term used to describe the primary site of disease, as categorized by the World Health Organization's (WHO) International Classification of Diseases for Oncology (ICD-O). This categorization groups cases into general categories.  This attribute represents the primary site of disease that qualified the subject for inclusion on the ResearchProject.",
+                "name": "primary_diagnosis_site",
+                "type": "STRING",
+                "mode": "NULLABLE"
+            },
+            {
+                "name": "Diagnosis",
+                "description": "A collection of characteristics that describe an abnormal condition of the body as assessed at a point in time. May be used to capture information about neoplastic and non-neoplastic conditions.",
+                "type": "RECORD",
+                "mode": "REPEATED",
+                "fields": [
+                    {
+                        "description": "The 'logical' identifier of the entity in the repository, e.g. a UUID.  This 'id' is unique within a given system. The identified entity may have a different 'id' in a different system.",
+                        "name": "id",
+                        "mode": "REQUIRED",
+                        "type": "STRING"
+                    },
+                    {
+                        "description": "A 'business' identifier  or accession number for the entity, typically as provided by an external system or authority, that persists across implementing systems  (i.e. a  'logical' identifier). ",
+                        "name": "identifier",
+                        "type": "RECORD",
+                        "mode": "REPEATED",
+                        "fields": [
+                            {
+                                "description": "The system or namespace that defines the identifier.",
+                                "name": "system",
+                                "type": "STRING"
+                            },
+                            {
+                                "description": "The value of the identifier, as defined by the system.",
+                                "name": "value",
+                                "type": "STRING"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "The diagnosis instance that qualified a subject for inclusion on a ResearchProject.",
+                        "name": "primary_diagnosis",
+                        "type": "STRING"
+                    },
+                    {
+                        "description": "The age in days of the individual at the time of diagnosis.",
+                        "name": "age_at_diagnosis",
+                        "type": "INTEGER"
+                    },
+                    {
+                        "description": "Code that represents the histology of the disease using the third edition of the International Classification of Diseases for Oncology, published in 2000, used principally in tumor and cancer registries for coding the site (topography) and the histology (morphology) of neoplasms.",
+                        "name": "morphology",
+                        "type": "STRING"
+                    },
+                    {
+                        "description": "The extent of a cancer in the body. Staging is usually based on the size of the tumor, whether lymph nodes contain cancer, and whether the cancer has spread from the original site to other parts of the body.",
+                        "name": "stage",
+                        "type": "STRING"
+                    },
+                    {
+                        "description": "The degree of abnormality of cancer cells, a measure of differentiation, the extent to which cancer cells are similar in appearance and function to healthy cells of the same tissue type. The degree of differentiation often relates to the clinical behavior of the particular tumor. Based on the microscopic findings, tumor grade is commonly described by one of four degrees of severity. Histopathologic grade of a tumor may be used to plan treatment and estimate the future course, outcome, and overall prognosis of disease. Certain types of cancers, such as soft tissue sarcoma, primary brain tumors, lymphomas, and breast have special grading systems.",
+                        "name": "grade",
+                        "type": "STRING"
+                    },
+                    {
+                        "description": "The method used to confirm the subjects malignant diagnosis.",
+                        "name": "method_of_diagnosis",
+                        "type": "STRING",
+                        "mode": "NULLABLE"
+                    },
+                    {
+                        "name": "Treatment",
+                        "description": "Represent medication administration or other treatment types.",
+                        "type": "RECORD",
+                        "mode": "REPEATED",
+                        "fields": [
+                            {
+                                "description": "The 'logical' identifier of the entity in the repository, e.g. a UUID.  This 'id' is unique within a given system. The identified entity may have a different 'id' in a different system.",
+                                "name": "id",
+                                "mode": "REQUIRED",
+                                "type": "STRING"
+                            },
+                            {
+                                "description": "A 'business' identifier  or accession number for the entity, typically as provided by an external system or authority, that persists across implementing systems  (i.e. a  'logical' identifier). ",
+                                "name": "identifier",
+                                "type": "RECORD",
+                                "mode": "REPEATED",
+                                "fields": [
+                                    {
+                                        "description": "The system or namespace that defines the identifier.",
+                                        "name": "system",
+                                        "type": "STRING"
+                                    },
+                                    {
+                                        "description": "The value of the identifier, as defined by the system.",
+                                        "name": "value",
+                                        "type": "STRING"
+                                    }
+                                ]
+                            },
+                            {
+                                "description": "The treatment type including medication/therapeutics or other procedures.",
+                                "name": "treatment_type",
+                                "type": "STRING"
+                            },
+                            {
+                                "description": "The final outcome of the treatment.",
+                                "name": "treatment_outcome",
+                                "type": "STRING"
+                            },
+                            {
+                                "description": "The timepoint at which the treatment started.",
+                                "name": "days_to_treatment_start",
+                                "type": "INTEGER",
+                                "mode": "NULLABLE"
+                            },
+                            {
+                                "description": " The timepoint at which the treatment ended.",
+                                "name": "days_to_treatment_end",
+                                "type": "INTEGER",
+                                "mode": "NULLABLE"
+                            },
+                            {
+                                "description": "One or more therapeutic agents as part of this treatment.",
+                                "name": "therapeutic_agent",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                            },
+                            {
+                                "description": "The anatomical site that the treatment targets.",
+                                "name": "treatment_anatomic_site",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                            },
+                            {
+                                "description": "The effect of a treatment on the diagnosis or tumor.",
+                                "name": "treatment_effect",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                            },
+                            {
+                                "description": "The reason the treatment ended.",
+                                "name": "treatment_end_reason",
+                                "type": "STRING",
+                                "mode": "NULLABLE"
+                            },
+                            {
+                                "description": "The number of treatment cycles the subject received.",
+                                "name": "number_of_cycles",
+                                "type": "INTEGER",
+                                "mode": "NULLABLE"
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "name": "Specimen",
+                "description": "Any material taken as a sample from a biological entity (living or dead), or from a physical object or the environment. Specimens are usually collected as an example of their kind, often for use in some investigation.",
+                "type": "RECORD",
+                "mode": "REPEATED",
+                "fields": [
+                    {
+                        "description": "The 'logical' identifier of the entity in the system of record, e.g. a UUID.  This 'id' is unique within a given system. The identified entity may have a different 'id' in a different system.",
+                        "name": "id",
+                        "mode": "REQUIRED",
+                        "type": "STRING"
+                    },
+                    {
+                        "description": "A 'business' identifier  or accession number for the entity, typically as provided by an external system or authority, that persists across implementing systems  (i.e. a  'logical' identifier). ",
+                        "name": "identifier",
+                        "type": "RECORD",
+                        "mode": "REPEATED",
+                        "fields": [
+                            {
+                                "description": "The system or namespace that defines the identifier.",
+                                "name": "system",
+                                "type": "STRING"
+                            },
+                            {
+                                "description": "The value of the identifier, as defined by the system.",
+                                "name": "value",
+                                "type": "STRING"
+                            }
+                        ]
+                    },
+                    {
+                        "description": "The Project associated with the specimen.",
+                        "name": "associated_project",
+                        "type": "STRING",
+                        "mode": "NULLABLE"
+                    },
+                    {
+                        "description": "The number of days from the index date to either the date a sample was collected for a specific study or project, or the date a subject underwent a procedure (e.g. surgical resection) yielding a sample that was eventually used for research.",
+                        "name": "days_to_collection",
+                        "type": "INTEGER",
+                        "mode": "NULLABLE"
+                    },
+                    {
+                        "description": "The text term used to describe the type of malignant disease, as categorized by the World Health Organization's (WHO) International Classification of Diseases for Oncology (ICD-O).   This attribute represents the disease that qualified the subject for inclusion on the ResearchProject.",
+                        "name": "primary_disease_type",
+                        "type": "STRING",
+                        "mode": "NULLABLE"
+                    },
+                    {
+                        "description": "Per GDC Dictionary, the text term that represents the name of the primary disease site of the submitted tumor sample; recommend dropping tumor; biospecimen_anatomic_site.",
+                        "name": "anatomical_site",
+                        "type": "STRING"
+                    },
+                    {
+                        "description": "The general kind of material from which the specimen was derived, indicating the physical nature of the source material. ",
+                        "name": "source_material_type",
+                        "type": "STRING"
+                    },
+                    {
+                        "description": "The high-level type of the specimen, based on its how it has been derived from the original extracted sample. \n",
+                        "name": "specimen_type",
+                        "type": "STRING"
+                    },
+                    {
+                        "description": "A source/parent specimen from which this one was directly derived.",
+                        "name": "derived_from_specimen",
+                        "type": "STRING",
+                        "mode": "NULLABLE"
+                    },
+                    {
+                        "description": "The Patient/ResearchSubject, or Biologically Derived Materal (e.g. a cell line, tissue culture, organoid) from which the specimen was directly or indirectly derived.",
+                        "name": "derived_from_subject",
+                        "type": "STRING"
+                    }
+                ]
+            }
+        ]
+    }
+]

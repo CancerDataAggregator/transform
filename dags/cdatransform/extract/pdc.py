@@ -36,19 +36,13 @@ class PDC(Extractor):
 
     def _get_initial_results(self, query_info, page_key, study_key):
         out = query_info["data"][page_key][study_key]
-        total_pages = query_info["data"][page_key][
-            "pagination"
-        ]["pages"]
+        total_pages = query_info["data"][page_key]["pagination"]["pages"]
 
         return (out, total_pages)
 
     def _extend_results(self, out, results, page_key, study_key):
         for results_info in results:
-            out.extend(
-                results_info["data"][page_key][
-                    study_key
-                ]
-            )
+            out.extend(results_info["data"][page_key][study_key])
 
         return out
 
@@ -59,7 +53,7 @@ class PDC(Extractor):
         page_size: int = 500,
         num_field_chunks: int = 2,
         session=None,
-        loop: asyncio.AbstractEventLoop = None
+        loop: asyncio.AbstractEventLoop = None,
     ):
 
         # if case_ids:
@@ -92,18 +86,16 @@ class PDC(Extractor):
         # Determine
         # Get list of Programs, projects per program, studies per project
         jData = await retry_get(
-            session=session, endpoint=self.endpoint, params={"query": make_all_programs_query()}
+            session=session,
+            endpoint=self.endpoint,
+            params={"query": make_all_programs_query()},
         )
-        AllPrograms: list[dict[str, str | int | list]] = jData["data"][
-            "allPrograms"
-        ]
+        AllPrograms: list[dict[str, str | int | list]] = jData["data"]["allPrograms"]
         # Loop over studies, and get demographics, diagnoses, samples, and taxon
         out = []
         for program in AllPrograms:
             for project in program["projects"]:
-                added_info = {
-                    "project_submitter_id": project["project_submitter_id"]
-                }
+                added_info = {"project_submitter_id": project["project_submitter_id"]}
                 for study in project["studies"]:
                     # get study_id and embargo_date, and other info for study
                     pdc_study_id = study["pdc_study_id"]
@@ -114,44 +106,106 @@ class PDC(Extractor):
                     )
 
                     initial_dem_future = retry_get(
-                        session=session, endpoint=self.endpoint, params={"query": case_demographics(pdc_study_id, 0, 100)}
+                        session=session,
+                        endpoint=self.endpoint,
+                        params={"query": case_demographics(pdc_study_id, 0, 100)},
                     )
 
                     initial_diag_future = retry_get(
-                        session=session, endpoint=self.endpoint, params={"query": case_diagnoses(pdc_study_id, 0, 100)}
+                        session=session,
+                        endpoint=self.endpoint,
+                        params={"query": case_diagnoses(pdc_study_id, 0, 100)},
                     )
 
                     initial_samp_future = retry_get(
-                        session=session, endpoint=self.endpoint, params={"query": case_samples(pdc_study_id, 0, 100)}
+                        session=session,
+                        endpoint=self.endpoint,
+                        params={"query": case_samples(pdc_study_id, 0, 100)},
                     )
 
                     # Get taxon info
                     taxon_future = self.taxon_for_study(pdc_study_id, session)
 
-                    study_info, initial_dem, initial_diag, initial_samp, taxon = await asyncio.gather(*[
-                        study_info_future, initial_dem_future, initial_diag_future, initial_samp_future, taxon_future])
+                    (
+                        study_info,
+                        initial_dem,
+                        initial_diag,
+                        initial_samp,
+                        taxon,
+                    ) = await asyncio.gather(
+                        *[
+                            study_info_future,
+                            initial_dem_future,
+                            initial_diag_future,
+                            initial_samp_future,
+                            taxon_future,
+                        ]
+                    )
 
-                    dem_out, dem_total_pages = self._get_initial_results(initial_dem, "paginatedCaseDemographicsPerStudy", "caseDemographicsPerStudy")
-                    diag_out, diag_total_pages = self._get_initial_results(initial_diag, "paginatedCaseDiagnosesPerStudy", "caseDiagnosesPerStudy")
-                    samp_out, samp_total_pages = self._get_initial_results(initial_samp, "paginatedCasesSamplesAliquots", "casesSamplesAliquots")
+                    dem_out, dem_total_pages = self._get_initial_results(
+                        initial_dem,
+                        "paginatedCaseDemographicsPerStudy",
+                        "caseDemographicsPerStudy",
+                    )
+                    diag_out, diag_total_pages = self._get_initial_results(
+                        initial_diag,
+                        "paginatedCaseDiagnosesPerStudy",
+                        "caseDiagnosesPerStudy",
+                    )
+                    samp_out, samp_total_pages = self._get_initial_results(
+                        initial_samp,
+                        "paginatedCasesSamplesAliquots",
+                        "casesSamplesAliquots",
+                    )
 
                     futures = []
                     # Get demographic info
-                    futures.extend(self.get_all_results_async(pdc_study_id, 100, case_demographics, session, dem_total_pages))
+                    futures.extend(
+                        self.get_all_results_async(
+                            pdc_study_id,
+                            100,
+                            case_demographics,
+                            session,
+                            dem_total_pages,
+                        )
+                    )
                     # Get diagnosis info
-                    futures.extend(self.get_all_results_async(pdc_study_id, 100, case_diagnoses, session, diag_total_pages))
+                    futures.extend(
+                        self.get_all_results_async(
+                            pdc_study_id, 100, case_diagnoses, session, diag_total_pages
+                        )
+                    )
                     # Get samples info
-                    futures.extend(self.get_all_results_async(pdc_study_id, 100, case_samples, session, samp_total_pages))
+                    futures.extend(
+                        self.get_all_results_async(
+                            pdc_study_id, 100, case_samples, session, samp_total_pages
+                        )
+                    )
 
                     page_results = await asyncio.gather(*futures)
 
                     for page_result in page_results:
-                        if ("paginatedCaseDemographicsPerStudy" in page_result['data']):
-                            dem_out = self._extend_results(dem_out, [page_result], "paginatedCaseDemographicsPerStudy", "caseDemographicsPerStudy")
-                        if ("paginatedCaseDiagnosesPerStudy" in page_result['data']):
-                            diag_out = self._extend_results(diag_out, [page_result], "paginatedCaseDiagnosesPerStudy", "caseDiagnosesPerStudy")
-                        if ("paginatedCasesSamplesAliquots" in page_result['data']):
-                            samp_out = self._extend_results(samp_out, [page_result], "paginatedCasesSamplesAliquots", "casesSamplesAliquots")
+                        if "paginatedCaseDemographicsPerStudy" in page_result["data"]:
+                            dem_out = self._extend_results(
+                                dem_out,
+                                [page_result],
+                                "paginatedCaseDemographicsPerStudy",
+                                "caseDemographicsPerStudy",
+                            )
+                        if "paginatedCaseDiagnosesPerStudy" in page_result["data"]:
+                            diag_out = self._extend_results(
+                                diag_out,
+                                [page_result],
+                                "paginatedCaseDiagnosesPerStudy",
+                                "caseDiagnosesPerStudy",
+                            )
+                        if "paginatedCasesSamplesAliquots" in page_result["data"]:
+                            samp_out = self._extend_results(
+                                samp_out,
+                                [page_result],
+                                "paginatedCasesSamplesAliquots",
+                                "casesSamplesAliquots",
+                            )
 
                     study_rec = study_info["data"]["study"][0]
                     study_rec.update(study)
@@ -283,7 +337,9 @@ class PDC(Extractor):
         self,
     ) -> Iterable[list[dict]]:
         # loop over studies to get files
-        jData = await retry_get(self.endpoint, params={"query": make_all_programs_query()})
+        jData = await retry_get(
+            self.endpoint, params={"query": make_all_programs_query()}
+        )
         AllPrograms = jData.json()["data"]["allPrograms"]
         for program in AllPrograms:
             for project in program["projects"]:
@@ -311,7 +367,9 @@ class PDC(Extractor):
                     yield files_recs_update
 
     async def _get_total_files(self) -> int:
-        result = await retry_get(self.endpoint, params={"query": query_files_paginated(0, 1)})
+        result = await retry_get(
+            self.endpoint, params={"query": query_files_paginated(0, 1)}
+        )
         return result.json()["data"]["getPaginatedFiles"]["total"]
 
     async def _get_total_uifiles(self) -> int:
@@ -329,12 +387,16 @@ class PDC(Extractor):
         while True:
             offset += limit
 
-            if (page >= total_pages):
+            if page >= total_pages:
                 break
 
-            futures.append(retry_get(
-                session=session, endpoint=self.endpoint, params={"query": query_func(study_id, offset, limit)}
-            ))
+            futures.append(
+                retry_get(
+                    session=session,
+                    endpoint=self.endpoint,
+                    params={"query": query_func(study_id, offset, limit)},
+                )
+            )
 
             page += 1
 
@@ -348,7 +410,8 @@ class PDC(Extractor):
             "paginatedCaseDemographicsPerStudy",
             "caseDemographicsPerStudy",
             session,
-            total_pages)
+            total_pages,
+        )
 
     async def diagnoses_for_study(self, study_id, limit, session, total_pages):
         return await self.get_all_results_async(
@@ -358,7 +421,8 @@ class PDC(Extractor):
             "paginatedCaseDiagnosesPerStudy",
             "caseDiagnosesPerStudy",
             session,
-            total_pages)
+            total_pages,
+        )
 
     async def samples_for_study(self, study_id, limit, session, total_pages):
         return await self.get_all_results_async(
@@ -368,11 +432,14 @@ class PDC(Extractor):
             "paginatedCasesSamplesAliquots",
             "casesSamplesAliquots",
             session,
-            total_pages)
+            total_pages,
+        )
 
     async def taxon_for_study(self, study_id, session=None):
         taxon_info = await retry_get(
-            session=session, endpoint=self.endpoint, params={"query": specimen_taxon(study_id)}
+            session=session,
+            endpoint=self.endpoint,
+            params={"query": specimen_taxon(study_id)},
         )
         out = taxon_info["data"]["biospecimenPerStudy"]
         seen: dict = {}
