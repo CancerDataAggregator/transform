@@ -4,10 +4,10 @@ from datetime import datetime
 
 
 @task(task_id="pdc_extract")
-def pdc_extract(**kwargs):
+def pdc_extract(uuid:str,**kwargs):
     print("Extracting PDC")
     pdc = PDC()
-    file_name = f"pdc-save-{str(datetime.now())}.jsonl.gz"
+    file_name = f"pdc-save-{uuid}.jsonl.gz"
     pdc.save_cases(file_name)
     return file_name
 

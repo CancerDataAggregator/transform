@@ -1,4 +1,3 @@
-from datetime import date, datetime
 from airflow.decorators import task
 from cdatransform.extract.gdc import GDC
 from cdatransform.transform.transform_main import transform_case_or_file
