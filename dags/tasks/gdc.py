@@ -1,46 +1,55 @@
+from datetime import date, datetime
 from airflow.decorators import task
 from cdatransform.extract.gdc import GDC
 from cdatransform.transform.transform_main import transform_case_or_file
+from cdatransform.lib import make_harmonized_file_name
 
 
-@task(task_id="gdc_extract")
-def gdc_extract(**kwargs):
+@task(task_id="gdc_extract_cases")
+def gdc_cases(uuid:str, **kwargs):
     print("Extracting GDC")
     gdc = GDC()
-    gdc.save_cases("gdc.all_cases.jsonl.gz")
+    file_name = f"gdc.all_cases_{uuid}.jsonl.gz"
+    gdc.save_cases(file_name)
 
-    return "gdc_file.jsonl.gz"
-
-
+    return file_name
 
 @task(task_id="gdc_extract_files")
-def  gdc_files():
+def  gdc_files(uuid:str, **kwargs):
     gdc = GDC()
-    gdc.save_files("gdc.all_files.jsonl.gz")
+    file_name = f"gdc.all_files_{uuid}.jsonl.gz"
+    gdc.save_files(file_name)
 
-@task(task_id="gdc_transform")
-def gdc_transform(transform_result: str, **kwargs):
-    print("Transforming GDC")
+    return file_name
+
+@task(task_id="gdc_transform_cases")
+def gdc_transform_cases(extract_result: str, **kwargs):
+    output_file_name = make_harmonized_file_name(extract_result)
     transform_case_or_file(
-        input_file="gdc.all_cases.jsonl.gz",
-        output_file="gdc.all_cases.H.jsonl.gz",
+        input_file=extract_result,
+        output_file=output_file_name,
         endpoint="cases",
         yaml_mapping_transform_file="GDC_subject_endpoint_mapping.yml",
     )
 
+    return output_file_name
+
+@task(task_id="gdc_transform")
+def gdc_transform_files(extract_result: str, **kwargs):
+    output_file_name = make_harmonized_file_name(extract_result)
     transform_case_or_file(
-        input_file="gdc.all_files.jsonl.gz",
-        output_file="gdc.all_files.H.jsonl.gz",
+        input_file=extract_result,
+        output_file=output_file_name,
         endpoint="files",
         yaml_mapping_transform_file="GDC_file_endpoint_mapping.yml",
     )
 
-    return "gdc.all_files.H.jsonl.gz"
+    return output_file_name
 
+@task(task_id="gdc_aggregate_cases")
+def gdc_aggregate_cases(uuid:str, transform_result: str, **kwargs):
+    return f"gdc.all_Subjects.{uuid}.jsonl.gz"
 
-
-@task(task_id="gdc_load")
-def gdc_load(transform_result: str, **kwargs):
-    print("Loading GDC")
-
-    return "gdc_loaded.jsonl.gz"
+@task(task_id="gdc_aggregate_files")
+def gdc_aggregate_files(uuid:str, transform_result: str, **kwargs):
+    return f"gdc.all_Files.{uuid}.jsonl.gz"

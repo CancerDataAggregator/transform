@@ -1,5 +1,6 @@
 import logging
 import os
+from uuid import uuid4
 
 import pendulum
 
@@ -34,7 +35,8 @@ def cda_etl():
 
     loader = load_task
 
-    loader(aggregator(dc_group()))
+    uuid = uuid4().hex
+    loader(aggregator(dc_group(uuid)))
 
 
 cda_etl = cda_etl()
