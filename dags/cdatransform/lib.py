@@ -1,9 +1,9 @@
-from typing import Union
+from typing import Optional, Union
 
 """Program wide utility functions and classes."""
 
 
-def get_ids(id: str = None, id_list_file: str = None) -> Union[list[str], None]:
+def get_ids(id: Optional[str] = None, id_list_file: Optional[str] = None):
     if id is not None:
         return [id]
 

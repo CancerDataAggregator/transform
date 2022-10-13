@@ -45,7 +45,7 @@ def print_mapping_files():
             file_list += 'Literal["{}"],'.format(file)
 
     type_file_list = (
-        f"""from typing_extensions import Literal\n from typing import Union\nYamlFileMapping = Union[{file_list}]"""
+        f"""from typing_extensions import Literal\nfrom typing import Union\nYamlFileMapping = Union[{file_list}]"""
     )
     open("dags/cdatransform/transform/yaml_mapping_types.py", "w").write(type_file_list)
 
@@ -58,7 +58,7 @@ def print_merge_files():
             file_list += 'Literal["{}"],'.format(file)
 
     type_file_list = (
-        f"""from typing_extensions import Literal\n from typing import Union\nYamlFileMerge = Union[{file_list}]"""
+        f"""from typing_extensions import Literal\nfrom typing import Union\nYamlFileMerge = Union[{file_list}]"""
     )
     open("dags/cdatransform/transform/yaml_merge_types.py", "w").write(type_file_list)
 
