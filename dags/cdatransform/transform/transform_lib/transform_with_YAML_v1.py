@@ -1,19 +1,19 @@
 
-from typing import Any
 
+from typing_extensions import Literal
 from ..read_using_YAML import (
     simp_read,
     det_tree_to_collapse,
     read_entry,
     add_linkers,
 )
-import .value_transformations
+import cdatransform.transform.transform_lib.value_transformations 
 from typing import Union, Callable
 
 
 def add_Specimen_rec(
     orig, MandT, **kwargs
-) -> list[dict[str, Union[str, int, list[str], dict, list[dict], None]]]:
+) -> list:
     cur_path: list[Union[str, int]] = kwargs.get("cur_path", ["cases", "samples"])
     spec_type: str = kwargs.get("spec_type", "samples")
     rel_path: str = kwargs.get("rel_path", "cases.samples")
@@ -75,10 +75,10 @@ def add_File_rec(orig, MandT, **kwargs):
 
 # Functions to apply the transforms to relevant fields and functionalize Transformation dictionary
 def entity_value_transforms(
-    tip: dict[str, Union[str, int, list[str], dict, list[dict], None]],
+    tip: dict,
     entity: str,
-    MandT: dict[str, dict[str, dict[str, Union[str, dict[str, str], list]]]],
-) -> dict[str, Union[str, int, list[str], dict, list[dict], None]]:
+    MandT: dict,
+) -> dict:
     if (
         "Transformations" in MandT[entity]
         and MandT[entity]["Transformations"] is not None
@@ -91,9 +91,9 @@ def entity_value_transforms(
 
 
 def apply_transformations(
-    tip: dict[str, Union[str, int, list]],
-    trans_dict: dict[str, Union[None, list[list[Union[Callable, list]]]]],
-) -> dict[str, Union[str, int, list[str], dict, list[dict], None]]:
+    tip: dict,
+    trans_dict: dict,
+) -> dict:
     for field_name, trans in trans_dict.items():
         # excluded_field = trans == "exclude"
         # if not excluded_field:
@@ -103,7 +103,7 @@ def apply_transformations(
 
 def apply_list_of_lists(
     data: Union[str, int, list],
-    list_trans: Union[None, list[list[Union[Callable, list]]]],
+    list_trans: Union[None, list],
 ) -> Union[str, int, list]:
     temp = data
     if list_trans is not None:
@@ -116,8 +116,8 @@ def apply_list_of_lists(
 
 
 def functionalize_trans_dict(
-    trans_dict: dict[str, list[list[Union[Callable, str, list]]]]
-) -> dict[str, list[list[Union[Callable, str, list]]]]:
+    trans_dict: dict
+) -> dict:
     """Takes a transformation dictionary from mapping_and_transformation loaded yaml, and replaces the string
     denoting a function call, with an actual callable. Searches local for function with name of
     the string
@@ -154,18 +154,18 @@ class Transform:
         self.endpoint = endpoint
 
     def __call__(
-        self, orig: dict[str, Union[str, int, list[str], dict, list[dict], None]]
-    ) -> dict[str, Union[str, int, list[str], dict, list[dict], None]]:
+        self, orig: dict
+    ) -> dict:
         if self.endpoint == "cases":
             return self.cases_transform(orig)
         else:  # self.endpoint == "files": May add more endpoint transformations... like mutations
             return self.files_transform(orig)
 
     def cases_transform(
-        self, orig: dict[str, Union[str, int, list[str], dict, list[dict], None]]
-    ) -> dict[str, Union[str, int, list[str], dict, list[dict], None]]:
-        cur_path: list[Union[str, int]] = ["cases"]
-        tip: dict[str, Union[str, int, list[str], dict, list[dict], None]] = read_entry(
+        self, orig: dict
+    ) -> dict:
+        cur_path: list[Literal["cases"]] = ["cases"]
+        tip: dict = read_entry(
             orig, self.MandT, "Patient"
         )
         tip = entity_value_transforms(tip, "Patient", self.MandT)
@@ -286,8 +286,8 @@ class Transform:
         return tip
 
     def files_transform(
-        self, orig: dict[str, Union[str, int, list[str], dict, list[dict], None]]
-    ) -> dict[str, Union[str, int, list[str], dict, list[dict], None]]:
+        self, orig: dict
+    ) -> dict:
         tip = read_entry(orig, self.MandT, "File", endpoint=self.endpoint)
         tip = entity_value_transforms(tip, "File", self.MandT)
         linkers = add_linkers(
