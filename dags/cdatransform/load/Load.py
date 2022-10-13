@@ -1,4 +1,8 @@
 # Construct a BigQuery client object.
+import json
+from google.cloud import bigquery  # , storage
+from google.oauth2 import service_account
+from typing import Any
 class Load:
     def __init__(
         self,
@@ -11,10 +15,10 @@ class Load:
         # dest_bucket_file_name='druth/idc-extract.jsonl.gz',
         # out_file='idc-test.jsonl.gz'
     ) -> None:
-        self.gsa_key = gsa_key
+        self.gsa_key:str = gsa_key
         self.gsa_info = gsa_info
         self.dest_table_id = dest_table_id
-        self.data_file = data_file
+        self.data_file:Any = data_file
         self.schema = self._get_json_schema(schema)
         self.service_account_cred = self._service_account_cred()
 

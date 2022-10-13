@@ -164,10 +164,10 @@ class GDC(Extractor):
         loop: asyncio.AbstractEventLoop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         end_cases: list = loop.run_until_complete(
-            self.http_call_save_files_or_cases(endpoint="case")
+            self.http_call_save_files_or_cases(endpoint="case",out_file=out_file)
         )
 
-        self.write_file(out_file, end_cases, t0)
+        # self.write_file(out_file, end_cases, t0)
 
         # send_json_to_storage(end_cases)
 
@@ -184,34 +184,35 @@ class GDC(Extractor):
                 page_size=page_size,
                 case_ids=file_ids,
                 num_field_chunks=2,
+                out_file=out_file
             )
         )
-        # need to write dictionary of file_ids per specimen (specimen: [files])
-        specimen_files_dict = defaultdict(list)
-        with gzip.open(out_file, "wb") as fp:
-            with jsonlines.Writer(fp) as writer:
-                for index, file in enumerate(end_cases):
-                    # _files(file_ids, page_size):
-                    writer.write(file)
-                    index += 1
-                    if index % page_size == 0:
-                        print(
-                            f"Wrote {index} files in {self.current_time_rate(t0)}s\n",
-                            flush=True,
-                        )
-                    if self.make_spec_file:
-                        for entity in file.get("associated_entities", []):
-                            if entity["entity_type"] != "case":
-                                specimen_files_dict[entity["entity_id"]].append(
-                                    file["file_id"]
-                                )
+        # # need to write dictionary of file_ids per specimen (specimen: [files])
+        # specimen_files_dict = defaultdict(list)
+        # with gzip.open(out_file, "wb") as fp:
+        #     with jsonlines.Writer(fp) as writer:
+        #         for index, file in enumerate(end_cases):
+        #             # _files(file_ids, page_size):
+        #             writer.write(file)
+        #             index += 1
+        #             if index % page_size == 0:
+        #                 print(
+        #                     f"Wrote {index} files in {self.current_time_rate(t0)}s\n",
+        #                     flush=True,
+        #                 )
+        #             if self.make_spec_file:
+        #                 for entity in file.get("associated_entities", []):
+        #                     if entity["entity_type"] != "case":
+        #                         specimen_files_dict[entity["entity_id"]].append(
+        #                             file["file_id"]
+        #                         )
 
-        print(f"Wrote {index} files in {self.current_time_rate(t0)}s\n", flush=True)
-        if self.make_spec_file:
-            for specimen, files in specimen_files_dict.items():
-                specimen_files_dict[specimen] = list(set(files))
-            with gzip.open(self.make_spec_file, "wt", encoding="ascii") as out:
-                json.dump(specimen_files_dict, out)
+        # print(f"Wrote {index} files in {self.current_time_rate(t0)}s\n", flush=True)
+        # if self.make_spec_file:
+        #     for specimen, files in specimen_files_dict.items():
+        #         specimen_files_dict[specimen] = list(set(files))
+        #     with gzip.open(self.make_spec_file, "wt", encoding="ascii") as out:
+        #         json.dump(specimen_files_dict, out)
 
 
 # def main() -> None:

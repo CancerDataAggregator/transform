@@ -36,7 +36,6 @@ class Extractor:
         ids: Union[list, None] = None,
         page_size: int = 500,
         num_field_chunks: int = 2,
-        session=None,
     ):
         raise "Not Implemented"
 
@@ -47,6 +46,7 @@ class Extractor:
         case_ids=None,
         page_size: int = 500,
         num_field_chunks: int = 3,
+        out_file:str = ""
     ):
         """
         this will call the case api asynchronously and write the each case to a array
@@ -58,20 +58,23 @@ class Extractor:
         n = 0
         t0 = time()
         end_cases = end_cases or []
-        async with aiohttp.ClientSession() as session:
-            async for case in self._paginate_files_or_cases(
-                ids=case_ids,
-                endpt=endpoint,
-                page_size=page_size,
-                num_field_chunks=num_field_chunks,
-                session=session,
-            ):
-
-                end_cases.append(case)
-                n += 1
-                if n % page_size == 0:
-                    print(
-                        f"Wrote {n} cases in {self.current_time_rate(t0)}s\n",
-                        flush=True,
-                    )
+        async for case in self._paginate_files_or_cases(
+            ids=case_ids,
+            endpt=endpoint,
+            page_size=page_size,
+            num_field_chunks=num_field_chunks,
+        ):
+            end_cases.append(case)
+            if len(end_cases) >= 50_000:
+                with gzip.open(out_file, "ab") as fp:
+                    with jsonlines.Writer(fp) as wri:
+                        for index, value in enumerate(end_cases):
+                            index += 1
+                            if index % 50 == 0:
+                                print(
+                                    f"Wrote {index} cases in {self.current_time_rate(t0)}s\n",
+                                    flush=True,
+                                )
+                            wri.write(value)
+                end_cases = []
         return end_cases

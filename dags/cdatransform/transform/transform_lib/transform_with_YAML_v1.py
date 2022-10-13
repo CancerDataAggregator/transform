@@ -7,7 +7,7 @@ from ..read_using_YAML import (
     read_entry,
     add_linkers,
 )
-import cdatransform.transform.transform_lib.value_transformations 
+import cdatransform.transform.transform_lib.value_transformations as value_transformations
 from typing import Union, Callable
 
 
@@ -136,7 +136,7 @@ def functionalize_trans_dict(
     Returns:
         dict[str, list[list[Union[Callable,str, list]]]]:
     """
-    temp: dict[str, list[list[Union[Callable, str, list]]]] = trans_dict.copy()
+    temp: dict = trans_dict.copy()
     for field_name, trans_vals in trans_dict.items():
         if trans_vals != "exclude":
             for index in range(len(trans_vals)):
