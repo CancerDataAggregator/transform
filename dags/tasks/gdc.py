@@ -8,9 +8,15 @@ def gdc_extract(**kwargs):
     print("Extracting GDC")
     gdc = GDC()
     gdc.save_cases("gdc.all_cases.jsonl.gz")
-    gdc.save_files("gdc.all_files.jsonl.gz")
+
     return "gdc_file.jsonl.gz"
 
+
+
+@task(task_id="gdc_extract_files")
+def  gdc_files():
+    gdc = GDC()
+    gdc.save_files("gdc.all_files.jsonl.gz")
 
 @task(task_id="gdc_transform")
 def gdc_transform(transform_result: str, **kwargs):
@@ -30,6 +36,7 @@ def gdc_transform(transform_result: str, **kwargs):
     )
 
     return "gdc.all_files.H.jsonl.gz"
+
 
 
 @task(task_id="gdc_load")
