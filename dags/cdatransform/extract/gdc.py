@@ -1,15 +1,13 @@
-import argparse
 import asyncio
 import gzip
 import json
-import pathlib
+from typing import Union
 import sys
 from time import time
 from collections import defaultdict
-from typing import Union, Literal
-import numpy as np
+
 import jsonlines
-import aiohttp
+
 
 from .extractor import Extractor
 
@@ -96,7 +94,7 @@ class GDC(Extractor):
     async def _paginate_files_or_cases(
         self,
         endpt: str,
-        ids: list | None = None,
+        ids: Union[list, None] = None,
         page_size: int = 500,
         num_field_chunks: int = 2,
         session=None,

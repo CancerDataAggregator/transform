@@ -33,7 +33,7 @@ class Extractor:
     async def _paginate_files_or_cases(
         self,
         endpt: str,
-        ids: list | None = None,
+        ids: Union[list, None] = None,
         page_size: int = 500,
         num_field_chunks: int = 2,
         session=None,

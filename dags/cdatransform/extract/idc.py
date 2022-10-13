@@ -1,7 +1,4 @@
-import argparse
-from typing import Union
-
-
+from typing import Union, Literal, Optional
 from cdatransform.lib import get_ids
 import cdatransform.transform.transform_lib.transform_with_YAML_v1 as tr
 from math import ceil
@@ -9,7 +6,7 @@ import jsonlines
 from cdatransform.lib import get_case_ids
 from google.cloud import bigquery, storage
 from google.oauth2 import service_account
-from yaml import Loader
+from yaml import Loader, load
 
 
 class IDC:
@@ -367,7 +364,6 @@ class IDC:
         num_var = len(func_desc[1])
         for var in range(num_var):
             out += var_list[var] + " " + func_desc[1][var]
-            var_used
             if var < num_var - 1:
                 out += ", "
         out += ") RETURNS "
@@ -425,84 +421,68 @@ class IDC:
         return query
 
 
-def main():
-    parser = argparse.ArgumentParser(description="Pull case data from GDC API.")
-    parser.add_argument("mapping_file", help="Location of IDC mapping file")
-    parser.add_argument(
-        "--dest_table_id",
-        help="Permanent table destination after querying IDC",
-        default="broad-cda-dev.github_testing.idc_patient_testing",
-    )
-    parser.add_argument(
-        "--source_table",
-        help="IDC source table to be queried",
-        default="bigquery-public-data.idc_v9.dicom_pivot_v9",
-    )
-    parser.add_argument("--gsa_key", help="Location of user GSA key")
-    parser.add_argument("--endpoint", help="Patient of File endpoint")
-    parser.add_argument("--gsa_info", help="json content of GSA key or github.secret")
-    parser.add_argument("--patient", help="Extract just this patient", default=None)
-    parser.add_argument(
-        "--patients",
-        help="Optional file with list of patient ids (one to a line)",
-        default=None,
-    )
-    parser.add_argument("--file", help="Extract just this file", default=None)
-    parser.add_argument(
-        "--files",
-        help="Optional file with list of file ids (one to a line)",
-        default=None,
-    )
-    parser.add_argument(
-        "--out_file",
-        help="Out file name. Should end with .gz",
-        default="idc_extract.jsonl.gz",
-    )
-    parser.add_argument("--cache", help="Use cached files.", action="store_true")
-    parser.add_argument(
-        "--make_bq_table",
-        help="Create new BQ permanent table from IDC view",
-        default=False,
-        type=bool,
-    )
-    parser.add_argument(
-        "--make_bucket_file",
-        help="Create new file in GCS from permanent table",
-        default=False,
-        type=bool,
-    )
-    parser.add_argument("--dest_bucket", help="GCS bucket", default="broad-cda-dev")
-    parser.add_argument(
-        "--dest_bucket_file_name",
-        help="GCS bucket file name",
-        default="public/idc-test.jsonl.gz",
-    )
-    args = parser.parse_args()
-    make_bq_table = args.make_bq_table
-    # make_bucket_file = args.make_bucket_file
-    mapping = yaml.load(open(args.mapping_file, "r"), Loader=Loader)
-    # out_file = args.out_file
+endpoint_type = Union[Literal["Patient"], Literal["File"]]
+
+
+def main(
+    mapping_file: str,
+    dest_table_id: str,
+    gsa_key: str,
+    endpoint: endpoint_type,
+    gsa_info: str,
+    patient: Optional[str] = None,
+    patients: Optional[list[str]] = None,
+    source_table: str = "bigquery-public-data.idc_v9.dicom_pivot_v9",
+    file: Optional[str] = None,
+    files: Optional[str] = None,
+    out_file: str = "idc_extract.jsonl.gz",
+    make_bq_table: bool = False,
+    make_bucket_file: bool = False,
+    dest_bucket: str = "broad-cda-dev",
+    dest_bucket_file_name: str = "public/idc-test.jsonl.gz",
+):
+    """_summary_
+
+    Args:
+        mapping_file (str): "Location of IDC mapping file"
+        dest_table_id (str): "Permanent table destination after querying IDC"
+        gsa_key (str): "Location of user GSA key
+        endpoint (endpoint_type):"Patient of File endpoint"
+        gsa_info: str "json content of GSA key or github.secret"
+        patient (Optional[str]): "Extract just this patient"
+        patients (Optional[list[str]]): "Optional file with list of patient ids (one to a line)"
+        source_table (str): "IDC source table to be queried"
+        file(Optional[str]): "Extract just this file"
+        files(Optional[list[str]]) "Optional file with list of file ids (one to a line)"
+        out_file (str): "Out file name. Should end with .gz"
+        make_bq_table (bool): "Create new BQ permanent table from IDC view"
+        make_bucket_file (bool): "Create new file in GCS from permanent table"
+        dest_bucket (str): "GCS bucket"
+        dest_bucket_file_name: (str) "GCS bucket file name"
+    """
+
+    make_bq_table = make_bq_table
+    # make_bucket_file = make_bucket_file
+    mapping = load(open(mapping_file, "r"), Loader=Loader)
+    # out_file = out_file
     idc = IDC(
-        gsa_key=args.gsa_key,
-        gsa_info=args.gsa_info,
-        dest_table_id=args.dest_table_id,
-        patients_file=args.patients,
-        patient=args.patient,
-        files_file=args.files,
-        file=args.file,
+        gsa_key=gsa_key,
+        gsa_info=gsa_info,
+        dest_table_id=dest_table_id,
+        patients_file=patients,
+        patient=patient,
+        files_file=files,
+        file=file,
         mapping=mapping,
-        source_table=args.source_table,
-        endpoint=args.endpoint,
-        dest_bucket=args.dest_bucket,
-        dest_bucket_file_name=args.dest_bucket_file_name,
-        out_file=args.out_file,
+        source_table=source_table,
+        endpoint=endpoint,
+        dest_bucket=dest_bucket,
+        dest_bucket_file_name=dest_bucket_file_name,
+        out_file=out_file,
     )
     if make_bq_table:
         idc.query_idc_to_table()
-    if args.make_bucket_file:
+    if make_bucket_file:
         idc.table_to_bucket()
     idc.download_blob()
 
-
-if __name__ == "__main__":
-    main()

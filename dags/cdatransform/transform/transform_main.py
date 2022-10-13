@@ -6,7 +6,8 @@ from pathlib import Path, PurePath
 
 import sys
 import time
-from typing import Literal, Optional, Type, Union
+from typing import Optional, Type, Union
+from typing_extensions import Literal
 from .transform_lib.transform_with_YAML_v1 import functionalize_trans_dict, Transform
 import jsonlines
 import yaml
@@ -99,7 +100,7 @@ def transform_case_or_file(
         id_lookup_in_jsonl_file_case_or_file,
         id_list_file=ids_lookup_in_jsonl_file_case_or_file,
     )
-    path_str = Path(input_file).resolve()
+    path_str = str(Path(input_file).resolve())
     with gzip.open(path_str, "r") as infp:
         with jsonlines.Reader(infp) as reader:
             with gzip.open(output_file, "w") as outfp:

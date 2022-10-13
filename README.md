@@ -256,3 +256,16 @@ git checkout <mine>
 
 If you used the editable install (`pip install -e .`) Python will use your
 changes live.
+
+
+# Docker airflow setup
+Note: Add new library's to the requirements.txt that you need to run etl then build the new image
+
+Navgate to root folder of the project in your terminal type these commands below 
+```dockerfile
+    docker build -t airflow-cdatransform . 
+``` 
+
+```dockerfile
+    docker-compose up --build -d
+```

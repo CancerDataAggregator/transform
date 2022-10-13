@@ -1,4 +1,4 @@
-import sys
+
 from typing import Any
 
 from ..read_using_YAML import (
@@ -7,8 +7,7 @@ from ..read_using_YAML import (
     read_entry,
     add_linkers,
 )
-import dags.cdatransform.transform.transform_lib.value_transformations as value_transformations_functions
-from dags.cdatransform.transform.validate import LogValidation
+import .value_transformations
 from typing import Union, Callable
 
 
@@ -143,7 +142,7 @@ def functionalize_trans_dict(
             for index in range(len(trans_vals)):
                 # This dict get the first value from dict it will return a list of list or a function
                 temp[field_name][index][0] = getattr(
-                    value_transformations_functions, trans_dict[field_name][index][0]
+                    value_transformations, trans_dict[field_name][index][0]
                 )
 
     return temp
