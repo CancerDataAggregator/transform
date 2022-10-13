@@ -1,5 +1,5 @@
 import json
-from typing import Iterable, Union
+from typing import AsyncGenerator, Generator, Iterable, Union
 from collections import defaultdict
 from math import ceil
 import jsonlines
@@ -49,7 +49,7 @@ class PDC(Extractor):
     async def _paginate_files_or_cases(
         self,
         endpt: str,
-        ids: list | None = None,
+        ids: Union[list ,None] = None,
         page_size: int = 500,
         num_field_chunks: int = 2,
         session=None,
@@ -299,7 +299,7 @@ class PDC(Extractor):
                 with gzip.open(f) as f_in:
                     shutil.copyfileobj(f_in, f_out)
 
-    async def _metadata_files_chunk(self, file_ids=None) -> Iterable[list[dict]]:
+    async def _metadata_files_chunk(self, file_ids=None) -> AsyncGenerator[list,dict]:
         if file_ids:
             files = []
             for file_id in file_ids:
@@ -320,7 +320,7 @@ class PDC(Extractor):
                 )
                 yield result.json()["data"]["fileMetadata"]
 
-    async def _UIfiles_chunk(self) -> Iterable[list[dict]]:
+    async def _UIfiles_chunk(self) ->  AsyncGenerator[list,dict]:
         totalfiles = self._get_total_uifiles()
         limit = 750
         for page in range(0, totalfiles, limit):
@@ -335,7 +335,7 @@ class PDC(Extractor):
 
     async def _study_files_chunk(
         self,
-    ) -> Iterable[list[dict]]:
+    )-> AsyncGenerator[list,dict]:
         # loop over studies to get files
         jData = await retry_get(
             self.endpoint, params={"query": make_all_programs_query()}
@@ -454,14 +454,14 @@ class PDC(Extractor):
 
 
 def agg_cases_info_for_study(
-    study: list[dict],
-    demo: list[dict],
-    diag: list[dict],
-    sample: list[dict],
+    study: list,
+    demo: list,
+    diag: list,
+    sample: list,
     taxon: dict,
     added_info: dict,
-) -> list[dict]:
-    out: list[dict] = []
+) -> list:
+    out: list = []
     for demo_case in demo:
         case_id = demo_case["case_id"]
         demo_case.update(added_info)

@@ -1,4 +1,4 @@
-from dags.cdatransform.transform.transform_main import (
+from cdatransform.transform.transform_main import (
     transform_case_or_file,
     print_mapping_files,
     print_merge_files,
