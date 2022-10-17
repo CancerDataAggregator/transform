@@ -323,7 +323,7 @@ class PDC(Extractor):
         else:
             totalfiles = await self._get_total_files()
             limit = 750
-            future_limit = 10
+            future_limit = 5
             for page in range(0, totalfiles, limit):
                 # sys.stderr.write(
                 #     f"<< Processing page {int(page/limit) + 1}/{ceil(totalfiles/limit)} Metadata Files >>\n"
@@ -362,7 +362,7 @@ class PDC(Extractor):
                 session=None, endpoint=self.endpoint, params={"query": query_UIfiles_bulk(page, limit)}
             ))
 
-            if len(futures) == 10:
+            if len(futures) == 5:
                 results = await asyncio.gather(*futures)
 
                 futures = []
@@ -402,7 +402,7 @@ class PDC(Extractor):
                     ))
                     num_studies -= 1
 
-                    if num_studies == 0 or len(futures) % 10 == 0:
+                    if num_studies == 0 or len(futures) == 2:
                         results = await asyncio.gather(*futures)
 
                         futures = []
