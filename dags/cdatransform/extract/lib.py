@@ -24,7 +24,7 @@ async def retry_get(session, endpoint, params, base_retry_interval=180.0):
                     if result.ok:
                         return await result.json()
                     else:
-                        sys.stderr.write(str(result.content))
+                        sys.stderr.write(str(await result.text()))
                         sys.stderr.write(
                             f"API call failed. Retrying in {retry_interval}s ...\n"
                         )

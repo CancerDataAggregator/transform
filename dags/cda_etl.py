@@ -35,7 +35,7 @@ def cda_etl():
 
     loader = load_task
 
-    uuid = uuid4().hex
+    uuid = str(uuid4().hex)
     loader(aggregator(dc_group(uuid)))
 
 

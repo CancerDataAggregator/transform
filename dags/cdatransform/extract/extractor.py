@@ -66,15 +66,23 @@ class Extractor:
         ):
             end_cases.append(case)
             if len(end_cases) >= 50_000:
-                with gzip.open(out_file, "ab") as fp:
-                    with jsonlines.Writer(fp) as wri:
-                        for index, value in enumerate(end_cases):
-                            index += 1
-                            if index % 50 == 0:
-                                print(
-                                    f"Wrote {index} cases in {self.current_time_rate(t0)}s\n",
-                                    flush=True,
-                                )
-                            wri.write(value)
-                end_cases = []
+                end_cases = self._write_items_and_clear(end_cases, out_file, t0)
+
+        if (len(end_cases) > 0):
+            end_cases = self._write_items_and_clear(end_cases, out_file, t0)
         return end_cases
+
+    def _write_items_and_clear(self, items, out_file, t0):
+        with gzip.open(out_file, "ab") as fp:
+                with jsonlines.Writer(fp) as wri:
+                    for index, value in enumerate(items):
+                        index += 1
+                        if index % 50 == 0:
+                            print(
+                                f"Wrote {index} cases in {self.current_time_rate(t0)}s\n",
+                                flush=True,
+                            )
+                        wri.write(value)
+
+        items = []
+        return items
