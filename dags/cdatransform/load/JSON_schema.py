@@ -1,6 +1,7 @@
 import argparse
 from .schema import Schema
-from typing import Literal, Optional, Union
+from typing import Optional, Union
+from typing_extensions import Literal
 from ..transform.yaml_mapping_types import YamlFileMapping
 from ..lib import yamlPathMapping
 

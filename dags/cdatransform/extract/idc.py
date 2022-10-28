@@ -1,9 +1,9 @@
-from typing import Union, Literal, Optional
+from typing import Union
+from typing_extensions import Literal
 from cdatransform.lib import get_ids
 import cdatransform.transform.transform_lib.transform_with_YAML_v1 as tr
 from math import ceil
 import jsonlines
-from cdatransform.lib import get_case_ids
 from google.cloud import bigquery, storage
 from google.oauth2 import service_account
 from yaml import Loader, load
@@ -23,7 +23,7 @@ class IDC:
         source_table="bigquery-public-data.idc_v9.dicom_pivot_v9",
         endpoint=None,
         dest_bucket="gdc-bq-sample-bucket",
-        dest_bucket_file_name="druth/idc-extract.jsonl.gz",
+        dest_bucket_file_name="idc-extract.jsonl.gz",
         out_file="idc-test.jsonl.gz",
     ) -> None:
         self.gsa_key = gsa_key
@@ -424,65 +424,65 @@ class IDC:
 endpoint_type = Union[Literal["Patient"], Literal["File"]]
 
 
-def main(
-    mapping_file: str,
-    dest_table_id: str,
-    gsa_key: str,
-    endpoint: endpoint_type,
-    gsa_info: str,
-    patient: Optional[str] = None,
-    patients: Optional[list[str]] = None,
-    source_table: str = "bigquery-public-data.idc_v9.dicom_pivot_v9",
-    file: Optional[str] = None,
-    files: Optional[str] = None,
-    out_file: str = "idc_extract.jsonl.gz",
-    make_bq_table: bool = False,
-    make_bucket_file: bool = False,
-    dest_bucket: str = "broad-cda-dev",
-    dest_bucket_file_name: str = "public/idc-test.jsonl.gz",
-):
-    """_summary_
+# def main(
+#     mapping_file: str,
+#     dest_table_id: str,
+#     gsa_key: str,
+#     endpoint: endpoint_type,
+#     gsa_info: str,
+#     patient: Optional[str] = None,
+#     patients: Optional[list[str]] = None,
+#     source_table: str = "bigquery-public-data.idc_v9.dicom_pivot_v9",
+#     file: Optional[str] = None,
+#     files: Optional[str] = None,
+#     out_file: str = "idc_extract.jsonl.gz",
+#     make_bq_table: bool = False,
+#     make_bucket_file: bool = False,
+#     dest_bucket: str = "broad-cda-dev",
+#     dest_bucket_file_name: str = "public/idc-test.jsonl.gz",
+# ):
+#     """_summary_
 
-    Args:
-        mapping_file (str): "Location of IDC mapping file"
-        dest_table_id (str): "Permanent table destination after querying IDC"
-        gsa_key (str): "Location of user GSA key
-        endpoint (endpoint_type):"Patient of File endpoint"
-        gsa_info: str "json content of GSA key or github.secret"
-        patient (Optional[str]): "Extract just this patient"
-        patients (Optional[list[str]]): "Optional file with list of patient ids (one to a line)"
-        source_table (str): "IDC source table to be queried"
-        file(Optional[str]): "Extract just this file"
-        files(Optional[list[str]]) "Optional file with list of file ids (one to a line)"
-        out_file (str): "Out file name. Should end with .gz"
-        make_bq_table (bool): "Create new BQ permanent table from IDC view"
-        make_bucket_file (bool): "Create new file in GCS from permanent table"
-        dest_bucket (str): "GCS bucket"
-        dest_bucket_file_name: (str) "GCS bucket file name"
-    """
+#     Args:
+#         mapping_file (str): "Location of IDC mapping file"
+#         dest_table_id (str): "Permanent table destination after querying IDC"
+#         gsa_key (str): "Location of user GSA key
+#         endpoint (endpoint_type):"Patient of File endpoint"
+#         gsa_info: str "json content of GSA key or github.secret"
+#         patient (Optional[str]): "Extract just this patient"
+#         patients (Optional[list[str]]): "Optional file with list of patient ids (one to a line)"
+#         source_table (str): "IDC source table to be queried"
+#         file(Optional[str]): "Extract just this file"
+#         files(Optional[list[str]]) "Optional file with list of file ids (one to a line)"
+#         out_file (str): "Out file name. Should end with .gz"
+#         make_bq_table (bool): "Create new BQ permanent table from IDC view"
+#         make_bucket_file (bool): "Create new file in GCS from permanent table"
+#         dest_bucket (str): "GCS bucket"
+#         dest_bucket_file_name: (str) "GCS bucket file name"
+#     """
 
-    make_bq_table = make_bq_table
-    # make_bucket_file = make_bucket_file
-    mapping = load(open(mapping_file, "r"), Loader=Loader)
-    # out_file = out_file
-    idc = IDC(
-        gsa_key=gsa_key,
-        gsa_info=gsa_info,
-        dest_table_id=dest_table_id,
-        patients_file=patients,
-        patient=patient,
-        files_file=files,
-        file=file,
-        mapping=mapping,
-        source_table=source_table,
-        endpoint=endpoint,
-        dest_bucket=dest_bucket,
-        dest_bucket_file_name=dest_bucket_file_name,
-        out_file=out_file,
-    )
-    if make_bq_table:
-        idc.query_idc_to_table()
-    if make_bucket_file:
-        idc.table_to_bucket()
-    idc.download_blob()
+#     make_bq_table = make_bq_table
+#     # make_bucket_file = make_bucket_file
+#     mapping = load(open(mapping_file, "r"), Loader=Loader)
+#     # out_file = out_file
+#     idc = IDC(
+#         gsa_key=gsa_key,
+#         gsa_info=gsa_info,
+#         dest_table_id=dest_table_id,
+#         patients_file=patients,
+#         patient=patient,
+#         files_file=files,
+#         file=file,
+#         mapping=mapping,
+#         source_table=source_table,
+#         endpoint=endpoint,
+#         dest_bucket=dest_bucket,
+#         dest_bucket_file_name=dest_bucket_file_name,
+#         out_file=out_file,
+#     )
+#     if make_bq_table:
+#         idc.query_idc_to_table()
+#     if make_bucket_file:
+#         idc.table_to_bucket()
+#     idc.download_blob()
 

@@ -2,8 +2,8 @@ from airflow.decorators import task
 from cdatransform.extract.pdc import PDC
 from datetime import datetime
 
-from dags.cdatransform.lib import make_harmonized_file_name
-from dags.cdatransform.transform.transform_main import transform_case_or_file
+from cdatransform.lib import make_harmonized_file_name
+from cdatransform.transform.transform_main import transform_case_or_file
 
 
 @task(task_id="pdc_cases")
