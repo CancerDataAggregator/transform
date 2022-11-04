@@ -1,5 +1,3 @@
-
-
 from typing_extensions import Literal
 from ..read_using_YAML import (
     simp_read,
@@ -11,9 +9,7 @@ import cdatransform.transform.transform_lib.value_transformations as value_trans
 from typing import Union, Callable
 
 
-def add_Specimen_rec(
-    orig, MandT, **kwargs
-) -> list:
+def add_Specimen_rec(orig, MandT, **kwargs) -> list:
     cur_path: list[Union[str, int]] = kwargs.get("cur_path", ["cases", "samples"])
     spec_type: str = kwargs.get("spec_type", "samples")
     rel_path: str = kwargs.get("rel_path", "cases.samples")
@@ -115,9 +111,7 @@ def apply_list_of_lists(
     return temp
 
 
-def functionalize_trans_dict(
-    trans_dict: dict
-) -> dict:
+def functionalize_trans_dict(trans_dict: dict) -> dict:
     """Takes a transformation dictionary from mapping_and_transformation loaded yaml, and replaces the string
     denoting a function call, with an actual callable. Searches local for function with name of
     the string
@@ -153,21 +147,15 @@ class Transform:
         self.MandT = MandT
         self.endpoint = endpoint
 
-    def __call__(
-        self, orig: dict
-    ) -> dict:
+    def __call__(self, orig: dict) -> dict:
         if self.endpoint == "cases":
             return self.cases_transform(orig)
         else:  # self.endpoint == "files": May add more endpoint transformations... like mutations
             return self.files_transform(orig)
 
-    def cases_transform(
-        self, orig: dict
-    ) -> dict:
+    def cases_transform(self, orig: dict) -> dict:
         cur_path: list[Literal["cases"]] = ["cases"]
-        tip: dict = read_entry(
-            orig, self.MandT, "Patient"
-        )
+        tip: dict = read_entry(orig, self.MandT, "Patient")
         tip = entity_value_transforms(tip, "Patient", self.MandT)
         # linkers = add_linkers(
         #    orig,
@@ -285,9 +273,7 @@ class Transform:
         tip["ResearchSubject"] = [RS]
         return tip
 
-    def files_transform(
-        self, orig: dict
-    ) -> dict:
+    def files_transform(self, orig: dict) -> dict:
         tip = read_entry(orig, self.MandT, "File", endpoint=self.endpoint)
         tip = entity_value_transforms(tip, "File", self.MandT)
         linkers = add_linkers(

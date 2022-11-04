@@ -49,7 +49,7 @@ class PDC(Extractor):
     async def _paginate_files_or_cases(
         self,
         endpt: str,
-        ids: Union[list ,None] = None,
+        ids: Union[list, None] = None,
         page_size: int = 500,
         num_field_chunks: int = 2,
         session=None,
@@ -218,20 +218,14 @@ class PDC(Extractor):
                         yield case
 
     def save_cases(self, out_file, case_ids=None):
-        t0 = time.time()
-        n = 0
         loop: asyncio.AbstractEventLoop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        end_cases: list = loop.run_until_complete(
-            self.http_call_save_files_or_cases(case_ids)
-        )
+        return loop.run_until_complete(self.http_call_save_files_or_cases(case_ids))
 
     def save_files(self, out_file, file_ids=None):
         loop: asyncio.AbstractEventLoop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        end_cases: list = loop.run_until_complete(
-            self._get_all_files(out_file, file_ids)
-        )
+        return loop.run_until_complete(self._get_all_files(out_file, file_ids))
 
     async def _get_all_files(self, out_file, file_ids=None):
         t0 = time.time()
@@ -243,25 +237,25 @@ class PDC(Extractor):
         n = 0
         specimen_files_dict = defaultdict(list)
         with gzip.open("pdc_meta_out.jsonl.gz", "wb") as fp:
-            writer = jsonlines.Writer(fp)
-            async for chunk in self._metadata_files_chunk(file_ids):
-                for rec in chunk:
-                    if file_ids is None or rec["file_id"] in file_ids:
-                        writer.write(rec)
-                        # add to specimen:file dictionary
-                        if rec.get('aliquots') is not None:
-                            for aliquot in rec.get("aliquots", []):
-                                specimen_files_dict[aliquot["sample_id"]].append(
-                                    rec["file_id"]
+            with jsonlines.Writer(fp) as writer:
+                async for chunk in self._metadata_files_chunk(file_ids):
+                    for rec in chunk:
+                        if file_ids is None or rec["file_id"] in file_ids:
+                            writer.write(rec)
+                            # add to specimen:file dictionary
+                            if rec.get("aliquots") is not None:
+                                for aliquot in rec.get("aliquots", []):
+                                    specimen_files_dict[aliquot["sample_id"]].append(
+                                        rec["file_id"]
+                                    )
+                                    specimen_files_dict[aliquot["aliquot_id"]].append(
+                                        rec["file_id"]
+                                    )
+                            n += 1
+                            if n % 500 == 0:
+                                sys.stderr.write(
+                                    f"Wrote {n} metadata files in {time.time() - t0}s\n"
                                 )
-                                specimen_files_dict[aliquot["aliquot_id"]].append(
-                                    rec["file_id"]
-                                )
-                        n += 1
-                        if n % 500 == 0:
-                            sys.stderr.write(
-                                f"Wrote {n} metadata files in {time.time() - t0}s\n"
-                            )
 
         sys.stderr.write(f"Wrote {n} metadata_files in {time.time() - t0}s\n")
         # Get and write UIfile chunks - PDC does not support using any UI calls, but
@@ -269,29 +263,31 @@ class PDC(Extractor):
         # the UI files, and it is strictly for Seven Bridges benefit
         n = 0
         with gzip.open("pdc_uifiles_out.jsonl.gz", "wb") as fp:
-            writer = jsonlines.Writer(fp)
-            async for chunk in self._UIfiles_chunk():
-                for rec in chunk:
-                    if file_ids is None or rec["file_id"] in file_ids:
-                        writer.write(rec)
-                    n += 1
-                    if n % 500 == 0:
-                        sys.stderr.write(f"Wrote {n} ui_files in {time.time() - t0}s\n")
+            with jsonlines.Writer(fp) as writer:
+                async for chunk in self._UIfiles_chunk():
+                    for rec in chunk:
+                        if file_ids is None or rec["file_id"] in file_ids:
+                            writer.write(rec)
+                        n += 1
+                        if n % 500 == 0:
+                            sys.stderr.write(
+                                f"Wrote {n} ui_files in {time.time() - t0}s\n"
+                            )
         sys.stderr.write(f"Wrote {n} ui_files in {time.time() - t0}s\n")
         # Get and write files from studies. Similar to bulk cases, loop over program,
         # project, study and extract files per study
         n = 0
         with gzip.open("pdc_studyfiles_out.jsonl.gz", "wb") as fp:
-            writer = jsonlines.Writer(fp)
-            async for chunk in self._study_files_chunk():
-                for file in chunk:
-                    if file_ids is None or file["file_id"] in file_ids:
-                        writer.write(file)
-                        n += 1
-                        if n % 5000 == 0:
-                            sys.stderr.write(
-                                f"Pulled {n} study files in {time.time() - t0}s\n"
-                            )
+            with jsonlines.Writer(fp) as writer:
+                async for chunk in self._study_files_chunk():
+                    for file in chunk:
+                        if file_ids is None or file["file_id"] in file_ids:
+                            writer.write(file)
+                            n += 1
+                            if n % 5000 == 0:
+                                sys.stderr.write(
+                                    f"Pulled {n} study files in {time.time() - t0}s\n"
+                                )
         sys.stderr.write(f"Pulled {n} study files in {time.time() - t0}s\n")
 
         # Write specimen_files_dict to file
@@ -308,15 +304,18 @@ class PDC(Extractor):
             for f in ["pdc_meta_out.jsonl.gz", "pdc_studyfiles_out.jsonl.gz"]:
                 with gzip.open(f) as f_in:
                     shutil.copyfileobj(f_in, f_out)
+        return out_file
 
-    async def _metadata_files_chunk(self, file_ids=None) -> AsyncGenerator[list,dict]:
+    async def _metadata_files_chunk(self, file_ids=None) -> AsyncGenerator[list, dict]:
         futures = []
 
         if file_ids:
             files = []
             for file_id in file_ids:
                 result = await retry_get(
-                    session=None, endpoint=self.endpoint, params={"query": query_metadata_file(file_id)}
+                    session=None,
+                    endpoint=self.endpoint,
+                    params={"query": query_metadata_file(file_id)},
                 )
                 files.extend(result["data"]["fileMetadata"])
             yield files
@@ -328,9 +327,13 @@ class PDC(Extractor):
                 # sys.stderr.write(
                 #     f"<< Processing page {int(page/limit) + 1}/{ceil(totalfiles/limit)} Metadata Files >>\n"
                 # )
-                futures.append(retry_get(
-                    session=None, endpoint=self.endpoint, params={"query": query_files_bulk(page, limit)}
-                ))
+                futures.append(
+                    retry_get(
+                        session=None,
+                        endpoint=self.endpoint,
+                        params={"query": query_files_bulk(page, limit)},
+                    )
+                )
 
                 if len(futures) == future_limit:
                     results = await asyncio.gather(*futures)
@@ -339,7 +342,7 @@ class PDC(Extractor):
 
                     for result in results:
                         yield result["data"]["fileMetadata"]
-                #yield result["data"]["fileMetadata"]
+                # yield result["data"]["fileMetadata"]
             if len(futures) > 0:
                 results = await asyncio.gather(*futures)
 
@@ -348,7 +351,7 @@ class PDC(Extractor):
                 for result in results:
                     yield result["data"]["fileMetadata"]
 
-    async def _UIfiles_chunk(self) ->  AsyncGenerator[list,dict]:
+    async def _UIfiles_chunk(self) -> AsyncGenerator[list, dict]:
         totalfiles = await self._get_total_uifiles()
         limit = 750
         futures = []
@@ -358,9 +361,13 @@ class PDC(Extractor):
             #     f"<< Processing page {int(page/limit) + 1}/{ceil(totalfiles/limit)}  UI Files >>\n"
             # )
             sys.stderr.write("\n")
-            futures.append(retry_get(
-                session=None, endpoint=self.endpoint, params={"query": query_UIfiles_bulk(page, limit)}
-            ))
+            futures.append(
+                retry_get(
+                    session=None,
+                    endpoint=self.endpoint,
+                    params={"query": query_UIfiles_bulk(page, limit)},
+                )
+            )
 
             if len(futures) == 5:
                 results = await asyncio.gather(*futures)
@@ -371,19 +378,21 @@ class PDC(Extractor):
                     yield result["data"]["getPaginatedUIFile"]["uiFiles"]
 
         if len(futures) > 0:
-                results = await asyncio.gather(*futures)
+            results = await asyncio.gather(*futures)
 
-                futures = []
+            futures = []
 
-                for result in results:
-                    yield result["data"]["getPaginatedUIFile"]["uiFiles"]
+            for result in results:
+                yield result["data"]["getPaginatedUIFile"]["uiFiles"]
 
     async def _study_files_chunk(
         self,
-    )-> AsyncGenerator[list,dict]:
+    ) -> AsyncGenerator[list, dict]:
         # loop over studies to get files
         jData = await retry_get(
-            session=None, endpoint=self.endpoint, params={"query": make_all_programs_query()}
+            session=None,
+            endpoint=self.endpoint,
+            params={"query": make_all_programs_query()},
         )
         AllPrograms = jData["data"]["allPrograms"]
         for program in AllPrograms:
@@ -397,9 +406,13 @@ class PDC(Extractor):
                         sys.stderr.write("WTF\n")
                         sys.stderr.write(str(project))
 
-                    futures.append(retry_get(
-                        session=None, endpoint=self.endpoint, params={"query": query_study_files(pdc_study_id)}
-                    ))
+                    futures.append(
+                        retry_get(
+                            session=None,
+                            endpoint=self.endpoint,
+                            params={"query": query_study_files(pdc_study_id)},
+                        )
+                    )
                     num_studies -= 1
 
                     if num_studies == 0 or len(futures) == 2:
@@ -423,13 +436,17 @@ class PDC(Extractor):
 
     async def _get_total_files(self) -> int:
         result = await retry_get(
-            session=None, endpoint=self.endpoint, params={"query": query_files_paginated(0, 1)}
+            session=None,
+            endpoint=self.endpoint,
+            params={"query": query_files_paginated(0, 1)},
         )
         return result["data"]["getPaginatedFiles"]["total"]
 
     async def _get_total_uifiles(self) -> int:
         result = await retry_get(
-            session=None, endpoint=self.endpoint, params={"query": query_uifiles_paginated_total(0, 1)}
+            session=None,
+            endpoint=self.endpoint,
+            params={"query": query_uifiles_paginated_total(0, 1)},
         )
         return result["data"]["getPaginatedUIFile"]["total"]
 

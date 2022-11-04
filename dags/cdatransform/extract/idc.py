@@ -485,4 +485,3 @@ endpoint_type = Union[Literal["Patient"], Literal["File"]]
 #     if make_bucket_file:
 #         idc.table_to_bucket()
 #     idc.download_blob()
-

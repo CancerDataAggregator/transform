@@ -9,34 +9,38 @@ from google.cloud import storage
 import json
 import aiohttp
 from typing import Union
+from asyncio import Semaphore
 
 
-async def retry_get(session, endpoint, params, base_retry_interval=180.0):
+async def retry_get(
+    session: aiohttp.client.ClientSession, endpoint, params, base_retry_interval=30.0
+):
+
     retry_interval = base_retry_interval
-    await asyncio.sleep(1)
-    async with aiohttp.ClientSession() as session:
+    while True:
+        await asyncio.sleep(1)
         async with session.get(
             url=endpoint, params=params, timeout=retry_interval
         ) as response:
-            while True:
-                try:
-                    result = response
-                    if result.ok:
-                        return await result.json()
-                    else:
-                        sys.stderr.write(str(await result.text()))
-                        sys.stderr.write(
-                            f"API call failed. Retrying in {retry_interval}s ...\n"
-                        )
-                        await asyncio.sleep(retry_interval)
-                        retry_interval *= 2
-                except:
+
+            try:
+                result = response
+                if result.ok:
+                    return await result.json()
+                else:
+                    sys.stderr.write(str(await result.text()))
                     sys.stderr.write(
                         f"API call failed. Retrying in {retry_interval}s ...\n"
                     )
                     await asyncio.sleep(retry_interval)
-
                     retry_interval *= 2
+            except:
+                sys.stderr.write(
+                    f"API call failed. Retrying in {retry_interval}s ...\n"
+                )
+                await asyncio.sleep(retry_interval)
+
+                retry_interval *= 2
 
 
 def send_json_to_storage(json_obj):

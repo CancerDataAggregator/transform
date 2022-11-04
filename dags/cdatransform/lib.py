@@ -21,5 +21,6 @@ def yamlPathMapping(yaml_mapping_file=None):
     YAMLFILEDIR = "./dags/yaml_merge_and_mapping_dir/mapping/"
     return f"{YAMLFILEDIR}{yaml_mapping_file}"
 
+
 def make_harmonized_file_name(file_name: str):
-    return file_name.replace('.jsonl', '.H.jsonl')
+    return file_name.replace(".jsonl", ".H.jsonl")

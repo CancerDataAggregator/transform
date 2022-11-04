@@ -75,6 +75,7 @@ class GDC(Extractor):
         self.field_break = field_break
         self.fields = fields
         self.make_spec_file = make_spec_file
+        super().__init__()
 
     def det_field_chunks(self, num_chunks) -> list:
         field_groups = defaultdict(list)
@@ -134,7 +135,9 @@ class GDC(Extractor):
                 }
                 # print(str(params))
 
-                result = await retry_get(session=session, endpoint=endpt, params=params)
+                result = await retry_get(
+                    session=session, endpoint=endpt, params=params
+                )
                 hits = result["data"]["hits"]
                 for hit in hits:
                     all_hits_dict[hit["id"]].append(hit)
@@ -163,10 +166,10 @@ class GDC(Extractor):
         t0: float = time()
         loop: asyncio.AbstractEventLoop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        end_cases: list = loop.run_until_complete(
-            self.http_call_save_files_or_cases(endpoint="case",out_file=out_file)
-        )
 
+        return loop.run_until_complete(
+            self.http_call_save_files_or_cases(endpoint="case", out_file=out_file)
+        )
         # self.write_file(out_file, end_cases, t0)
 
         # send_json_to_storage(end_cases)
@@ -178,55 +181,12 @@ class GDC(Extractor):
         t0 = time()
         loop: asyncio.AbstractEventLoop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        end_cases: list = loop.run_until_complete(
+        return loop.run_until_complete(
             self.http_call_save_files_or_cases(
                 endpoint="file",
                 page_size=page_size,
                 case_ids=file_ids,
                 num_field_chunks=2,
-                out_file=out_file
+                out_file=out_file,
             )
         )
-        # # need to write dictionary of file_ids per specimen (specimen: [files])
-        # specimen_files_dict = defaultdict(list)
-        # with gzip.open(out_file, "wb") as fp:
-        #     with jsonlines.Writer(fp) as writer:
-        #         for index, file in enumerate(end_cases):
-        #             # _files(file_ids, page_size):
-        #             writer.write(file)
-        #             index += 1
-        #             if index % page_size == 0:
-        #                 print(
-        #                     f"Wrote {index} files in {self.current_time_rate(t0)}s\n",
-        #                     flush=True,
-        #                 )
-        #             if self.make_spec_file:
-        #                 for entity in file.get("associated_entities", []):
-        #                     if entity["entity_type"] != "case":
-        #                         specimen_files_dict[entity["entity_id"]].append(
-        #                             file["file_id"]
-        #                         )
-
-        # print(f"Wrote {index} files in {self.current_time_rate(t0)}s\n", flush=True)
-        # if self.make_spec_file:
-        #     for specimen, files in specimen_files_dict.items():
-        #         specimen_files_dict[specimen] = list(set(files))
-        #     with gzip.open(self.make_spec_file, "wt", encoding="ascii") as out:
-        #         json.dump(specimen_files_dict, out)
-
-
-# def main() -> None:
-
-
-#     # gdc.save_cases(
-#     #         args.out_file,
-#     #         case_ids=get_case_ids(case=args.case, case_list_file=args.cases),
-#     #     )
-#     # gdc.save_files(
-#     #         args.out_file,
-#     #         file_ids=get_case_ids(case=args.file, case_list_file=args.files),
-#     #     )
-
-
-# if __name__ == "__main__":
-#     main()

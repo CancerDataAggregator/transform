@@ -5,7 +5,7 @@ from cdatransform.lib import make_harmonized_file_name
 
 
 @task(task_id="gdc_extract_cases")
-def gdc_cases(uuid:str, **kwargs):
+def gdc_cases(uuid: str, **kwargs):
     print("Extracting GDC")
     gdc = GDC()
     file_name = f"gdc.all_cases_{uuid}.jsonl.gz"
@@ -13,13 +13,15 @@ def gdc_cases(uuid:str, **kwargs):
 
     return file_name
 
+
 @task(task_id="gdc_extract_files")
-def  gdc_files(uuid:str, **kwargs):
+def gdc_files(uuid: str, **kwargs):
     gdc = GDC()
     file_name = f"gdc.all_files_{uuid}.jsonl.gz"
     gdc.save_files(file_name)
 
     return file_name
+
 
 @task(task_id="gdc_transform_cases")
 def gdc_transform_cases(extract_result: str, **kwargs):
@@ -33,6 +35,7 @@ def gdc_transform_cases(extract_result: str, **kwargs):
 
     return output_file_name
 
+
 @task(task_id="gdc_transform")
 def gdc_transform_files(extract_result: str, **kwargs):
     output_file_name = make_harmonized_file_name(extract_result)
@@ -45,10 +48,12 @@ def gdc_transform_files(extract_result: str, **kwargs):
 
     return output_file_name
 
+
 @task(task_id="gdc_aggregate_cases")
-def gdc_aggregate_cases(uuid:str, transform_result: str, **kwargs):
+def gdc_aggregate_cases(uuid: str, transform_result: str, **kwargs):
     return f"gdc.all_Subjects.{uuid}.jsonl.gz"
 
+
 @task(task_id="gdc_aggregate_files")
-def gdc_aggregate_files(uuid:str, transform_result: str, **kwargs):
+def gdc_aggregate_files(uuid: str, transform_result: str, **kwargs):
     return f"gdc.all_Files.{uuid}.jsonl.gz"

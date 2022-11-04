@@ -6,7 +6,7 @@ from typing_extensions import DefaultDict
 # reading functions - simple read and read_entity
 def simp_read(
     orig: dict,
-    ptr_o: Union[str,list],
+    ptr_o: Union[str, list],
     cp_o: list,
 ):
     """This function takes an original row from output file (1 case or file - dict), a string denoting
@@ -34,7 +34,7 @@ def simp_read(
         return ptr[0]
     rmoved: str = cp.pop(0)
     ptr.remove(rmoved)
-    rec:Union[list,dict] = orig.copy()
+    rec: Union[list, dict] = orig.copy()
     while len(ptr) > 0 and rec is not None:
         # While the pointer path still has places to go, and the record still has things to explore...
         if cp != [] and ptr[0] == cp[0]:
@@ -74,12 +74,7 @@ def simp_read(
     return rec
 
 
-def read_entry(
-    orig: dict,
-    MandT: dict,
-    entity: str,
-    **kwargs
-) -> dict:
+def read_entry(orig: dict, MandT: dict, entity: str, **kwargs) -> dict:
     """_summary_
 
     Args:
@@ -151,11 +146,7 @@ def read_entry(
 #           }
 #       }
 #   }
-def det_tree_to_collapse(
-    MandT: dict,
-    entity: str,
-    **kwargs
-) -> dict:
+def det_tree_to_collapse(MandT: dict, entity: str, **kwargs) -> dict:
     """Functions to determine tree structure of nested things in YAML.
         e.g. From id: {"samples": 'cases.samples.sample_id',
                     "portions": 'cases.samples.portions.portion_id',
@@ -199,9 +190,7 @@ def det_tree_to_collapse(
     return tree
 
 
-def mergedicts(
-    dict1: dict, dict2: dict
-) -> Iterator:
+def mergedicts(dict1: dict, dict2: dict) -> Iterator:
     for k in set(dict1.keys()).union(dict2.keys()):
         if k in dict1 and k in dict2:
             if isinstance(dict1[k], dict) and isinstance(dict2[k], dict):
@@ -222,19 +211,14 @@ def mergedicts(
             yield (k, dict2[k])
 
 
-def spec_type_from_path(cur_path: list)-> Optional[str]:
+def spec_type_from_path(cur_path: list) -> Optional[str]:
     if isinstance(cur_path[-1], str):
         return cur_path[-1]
     if isinstance(cur_path[-2], str):
         return cur_path[-2]
 
 
-def add_linkers(
-    orig: dict,
-    MandT: dict,
-    entity: str,
-    **kwargs
-):
+def add_linkers(orig: dict, MandT: dict, entity: str, **kwargs):
     """This function looks at a record of an entity (Subject, ResearchSubject, etc.) and adds any linker
     fields (like Files to Subject entities). This function is now only used to add Subjects, ResearchSubjects,
     and Specimens to the Files table
