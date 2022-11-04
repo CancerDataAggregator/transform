@@ -8,6 +8,8 @@ from collections import defaultdict
 
 import jsonlines
 
+from dags.cdatransform.models.extraction_result import ExtractionResult
+
 
 from .extractor import Extractor
 
@@ -63,6 +65,7 @@ def find_all_deepest_specimens(samples) -> list:
 class GDC(Extractor):
     def __init__(
         self,
+        dest_bucket: str,
         cases_endpoint: str = "https://api.gdc.cancer.gov/v0/cases",
         files_endpoint: str = "https://api.gdc.cancer.gov/v0/files",
         # parent_spec: bool = True,
@@ -75,7 +78,7 @@ class GDC(Extractor):
         self.field_break = field_break
         self.fields = fields
         self.make_spec_file = make_spec_file
-        super().__init__()
+        super().__init__(dest_bucket=dest_bucket)
 
     def det_field_chunks(self, num_chunks) -> list:
         field_groups = defaultdict(list)
@@ -160,7 +163,7 @@ class GDC(Extractor):
 
     def save_cases(
         self, out_file: str, case_ids: str = None, page_size: int = 500
-    ) -> None:
+    ) -> ExtractionResult:
         self.fields = case_fields
         print("starting save cases")
         t0: float = time()
@@ -176,7 +179,7 @@ class GDC(Extractor):
 
     def save_files(
         self, out_file: str, file_ids: list = None, page_size: int = 5000
-    ) -> None:
+    ) -> ExtractionResult:
         self.fields = file_fields
         t0 = time()
         loop: asyncio.AbstractEventLoop = asyncio.new_event_loop()
