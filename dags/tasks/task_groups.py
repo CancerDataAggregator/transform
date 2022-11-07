@@ -26,12 +26,12 @@ from tasks.gdc import gdc_cases, gdc_files
 # region GDC
 @task_group(group_id="GDC_Cases")
 def gdc_cases_task_group(uuid: str, **kwargs):
-    return gdc_aggregate_cases(uuid, gdc_transform_cases(gdc_cases(uuid)))
+    return gdc_aggregate_cases(uuid, gdc_transform_cases(uuid, gdc_cases(uuid)))
 
 
 @task_group(group_id="GDC_Files")
 def gdc_files_task_group(uuid: str, **kwargs):
-    return gdc_aggregate_files(uuid, gdc_transform_files(gdc_files(uuid)))
+    return gdc_aggregate_files(uuid, gdc_transform_files(uuid, gdc_files(uuid)))
 
 
 @task_group(group_id="GDC")

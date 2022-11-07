@@ -83,7 +83,7 @@ class Extractor:
 
             if len(end_cases) > 0:
                 end_cases = self._write_items_and_clear(end_cases, out_file, t0)
-            return ExtractionResult(out_file, self.file_index, self.dest_bucket)
+        return ExtractionResult(out_file, self.file_index, self.dest_bucket)
 
     def _write_items_and_clear(self, items, out_file: str, t0):
         self.file_index += 1

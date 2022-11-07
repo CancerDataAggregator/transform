@@ -28,3 +28,10 @@ class StorageService:
         gcp_buck_path, mode, transport_params=dict(client=self.gcp_client)
     ) as fp:
       return callback(fp, reader)
+
+  def get_session(self, gcp_buck_path: str, mode: str):
+    return open(gcp_buck_path, mode, transport_params=dict(client=self.gcp_client))
+
+  def compose_blobs(self, files: list, bucket_name: str, output_file: str):
+    bucket = self.gcp_client.bucket(bucket_name)
+    bucket.blob(output_file).compose(files)

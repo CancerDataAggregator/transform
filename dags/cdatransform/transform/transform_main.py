@@ -68,7 +68,7 @@ Endpoint_type = Union[Literal["cases"], Literal["files"]]
 def transform_case_or_file(
     storage_service: StorageService,
     bucket_name: str,
-    input_file: str = "",
+    input_files: list,
     output_file: str = "",
     yaml_mapping_transform_file: Optional[YamlFileMapping] = None,
     endpoint: Endpoint_type = "cases",
@@ -102,27 +102,20 @@ def transform_case_or_file(
         id_list_file=ids_lookup_in_jsonl_file_case_or_file,
     )
     # path_str = str(Path(input_file).resolve())
-    def write_from_reader(outfp, reader):
-        nonlocal _count
 
+    with storage_service.get_session(f"{bucket_name}/{output_file}", "w") as outfp:
         with jsonlines.Writer(outfp) as writer:
-            for line in reader:
-                if id_list is None or line.get("id") in id_list:
-                    writer.write(transform(line))
-                    _count += 1
-                    if _count % 1000 == 0:
-                        sys.stderr.write(
-                            f"Processed {_count} {endpoint} ({time.time() - t0}).\n")
-
-    def process(infp):
-        with jsonlines.Reader(infp) as reader:
-            storage_service.open_session_with_reader(write_from_reader, reader, output_file, "w")
-
-    storage_service.open_session(process, input_file, "r")
+            for input_file in input_files:
+                with storage_service.get_session(input_file, "r") as infp:
+                    with jsonlines.Reader(infp) as reader:
+                        for line in reader:
+                            if id_list is None or line.get("id") in id_list:
+                                writer.write(transform(line))
+                                _count += 1
+                                if _count % 1000 == 0:
+                                    sys.stderr.write(
+                                        f"Processed {_count} {endpoint} ({time.time() - t0}).\n")
 
     sys.stderr.write(f"Processed {_count} {endpoint} ({time.time() - t0}).\n")
 
-
-if __name__ == "__main__":
-    # execute only if run as a script
-    transform_case_or_file()
+    return f"{bucket_name}/{output_file}"

@@ -7,6 +7,8 @@ import yaml
 import gzip
 import logging
 from typing import DefaultDict
+
+from dags.cdatransform.services.storage_service import StorageService
 from .merge.merge_functions import merge_fields_level
 import jsonlines
 import yaml
@@ -18,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 """
-Custom Types defintions 
+Custom Types defintions
 """
 Endpoint_type_aggregation = Union[Literal["subjects"], Literal["files"]]
 
@@ -100,6 +102,8 @@ def merge_entities_with_same_id(entity_recs: list[dict], how_to_merge_entity: di
 
 
 def aggregation(
+    storage_service: StorageService,
+    bucket_name: str,
     input_file: str = "",
     output_file: str = "",
     merge_file: Optional[YamlFileMerge] = None,
@@ -130,13 +134,13 @@ def aggregation(
 
     with open(merge_file) as file:
         how_to_merge = yaml.full_load(file)
-    with gzip.open(input_file, "r") as infp:
+    with storage_service.get_session(input_file, "r") as infp:
         with jsonlines.Reader(infp) as readDC:
             entity_rec_mapping = defaultdict(list)
             for rec in readDC:
                 id = rec["id"]
                 entity_rec_mapping[id].append(rec)
-    with gzip.open(output_file, "w") as outfp:
+    with storage_service.get_session(f"{bucket_name}/{output_file}", "w") as outfp:
         with jsonlines.Writer(outfp) as writeDC:
             log = LogValidation()
             for id, records in entity_rec_mapping.items():
@@ -190,6 +194,4 @@ def aggregation(
                 writeDC.write(merged_entry)
             log.generate_report(logging.getLogger("test"))
 
-
-if __name__ == "__main__":
-    aggregation()
+    return f"{bucket_name}/{output_file}"

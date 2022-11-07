@@ -7,6 +7,9 @@ class ExtractionResult:
     self.last_index = last_index
     self.bucket_name = bucket_name
 
-  def file_loop(self, file_ext: str = "jsonl.gz"):
+  def file_list(self, file_ext: str = "jsonl.gz"):
+    files = []
     for i in range(0, self.last_index):
-      yield f"{self.bucket_name}/{self.prefix}-index-{i}.{file_ext}"
+       files.append(f"{self.bucket_name}/{self.prefix}-index-{i}.{file_ext}")
+
+    return files
