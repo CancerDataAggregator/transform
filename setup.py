@@ -23,6 +23,7 @@ setup(
         "deepdiff",
         "google-cloud-storage",
         "google-cloud-bigquery",
+        "smart-open"
     ],
     entry_points={
         "console_scripts": [

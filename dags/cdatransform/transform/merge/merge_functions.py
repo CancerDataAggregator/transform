@@ -7,13 +7,13 @@
 #     )
 #     print(dat_dict)
 from collections import defaultdict
-from typing import Union
+from typing import Union, Dict, List
 
 
 def source_hierarchy_by_time(records_dict):
     # accepts list of dicts, finds created time, sorts by oldest to newest
     times = []
-    to_dat_dict = dict()
+    to_dat_dict = Dict()
     for rec in records_dict:
         if "created_datetime" in rec:
             ctime = rec.pop("created_datetime")
@@ -121,12 +121,12 @@ def append_field_vals_to_single_list(field_vals_list_of_lists, **kwargs):
 
 
 def coalesce_field_values(
-    data_dictionary: dict[
-        Union[str, int], Union[str, int, list[str], list[int], list[dict]]
+    data_dictionary: Dict[
+        Union[str, int], Union[str, int, List[str], List[int], List[Dict]]
     ],
-    default_value: Union[str, int, list[str], list[int]],
-    source_hierarchy: list[Union[str, int]],
-) -> Union[str, int, list[str], list[int], list[dict]]:
+    default_value: Union[str, int, List[str], List[int]],
+    source_hierarchy: List[Union[str, int]],
+) -> Union[str, int, List[str], List[int], List[Dict]]:
     """Given {source1:value1, source2,value2...} and source hierarchy = ['source1, source2...]
     return value1 if value1 is none, or value2 if value1 is none and value2 is not none... etc
 
@@ -147,10 +147,10 @@ def coalesce_field_values(
 
 
 def merge_identifiers(
-    data_dictionary: dict[
-        Union[str, int], Union[str, int, list[str], list[int], list[dict]]
+    data_dictionary: Dict[
+        Union[str, int], Union[str, int, List[str], List[int], List[Dict]]
     ]
-) -> list[dict[str, str]]:
+) -> List[Dict[str, str]]:
     dat_identifiers: list[dict[str, str]] = []
     for identifiers in data_dictionary.values():
         # identifiers is list of dicts. Loop over all lists of dicts and append to dat_identifiers if

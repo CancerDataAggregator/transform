@@ -90,7 +90,7 @@ class PDC(Extractor):
             endpoint=self.endpoint,
             params={"query": make_all_programs_query()},
         )
-        AllPrograms: list[dict[str, str | int | list]] = jData["data"]["allPrograms"]
+        AllPrograms: list[dict[str, Union[str, int, list]]] = jData["data"]["allPrograms"]
         # Loop over studies, and get demographics, diagnoses, samples, and taxon
         out = []
         for program in AllPrograms:

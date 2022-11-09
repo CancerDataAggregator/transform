@@ -86,7 +86,7 @@ class GDC(Extractor):
         for field in self.fields:
             field_groups[field.split(".")[0]].append(field)
         chunk = 0
-        for _, field_list in field_groups.items():
+        for field_list in field_groups.values():
             field_chunks[chunk].extend(field_list)
             if len(field_chunks[chunk]) > len(self.fields) / num_chunks:
                 chunk += 1
@@ -123,9 +123,9 @@ class GDC(Extractor):
             endpt = self.files_endpoint
         offset: int = 0
         field_chunks = self.det_field_chunks(num_field_chunks)
-        break_loop = False
-        while not break_loop:
-            all_hits_dict = defaultdict(list)
+        while True:
+            all_hits_dict = defaultdict(list) # { id1: [{record1 - fields from chunk1},
+                                              #         {record2 - fields from chunk 2}]}
             for field_chunk in field_chunks:
                 fields = ",".join(field_chunk)
                 params = {
@@ -147,23 +147,24 @@ class GDC(Extractor):
                 page = result["data"]["pagination"]
                 current_page = page.get("page")
                 current_pages = page.get("pages")
-                if current_page >= current_pages:
-                    break_loop = True
 
-                sys.stderr.write(f"Pulling page {current_page} / {current_pages}\n")
+            sys.stderr.write(f"Pulling page {current_page} / {current_pages}\n")
 
-                res_list = [
-                    {key: value for record in records for key, value in record.items()}
-                    for records in all_hits_dict.values()
-                ]
-                for result_from_list in res_list:
-                    yield result_from_list
+            # Merge records of same case/file so there is one record with all desired fields
+            res_list = [
+                {key: value for record in records for key, value in record.items()}
+                for records in all_hits_dict.values()
+            ]
+            for result_from_list in res_list:
+                yield result_from_list
 
-                offset += page_size
+            if current_page >= current_pages:
+                break
+            offset += page_size
 
     def save_cases(
         self, out_file: str, case_ids: str = None, page_size: int = 500
-    ) -> ExtractionResult:
+    ) -> str:
         self.fields = case_fields
         print("starting save cases")
         t0: float = time()
@@ -179,7 +180,7 @@ class GDC(Extractor):
 
     def save_files(
         self, out_file: str, file_ids: list = None, page_size: int = 5000
-    ) -> ExtractionResult:
+    ) -> str:
         self.fields = file_fields
         t0 = time()
         loop: asyncio.AbstractEventLoop = asyncio.new_event_loop()

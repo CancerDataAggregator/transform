@@ -59,7 +59,7 @@ class Extractor:
         page_size: int = 500,
         num_field_chunks: int = 3,
         out_file: str = "",
-    ) -> ExtractionResult:
+    ) -> str:
         """
         this will call the case api asynchronously and write the each case to a array
         Args:
@@ -69,38 +69,16 @@ class Extractor:
         """
         t0 = time()
         end_cases = end_cases or []
+        output_path = f"{self.dest_bucket}/{out_file}"
         async with aiohttp.ClientSession() as session:
-            async for case in self._paginate_files_or_cases(
-                ids=case_ids,
-                endpt=endpoint,
-                page_size=page_size,
-                num_field_chunks=num_field_chunks,
-                session=session,
-            ):
-                end_cases.append(case)
-                if len(end_cases) >= 50_000:
-                    end_cases = self._write_items_and_clear(end_cases, out_file, t0)
-
-            if len(end_cases) > 0:
-                end_cases = self._write_items_and_clear(end_cases, out_file, t0)
-        return ExtractionResult(out_file, self.file_index, self.dest_bucket)
-
-    def _write_items_and_clear(self, items, out_file: str, t0):
-        self.file_index += 1
-        new_out_file = out_file.replace(".jsonl.gz", "")
-        gcp_buck_path = f"{self.dest_bucket}/{new_out_file}-index-{self.file_index}.jsonl.gz"
-
-        def write_json(fp):
-            with jsonlines.Writer(fp) as wri:
-                for index, value in enumerate(self.items):
-                    index += 1
-                    if index % 50 == 0:
-                        print(
-                            f"Wrote {index} cases in {self.current_time_rate(t0)}s\n",
-                            flush=True,
-                        )
-                    wri.write(value)
-
-                self.items = []
-                return self.items
-        return self.storage_service.open_session(write_json, gcp_buck_path=gcp_buck_path, mode="w")
+            with self.storage_service.get_session(gcp_buck_path=output_path, mode="w") as fp:
+                with jsonlines.Writer(fp) as wri:
+                    async for case in self._paginate_files_or_cases(
+                        ids=case_ids,
+                        endpt=endpoint,
+                        page_size=page_size,
+                        num_field_chunks=num_field_chunks,
+                        session=session,
+                    ):
+                        wri.write(case)
+        return output_path

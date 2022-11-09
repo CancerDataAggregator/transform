@@ -6,7 +6,7 @@ import jsonlines
 import yaml
 import gzip
 import logging
-from typing import DefaultDict
+from typing import DefaultDict, List, Dict, Tuple
 
 from dags.cdatransform.services.storage_service import StorageService
 from .merge.merge_functions import merge_fields_level
@@ -25,8 +25,8 @@ Custom Types defintions
 Endpoint_type_aggregation = Union[Literal["subjects"], Literal["files"]]
 
 
-def get_coalesce_field_names(merge_field_dict) -> list[str]:
-    coal_fields: list[str] = [
+def get_coalesce_field_names(merge_field_dict) -> List[str]:
+    coal_fields: List[str] = [
         key
         for key, val in merge_field_dict.items()
         if val.get("merge_type") == "coalesce"
@@ -35,8 +35,8 @@ def get_coalesce_field_names(merge_field_dict) -> list[str]:
 
 
 def prep_log_merge_error(
-    entities: dict[str, dict], merge_field_dict, endpoint
-) -> tuple[list[str], dict, str, str]:
+    entities: Dict[str, dict], merge_field_dict, endpoint
+) -> Tuple[List[str], dict, str, str]:
     sources = list(entities.keys())
     coal_fields: list[str] = get_coalesce_field_names(merge_field_dict)
     ret_dat: dict = {}
@@ -83,7 +83,7 @@ def log_merge_error(
     return log
 
 
-def merge_entities_with_same_id(entity_recs: list[dict], how_to_merge_entity: dict):
+def merge_entities_with_same_id(entity_recs: List[dict], how_to_merge_entity: dict):
     entities: DefaultDict = defaultdict(list)
     rec: list = []
     for entity in entity_recs:

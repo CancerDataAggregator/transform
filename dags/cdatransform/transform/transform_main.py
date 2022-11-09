@@ -68,7 +68,7 @@ Endpoint_type = Union[Literal["cases"], Literal["files"]]
 def transform_case_or_file(
     storage_service: StorageService,
     bucket_name: str,
-    input_files: list,
+    input_path: str,
     output_file: str = "",
     yaml_mapping_transform_file: Optional[YamlFileMapping] = None,
     endpoint: Endpoint_type = "cases",
@@ -105,16 +105,15 @@ def transform_case_or_file(
 
     with storage_service.get_session(f"{bucket_name}/{output_file}", "w") as outfp:
         with jsonlines.Writer(outfp) as writer:
-            for input_file in input_files:
-                with storage_service.get_session(input_file, "r") as infp:
-                    with jsonlines.Reader(infp) as reader:
-                        for line in reader:
-                            if id_list is None or line.get("id") in id_list:
-                                writer.write(transform(line))
-                                _count += 1
-                                if _count % 1000 == 0:
-                                    sys.stderr.write(
-                                        f"Processed {_count} {endpoint} ({time.time() - t0}).\n")
+            with storage_service.get_session(input_path, "r") as infp:
+                with jsonlines.Reader(infp) as reader:
+                    for line in reader:
+                        if id_list is None or line.get("id") in id_list:
+                            writer.write(transform(line))
+                            _count += 1
+                            if _count % 1000 == 0:
+                                sys.stderr.write(
+                                    f"Processed {_count} {endpoint} ({time.time() - t0}).\n")
 
     sys.stderr.write(f"Processed {_count} {endpoint} ({time.time() - t0}).\n")
 
