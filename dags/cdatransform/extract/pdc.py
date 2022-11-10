@@ -12,9 +12,12 @@ import json
 import pathlib
 import shutil
 import sys
+import aiohttp
 from collections import defaultdict
 from math import ceil
 import asyncio
+
+from dags.cdatransform.services.storage_service import StorageService
 
 from .extractor import Extractor
 
@@ -29,10 +32,16 @@ class hashabledict(dict):
 
 class PDC(Extractor):
     def __init__(
-        self, endpoint="https://pdc.cancer.gov/graphql", make_spec_file=None
+        self,
+        dest_bucket,
+        uuid,
+        endpoint="https://pdc.cancer.gov/graphql",
+        make_spec_file=None
     ) -> None:
         self.endpoint = endpoint
         self.make_spec_file = make_spec_file
+        self.uuid = uuid
+        super().__init__(dest_bucket=dest_bucket)
 
     def _get_initial_results(self, query_info, page_key, study_key):
         out = query_info["data"][page_key][study_key]
@@ -220,7 +229,7 @@ class PDC(Extractor):
     def save_cases(self, out_file, case_ids=None):
         loop: asyncio.AbstractEventLoop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        return loop.run_until_complete(self.http_call_save_files_or_cases(case_ids))
+        return loop.run_until_complete(self.http_call_save_files_or_cases(case_ids, out_file=out_file))
 
     def save_files(self, out_file, file_ids=None):
         loop: asyncio.AbstractEventLoop = asyncio.new_event_loop()
@@ -236,58 +245,73 @@ class PDC(Extractor):
         # is not needed on our end, but leaving it for now
         n = 0
         specimen_files_dict = defaultdict(list)
-        with gzip.open("pdc_meta_out.jsonl.gz", "wb") as fp:
-            with jsonlines.Writer(fp) as writer:
-                async for chunk in self._metadata_files_chunk(file_ids):
-                    for rec in chunk:
-                        if file_ids is None or rec["file_id"] in file_ids:
-                            writer.write(rec)
-                            # add to specimen:file dictionary
-                            if rec.get("aliquots") is not None:
-                                for aliquot in rec.get("aliquots", []):
-                                    specimen_files_dict[aliquot["sample_id"]].append(
-                                        rec["file_id"]
+        #with gzip.open("pdc_meta_out.jsonl.gz", "wb") as fp:
+        meta_out_path = f"{self.dest_bucket}/pdc.meta_out.{self.uuid}.jsonl.gz"
+        async with aiohttp.ClientSession() as session:
+            with self.storage_service.get_session(
+                gcp_buck_path=meta_out_path,
+                mode="w") as fp:
+                with jsonlines.Writer(fp) as writer:
+                    async for chunk in self._metadata_files_chunk(session, file_ids):
+                        for rec in chunk:
+                            if file_ids is None or rec["file_id"] in file_ids:
+                                writer.write(rec)
+                                # add to specimen:file dictionary
+                                if rec.get("aliquots") is not None:
+                                    for aliquot in rec.get("aliquots", []):
+                                        specimen_files_dict[aliquot["sample_id"]].append(
+                                            rec["file_id"]
+                                        )
+                                        specimen_files_dict[aliquot["aliquot_id"]].append(
+                                            rec["file_id"]
+                                        )
+                                n += 1
+                                if n % 500 == 0:
+                                    sys.stderr.write(
+                                        f"Wrote {n} metadata files in {time.time() - t0}s\n"
                                     )
-                                    specimen_files_dict[aliquot["aliquot_id"]].append(
-                                        rec["file_id"]
-                                    )
-                            n += 1
-                            if n % 500 == 0:
-                                sys.stderr.write(
-                                    f"Wrote {n} metadata files in {time.time() - t0}s\n"
-                                )
 
         sys.stderr.write(f"Wrote {n} metadata_files in {time.time() - t0}s\n")
         # Get and write UIfile chunks - PDC does not support using any UI calls, but
         # Seven Bridges does it... so here we are. Note: CDA does not use anything from
         # the UI files, and it is strictly for Seven Bridges benefit
         n = 0
-        with gzip.open("pdc_uifiles_out.jsonl.gz", "wb") as fp:
-            with jsonlines.Writer(fp) as writer:
-                async for chunk in self._UIfiles_chunk():
-                    for rec in chunk:
-                        if file_ids is None or rec["file_id"] in file_ids:
-                            writer.write(rec)
-                        n += 1
-                        if n % 500 == 0:
-                            sys.stderr.write(
-                                f"Wrote {n} ui_files in {time.time() - t0}s\n"
-                            )
+        #with gzip.open("pdc_uifiles_out.jsonl.gz", "wb") as fp:
+        async with aiohttp.ClientSession() as session:
+            with self.storage_service.get_session(
+                gcp_buck_path=f"{self.dest_bucket}/pdc.uifiles_out.{self.uuid}.jsonl.gz",
+                mode="w") as fp:
+                with jsonlines.Writer(fp) as writer:
+                    async for chunk in self._UIfiles_chunk(session):
+                        for rec in chunk:
+                            if file_ids is None or rec["file_id"] in file_ids:
+                                writer.write(rec)
+                            n += 1
+                            if n % 500 == 0:
+                                sys.stderr.write(
+                                    f"Wrote {n} ui_files in {time.time() - t0}s\n"
+                                )
         sys.stderr.write(f"Wrote {n} ui_files in {time.time() - t0}s\n")
         # Get and write files from studies. Similar to bulk cases, loop over program,
         # project, study and extract files per study
         n = 0
-        with gzip.open("pdc_studyfiles_out.jsonl.gz", "wb") as fp:
-            with jsonlines.Writer(fp) as writer:
-                async for chunk in self._study_files_chunk():
-                    for file in chunk:
-                        if file_ids is None or file["file_id"] in file_ids:
-                            writer.write(file)
-                            n += 1
-                            if n % 5000 == 0:
-                                sys.stderr.write(
-                                    f"Pulled {n} study files in {time.time() - t0}s\n"
-                                )
+        #with gzip.open("pdc_studyfiles_out.jsonl.gz", "wb") as fp:
+        study_files_path = f"{self.dest_bucket}/pdc.studyfiles_out.{self.uuid}.jsonl.gz"
+        async with aiohttp.ClientSession() as session:
+            with self.storage_service.get_session(
+                gcp_buck_path=study_files_path,
+                mode="w"
+            ) as fp:
+                with jsonlines.Writer(fp) as writer:
+                    async for chunk in self._study_files_chunk(session):
+                        for file in chunk:
+                            if file_ids is None or file["file_id"] in file_ids:
+                                writer.write(file)
+                                n += 1
+                                if n % 5000 == 0:
+                                    sys.stderr.write(
+                                        f"Pulled {n} study files in {time.time() - t0}s\n"
+                                    )
         sys.stderr.write(f"Pulled {n} study files in {time.time() - t0}s\n")
 
         # Write specimen_files_dict to file
@@ -300,27 +324,30 @@ class PDC(Extractor):
         # concatenate metadata and studyfiles for CDA to transform. THIS IS THE
         # FILE TO USE FOR TRANSFORMATION! All other files are for the cloud resources
         # (ISB-CGC, Seven Bridges, Terra) to use instead of using PDC API
-        with gzip.open(out_file, "wb") as f_out:
-            for f in ["pdc_meta_out.jsonl.gz", "pdc_studyfiles_out.jsonl.gz"]:
-                with gzip.open(f) as f_in:
-                    shutil.copyfileobj(f_in, f_out)
-        return out_file
+        #with gzip.open(out_file, "wb") as f_out:
+        #with self.storage_service.get_session(gcp_buck_path=f"{self.dest_bucket}/{out_file}", mode="w") as f_out:
+            # for f in ["pdc_meta_out.jsonl.gz", "pdc_studyfiles_out.jsonl.gz"]:
+            #     with gzip.open(f) as f_in:
+            #         shutil.copyfileobj(f_in, f_out)
+        out_path = f"{self.dest_bucket}/{out_file}"
+        self.storage_service.compose_blobs([meta_out_path, study_files_path], self.dest_bucket, out_path)
+        return out_path
 
-    async def _metadata_files_chunk(self, file_ids=None) -> AsyncGenerator[list, dict]:
+    async def _metadata_files_chunk(self, session, file_ids=None) -> AsyncGenerator[list, dict]:
         futures = []
 
         if file_ids:
             files = []
             for file_id in file_ids:
                 result = await retry_get(
-                    session=None,
+                    session=session,
                     endpoint=self.endpoint,
                     params={"query": query_metadata_file(file_id)},
                 )
                 files.extend(result["data"]["fileMetadata"])
             yield files
         else:
-            totalfiles = await self._get_total_files()
+            totalfiles = await self._get_total_files(session)
             limit = 750
             future_limit = 5
             for page in range(0, totalfiles, limit):
@@ -329,7 +356,7 @@ class PDC(Extractor):
                 # )
                 futures.append(
                     retry_get(
-                        session=None,
+                        session=session,
                         endpoint=self.endpoint,
                         params={"query": query_files_bulk(page, limit)},
                     )
@@ -351,8 +378,8 @@ class PDC(Extractor):
                 for result in results:
                     yield result["data"]["fileMetadata"]
 
-    async def _UIfiles_chunk(self) -> AsyncGenerator[list, dict]:
-        totalfiles = await self._get_total_uifiles()
+    async def _UIfiles_chunk(self, session) -> AsyncGenerator[list, dict]:
+        totalfiles = await self._get_total_uifiles(session)
         limit = 750
         futures = []
 
@@ -363,7 +390,7 @@ class PDC(Extractor):
             sys.stderr.write("\n")
             futures.append(
                 retry_get(
-                    session=None,
+                    session=session,
                     endpoint=self.endpoint,
                     params={"query": query_UIfiles_bulk(page, limit)},
                 )
@@ -387,10 +414,11 @@ class PDC(Extractor):
 
     async def _study_files_chunk(
         self,
+        session
     ) -> AsyncGenerator[list, dict]:
         # loop over studies to get files
         jData = await retry_get(
-            session=None,
+            session=session,
             endpoint=self.endpoint,
             params={"query": make_all_programs_query()},
         )
@@ -408,7 +436,7 @@ class PDC(Extractor):
 
                     futures.append(
                         retry_get(
-                            session=None,
+                            session=session,
                             endpoint=self.endpoint,
                             params={"query": query_study_files(pdc_study_id)},
                         )
@@ -434,17 +462,17 @@ class PDC(Extractor):
                                     exit()
                             yield files_recs_update
 
-    async def _get_total_files(self) -> int:
+    async def _get_total_files(self, session) -> int:
         result = await retry_get(
-            session=None,
+            session=session,
             endpoint=self.endpoint,
             params={"query": query_files_paginated(0, 1)},
         )
         return result["data"]["getPaginatedFiles"]["total"]
 
-    async def _get_total_uifiles(self) -> int:
+    async def _get_total_uifiles(self, session) -> int:
         result = await retry_get(
-            session=None,
+            session=session,
             endpoint=self.endpoint,
             params={"query": query_uifiles_paginated_total(0, 1)},
         )

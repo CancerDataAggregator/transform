@@ -1,3 +1,4 @@
+import os
 from airflow.decorators import task
 from cdatransform.extract.pdc import PDC
 from datetime import datetime
@@ -8,18 +9,16 @@ from cdatransform.transform.transform_main import transform_case_or_file
 
 @task(task_id="pdc_cases")
 def pdc_cases(uuid: str, **kwargs):
-    pdc = PDC()
-    file_name = f"pdc-save-cases-{uuid}.jsonl.gz"
-    pdc.save_cases(file_name)
-    return file_name
+    pdc = PDC(dest_bucket=os.environ["PDC_DESTINATION_BUCKET"], uuid=uuid)
+    file_name = f"pdc.all_cases_{uuid}.jsonl.gz"
+    return pdc.save_cases(file_name)
 
 
 @task(task_id="pdc_files")
 def pdc_files(uuid: str, **kwargs):
-    pdc = PDC()
-    file_name = f"pdc-save-files-{uuid}.jsonl.gz"
-    pdc.save_files(file_name)
-    return file_name
+    pdc = PDC(dest_bucket=os.environ["PDC_DESTINATION_BUCKET"], uuid=uuid)
+    file_name = f"pdc.all_files_{uuid}.jsonl.gz"
+    return pdc.save_files(file_name)
 
 
 @task(task_id="pdc_transform_cases")

@@ -70,6 +70,7 @@ class Extractor:
         t0 = time()
         end_cases = end_cases or []
         output_path = f"{self.dest_bucket}/{out_file}"
+        files_written = 0
         async with aiohttp.ClientSession() as session:
             with self.storage_service.get_session(gcp_buck_path=output_path, mode="w") as fp:
                 with jsonlines.Writer(fp) as wri:
@@ -80,5 +81,8 @@ class Extractor:
                         num_field_chunks=num_field_chunks,
                         session=session,
                     ):
+                        files_written += 1
+                        if (files_written % 50 == 0):
+                            print(f"Wrote {files_written} rows in {time() - t0}s\n")
                         wri.write(case)
         return output_path
