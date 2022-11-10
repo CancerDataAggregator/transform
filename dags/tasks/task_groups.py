@@ -75,12 +75,12 @@ def idc_task_group(uuid: str, **kwargs):
 # region PDC
 @task_group(group_id="PDC_Cases")
 def pdc_cases_task_group(uuid: str, **kwargs):
-    return pdc_aggregate_cases(uuid, pdc_transform_cases(pdc_cases(uuid)))
+    return pdc_aggregate_cases(uuid, pdc_transform_cases(uuid, pdc_cases(uuid)))
 
 
 @task_group(group_id="PDC_Files")
 def pdc_files_task_group(uuid: str, **kwargs):
-    return pdc_aggregate_files(uuid, pdc_transform_files(pdc_files(uuid)))
+    return pdc_aggregate_files(uuid, pdc_transform_files(uuid, pdc_files(uuid)))
 
 
 @task_group(group_id="PDC")
