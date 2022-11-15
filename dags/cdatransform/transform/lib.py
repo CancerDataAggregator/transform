@@ -12,6 +12,9 @@ from dags.cdatransform.transform.pdclib import (
     entity_to_specimen as pdclib_entity_to_specimen,
     research_subject as pdclib_research_subject,
 )
+import yaml
+from yaml import Loader
+import dags.cdatransform.transform.transform_lib.transform_with_YAML_v1 as tr
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +28,29 @@ t_lib = {
     "pdc.patient": pdclib_patient,
     "pdc.research_subject": pdclib_research_subject,
 }
+
+def get_transformation_mapping(file_name: str):
+    YAMLFILEDIR = "./dags/yaml_merge_and_mapping_dir/mapping/"
+    if file_name is None or len(file_name) == 0:
+        yaml_mapping_transform_file = f"{YAMLFILEDIR}GDC_subject_endpoint_mapping.yml"
+    else:
+        yaml_mapping_transform_file = f"{YAMLFILEDIR}{file_name}"
+    # endpoint = ["case","file",]
+    # this is a str for the endpoints will change use param later
+
+    mapping_and_transformation: dict[str, dict[str, dict]] = yaml.load(
+        open(yaml_mapping_transform_file, "r"), Loader=Loader
+    )
+
+    for entity, mapping_or_transformation_dict in mapping_and_transformation.items():
+        if "Transformations" in mapping_or_transformation_dict:
+            mapping_and_transformation[entity][
+                "Transformations"
+            ] = tr.functionalize_trans_dict(
+                mapping_and_transformation[entity]["Transformations"]
+            )
+
+    return mapping_and_transformation
 
 
 def parse_transforms(t_list, t_lib):

@@ -1,69 +1,48 @@
 from typing import Union
 from typing_extensions import Literal
-from cdatransform.lib import get_ids
-import cdatransform.transform.transform_lib.transform_with_YAML_v1 as tr
+from dags.cdatransform.lib import get_ids
+import dags.cdatransform.transform.transform_lib.transform_with_YAML_v1 as tr
 from math import ceil
 import jsonlines
 from google.cloud import bigquery, storage
 from google.oauth2 import service_account
-from yaml import Loader, load
+
+from dags.cdatransform.services.storage_service import StorageService
+from dags.cdatransform.transform.lib import get_transformation_mapping
 
 
 class IDC:
     def __init__(
         self,
-        gsa_key="../../GCS-service-account-key.json",
-        gsa_info=None,
         patients_file=None,
         patient=None,
         files_file=None,
         file=None,
+        bq_project_dataset="broad-cda-dev.github_test",
         dest_table_id="broad-cda-dev.github_test.dicom_pivot_v9",
-        mapping=None,  # yaml.load(open("IDC_mapping.yml", "r"), Loader=Loader),
+        mapping_file="IDC_mapping.yml",  # yaml.load(open("IDC_mapping.yml", "r"), Loader=Loader),
         source_table="bigquery-public-data.idc_v9.dicom_pivot_v9",
         endpoint=None,
         dest_bucket="gdc-bq-sample-bucket",
         dest_bucket_file_name="idc-extract.jsonl.gz",
         out_file="idc-test.jsonl.gz",
     ) -> None:
-        self.gsa_key = gsa_key
-        self.gsa_info = gsa_info
         self.dest_table_id = dest_table_id
         self.endpoint = endpoint
         self.dest_bucket = dest_bucket
         self.out_file = out_file
         self.dest_bucket_file_name = dest_bucket_file_name
-        self.service_account_cred = self._service_account_cred()
-        self.mapping: dict = self._init_mapping(mapping)
+        self.storage_service = StorageService()
+        self.service_account_cred = self.storage_service.get_credentials()
+        self.mapping: dict = get_transformation_mapping(mapping_file)
         self.patient_ids = get_ids(id=patient, id_list_file=patients_file)
         self.file_ids = get_ids(id=file, id_list_file=files_file)
         self.source_table = source_table
         self.transform_query = self._query_build()
         self.max_blobs_compose = 32  # GCS limit on how many blobs to compose together
-
-    def _service_account_cred(self):
-        key_path = self.gsa_key
-        gsa_info = self.gsa_info
-        try:
-            credentials = service_account.Credentials()
-        except Exception:
-            if self.gsa_info is not None:
-                credentials = service_account.Credentials.from_service_account_info(
-                    gsa_info
-                )
-            else:
-                credentials = service_account.Credentials.from_service_account_file(
-                    key_path, scopes=["https://www.googleapis.com/auth/cloud-platform"]
-                )
-        return credentials
-
-    def _init_mapping(self, mapping) -> dict:
-        for entity, MorT_dict in mapping.items():
-            if "Transformations" in MorT_dict:
-                mapping[entity]["Transformations"] = tr.functionalize_trans_dict(
-                    mapping[entity]["Transformations"]
-                )
-        return mapping
+        project_dataset_split = bq_project_dataset.split(".")
+        self.project = project_dataset_split[0]
+        self.dataset = project_dataset_split[1]
 
     def query_idc_to_table(self):
         dest_table_id = self.dest_table_id
@@ -100,8 +79,8 @@ class IDC:
         # dest_bucket_file_name = self.dest_bucket_file_name.split('.')
         # dest_bucket_file_name.insert(-2,'*')
         # dest_bucket_file_name='.'.join(dest_bucket_file_name)
-        destination_uri = "gs://{}/{}".format(bucket_name, self.dest_bucket_file_name)
-        dataset_ref = bigquery.DatasetReference(project, dataset_id)
+        destination_uri = "gs://{}/{}".format(bucket_name.replace("gs://", ""), self.dest_bucket_file_name)
+        dataset_ref = bigquery.DatasetReference(self.project, self.dataset)
         table_ref = dataset_ref.table(table)
         job_config = bigquery.job.ExtractJobConfig()
         job_config.destination_format = (
@@ -122,22 +101,29 @@ class IDC:
 
     def download_blob(self):
         """Downloads a blob from the bucket."""
-        key_path = self.gsa_key
-        bucket_name = self.dest_bucket
+        bucket_name_split = self.dest_bucket.replace("gs://", "").split("/")
+        bucket_name = bucket_name_split[0]
         source_blob_name = self.dest_bucket_file_name
         destination_file_name = self.out_file
 
-        try:
-            storage_client = storage.Client()
-        except Exception:
-            storage_client = storage.Client.from_service_account_json(key_path)
-        bucket = storage_client.bucket(bucket_name)
+        bucket = self.storage_service.get_bucket(bucket_name)
         prefix = source_blob_name.split("*")
-        if len(prefix) > 1:
+
+        bucket_prefix = ""
+        if len(bucket_name_split) > 1:
+            bucket_prefix = ""
+            for i in range(1, len(bucket_name_split)):
+                slash_or_empty = "/" if len(bucket_prefix) > 0 else ""
+                bucket_prefix = f"{bucket_prefix}{slash_or_empty}{bucket_name_split[i]}"
+            prefix = f"{bucket_prefix}/{prefix[0]}"
+        else:
+            bucket_prefix = bucket_name_split[0]
+
+        if len(source_blob_name.split("*")) > 1:
             # concatenate files together. One big file downloads faster than many small ones
             # Find all 'wildcard' named files
             blobs = []
-            for blob in bucket.list_blobs(prefix=prefix[0]):
+            for blob in bucket.list_blobs(prefix=prefix):
                 blobs.append(blob)
             if len(blobs) > self.max_blobs_compose:
                 lst_blobs = []
@@ -149,21 +135,21 @@ class IDC:
                     )  # - 1
                     print(str(min_index) + ":" + str(max_index))
                     # lst_blobs.append(blobs[min_index:max_index])
-                    bucket.blob(prefix[0] + str(i) + ".jsonl.gz").compose(
+                    bucket.blob(prefix + str(i) + ".jsonl.gz").compose(
                         blobs[min_index:max_index]
                     )
                 for blob in blobs:
                     blob.delete()
                 blobs = []
-                for blob in bucket.list_blobs(prefix=prefix[0]):
+                for blob in bucket.list_blobs(prefix=prefix):
                     blobs.append(blob)
             for blob in blobs:
                 print(blob.name)
             # Put them together
-            bucket.blob(destination_file_name).compose(blobs)
-            # Download big file
-            blob = bucket.blob(destination_file_name)
-            blob.download_to_filename(destination_file_name)
+            slash_or_empty = "/" if len(bucket_prefix) > 0 else ""
+            final_destination = f"{bucket_prefix}{slash_or_empty}{destination_file_name}"
+            bucket.blob(f"{final_destination}").compose(blobs)
+            return f"gs://{bucket_name_split[0]}/{final_destination}"
             # Delete smaller files from bucket
             # for blob in blobs:
             #    blob.delete()
@@ -179,13 +165,7 @@ class IDC:
             #            for line in reader:
             #                writer.write(line)
             #        os.remove(fname)
-        else:
-            blob = bucket.blob(source_blob_name)
-            blob.download_to_filename(destination_file_name)
-
-        print(
-            "Blob {} downloaded to {}.".format(source_blob_name, destination_file_name)
-        )
+        return source_blob_name
 
     def add_udf_to_field_query(self, val_split, mapping_transform):
         for transform in mapping_transform:

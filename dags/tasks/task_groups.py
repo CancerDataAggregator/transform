@@ -1,3 +1,4 @@
+import os
 from airflow.decorators import task_group
 from tasks.idc import (
     idc_cases_to_bucket,
@@ -47,7 +48,7 @@ def gdc_task_group(uuid: str, **kwargs):
 # region IDC
 @task_group(group_id="IDC_Cases_Extract")
 def idc_cases_extract_task_group(uuid: str, **kwargs):
-    version = "10"
+    version = os.environ["IDC_DATA_VERSION"]
     return idc_combine_case_blobs(
         idc_cases_to_bucket(idc_cases_to_table(uuid, version))
     )
@@ -55,7 +56,7 @@ def idc_cases_extract_task_group(uuid: str, **kwargs):
 
 @task_group(group_id="IDC_Files_Extract")
 def idc_files_extract_task_group(uuid: str, **kwargs):
-    version = "10"
+    version = os.environ["IDC_DATA_VERSION"]
     return idc_combine_file_blobs(
         idc_files_to_bucket(idc_files_to_table(uuid, version))
     )
@@ -63,7 +64,6 @@ def idc_files_extract_task_group(uuid: str, **kwargs):
 
 @task_group(group_id="IDC")
 def idc_task_group(uuid: str, **kwargs):
-    version = "10"
     return {
         "idc_cases": idc_cases_extract_task_group(uuid),
         "idc_files": idc_files_extract_task_group(uuid),

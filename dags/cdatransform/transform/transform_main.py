@@ -10,6 +10,7 @@ from typing import Optional, Type, Union
 from typing_extensions import Literal
 
 from dags.cdatransform.services.storage_service import StorageService
+from dags.cdatransform.transform.lib import get_transformation_mapping
 from .transform_lib.transform_with_YAML_v1 import functionalize_trans_dict, Transform
 import jsonlines
 import yaml
@@ -75,25 +76,10 @@ def transform_case_or_file(
     id_lookup_in_jsonl_file_case_or_file: Optional[str] = None,
     ids_lookup_in_jsonl_file_case_or_file: Optional[str] = None,
 ) -> None:
-    YAMLFILEDIR = "./dags/yaml_merge_and_mapping_dir/mapping/"
     if yaml_mapping_transform_file is None:
-        yaml_mapping_transform_file = f"{YAMLFILEDIR}GDC_subject_endpoint_mapping.yml"
-    else:
-        yaml_mapping_transform_file = f"{YAMLFILEDIR}{yaml_mapping_transform_file}"
-    # endpoint = ["case","file",]
-    # this is a str for the endpoints will change use param later
+        yaml_mapping_transform_file = "GDC_subject_endpoint_mapping.yml"
+    mapping_and_transformation = get_transformation_mapping(yaml_mapping_transform_file)
 
-    mapping_and_transformation: dict[str, dict[str, dict]] = yaml.load(
-        open(yaml_mapping_transform_file, "r"), Loader=Loader
-    )
-
-    for entity, mapping_or_transformation_dict in mapping_and_transformation.items():
-        if "Transformations" in mapping_or_transformation_dict:
-            mapping_and_transformation[entity][
-                "Transformations"
-            ] = functionalize_trans_dict(
-                mapping_and_transformation[entity]["Transformations"]
-            )
     transform = Transform(mapping_and_transformation, endpoint)
     t0 = time.time()
     _count = int(0)

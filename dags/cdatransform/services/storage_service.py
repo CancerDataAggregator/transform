@@ -1,7 +1,8 @@
 from io import TextIOWrapper
 import os
 from google.cloud import storage
-from google.cloud.storage import Client
+from google.cloud.storage import Client, Bucket
+from google.oauth2 import service_account
 from smart_open import open
 from typing import Any, Callable, Union
 
@@ -22,6 +23,14 @@ class StorageService:
       bucket.get_blob(self.get_file_path_in_bucket(file))
       for file in files
     ])
+
+  def get_bucket(self, bucket_name: str) -> Bucket:
+    return self.gcp_client.get_bucket(bucket_name)
+
+  def get_credentials(self) -> service_account.Credentials:
+    return service_account.Credentials.from_service_account_file(
+              os.environ["GOOGLE_APPLICATION_CREDENTIALS"], scopes=["https://www.googleapis.com/auth/cloud-platform"]
+           )
 
   def get_bucket_name(self, name: str)-> str:
     no_gs = name.replace("gs://", "")
