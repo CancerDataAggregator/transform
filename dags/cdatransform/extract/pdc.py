@@ -17,7 +17,7 @@ from collections import defaultdict
 from math import ceil
 import asyncio
 
-from dags.cdatransform.services.storage_service import StorageService
+from cdatransform.services.storage_service import StorageService
 
 from .extractor import Extractor
 

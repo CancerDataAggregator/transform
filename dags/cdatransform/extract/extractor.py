@@ -12,8 +12,8 @@ from typing import Union
 import os
 from google.cloud.storage import Client
 from smart_open import open
-from dags.cdatransform.services.storage_service import StorageService
-from dags.cdatransform.models.extraction_result import ExtractionResult
+from cdatransform.services.storage_service import StorageService
+from cdatransform.models.extraction_result import ExtractionResult
 
 
 class Extractor:

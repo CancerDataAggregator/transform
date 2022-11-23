@@ -1,11 +1,11 @@
 from airflow.decorators import task
-from dags.cdatransform.extract.gdc import GDC
+from cdatransform.extract.gdc import GDC
 from cdatransform.transform.transform_main import transform_case_or_file
 from cdatransform.lib import make_harmonized_file_name
 import os
 from cdatransform.models.extraction_result import ExtractionResult
-from dags.cdatransform.services.storage_service import StorageService
-from dags.cdatransform.transform.aggregate import aggregation
+from cdatransform.services.storage_service import StorageService
+from cdatransform.transform.aggregate import aggregation
 
 
 @task(task_id="gdc_extract_cases")

@@ -1,14 +1,14 @@
 from typing import Union
 from typing_extensions import Literal
-from dags.cdatransform.lib import get_ids
-import dags.cdatransform.transform.transform_lib.transform_with_YAML_v1 as tr
+from cdatransform.lib import get_ids
+import cdatransform.transform.transform_lib.transform_with_YAML_v1 as tr
 from math import ceil
 import jsonlines
 from google.cloud import bigquery, storage
 from google.oauth2 import service_account
 
-from dags.cdatransform.services.storage_service import StorageService
-from dags.cdatransform.transform.lib import get_transformation_mapping
+from cdatransform.services.storage_service import StorageService
+from cdatransform.transform.lib import get_transformation_mapping
 
 
 class IDC:
@@ -44,14 +44,21 @@ class IDC:
         self.project = project_dataset_split[0]
         self.dataset = project_dataset_split[1]
 
-    def query_idc_to_table(self):
-        dest_table_id = self.dest_table_id
+    def __get_bigquery_client(self):
         credentials = self.service_account_cred
 
-        client = bigquery.Client(
-            credentials=credentials,
-            project=credentials.project_id,
-        )
+        if credentials is not None:
+            return bigquery.Client(
+                credentials=credentials,
+                project=self.project,
+            )
+        else:
+            return bigquery.Client(project=self.project)
+
+    def query_idc_to_table(self):
+        dest_table_id = self.dest_table_id
+        client = self.__get_bigquery_client()
+
         job_config = bigquery.QueryJobConfig(
             allow_large_results=True,
             destination=dest_table_id,
@@ -70,12 +77,7 @@ class IDC:
         bucket_name = self.dest_bucket
         dataset_id = self.dest_table_id.split(".")[1]
         table = self.dest_table_id.split(".")[2]
-        credentials = self.service_account_cred
-        project = credentials.project_id
-        client = bigquery.Client(
-            credentials=credentials,
-            project=credentials.project_id,
-        )
+        client = self.__get_bigquery_client()
         # dest_bucket_file_name = self.dest_bucket_file_name.split('.')
         # dest_bucket_file_name.insert(-2,'*')
         # dest_bucket_file_name='.'.join(dest_bucket_file_name)

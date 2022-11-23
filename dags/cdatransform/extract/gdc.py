@@ -8,7 +8,7 @@ from collections import defaultdict
 
 import jsonlines
 
-from dags.cdatransform.models.extraction_result import ExtractionResult
+from cdatransform.models.extraction_result import ExtractionResult
 
 
 from .extractor import Extractor

@@ -13,8 +13,8 @@ log = logging.getLogger(__name__)
 
 default_args = {
     "owner": "airflow",
-    "depends_on_past": True,
-    "wait_for_downstream": True,
+    "depends_on_past": False,
+    "wait_for_downstream": False,
     "concurrency": 3,
 }
 

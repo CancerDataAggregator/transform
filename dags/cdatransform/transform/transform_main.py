@@ -9,8 +9,8 @@ import time
 from typing import Optional, Type, Union
 from typing_extensions import Literal
 
-from dags.cdatransform.services.storage_service import StorageService
-from dags.cdatransform.transform.lib import get_transformation_mapping
+from cdatransform.services.storage_service import StorageService
+from cdatransform.transform.lib import get_transformation_mapping
 from .transform_lib.transform_with_YAML_v1 import functionalize_trans_dict, Transform
 import jsonlines
 import yaml

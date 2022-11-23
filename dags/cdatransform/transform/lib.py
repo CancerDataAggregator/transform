@@ -1,12 +1,13 @@
 import logging
-from dags.cdatransform.transform.gdclib import (
+import os
+from cdatransform.transform.gdclib import (
     research_subject as gdclib_research_subject,
     diagnosis as gdclib_diagnosis,
     patient as gdclib_patient,
     entity_to_specimen as gdclib_entity_to_specimen,
 )
 
-from dags.cdatransform.transform.pdclib import (
+from cdatransform.transform.pdclib import (
     patient as pdclib_patient,
     diagnosis as pdclib_diagnosis,
     entity_to_specimen as pdclib_entity_to_specimen,
@@ -14,7 +15,7 @@ from dags.cdatransform.transform.pdclib import (
 )
 import yaml
 from yaml import Loader
-import dags.cdatransform.transform.transform_lib.transform_with_YAML_v1 as tr
+import cdatransform.transform.transform_lib.transform_with_YAML_v1 as tr
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +31,8 @@ t_lib = {
 }
 
 def get_transformation_mapping(file_name: str):
-    YAMLFILEDIR = "./dags/yaml_merge_and_mapping_dir/mapping/"
+    mapping_dir = os.environ["MERGE_AND_MAPPING_DIRECTORY"]
+    YAMLFILEDIR = f"{mapping_dir}/mapping/"
     if file_name is None or len(file_name) == 0:
         yaml_mapping_transform_file = f"{YAMLFILEDIR}GDC_subject_endpoint_mapping.yml"
     else:

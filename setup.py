@@ -23,7 +23,9 @@ setup(
         "deepdiff",
         "google-cloud-storage",
         "google-cloud-bigquery",
-        "smart-open"
+        "smart-open",
+        "aiohttp",
+        "urllib3"
     ],
     entry_points={
         "console_scripts": [

@@ -8,10 +8,10 @@ from cdatransform.transform.transform_main import Endpoint_type
 def instantiateIDC(uuid: str, version: str, endpoint: Endpoint_type) -> IDC:
     out_file = f"idc.all_{endpoint}_{version}_{uuid}.jsonl.gz"
     project_dataset = os.environ["DESTINATION_PROJECT_AND_DATASET"]
-    dest_table_id = f"{project_dataset}.IDC_{endpoint}_V{version}"
+    dest_table_id = f"{project_dataset}.IDC_{endpoint}_V{version}_{uuid}"
     source_table = f"bigquery-public-data.idc_v{version}.dicom_pivot_v{version}"
     dest_bucket = os.environ["IDC_DESTINATION_BUCKET"]
-    dest_bucket_file_name = f"idc_v{version}_{endpoint}*.jsonl.gz"
+    dest_bucket_file_name = f"idc_v{version}_{endpoint}_{uuid}_*.jsonl.gz"
 
     return IDC(
         bq_project_dataset=project_dataset,
@@ -30,12 +30,13 @@ def idc_cases_to_table(uuid: str, version: str, **kwargs):
 
     idc.query_idc_to_table()
 
-    return {version: version, uuid: uuid}
+    return {'version': version, 'uuid': uuid}
 
 
 @task(task_id="idc_extract_cases_to_blobs")
 def idc_cases_to_bucket(context: Dict, **kwargs):
-    idc = instantiateIDC(context["uuid"], context["version"], "Patient")
+    print(context)
+    idc = instantiateIDC(context['uuid'], context['version'], "Patient")
 
     idc.table_to_bucket()
 
@@ -48,12 +49,13 @@ def idc_files_to_table(uuid: str, version: str, **kwargs):
 
     idc.query_idc_to_table()
 
-    return {version: version, uuid: uuid}
+    return {'version': version, 'uuid': uuid}
 
 
 @task(task_id="idc_extract_files_to_blobs")
 def idc_files_to_bucket(context: Dict, **kwargs):
-    idc = instantiateIDC(context["uuid"], context["version"], "File")
+    print(context)
+    idc = instantiateIDC(context['uuid'], context['version'], "File")
 
     idc.table_to_bucket()
 

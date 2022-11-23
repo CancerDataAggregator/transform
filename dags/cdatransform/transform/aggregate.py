@@ -1,5 +1,6 @@
 import argparse
 from collections import defaultdict
+import os
 from typing import List, Union, Optional
 from typing_extensions import Literal
 import jsonlines
@@ -8,7 +9,7 @@ import gzip
 import logging
 from typing import DefaultDict, List, Dict, Tuple
 
-from dags.cdatransform.services.storage_service import StorageService
+from cdatransform.services.storage_service import StorageService
 from .merge.merge_functions import merge_fields_level
 import jsonlines
 import yaml
@@ -126,7 +127,8 @@ def aggregation(
     logger.info("----------------------")
     logger.info("Starting aggregate run")
     logger.info("----------------------")
-    YAMLFILEDIR = "./dags/yaml_merge_and_mapping_dir/merge/"
+    mapping_dir = os.environ["MERGE_AND_MAPPING_DIRECTORY"]
+    YAMLFILEDIR = f"{mapping_dir}/merge/"
     if merge_file is None:
         merge_file = f"{YAMLFILEDIR}subject_endpoint_merge.yml"
     else:

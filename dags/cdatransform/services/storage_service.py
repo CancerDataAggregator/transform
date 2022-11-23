@@ -8,8 +8,11 @@ from typing import Any, Callable, Union
 
 class StorageService:
   def __init__(self) -> None:
-    self.service_account_path = os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
-    self.gcp_client = Client.from_service_account_json(self.service_account_path)
+    if "GOOGLE_APPLICATION_CREDENTIALS" in os.environ:
+      self.service_account_path = os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
+      self.gcp_client = Client.from_service_account_json(self.service_account_path)
+    else:
+      self.gcp_client = Client()
 
   def get_session(self, gcp_buck_path: str, mode: str):
     return open(gcp_buck_path, mode, transport_params=dict(client=self.gcp_client))
@@ -28,6 +31,9 @@ class StorageService:
     return self.gcp_client.get_bucket(bucket_name)
 
   def get_credentials(self) -> service_account.Credentials:
+    if "GOOGLE_APPLICATION_CREDENTIALS" not in os.environ:
+      return None
+
     return service_account.Credentials.from_service_account_file(
               os.environ["GOOGLE_APPLICATION_CREDENTIALS"], scopes=["https://www.googleapis.com/auth/cloud-platform"]
            )

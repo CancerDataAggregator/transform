@@ -5,8 +5,8 @@ from datetime import datetime
 
 from cdatransform.lib import make_harmonized_file_name
 from cdatransform.transform.transform_main import transform_case_or_file
-from dags.cdatransform.services.storage_service import StorageService
-from dags.cdatransform.transform.aggregate import aggregation
+from cdatransform.services.storage_service import StorageService
+from cdatransform.transform.aggregate import aggregation
 
 
 @task(task_id="pdc_cases")
