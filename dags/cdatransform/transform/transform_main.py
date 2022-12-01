@@ -1,23 +1,28 @@
-from dataclasses import dataclass
-from enum import Enum
 import gzip
+import logging
 import os
-from pathlib import Path, PurePath
-
 import sys
 import time
+from dataclasses import dataclass
+from enum import Enum
+from pathlib import Path, PurePath
 from typing import Optional, Type, Union
-from typing_extensions import Literal
 
-from cdatransform.services.storage_service import StorageService
-from cdatransform.transform.lib import get_transformation_mapping
-from .transform_lib.transform_with_YAML_v1 import functionalize_trans_dict, Transform
 import jsonlines
 import yaml
-from yaml import Loader
-import logging
-from .yaml_mapping_types import YamlFileMapping
 from smart_open import open
+from typing_extensions import Literal
+from yaml import Loader
+
+try:
+    from cdatransform.services.storage_service import StorageService
+    from cdatransform.transform.lib import get_transformation_mapping
+except ImportError:
+    from dags.cdatransform.services.storage_service import StorageService
+    from dags.cdatransform.transform.lib import get_transformation_mapping
+
+from .transform_lib.transform_with_YAML_v1 import Transform, functionalize_trans_dict
+from .yaml_mapping_types import YamlFileMapping
 
 logger = logging.getLogger(__name__)
 
@@ -99,7 +104,8 @@ def transform_case_or_file(
                             _count += 1
                             if _count % 1000 == 0:
                                 sys.stderr.write(
-                                    f"Processed {_count} {endpoint} ({time.time() - t0}).\n")
+                                    f"Processed {_count} {endpoint} ({time.time() - t0}).\n"
+                                )
 
     sys.stderr.write(f"Processed {_count} {endpoint} ({time.time() - t0}).\n")
 

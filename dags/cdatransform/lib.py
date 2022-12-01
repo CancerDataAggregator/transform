@@ -19,7 +19,10 @@ def yamlPathMapping(yaml_mapping_file=None):
     if yaml_mapping_file is None:
         raise ValueError("Please enter a path")
 
-    mapping_dir = os.environ["MERGE_AND_MAPPING_DIRECTORY"]
+    if "MERGE_AND_MAPPING_DIRECTORY" in os.environ:
+        mapping_dir = os.environ["MERGE_AND_MAPPING_DIRECTORY"]
+    else:
+        mapping_dir = "./dags/yaml_merge_and_mapping_dir"
     YAMLFILEDIR = f"{mapping_dir}/mapping/"
     return f"{YAMLFILEDIR}{yaml_mapping_file}"
 

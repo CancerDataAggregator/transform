@@ -4,10 +4,15 @@ import logging
 import sys
 from typing import DefaultDict
 
-import cdatransform.transform.merge.merge_functions as mf
 import jsonlines
 import yaml
-from cdatransform.transform.validate import LogValidation
+
+try:
+    import cdatransform.transform.merge.merge_functions as mf
+    from cdatransform.transform.validate import LogValidation
+except ImportError:
+    import dags.cdatransform.transform.merge.merge_functions as mf
+    from dags.cdatransform.transform.validate import LogValidation
 
 logger = logging.getLogger(__name__)
 

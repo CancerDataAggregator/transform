@@ -1,14 +1,21 @@
-from typing import Union
-from typing_extensions import Literal
-from cdatransform.lib import get_ids
-import cdatransform.transform.transform_lib.transform_with_YAML_v1 as tr
 from math import ceil
+from typing import Union
+
 import jsonlines
 from google.cloud import bigquery, storage
 from google.oauth2 import service_account
+from typing_extensions import Literal
 
-from cdatransform.services.storage_service import StorageService
-from cdatransform.transform.lib import get_transformation_mapping
+try:
+    import cdatransform.transform.transform_lib.transform_with_YAML_v1 as tr
+    from cdatransform.lib import get_ids
+    from cdatransform.services.storage_service import StorageService
+    from cdatransform.transform.lib import get_transformation_mapping
+except ImportError:
+    import dags.cdatransform.transform.transform_lib.transform_with_YAML_v1 as tr
+    from dags.cdatransform.lib import get_ids
+    from dags.cdatransform.services.storage_service import StorageService
+    from dags.cdatransform.transform.lib import get_transformation_mapping
 
 
 class IDC:

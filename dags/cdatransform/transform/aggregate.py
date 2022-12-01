@@ -1,20 +1,22 @@
 import argparse
-from collections import defaultdict
-import os
-from typing import List, Union, Optional
-from typing_extensions import Literal
-import jsonlines
-import yaml
 import gzip
 import logging
-from typing import DefaultDict, List, Dict, Tuple
+import os
+import sys
+from collections import defaultdict
+from typing import DefaultDict, Dict, List, Optional, Tuple, Union
 
-from cdatransform.services.storage_service import StorageService
-from .merge.merge_functions import merge_fields_level
 import jsonlines
 import yaml
+from typing_extensions import Literal
+
+try:
+    from cdatransform.services.storage_service import StorageService
+except ImportError:
+    from dags.cdatransform.services.storage_service import StorageService
+
+from .merge.merge_functions import merge_fields_level
 from .validate import LogValidation
-import sys
 from .yaml_merge_types import YamlFileMerge
 
 logger = logging.getLogger(__name__)
@@ -79,7 +81,11 @@ def log_merge_error(
     )  # remove the 's' at the end of the endpoint names
     all_sources.insert(1, id)
     all_sources.insert(2, "project")
-    all_sources.insert(3, project)
+    new_proj = project
+    if isinstance(new_proj, list):
+        new_proj = "_".join(project)
+    all_sources.insert(3, new_proj)
+    print(all_sources)
     log.agree_sources(coal_dat, "_".join(all_sources), coal_fields)
     return log
 
@@ -127,7 +133,10 @@ def aggregation(
     logger.info("----------------------")
     logger.info("Starting aggregate run")
     logger.info("----------------------")
-    mapping_dir = os.environ["MERGE_AND_MAPPING_DIRECTORY"]
+    if "MERGE_AND_MAPPING_DIRECTORY" in os.environ:
+        mapping_dir = os.environ["MERGE_AND_MAPPING_DIRECTORY"]
+    else:
+        mapping_dir = "./dags/yaml_merge_and_mapping_dir"
     YAMLFILEDIR = f"{mapping_dir}/merge/"
     if merge_file is None:
         merge_file = f"{YAMLFILEDIR}subject_endpoint_merge.yml"

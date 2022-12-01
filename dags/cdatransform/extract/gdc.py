@@ -1,15 +1,17 @@
 import asyncio
 import gzip
 import json
-from typing import Union
 import sys
-from time import time
 from collections import defaultdict
+from time import time
+from typing import Union
 
 import jsonlines
 
-from cdatransform.models.extraction_result import ExtractionResult
-
+try:
+    from cdatransform.models.extraction_result import ExtractionResult
+except ImportError:
+    from dags.cdatransform.models.extraction_result import ExtractionResult
 
 from .extractor import Extractor
 
@@ -124,8 +126,8 @@ class GDC(Extractor):
         offset: int = 0
         field_chunks = self.det_field_chunks(num_field_chunks)
         while True:
-            all_hits_dict = defaultdict(list) # { id1: [{record1 - fields from chunk1},
-                                              #         {record2 - fields from chunk 2}]}
+            all_hits_dict = defaultdict(list)  # { id1: [{record1 - fields from chunk1},
+            #         {record2 - fields from chunk 2}]}
             for field_chunk in field_chunks:
                 fields = ",".join(field_chunk)
                 params = {
@@ -138,9 +140,7 @@ class GDC(Extractor):
                 }
                 # print(str(params))
 
-                result = await retry_get(
-                    session=session, endpoint=endpt, params=params
-                )
+                result = await retry_get(session=session, endpoint=endpt, params=params)
                 hits = result["data"]["hits"]
                 for hit in hits:
                     all_hits_dict[hit["id"]].append(hit)

@@ -1,11 +1,13 @@
-from airflow.decorators import task
-from cdatransform.extract.gdc import GDC
-from cdatransform.transform.transform_main import transform_case_or_file
-from cdatransform.lib import make_harmonized_file_name
 import os
+
+from airflow.decorators import task
+
+from cdatransform.extract.gdc import GDC
+from cdatransform.lib import make_harmonized_file_name
 from cdatransform.models.extraction_result import ExtractionResult
 from cdatransform.services.storage_service import StorageService
 from cdatransform.transform.aggregate import aggregation
+from cdatransform.transform.transform_main import transform_case_or_file
 
 
 @task(task_id="gdc_extract_cases")
@@ -34,7 +36,9 @@ def gdc_transform_cases(uuid: str, extract_result: str, **kwargs):
         input_path=extract_result,
         output_file=output_file,
         endpoint="cases",
-        yaml_mapping_transform_file="GDC_subject_endpoint_mapping.yml")
+        yaml_mapping_transform_file="GDC_subject_endpoint_mapping.yml",
+    )
+
 
 @task(task_id="gdc_transform")
 def gdc_transform_files(uuid: str, extract_result: str, **kwargs):
@@ -46,7 +50,9 @@ def gdc_transform_files(uuid: str, extract_result: str, **kwargs):
         input_path=extract_result,
         output_file=output_file,
         endpoint="files",
-        yaml_mapping_transform_file="GDC_file_endpoint_mapping.yml")
+        yaml_mapping_transform_file="GDC_file_endpoint_mapping.yml",
+    )
+
 
 @task(task_id="gdc_aggregate_cases")
 def gdc_aggregate_cases(uuid: str, transform_result: str, **kwargs):
@@ -58,7 +64,7 @@ def gdc_aggregate_cases(uuid: str, transform_result: str, **kwargs):
         input_file=transform_result,
         output_file=output_file,
         merge_file="subject_endpoint_merge.yml",
-        endpoint="subjects"
+        endpoint="subjects",
     )
 
 
@@ -72,5 +78,5 @@ def gdc_aggregate_files(uuid: str, transform_result: str, **kwargs):
         input_file=transform_result,
         output_file=output_file,
         merge_file="file_endpoint_merge.yml",
-        endpoint="files"
+        endpoint="files",
     )

@@ -1,21 +1,45 @@
 import logging
 import os
-from cdatransform.transform.gdclib import (
-    research_subject as gdclib_research_subject,
-    diagnosis as gdclib_diagnosis,
-    patient as gdclib_patient,
-    entity_to_specimen as gdclib_entity_to_specimen,
-)
 
-from cdatransform.transform.pdclib import (
-    patient as pdclib_patient,
-    diagnosis as pdclib_diagnosis,
-    entity_to_specimen as pdclib_entity_to_specimen,
-    research_subject as pdclib_research_subject,
-)
 import yaml
 from yaml import Loader
-import cdatransform.transform.transform_lib.transform_with_YAML_v1 as tr
+
+try:
+    import cdatransform.transform.transform_lib.transform_with_YAML_v1 as tr
+    from cdatransform.transform.gdclib import diagnosis as gdclib_diagnosis
+    from cdatransform.transform.gdclib import (
+        entity_to_specimen as gdclib_entity_to_specimen,
+    )
+    from cdatransform.transform.gdclib import patient as gdclib_patient
+    from cdatransform.transform.gdclib import (
+        research_subject as gdclib_research_subject,
+    )
+    from cdatransform.transform.pdclib import diagnosis as pdclib_diagnosis
+    from cdatransform.transform.pdclib import (
+        entity_to_specimen as pdclib_entity_to_specimen,
+    )
+    from cdatransform.transform.pdclib import patient as pdclib_patient
+    from cdatransform.transform.pdclib import (
+        research_subject as pdclib_research_subject,
+    )
+except ImportError:
+    import dags.cdatransform.transform.transform_lib.transform_with_YAML_v1 as tr
+    from dags.cdatransform.transform.gdclib import diagnosis as gdclib_diagnosis
+    from dags.cdatransform.transform.gdclib import (
+        entity_to_specimen as gdclib_entity_to_specimen,
+    )
+    from dags.cdatransform.transform.gdclib import patient as gdclib_patient
+    from dags.cdatransform.transform.gdclib import (
+        research_subject as gdclib_research_subject,
+    )
+    from dags.cdatransform.transform.pdclib import diagnosis as pdclib_diagnosis
+    from dags.cdatransform.transform.pdclib import (
+        entity_to_specimen as pdclib_entity_to_specimen,
+    )
+    from dags.cdatransform.transform.pdclib import patient as pdclib_patient
+    from dags.cdatransform.transform.pdclib import (
+        research_subject as pdclib_research_subject,
+    )
 
 logger = logging.getLogger(__name__)
 
@@ -30,8 +54,13 @@ t_lib = {
     "pdc.research_subject": pdclib_research_subject,
 }
 
+
 def get_transformation_mapping(file_name: str):
-    mapping_dir = os.environ["MERGE_AND_MAPPING_DIRECTORY"]
+    if "MERGE_AND_MAPPING_DIRECTORY" in os.environ:
+        mapping_dir = os.environ["MERGE_AND_MAPPING_DIRECTORY"]
+    else:
+        mapping_dir = "./dags/yaml_merge_and_mapping_dir"
+
     YAMLFILEDIR = f"{mapping_dir}/mapping/"
     if file_name is None or len(file_name) == 0:
         yaml_mapping_transform_file = f"{YAMLFILEDIR}GDC_subject_endpoint_mapping.yml"

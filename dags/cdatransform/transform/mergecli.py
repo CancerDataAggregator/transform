@@ -2,12 +2,17 @@ import argparse
 import gzip
 import logging
 import sys
+from collections import defaultdict
 
-import cdatransform.transform.merge.merge_functions as mf
 import jsonlines
 import yaml
-from cdatransform.transform.validate import LogValidation
-from collections import defaultdict
+
+try:
+    import cdatransform.transform.merge.merge_functions as mf
+    from cdatransform.transform.validate import LogValidation
+except ImportError:
+    import dags.cdatransform.transform.merge.merge_functions as mf
+    from dags.cdatransform.transform.validate import LogValidation
 
 logger = logging.getLogger(__name__)
 

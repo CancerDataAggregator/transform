@@ -1,19 +1,24 @@
 import asyncio
+import gzip
+import json
+import os
 import sys
 from time import time
-import jsonlines
-import gzip
+from typing import Union
 
+import aiohttp
+import jsonlines
 import requests
 from google.cloud import storage
-import json
-import aiohttp
-from typing import Union
-import os
 from google.cloud.storage import Client
 from smart_open import open
-from cdatransform.services.storage_service import StorageService
-from cdatransform.models.extraction_result import ExtractionResult
+
+try:
+    from cdatransform.models.extraction_result import ExtractionResult
+    from cdatransform.services.storage_service import StorageService
+except ImportError:
+    from dags.cdatransform.models.extraction_result import ExtractionResult
+    from dags.cdatransform.services.storage_service import StorageService
 
 
 class Extractor:

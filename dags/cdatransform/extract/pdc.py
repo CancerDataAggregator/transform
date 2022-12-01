@@ -1,26 +1,24 @@
-import json
-from typing import AsyncGenerator, Generator, Iterable, Union
-from collections import defaultdict
-from math import ceil
-import jsonlines
-import time
-import sys
-import gzip
 import argparse
+import asyncio
 import gzip
 import json
 import pathlib
 import shutil
 import sys
-import aiohttp
+import time
 from collections import defaultdict
 from math import ceil
-import asyncio
+from typing import AsyncGenerator, Generator, Iterable, Union
 
-from cdatransform.services.storage_service import StorageService
+import aiohttp
+import jsonlines
+
+try:
+    from cdatransform.services.storage_service import StorageService
+except ImportError:
+    from dags.cdatransform.services.storage_service import StorageService
 
 from .extractor import Extractor
-
 from .lib import retry_get
 from .pdc_query_lib import *
 
@@ -36,7 +34,7 @@ class PDC(Extractor):
         dest_bucket,
         uuid,
         endpoint="https://pdc.cancer.gov/graphql",
-        make_spec_file=None
+        make_spec_file=None,
     ) -> None:
         self.endpoint = endpoint
         self.make_spec_file = make_spec_file
@@ -99,7 +97,9 @@ class PDC(Extractor):
             endpoint=self.endpoint,
             params={"query": make_all_programs_query()},
         )
-        AllPrograms: list[dict[str, Union[str, int, list]]] = jData["data"]["allPrograms"]
+        AllPrograms: list[dict[str, Union[str, int, list]]] = jData["data"][
+            "allPrograms"
+        ]
         # Loop over studies, and get demographics, diagnoses, samples, and taxon
         out = []
         for program in AllPrograms:
@@ -229,7 +229,9 @@ class PDC(Extractor):
     def save_cases(self, out_file, case_ids=None):
         loop: asyncio.AbstractEventLoop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        return loop.run_until_complete(self.http_call_save_files_or_cases(case_ids, out_file=out_file))
+        return loop.run_until_complete(
+            self.http_call_save_files_or_cases(case_ids, out_file=out_file)
+        )
 
     def save_files(self, out_file, file_ids=None):
         loop: asyncio.AbstractEventLoop = asyncio.new_event_loop()
@@ -245,12 +247,12 @@ class PDC(Extractor):
         # is not needed on our end, but leaving it for now
         n = 0
         specimen_files_dict = defaultdict(list)
-        #with gzip.open("pdc_meta_out.jsonl.gz", "wb") as fp:
+        # with gzip.open("pdc_meta_out.jsonl.gz", "wb") as fp:
         meta_out_path = f"{self.dest_bucket}/pdc.meta_out.{self.uuid}.jsonl.gz"
         async with aiohttp.ClientSession() as session:
             with self.storage_service.get_session(
-                gcp_buck_path=meta_out_path,
-                mode="w") as fp:
+                gcp_buck_path=meta_out_path, mode="w"
+            ) as fp:
                 with jsonlines.Writer(fp) as writer:
                     async for chunk in self._metadata_files_chunk(session, file_ids):
                         for rec in chunk:
@@ -259,12 +261,12 @@ class PDC(Extractor):
                                 # add to specimen:file dictionary
                                 if rec.get("aliquots") is not None:
                                     for aliquot in rec.get("aliquots", []):
-                                        specimen_files_dict[aliquot["sample_id"]].append(
-                                            rec["file_id"]
-                                        )
-                                        specimen_files_dict[aliquot["aliquot_id"]].append(
-                                            rec["file_id"]
-                                        )
+                                        specimen_files_dict[
+                                            aliquot["sample_id"]
+                                        ].append(rec["file_id"])
+                                        specimen_files_dict[
+                                            aliquot["aliquot_id"]
+                                        ].append(rec["file_id"])
                                 n += 1
                                 if n % 500 == 0:
                                     sys.stderr.write(
@@ -276,11 +278,12 @@ class PDC(Extractor):
         # Seven Bridges does it... so here we are. Note: CDA does not use anything from
         # the UI files, and it is strictly for Seven Bridges benefit
         n = 0
-        #with gzip.open("pdc_uifiles_out.jsonl.gz", "wb") as fp:
+        # with gzip.open("pdc_uifiles_out.jsonl.gz", "wb") as fp:
         async with aiohttp.ClientSession() as session:
             with self.storage_service.get_session(
                 gcp_buck_path=f"{self.dest_bucket}/pdc.uifiles_out.{self.uuid}.jsonl.gz",
-                mode="w") as fp:
+                mode="w",
+            ) as fp:
                 with jsonlines.Writer(fp) as writer:
                     async for chunk in self._UIfiles_chunk(session):
                         for rec in chunk:
@@ -295,12 +298,11 @@ class PDC(Extractor):
         # Get and write files from studies. Similar to bulk cases, loop over program,
         # project, study and extract files per study
         n = 0
-        #with gzip.open("pdc_studyfiles_out.jsonl.gz", "wb") as fp:
+        # with gzip.open("pdc_studyfiles_out.jsonl.gz", "wb") as fp:
         study_files_path = f"{self.dest_bucket}/pdc.studyfiles_out.{self.uuid}.jsonl.gz"
         async with aiohttp.ClientSession() as session:
             with self.storage_service.get_session(
-                gcp_buck_path=study_files_path,
-                mode="w"
+                gcp_buck_path=study_files_path, mode="w"
             ) as fp:
                 with jsonlines.Writer(fp) as writer:
                     async for chunk in self._study_files_chunk(session):
@@ -324,16 +326,20 @@ class PDC(Extractor):
         # concatenate metadata and studyfiles for CDA to transform. THIS IS THE
         # FILE TO USE FOR TRANSFORMATION! All other files are for the cloud resources
         # (ISB-CGC, Seven Bridges, Terra) to use instead of using PDC API
-        #with gzip.open(out_file, "wb") as f_out:
-        #with self.storage_service.get_session(gcp_buck_path=f"{self.dest_bucket}/{out_file}", mode="w") as f_out:
-            # for f in ["pdc_meta_out.jsonl.gz", "pdc_studyfiles_out.jsonl.gz"]:
-            #     with gzip.open(f) as f_in:
-            #         shutil.copyfileobj(f_in, f_out)
+        # with gzip.open(out_file, "wb") as f_out:
+        # with self.storage_service.get_session(gcp_buck_path=f"{self.dest_bucket}/{out_file}", mode="w") as f_out:
+        # for f in ["pdc_meta_out.jsonl.gz", "pdc_studyfiles_out.jsonl.gz"]:
+        #     with gzip.open(f) as f_in:
+        #         shutil.copyfileobj(f_in, f_out)
         out_path = f"{self.dest_bucket}/{out_file}"
-        self.storage_service.compose_blobs([meta_out_path, study_files_path], self.dest_bucket, out_path)
+        self.storage_service.compose_blobs(
+            [meta_out_path, study_files_path], self.dest_bucket, out_path
+        )
         return out_path
 
-    async def _metadata_files_chunk(self, session, file_ids=None) -> AsyncGenerator[list, dict]:
+    async def _metadata_files_chunk(
+        self, session, file_ids=None
+    ) -> AsyncGenerator[list, dict]:
         futures = []
 
         if file_ids:
@@ -412,10 +418,7 @@ class PDC(Extractor):
             for result in results:
                 yield result["data"]["getPaginatedUIFile"]["uiFiles"]
 
-    async def _study_files_chunk(
-        self,
-        session
-    ) -> AsyncGenerator[list, dict]:
+    async def _study_files_chunk(self, session) -> AsyncGenerator[list, dict]:
         # loop over studies to get files
         jData = await retry_get(
             session=session,

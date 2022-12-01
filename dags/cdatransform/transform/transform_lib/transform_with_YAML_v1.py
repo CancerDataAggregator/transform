@@ -1,12 +1,13 @@
+from typing import Callable, Union
+
 from typing_extensions import Literal
-from ..read_using_YAML import (
-    simp_read,
-    det_tree_to_collapse,
-    read_entry,
-    add_linkers,
-)
-import cdatransform.transform.transform_lib.value_transformations as value_transformations
-from typing import Union, Callable
+
+try:
+    import cdatransform.transform.transform_lib.value_transformations as value_transformations
+except ImportError:
+    import dags.cdatransform.transform.transform_lib.value_transformations as value_transformations
+
+from ..read_using_YAML import add_linkers, det_tree_to_collapse, read_entry, simp_read
 
 
 def add_Specimen_rec(orig, MandT, **kwargs) -> list:
