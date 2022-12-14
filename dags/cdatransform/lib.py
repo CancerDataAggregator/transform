@@ -15,7 +15,7 @@ def get_ids(id: Optional[str] = None, id_list_file: Optional[str] = None):
             return [line.strip() for line in fp.readlines()]
 
 
-def yamlPathMapping(yaml_mapping_file=None):
+def yamlPathMapping(yaml_mapping_file=None, merge_or_mapping="mapping"):
     if yaml_mapping_file is None:
         raise ValueError("Please enter a path")
 
@@ -23,7 +23,7 @@ def yamlPathMapping(yaml_mapping_file=None):
         mapping_dir = os.environ["MERGE_AND_MAPPING_DIRECTORY"]
     else:
         mapping_dir = "./dags/yaml_merge_and_mapping_dir"
-    YAMLFILEDIR = f"{mapping_dir}/mapping/"
+    YAMLFILEDIR = f"{mapping_dir}/{merge_or_mapping}/"
     return f"{YAMLFILEDIR}{yaml_mapping_file}"
 
 

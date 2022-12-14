@@ -2,12 +2,16 @@ import logging
 from uuid import uuid4
 
 import pendulum
-
 from airflow.decorators import dag
-from tasks.load import load_task
-from tasks.task_groups import dc_task_group
 from tasks.aggregation import aggregation_task
+from tasks.task_groups import (
+    dc_task_group,
+    load_task_group,
+    merge_task_group,
+    schema_task_group,
+)
 
+from dags.cdatransform.services.context_service import ContextService
 
 log = logging.getLogger(__name__)
 
@@ -27,15 +31,18 @@ default_args = {
     catchup=False,
     tags=["CDA"],
 )
-def cda_etl():
+def cda_etl(*args):
+    ContextService().validate()
+
     dc_group = dc_task_group
 
-    aggregator = aggregation_task
+    merge_group = merge_task_group
 
-    loader = load_task
+    schema_group = schema_task_group
+    load_group = load_task_group
 
     uuid = str(uuid4().hex)
-    loader(aggregator(dc_group(uuid)))
+    load_group(schema_group(uuid, merge_group(dc_group(uuid))))
 
 
 cda_etl = cda_etl()

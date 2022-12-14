@@ -1,7 +1,16 @@
-from functools import lru_cache
 import json
+from functools import lru_cache
+
 import yaml
 from yaml import Loader
+
+try:
+    from cdatransform.lib import yamlPathMapping
+    from cdatransform.services.storage_service import StorageService
+except ImportError:
+    from dags.cdatransform.lib import yamlPathMapping
+    from dags.cdatransform.services.storage_service import StorageService
+
 from .download_json_schema import make_request, url_download
 
 
@@ -11,14 +20,13 @@ class Schema:
         mapping,
         outfile,
         endpoint,
-        missing_descriptions_file="dags/cdatransform/load/missing_descriptions.json",
-        ccdh_mapping_file="dags/cdatransform/load/ccdh_map.json",
-        data_model_dir="../schema_dir",
+        missing_descriptions_file="cdatransform/load/missing_descriptions.json",
+        ccdh_mapping_file="cdatransform/load/ccdh_map.json",
     ) -> None:
         self.outfile = outfile
         self.endpoint = endpoint
         self.ccdh_mapping_file = ccdh_mapping_file
-        self.mapping = yaml.load(open(mapping, "r"), Loader=Loader)
+        self.mapping = yaml.load(open(yamlPathMapping(mapping), "r"), Loader=Loader)
         self.ccdh_mapping = self._init_ccdh_model(ccdh_mapping_file)
         self.missing_descriptions = self._init_missing_descriptions(
             missing_descriptions_file
@@ -71,7 +79,7 @@ class Schema:
     def add_linkers(self, entity):
         fields = []
         for field in list(self.mapping[entity]["Linkers"].keys()):
-            field_dict = dict({})
+            field_dict = {}
             field_dict["description"] = " ".join(
                 ["List of ids of", field[:-1], "entities associated with the", entity]
             )
@@ -85,7 +93,7 @@ class Schema:
     def make_entity_schema(self, entity):
         print("Ran with entity:")
         print(entity)
-        entity_dict = dict({})
+        entity_dict = {}
         entity_dict["name"] = entity
         # ccdh_map
         if entity == "Subject":
@@ -103,10 +111,10 @@ class Schema:
         entity_dict["fields"] = []
 
         for field in list(self.ccdh_mapping[entity_loop].keys()):
-            field_dict = dict({})
+            field_dict = {}
             field_dict["description"] = (
                 self.data_model[entity_loop]
-                .get(self.ccdh_mapping[entity_loop][field], dict({}))
+                .get(self.ccdh_mapping[entity_loop][field], {})
                 .get("description", "")
             )
             field_dict["name"] = field
@@ -123,13 +131,13 @@ class Schema:
                 continue
             if (
                 self.data_model[entity_loop]
-                .get(self.ccdh_mapping[entity_loop][field], dict({}))
+                .get(self.ccdh_mapping[entity_loop][field], {})
                 .get("oneOf")
                 is not None
             ):
                 field_dict["type"] = (
                     self.data_model[entity_loop]
-                    .get(self.ccdh_mapping[entity_loop][field], dict({}))
+                    .get(self.ccdh_mapping[entity_loop][field], {})
                     .get("oneOf", [dict({"type": "string"})])[1]["type"]
                     .upper()
                 )
@@ -137,14 +145,14 @@ class Schema:
             else:
                 field_dict["type"] = (
                     self.data_model[entity_loop]
-                    .get(self.ccdh_mapping[entity_loop][field], dict({}))
+                    .get(self.ccdh_mapping[entity_loop][field], {})
                     .get("type", "")
                     .upper()
                 )
                 if (
                     field_dict["type"] == ""
                     and self.data_model[entity_loop]
-                    .get(self.ccdh_mapping[entity_loop][field], dict({}))
+                    .get(self.ccdh_mapping[entity_loop][field], {})
                     .get("$ref", None)
                     is not None
                 ):
@@ -210,7 +218,7 @@ class Schema:
             RS["fields"].append(Diag)
             RS["fields"].append(Spec)
             Patient["fields"].append(RS)
-            with open(self.outfile, "w") as outfile:
+            with StorageService().get_session(self.outfile, "w") as outfile:
                 json.dump(Patient["fields"], outfile, indent=4)
         # File table procedure
         elif self.endpoint == "File":
@@ -223,7 +231,7 @@ class Schema:
             Diag["fields"].append(Treat)
             RS["fields"].append(Diag)
             File["fields"].extend([Patient, RS, Spec])
-            with open(self.outfile, "w") as outfile:
+            with StorageService().get_session(self.outfile, "w") as outfile:
                 outfile.write(
                     json.dumps(
                         File["fields"],
