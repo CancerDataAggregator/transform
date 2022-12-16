@@ -11,6 +11,20 @@ class ContextService:
     def version(self):
         return self.config["data_version"]
 
+    @property
+    def project(self):
+        return self.config["project"]
+
+    @property
+    def dataset(self):
+        return self.config["dataset"]
+
     def validate(self):
         if "data_version" not in self.config:
             raise ValueError("data_version is required in order to run this dag.")
+
+        if "project" not in self.config:
+            raise ValueError("project is required in order to run this dag.")
+
+        if "dataset" not in self.config:
+            raise ValueError("dataset is required in order to run this dag.")

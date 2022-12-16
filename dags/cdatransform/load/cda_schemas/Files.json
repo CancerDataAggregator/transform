@@ -1,0 +1,81 @@
+{
+  "tableName": "all_Files_v3_1_test1",
+  "tableAlias": "File",
+  "fieldConfigs": {
+    "id": {
+      "partitionBy": true,
+      "countByFields": [{
+        "field": "id",
+        "type": "TOTAL",
+        "alias": "total"
+      }]
+    },
+    "identifier.system": {
+      "partitionBy": true,
+      "countByFields": [{
+        "field": "system",
+        "type": "GROUPED"
+      }]
+    },
+    "data_category": {
+      "countByFields": [{
+        "field": "data_category",
+        "type": "GROUPED"
+      }]
+    },
+    "file_format": {
+      "countByFields": [{
+        "field": "file_format",
+        "type": "GROUPED"
+      }]
+    },
+    "data_type": {
+      "countByFields": [{
+        "field": "data_type",
+        "type": "GROUPED"
+      }]
+    },
+    "ResearchSubjects": {
+      "excludeFromSelect": true,
+      "foreignKeys": [
+        {
+          "fields": [
+            "researchsubject_id"
+          ],
+          "type": "SINGLE",
+          "tableName": "all_Subjects_v3_1_test1",
+          "tableAlias": "subjects",
+          "location": "ResearchSubject"
+        }
+      ]
+    },
+    "Specimens": {
+      "excludeFromSelect": true,
+      "foreignKeys": [
+        {
+          "fields": [
+            "specimen_id"
+          ],
+          "type": "SINGLE",
+          "tableName": "all_Subjects_v3_1_test1",
+          "tableAlias": "specimens",
+          "location": "ResearchSubject.Specimen"
+        }
+      ]
+    },
+    "Subjects": {
+      "excludeFromSelect": true,
+      "foreignKeys": [
+        {
+          "fields": [
+            "subject_id"
+          ],
+          "type": "SINGLE",
+          "tableName": "all_Subjects_v3_1_test1",
+          "tableAlias": "subjects",
+          "location": ""
+        }
+      ]
+    }
+  }
+}

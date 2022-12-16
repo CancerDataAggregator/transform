@@ -1,0 +1,88 @@
+{
+  "tableName": "somatic_mutation_hg38_gdc_v3_1_test1",
+  "tableAlias": "Mutation",
+  "fieldConfigs": {
+    "case_barcode": {
+      "partitionBy": true,
+      "foreignKeys": [
+        {
+          "fields": [
+            "subject_id"
+          ],
+          "type": "SINGLE",
+          "tableName": "all_Subjects_v3_1_test1",
+          "tableAlias": "subjects"
+        }
+      ]
+    },
+    "Tumor_Sample_UUID": {
+      "foreignKeys": [
+        {
+          "fields": [
+            "specimen_id"
+          ],
+          "type": "COMPOSITE_OR",
+          "tableName": "all_Subjects_v3_1_test1",
+          "tableAlias": "specimen",
+          "location": "ResearchSubject.Specimen"
+        }
+      ]
+    },
+    "Matched_Norm_Sample_UUID": {
+      "foreignKeys": [
+        {
+          "fields": [
+            "specimen_id"
+          ],
+          "type": "COMPOSITE_OR",
+          "tableName": "all_Subjects_v3_1_test1",
+          "tableAlias": "specimen",
+          "location": "ResearchSubject.Specimen"
+        }
+      ]
+    },
+    "case_id": {
+      "foreignKeys": [
+        {
+          "fields": [
+            "researchsubject_id"
+          ],
+          "type": "SINGLE",
+          "tableName": "all_Subjects_v3_1_test1",
+          "tableAlias": "researchsubjects",
+          "location": "ResearchSubject"
+        }
+      ]
+    },
+    "project_short_name": {
+      "countByFields": [{
+        "field": "project_short_name",
+        "type": "GROUPED"
+      }]
+    },
+    "NCBI_Build": {
+      "countByFields": [{
+        "field": "NCBI_Build",
+        "type": "GROUPED"
+      }]
+    },
+    "Chromosome": {
+      "countByFields": [{
+        "field": "Chromosome",
+        "type": "GROUPED"
+      }]
+    },
+    "Variant_Type": {
+      "countByFields": [{
+        "field": "Variant_Type",
+        "type": "GROUPED"
+      }]
+    },
+    "One_Consequence": {
+      "countByFields": [{
+        "field": "One_Consequence",
+        "type": "GROUPED"
+      }]
+    }
+  }
+}

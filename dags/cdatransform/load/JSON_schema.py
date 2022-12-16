@@ -1,9 +1,11 @@
 import argparse
-from .schema import Schema
 from typing import Optional, Union
+
 from typing_extensions import Literal
-from ..transform.yaml_mapping_types import YamlFileMapping
+
 from ..lib import yamlPathMapping
+from ..transform.yaml_mapping_types import YamlFileMapping
+from .schema import Schema
 
 Endpoint_type_schema = Literal["File", "Patient"]
 
@@ -24,7 +26,3 @@ def json_bq_schema(
         endpoint=endpoint,
     )
     schema.write_json_schema()
-
-
-if __name__ == "__main__":
-    json_bq_schema()
