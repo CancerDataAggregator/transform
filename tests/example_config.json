@@ -1,0 +1,6 @@
+// this is for the Config settings in airflow run dags as config ContextService().validate()
+{
+    "data_version" :"3_2", 
+    "project" : "gdc-bq-sample",
+    "dataset" : "dev"
+}
