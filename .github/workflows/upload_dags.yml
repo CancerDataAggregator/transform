@@ -3,7 +3,7 @@ name: upload_dags
 on:
   push:
     branches:
-      - add_airflow_component
+      - add_airflow_components
     paths-ignore:
       - "README.md"
       - ".github/**"

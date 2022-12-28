@@ -1,4 +1,4 @@
-echo "Statring Folder Copy"
+echo "Starting Folder Copy"
 cd dags
 pip install cleanpy
 cleanpy .
