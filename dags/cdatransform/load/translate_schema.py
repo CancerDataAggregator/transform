@@ -7,13 +7,28 @@ from google.cloud.bigquery.dataset import DatasetReference
 from google.cloud.bigquery.schema import SchemaField
 from google.cloud.bigquery.table import Table, TableReference
 
+try:
+    from cdatransform.services.storage_service import StorageService
+except ImportError:
+    from dags.cdatransform.services.storage_service import StorageService
+
 
 class TransformSchema:
-    def __init__(self, load_result: Dict, destination_bucket):
+    SCHEMA_DIR = "cda_schemas"
+
+    def __init__(
+        self, load_result: Dict, destination_bucket: str, project: str, dataset: str
+    ):
         self.client = bigquery.Client()
         """from_service_account_json('bigquery-service-account.json')"""
         self.load_result = load_result
         self.destination_bucket = destination_bucket
+        self.project = project
+        self.dataset = dataset
+        self.dataset_ref: DatasetReference = self.client.dataset(
+            self.dataset, project=self.project
+        )
+        self.storage_service = StorageService()
 
     def process_schema_definitions(self, field_configs: Dict, schema_defs, parent: str):
         def_list: list[Dict] = []
@@ -43,12 +58,11 @@ class TransformSchema:
 
         return def_list
 
-    def extract_schema_and_transform(self, table_name: str, project: str, dataset: str):
-        dataset_ref: DatasetReference = self.client.dataset(dataset, project=project)
-        table_ref: TableReference = dataset_ref.table(table_name)
+    def extract_schema_and_transform(self, schema_name: str, table_name: str):
+        table_ref: TableReference = self.dataset_ref.table(table_name)
         table: Table = self.client.get_table(table_ref)
 
-        with open(f"{self.version}/{table_name}.json", "r") as table_file:
+        with open(f"{self.SCHEMA_DIR}/{schema_name}.json", "r") as table_file:
             table_data = json.load(table_file)
 
         schema_dict: Dict = {
@@ -58,25 +72,19 @@ class TransformSchema:
             ),
         }
 
-        with open(f"{table_name}.json", "w") as file_output:
+        with self.storage_service.get_session(
+            f"{self.destination_bucket}/{table_name}.json", "w"
+        ) as file_output:
             file_output.write(
                 json.dumps(
                     schema_dict, sort_keys=False, indent=4, separators=(",", ": ")
                 )
             )
 
-    def transform_by_version(self):
-        if len(self.version) == 0:
-            raise "Must provide a version"
+    def transform(self):
+        for schema_name in self.load_result:
+            self.extract_schema_and_transform(
+                schema_name=schema_name, table_name=self.load_result[schema_name]
+            )
 
-        with open(f"{self.version}/versionConfig.json") as version_config:
-            version_info = json.load(version_config)
-            project = version_info["project"]
-            dataset = version_info["dataset"]
-
-            for table_name in version_info["tables"]:
-                self.extract_schema_and_transform(table_name, project, dataset)
-
-
-# if __name__ == "__main__":
-#     TransformSchema("3_1").transform_by_version()
+        return True

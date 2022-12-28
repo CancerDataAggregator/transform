@@ -3,7 +3,7 @@ from uuid import uuid4
 
 import pendulum
 from airflow.decorators import dag
-from tasks.aggregation import aggregation_task
+from tasks.schema_transform import schema_transform_task
 from tasks.task_groups import (
     dc_task_group,
     load_task_group,
@@ -42,7 +42,7 @@ def cda_etl(*args):
     load_group = load_task_group
 
     uuid = str(uuid4().hex)
-    load_group(schema_group(uuid, merge_group(dc_group(uuid))))
+    schema_transform_task(load_group(schema_group(uuid, merge_group(dc_group(uuid)))))
 
 
 cda_etl = cda_etl()
