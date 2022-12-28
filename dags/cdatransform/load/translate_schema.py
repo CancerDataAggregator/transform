@@ -1,4 +1,5 @@
 import json
+import os
 from ensurepip import version
 from typing import Dict
 
@@ -14,7 +15,12 @@ except ImportError:
 
 
 class TransformSchema:
-    SCHEMA_DIR = "cda_schemas"
+
+    SCHEMA_DIR = (
+        os.environ["CDA_SCHEMA_DIRECTORY"]
+        if "CDA_SCHEMA_DIRECTORY" in os.environ
+        else "./dags/cdatransform/load/cda_schemas"
+    )
 
     def __init__(
         self, load_result: Dict, destination_bucket: str, project: str, dataset: str

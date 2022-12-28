@@ -31,7 +31,10 @@ from tasks.pdc import (
 )
 from tasks.schema import files_schema, subjects_schema
 
-from dags.cdatransform.services.context_service import ContextService
+try:
+    from cdatransform.services.context_service import ContextService
+except ImportError:
+    from dags.cdatransform.services.context_service import ContextService
 
 
 # region GDC
