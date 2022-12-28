@@ -43,4 +43,4 @@ jobs:
           pytest
       - name: Upload dags to gcloud
         run: |
-          python3 upload_dags.py
+          bash upload_dags.sh
