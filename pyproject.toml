@@ -45,5 +45,4 @@ aiohttp = "3.8.3"
 aiofile = "3.8.1"
 
 [build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools", "wheel"]
