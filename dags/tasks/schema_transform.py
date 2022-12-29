@@ -3,8 +3,8 @@ from typing import Dict
 
 from airflow.decorators import task
 
-from dags.cdatransform.load.translate_schema import TransformSchema
-from dags.cdatransform.services.context_service import ContextService
+from cdatransform.load.translate_schema import TransformSchema
+from cdatransform.services.context_service import ContextService
 
 
 @task(task_id="schema_transform")
