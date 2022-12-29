@@ -11,7 +11,7 @@ from tasks.task_groups import (
     schema_task_group,
 )
 
-from dags.cdatransform.services.context_service import ContextService
+from cdatransform.services.context_service import ContextService
 
 log = logging.getLogger(__name__)
 
