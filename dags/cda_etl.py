@@ -31,7 +31,7 @@ default_args = {
     catchup=False,
     tags=["CDA"],
 )
-def cda_etl(*args):
+def cda_etl():
     ContextService().validate()
 
     dc_group = dc_task_group
