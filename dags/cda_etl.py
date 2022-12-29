@@ -32,7 +32,7 @@ default_args = {
     tags=["CDA"],
 )
 def cda_etl():
-    ContextService().validate()
+    # ContextService().validate()
 
     dc_group = dc_task_group
 
