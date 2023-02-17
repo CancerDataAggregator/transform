@@ -4,17 +4,18 @@ from typing import Dict
 from airflow.decorators import task
 
 from cdatransform.load.Load import Load
-from cdatransform.services.context_service import ContextService
+
+# from cdatransform.services.context_service import ContextService
 
 
 @task(task_id="load_subjects")
 def load_subjects(version: str, load_data: Dict):
-    context_service = ContextService()
+    # context_service = ContextService()
     dest_table = f"all_Subjects_{version}_final"
-    table_id = f"{context_service.project}.{context_service.dataset}.{dest_table}"
+    table_id = f"gdc-bq-sample.dev.{dest_table}"
     loader = Load(
-        context_service.project,
-        context_service.dataset,
+        "gdc-bq-sample",
+        "dev",
         data_file=load_data["subjects_merged"],
         dest_table_id=table_id,
         schema=load_data["subjects_schema"],
@@ -28,11 +29,11 @@ def load_subjects(version: str, load_data: Dict):
 def load_files(version: str, load_data: Dict):
     dest_table = f"all_Files_{version}_final"
 
-    context_service = ContextService()
-    table_id = f"{context_service.project}.{context_service.dataset}.{dest_table}"
+    # context_service = ContextService()
+    table_id = f"gdc-bq-sample.dev.{dest_table}"
     loader = Load(
-        context_service.project,
-        context_service.dataset,
+        "gdc-bq-sample",
+        "dev",
         data_file=load_data["files_merged"],
         dest_table_id=table_id,
         schema=load_data["files_schema"],

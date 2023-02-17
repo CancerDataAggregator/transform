@@ -31,10 +31,10 @@ from tasks.pdc import (
 )
 from tasks.schema import files_schema, subjects_schema
 
-try:
-    from cdatransform.services.context_service import ContextService
-except ImportError:
-    from dags.cdatransform.services.context_service import ContextService
+# try:
+#     from cdatransform.services.context_service import ContextService
+# except ImportError:
+#     from dags.cdatransform.services.context_service import ContextService
 
 
 # region GDC
@@ -61,7 +61,8 @@ def gdc_task_group(uuid: str, **kwargs):
 # region IDC
 @task_group(group_id="IDC_Cases_Extract")
 def idc_cases_extract_task_group(uuid: str, **kwargs):
-    version = ContextService().version
+    # version = ContextService().version
+    version = "v3_test_1"
     return idc_combine_case_blobs(
         idc_cases_to_bucket(idc_cases_to_table(uuid, version))
     )
@@ -69,7 +70,8 @@ def idc_cases_extract_task_group(uuid: str, **kwargs):
 
 @task_group(group_id="IDC_Files_Extract")
 def idc_files_extract_task_group(uuid: str, **kwargs):
-    version = ContextService().version
+    # version = ContextService().version
+    version = "v3_test_1"
     return idc_combine_file_blobs(
         idc_files_to_bucket(idc_files_to_table(uuid, version))
     )
@@ -131,7 +133,8 @@ def schema_task_group(uuid: str, merge_result: Dict):
 
 @task_group(group_id="load_group")
 def load_task_group(schema_result: Dict):
-    version = ContextService().version
+    # version = ContextService().version
+    version = "v3_test_1"
     return {
         **load_subjects(version, schema_result),
         **load_files(version, schema_result),
