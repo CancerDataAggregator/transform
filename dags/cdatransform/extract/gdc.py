@@ -9,16 +9,19 @@ from typing import Union
 import jsonlines
 
 try:
+    from cdatransform.extract.extractor import Extractor
+    from cdatransform.extract.gdc_case_fields import case_fields
+    from cdatransform.extract.gdc_file_fields import gdc_file_fields
+    from cdatransform.extract.lib import retry_get
     from cdatransform.models.extraction_result import ExtractionResult
 except ImportError:
+    from dags.cdatransform.extract.extractor import Extractor
+    from dags.cdatransform.extract.gdc_case_fields import case_fields
+    from dags.cdatransform.extract.gdc_file_fields import gdc_file_fields
+    from dags.cdatransform.extract.lib import retry_get
     from dags.cdatransform.models.extraction_result import ExtractionResult
 
-from .extractor import Extractor
-
 # from cdatransform.lib import get_case_ids
-from .gdc_case_fields import case_fields
-from .gdc_file_fields import file_fields
-from .lib import retry_get, send_json_to_storage
 
 # What is the significance of cases.samples.sample_id vs cases.sample_ids?
 # Answer: cases.sample_ids is not returned by GDC API

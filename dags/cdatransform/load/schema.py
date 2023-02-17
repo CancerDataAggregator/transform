@@ -7,11 +7,12 @@ from yaml import Loader
 try:
     from cdatransform.lib import yamlPathMapping
     from cdatransform.services.storage_service import StorageService
+
+    from .download_json_schema import make_request, url_download
 except ImportError:
     from dags.cdatransform.lib import yamlPathMapping
+    from dags.cdatransform.load.download_json_schema import make_request, url_download
     from dags.cdatransform.services.storage_service import StorageService
-
-from .download_json_schema import make_request, url_download
 
 
 class Schema:

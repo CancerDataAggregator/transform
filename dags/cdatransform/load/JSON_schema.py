@@ -3,9 +3,15 @@ from typing import Optional, Union
 
 from typing_extensions import Literal
 
-from ..lib import yamlPathMapping
-from ..transform.yaml_mapping_types import YamlFileMapping
-from .schema import Schema
+try:
+    from ..lib import yamlPathMapping
+    from ..transform.yaml_mapping_types import YamlFileMapping
+    from .schema import Schema
+except ImportError:
+    from dags.cdatransform.lib import yamlPathMapping
+    from dags.cdatransform.load.schema import Schema
+    from dags.cdatransform.transform.yaml_mapping_types import YamlFileMapping
+
 
 Endpoint_type_schema = Literal["File", "Patient"]
 

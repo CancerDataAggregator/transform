@@ -14,13 +14,16 @@ import aiohttp
 import jsonlines
 
 try:
+    from cdatransform.extract.extractor import Extractor
+    from cdatransform.extract.lib import retry_get
     from cdatransform.services.storage_service import StorageService
-except ImportError:
-    from dags.cdatransform.services.storage_service import StorageService
 
-from .extractor import Extractor
-from .lib import retry_get
-from .pdc_query_lib import *
+    from .pdc_query_lib import *
+except ImportError:
+    from dags.cdatransform.extract.extractor import Extractor
+    from dags.cdatransform.extract.lib import retry_get
+    from dags.cdatransform.extract.pdc_query_lib import *
+    from dags.cdatransform.services.storage_service import StorageService
 
 
 class hashabledict(dict):
