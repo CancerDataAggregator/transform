@@ -42,7 +42,9 @@ def cda_etl():
     load_group = load_task_group
 
     uuid = str(uuid4().hex)
-    schema_transform_task(load_group(schema_group(uuid, merge_group(dc_group(uuid)))))
+    schema_transform_task(
+        load_group(schema_group(uuid, merge_group(uuid, dc_group(uuid))))
+    )
 
 
 cda_etl = cda_etl()
