@@ -22,7 +22,7 @@ def load_subjects(version: str, load_data: Dict):
     )
     loader.load_data()
 
-    return {"Subjects": dest_table}
+    return dest_table
 
 
 @task(task_id="load_files")
@@ -39,4 +39,4 @@ def load_files(version: str, load_data: Dict):
         schema=load_data["files_schema"],
     )
     loader.load_data()
-    return {"Files": table_id}
+    return table_id

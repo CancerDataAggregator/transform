@@ -135,7 +135,9 @@ def schema_task_group(uuid: str, merge_result: Dict):
 def load_task_group(schema_result: Dict):
     # version = ContextService().version
     version = "v3_test_1"
+    subjects_result = load_subjects(version, schema_result)
+    files_result = load_files(version, schema_result)
     return {
-        **load_subjects(version, schema_result),
-        **load_files(version, schema_result),
+        "Subjects": subjects_result,
+        "Files": files_result,
     }
