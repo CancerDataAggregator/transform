@@ -1,9 +1,12 @@
 """
 Transforms specific to PDC data structures
 """
-from .commonlib import constrain_research_subject, lower
-from .validate import LogValidation
-
+try:
+    from cdatransform.transform.commonlib import constrain_research_subject, lower
+    from cdatransform.transform.validate import LogValidation
+except ImportError:
+    from dags.cdatransform.transform.commonlib import constrain_research_subject, lower
+    from dags.cdatransform.transform.validate import LogValidation
 # pdc.patient ------------------------------------------
 
 

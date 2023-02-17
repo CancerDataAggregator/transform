@@ -12,12 +12,14 @@ from typing_extensions import Literal
 
 try:
     from cdatransform.services.storage_service import StorageService
+    from cdatransform.transform.merge.merge_functions import merge_fields_level
+    from cdatransform.transform.validate import LogValidation
+    from cdatransform.transform.yaml_merge_types import YamlFileMerge
 except ImportError:
     from dags.cdatransform.services.storage_service import StorageService
-
-from .merge.merge_functions import merge_fields_level
-from .validate import LogValidation
-from .yaml_merge_types import YamlFileMerge
+    from dags.cdatransform.transform.merge.merge_functions import merge_fields_level
+    from dags.cdatransform.transform.validate import LogValidation
+    from dags.cdatransform.transform.yaml_merge_types import YamlFileMerge
 
 logger = logging.getLogger(__name__)
 

@@ -4,10 +4,20 @@ from typing_extensions import Literal
 
 try:
     import cdatransform.transform.transform_lib.value_transformations as value_transformations
+    from cdatransform.transform.read_using_YAML import (
+        add_linkers,
+        det_tree_to_collapse,
+        read_entry,
+        simp_read,
+    )
 except ImportError:
     import dags.cdatransform.transform.transform_lib.value_transformations as value_transformations
-
-from ..read_using_YAML import add_linkers, det_tree_to_collapse, read_entry, simp_read
+    from dags.cdatransform.transform.read_using_YAML import (
+        add_linkers,
+        det_tree_to_collapse,
+        read_entry,
+        simp_read,
+    )
 
 
 def add_Specimen_rec(orig, MandT, **kwargs) -> list:

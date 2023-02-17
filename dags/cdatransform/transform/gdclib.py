@@ -2,8 +2,12 @@
 Transforms specific to GDC data structures
 """
 
-from .commonlib import constrain_research_subject, lower
-from .validate import LogValidation
+try:
+    from cdatransform.transform.commonlib import constrain_research_subject, lower
+    from cdatransform.transform.validate import LogValidation
+except ImportError:
+    from dags.cdatransform.transform.commonlib import constrain_research_subject, lower
+    from dags.cdatransform.transform.validate import LogValidation
 
 
 # gdc.patient ------------------------------------------
