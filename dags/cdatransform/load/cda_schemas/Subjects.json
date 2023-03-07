@@ -1,11 +1,11 @@
 {
-  "tableName": "all_Subjects_v3_1_test1",
+  "tableName": "{SubjectsTable}",
   "tableAlias": "Subject",
   "fieldConfigs": {
     "id": {
       "partitionBy": true,
       "countByFields": [{
-        "table": "all_Files_v3_1_test1",
+        "table": "{FilesTable}",
         "field": "id",
         "alias": "files",
         "type": "TOTAL"
@@ -20,7 +20,7 @@
             "case_barcode"
           ],
           "type": "SINGLE",
-          "tableName": "somatic_mutation_hg38_gdc_v3_1_test1",
+          "tableName": "{MutationsTable}",
           "tableAlias": "mutations"
         },
         {
@@ -28,7 +28,7 @@
             "Subjects"
           ],
           "type": "SINGLE",
-          "tableName": "all_Files_v3_1_test1",
+          "tableName": "{FilesTable}",
           "tableAlias": "files"
         }
       ]
@@ -70,7 +70,7 @@
     "ResearchSubject.id": {
       "partitionBy": true,
       "countByFields": [{
-        "table": "all_Files_v3_1_test1",
+        "table": "{FilesTable}",
         "field": "id",
         "alias": "files",
         "type": "TOTAL"
@@ -85,7 +85,7 @@
             "case_id"
           ],
           "type": "SINGLE",
-          "tableName": "somatic_mutation_hg38_gdc_v3_1_test1",
+          "tableName": "{MutationsTable}",
           "tableAlias": "mutations"
         },
         {
@@ -93,7 +93,7 @@
             "ResearchSubjects"
           ],
           "type": "SINGLE",
-          "tableName": "all_Files_v3_1_test1",
+          "tableName": "{FilesTable}",
           "tableAlias": "files"
         }
       ]
@@ -189,7 +189,7 @@
     "ResearchSubject.Specimen.id": {
       "partitionBy": true,
       "countByFields": [{
-        "table": "all_Files_v3_1_test1",
+        "table": "{FilesTable}",
         "field": "id",
         "alias": "files",
         "type": "TOTAL"
@@ -205,7 +205,7 @@
             "Matched_Norm_Sample_UUID"
           ],
           "type": "COMPOSITE_OR",
-          "tableName": "somatic_mutation_hg38_gdc_v3_1_test1",
+          "tableName": "{MutationsTable}",
           "tableAlias": "mutations"
         },
         {
@@ -213,7 +213,7 @@
             "Specimens"
           ],
           "type": "SINGLE",
-          "tableName": "all_Files_v3_1_test1",
+          "tableName": "{FilesTable}",
           "tableAlias": "files"
         }
       ]

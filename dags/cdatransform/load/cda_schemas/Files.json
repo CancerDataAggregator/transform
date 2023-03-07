@@ -1,5 +1,5 @@
 {
-  "tableName": "all_Files_v3_1_test1",
+  "tableName": "{FilesTable}",
   "tableAlias": "File",
   "fieldConfigs": {
     "id": {
@@ -43,7 +43,7 @@
             "researchsubject_id"
           ],
           "type": "SINGLE",
-          "tableName": "all_Subjects_v3_1_test1",
+          "tableName": "{SubjectsTable}",
           "tableAlias": "subjects",
           "location": "ResearchSubject"
         }
@@ -57,7 +57,7 @@
             "specimen_id"
           ],
           "type": "SINGLE",
-          "tableName": "all_Subjects_v3_1_test1",
+          "tableName": "{SubjectsTable}",
           "tableAlias": "specimens",
           "location": "ResearchSubject.Specimen"
         }
@@ -71,7 +71,7 @@
             "subject_id"
           ],
           "type": "SINGLE",
-          "tableName": "all_Subjects_v3_1_test1",
+          "tableName": "{SubjectsTable}",
           "tableAlias": "subjects",
           "location": ""
         }

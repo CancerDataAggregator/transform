@@ -1,5 +1,5 @@
 {
-  "tableName": "somatic_mutation_hg38_gdc_v3_1_test1",
+  "tableName": "{MutationsTable}",
   "tableAlias": "Mutation",
   "fieldConfigs": {
     "case_barcode": {
@@ -10,7 +10,7 @@
             "subject_id"
           ],
           "type": "SINGLE",
-          "tableName": "all_Subjects_v3_1_test1",
+          "tableName": "{SubjectsTable}",
           "tableAlias": "subjects"
         }
       ]
@@ -22,7 +22,7 @@
             "specimen_id"
           ],
           "type": "COMPOSITE_OR",
-          "tableName": "all_Subjects_v3_1_test1",
+          "tableName": "{SubjectsTable}",
           "tableAlias": "specimen",
           "location": "ResearchSubject.Specimen"
         }
@@ -35,7 +35,7 @@
             "specimen_id"
           ],
           "type": "COMPOSITE_OR",
-          "tableName": "all_Subjects_v3_1_test1",
+          "tableName": "{SubjectsTable}",
           "tableAlias": "specimen",
           "location": "ResearchSubject.Specimen"
         }
@@ -48,7 +48,7 @@
             "researchsubject_id"
           ],
           "type": "SINGLE",
-          "tableName": "all_Subjects_v3_1_test1",
+          "tableName": "{SubjectsTable}",
           "tableAlias": "researchsubjects",
           "location": "ResearchSubject"
         }

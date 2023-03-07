@@ -19,7 +19,7 @@ class TransformSchema:
     SCHEMA_DIR = (
         os.environ["CDA_SCHEMA_DIRECTORY"]
         if "CDA_SCHEMA_DIRECTORY" in os.environ
-        else "./dags/cdatransform/load/cda_schemas"
+        else os.path.abspath("./dags/cdatransform/load/cda_schemas")
     )
 
     def __init__(
@@ -58,11 +58,31 @@ class TransformSchema:
                 new_dict["fields"] = fields
 
             if table_field in field_configs:
-                new_dict = {**new_dict, **field_configs[table_field]}
+                new_dict = {
+                    **new_dict,
+                    **self.__replaceTableNames(field_configs[table_field]),
+                }
 
             def_list.append(new_dict)
 
         return def_list
+
+    def __replaceTableNames(self, obj):
+        if isinstance(obj, dict):
+            for key in obj:
+                obj[key] = self.__replaceTableNames(obj[key])
+        if isinstance(obj, list):
+            return [self.__replaceTableNames(list_obj) for list_obj in obj]
+        if isinstance(obj, str):
+            return self.__replaceTableName(obj)
+
+        return obj
+
+    def __replaceTableName(self, text):
+        if not text.endswith("Table}"):
+            return text
+        index = text.replace("Table", "").replace("{", "").replace("}", "")
+        return self.load_result[index]
 
     def extract_schema_and_transform(self, schema_name: str, table_name: str):
         table_ref: TableReference = self.dataset_ref.table(table_name)
@@ -73,6 +93,7 @@ class TransformSchema:
 
         schema_dict: Dict = {
             "tableAlias": table_data["tableAlias"],
+            "tableName": self.__replaceTableName(table_data["tableName"]),
             "definitions": self.process_schema_definitions(
                 table_data["fieldConfigs"], table.schema, ""
             ),
@@ -81,6 +102,7 @@ class TransformSchema:
         with self.storage_service.get_session(
             f"{self.destination_bucket}/{table_name}.json", "w"
         ) as file_output:
+            # with open(f"{self.SCHEMA_DIR}/{table_name}.json", "w") as file_output:
             file_output.write(
                 json.dumps(
                     schema_dict, sort_keys=False, indent=4, separators=(",", ": ")
