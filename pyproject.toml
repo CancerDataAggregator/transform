@@ -43,6 +43,7 @@ smart-open = "6.2.0"
 urllib3 = "1.26.11"
 aiohttp = "3.8.3"
 aiofile = "3.8.1"
+apache-airflow = "^2.5.3"
 
 [build-system]
 requires = ["setuptools", "wheel"]

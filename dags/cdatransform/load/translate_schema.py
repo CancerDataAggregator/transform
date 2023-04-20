@@ -1,7 +1,6 @@
 import json
 import os
-from ensurepip import version
-from typing import Dict
+from typing import Dict, Union
 
 from google.cloud import bigquery
 from google.cloud.bigquery.dataset import DatasetReference
@@ -15,7 +14,6 @@ except ImportError:
 
 
 class TransformSchema:
-
     SCHEMA_DIR = (
         os.environ["CDA_SCHEMA_DIRECTORY"]
         if "CDA_SCHEMA_DIRECTORY" in os.environ
@@ -88,7 +86,9 @@ class TransformSchema:
         table_ref: TableReference = self.dataset_ref.table(table_name)
         table: Table = self.client.get_table(table_ref)
 
-        with open(f"{self.SCHEMA_DIR}/{schema_name}.json", "r") as table_file:
+        with open(
+            f"{self.SCHEMA_DIR}/{schema_name}.json", "r", encoding="utf-8"
+        ) as table_file:
             table_data = json.load(table_file)
 
         schema_dict: Dict = {
