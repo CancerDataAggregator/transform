@@ -1,0 +1,579 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "cda_submission_metadata",
+    "description": "A JSON-serialized collection of research metadata prepared specifically for ingest into the CDA search database.",
+    "type": "object",
+    "properties": {
+        "file": {
+            "description": "A collection of file records.",
+            "type": "array",
+            "items": {
+                "description": "An individual file record.",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "description": "A unique identifier for this file record.",
+                        "type": "string"
+                    },
+                    "identifiers": {
+                        "description": "Zero or more legacy identifiers for this file record (or for sources used to create this file record).",
+                        "type": "array",
+                        "items": {
+                            "description": "A legacy identifier for this file record (or for a source record used to create this file record).",
+                            "type": "object",
+                            "properties": {
+                                "system": {
+                                    "description": "The source namespace or accounting system which produced this identifier (e.g. 'GDC').",
+                                    "type": "string"
+                                },
+                                "field_name": {
+                                    "description": "The specific location within the source system from which this identifier was extracted or derived (e.g. 'file.file_id').",
+                                    "type": "string"
+                                },
+                                "value": {
+                                    "description": "The identifier itself (e.g. a UUID).",
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "system",
+                                "field_name",
+                                "value"
+                            ]
+                        },
+                        "uniqueItems": true
+                    },
+                    "label": {
+                        "description": "A label for this file (e.g. its basename).",
+                        "type": "string"
+                    },
+                    "data_category": {
+                        "description": "A broad categorization of the contents of this file.",
+                        "type": "string"
+                    },
+                    "data_type": {
+                        "description": "The specific content type of this file.",
+                        "type": "string"
+                    },
+                    "file_format": {
+                        "description": "This file's data format.",
+                        "type": "string"
+                    },
+                    "drs_uri": {
+                        "description": "A resolvable DRS URI pointing to this file.",
+                        "type": "string"
+                    },
+                    "byte_size": {
+                        "description": "The size of this file in bytes.",
+                        "type": "integer"
+                    },
+                    "checksum": {
+                        "description": "The output of a checksum operation computed on this file (e.g. an MD5 hash string).",
+                        "type": "string"
+                    },
+                    "data_modality": {
+                        "description": "The biological nature of the information gathered in this file, independent of the technology or methods used to produce that information.",
+                        "type": "string"
+                    },
+                    "imaging_modality": {
+                        "description": "Imported directly from DICOM; omit otherwise.",
+                        "type": "string"
+                    },
+                    "dbgap_accession_number": {
+                        "description": "The accession string identifying the dbGaP dataset containing this file.",
+                        "type": "string"
+                    },
+                    "imaging_series": {
+                        "description": "An identifier describing a collection of image files of which this file is a part.",
+                        "type": "string"
+                    },
+                    "associated_projects": {
+                        "description": "One or more projects associated with this file.",
+                        "type": "array",
+                        "items": {
+                            "description": "A project associated with this file record.",
+                            "type": "string"
+                        },
+                        "uniqueItems": true
+                    },
+                    "subjects": {
+                        "description": "Zero or more subject records associated with this file.",
+                        "type": "array",
+                        "items": {
+                            "description": "The unique identifier for a subject record associated with this file record.",
+                            "type": "string"
+                        },
+                        "uniqueItems": true
+                    },
+                    "research_subjects": {
+                        "description": "Zero or more research_subject records associated with this file.",
+                        "type": "array",
+                        "items": {
+                            "description": "The unique identifier for a research_subject record associated with this file record.",
+                            "type": "string"
+                        },
+                        "uniqueItems": true
+                    },
+                    "specimens": {
+                        "description": "Zero or more specimen records associated with this file.",
+                        "type": "array",
+                        "items": {
+                            "description": "The unique identifier for a specimen record associated with this file record.",
+                            "type": "string"
+                        },
+                        "uniqueItems": true
+                    }
+                },
+                "required": [
+                    "id",
+                    "identifiers",
+                    "associated_projects",
+                    "subjects",
+                    "research_subjects",
+                    "specimens"
+                ]
+            },
+            "uniqueItems": true
+        },
+        "diagnosis": {
+            "description": "A collection of diagnosis records.",
+            "type": "array",
+            "items": {
+                "description": "An individual diagnosis record of a particular subject.",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "description": "A unique identifier for this diagnosis record.",
+                        "type": "string"
+                    },
+                    "identifiers": {
+                        "description": "Zero or more legacy identifiers for this diagnosis record (or for sources used to create this diagnosis record).",
+                        "type": "array",
+                        "items": {
+                            "description": "A legacy identifier for this diagnosis record (or for a source record used to create this diagnosis record).",
+                            "type": "object",
+                            "properties": {
+                                "system": {
+                                    "description": "The source namespace or accounting system which produced this identifier (e.g. 'GDC').",
+                                    "type": "string"
+                                },
+                                "field_name": {
+                                    "description": "The specific location within the source system from which this identifier was extracted or derived (e.g. 'diagnosis.diagnosis_id').",
+                                    "type": "string"
+                                },
+                                "value": {
+                                    "description": "The identifier itself (e.g. a UUID).",
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "system",
+                                "field_name",
+                                "value"
+                            ]
+                        },
+                        "uniqueItems": true
+                    },
+                    "primary_diagnosis": {
+                        "description": "The diagnosed pathology qualifying the subject for participation in the project or study that produced this metadata.",
+                        "type": "string"
+                    },
+                    "age_at_diagnosis": {
+                        "description": "The age in days of the subject at the time of diagnosis.",
+                        "type": "integer"
+                    },
+                    "morphology": {
+                        "description": "Code that represents the histology of the disease.",
+                        "type": "string"
+                    },
+                    "stage": {
+                        "description": "The extent of a cancer in the body.",
+                        "type": "string"
+                    },
+                    "grade": {
+                        "description": "The extent to which cancer cells are similar in appearance and function to healthy cells of the same tissue type.",
+                        "type": "string"
+                    },
+                    "method_of_diagnosis": {
+                        "description": "The method used to confirm the subject's malignant diagnosis.",
+                        "type": "string"
+                    },
+                    "treatments": {
+                        "description": "Zero or more treatment records associated with this diagnosis.",
+                        "type": "array",
+                        "items": {
+                            "description": "The unique identifier for a treatment record associated with this diagnosis record.",
+                            "type": "string"
+                        },
+                        "uniqueItems": true
+                    }
+                },
+                "required": [
+                    "id",
+                    "identifiers",
+                    "treatments"
+                ]
+            },
+            "uniqueItems": true
+        },
+        "treatment": {
+            "description": "A collection of treatment records.",
+            "type": "array",
+            "items": {
+                "description": "A record of the administration of some treatment (medication, surgery, etc.).",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "description": "A unique identifier for this treatment record.",
+                        "type": "string"
+                    },
+                    "identifiers": {
+                        "description": "Zero or more legacy identifiers for this treatment record (or for sources used to create this treatment record).",
+                        "type": "array",
+                        "items": {
+                            "description": "A legacy identifier for this treatment record (or for a source record used to create this treatment record).",
+                            "type": "object",
+                            "properties": {
+                                "system": {
+                                    "description": "The source namespace or accounting system which produced this identifier (e.g. 'GDC').",
+                                    "type": "string"
+                                },
+                                "field_name": {
+                                    "description": "The specific location within the source system from which this identifier was extracted or derived (e.g. 'treatment.treatment_id').",
+                                    "type": "string"
+                                },
+                                "value": {
+                                    "description": "The identifier itself (e.g. a UUID).",
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "system",
+                                "field_name",
+                                "value"
+                            ]
+                        },
+                        "uniqueItems": true
+                    },
+                    "treatment_type": {
+                        "description": "The treatment type including medication/therapeutics or other procedures.",
+                        "type": "string"
+                    },
+                    "treatment_outcome": {
+                        "description": "The final outcome of the treatment.",
+                        "type": "string"
+                    },
+                    "days_to_treatment_start": {
+                        "description": "The timepoint at which the treatment started.",
+                        "type": "integer"
+                    },
+                    "days_to_treatment_end": {
+                        "description": "The timepoint at which the treatment ended.",
+                        "type": "integer"
+                    },
+                    "therapeutic_agent": {
+                        "description": "A therapeutic agent that serves as an essential part of this treatment.",
+                        "type": "string"
+                    },
+                    "treatment_anatomic_site": {
+                        "description": "The anatomical site that the treatment targets.",
+                        "type": "string"
+                    },
+                    "treatment_effect": {
+                        "description": "The effect of a treatment on the diagnosis or tumor.",
+                        "type": "string"
+                    },
+                    "treatment_end_reason": {
+                        "description": "The reason the treatment ended.",
+                        "type": "string"
+                    },
+                    "number_of_cycles": {
+                        "description": "The number of treatment cycles administered.",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "id",
+                    "identifiers"
+                ]
+            },
+            "uniqueItems": true
+        },
+        "specimen": {
+            "description": "A collection of specimen records.",
+            "type": "array",
+            "items": {
+                "description": "Any material taken as a sample from a biological entity (living or dead), or from a physical object or the environment.",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "description": "A unique identifier for this specimen record.",
+                        "type": "string"
+                    },
+                    "identifiers": {
+                        "description": "Zero or more legacy identifiers for this specimen record (or for sources used to create this specimen record).",
+                        "type": "array",
+                        "items": {
+                            "description": "A legacy identifier for this specimen record (or for a source record used to create this specimen record).",
+                            "type": "object",
+                            "properties": {
+                                "system": {
+                                    "description": "The source namespace or accounting system which produced this identifier (e.g. 'GDC').",
+                                    "type": "string"
+                                },
+                                "field_name": {
+                                    "description": "The specific location within the source system from which this identifier was extracted or derived (e.g. 'files.samples.portions.analytes.aliquots.aliquot_id').",
+                                    "type": "string"
+                                },
+                                "value": {
+                                    "description": "The identifier itself (e.g. a UUID).",
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "system",
+                                "field_name",
+                                "value"
+                            ]
+                        },
+                        "uniqueItems": true
+                    },
+                    "days_to_collection": {
+                        "description": "The number of days from the index date to either the date a sample was collected for a specific study or project, or the date a subject underwent a procedure (e.g. surgical resection) yielding a sample that was eventually used for research.",
+                        "type": "integer"
+                    },
+                    "primary_disease_type": {
+                        "description": "A text term used to describe the type of malignant disease.",
+                        "type": "string"
+                    },
+                    "anatomical_site": {
+                        "description": "A text term identifying the primary disease site of the source tumor for this specimen.",
+                        "type": "string"
+                    },
+                    "source_material_type": {
+                        "description": "The kind of material from which this specimen was derived.",
+                        "type": "string"
+                    },
+                    "specimen_type": {
+                        "description": "A provenance-style role for this specimen, e.g. 'aliquot' or 'slide.'",
+                        "type": "string"
+                    },
+                    "associated_project": {
+                        "description": "The project associated with this specimen.",
+                        "type": "string"
+                    },
+                    "derived_from_specimen": {
+                        "description": "The unique identifier of a record describing a source/parent specimen from which this one was directly derived.",
+                        "type": [ "string", "null" ]
+                    },
+                    "derived_from_subject": {
+                        "description": "The unique identifier of a record describing a subject from which this specimen was directly derived.",
+                        "type": [ "string", "null" ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "identifiers",
+                    "derived_from_specimen",
+                    "derived_from_subject"
+                ]
+            },
+            "uniqueItems": true
+        },
+        "research_subject": {
+            "description": "A collection of project-specific research_subject case records, where one research_subject record is created for each project in which a subject participates.",
+            "type": "array",
+            "items": {
+                "description": "A single research_subject record, possibly one of many associated with a single subject record.",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "description": "A unique identifier for this research_subject record.",
+                        "type": "string"
+                    },
+                    "identifiers": {
+                        "description": "Zero or more legacy identifiers for this research_subject record (or for sources used to create this research_subject record).",
+                        "type": "array",
+                        "items": {
+                            "description": "A legacy identifier for this research_subject record (or for a source record used to create this research_subject record).",
+                            "type": "object",
+                            "properties": {
+                                "system": {
+                                    "description": "The source namespace or accounting system which produced this identifier (e.g. 'GDC').",
+                                    "type": "string"
+                                },
+                                "field_name": {
+                                    "description": "The specific location within the source system from which this identifier was extracted or derived (e.g. 'case.case_id').",
+                                    "type": "string"
+                                },
+                                "value": {
+                                    "description": "The identifier itself (e.g. a UUID).",
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "system",
+                                "field_name",
+                                "value"
+                            ]
+                        },
+                        "uniqueItems": true
+                    },
+                    "primary_diagnosis_condition": {
+                        "description": "A text term used to describe the type of malignant disease that qualified this research_subject for inclusion in its research project.",
+                        "type": "string"
+                    },
+                    "primary_diagnosis_site": {
+                        "description": "The primary site of the disease identified by primary_diagnosis_condition.",
+                        "type": "string"
+                    },
+                    "member_of_research_project": {
+                        "description": "The project associated with this research_subject.",
+                        "type": "string"
+                    },
+                    "diagnoses": {
+                        "description": "Zero or more diagnosis records associated with this research_subject.",
+                        "type": "array",
+                        "items": {
+                            "description": "The unique identifier for a diagnosis record associated with this research_subject.",
+                            "type": "string"
+                        },
+                        "uniqueItems": true
+                    },
+                    "treatments": {
+                        "description": "Zero or more treatment records associated with this research_subject.",
+                        "type": "array",
+                        "items": {
+                            "description": "The unique identifier for a treatment record associated with this research_subject.",
+                            "type": "string"
+                        },
+                        "uniqueItems": true
+                    },
+                    "specimens": {
+                        "description": "Zero or more specimen records associated with this research_subject.",
+                        "type": "array",
+                        "items": {
+                            "description": "The unique identifier for a specimen record associated with this research_subject.",
+                            "type": "string"
+                        },
+                        "uniqueItems": true
+                    }
+                },
+                "required": [
+                    "id",
+                    "identifiers",
+                    "diagnoses",
+                    "treatments",
+                    "specimens"
+                ]
+            },
+            "uniqueItems": true
+        },
+        "subject": {
+            "description": "A collection of subject records.",
+            "type": "array",
+            "items": {
+                "description": "A biological entity of interest about which observations have been made.",
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "description": "A unique identifier for this subject record.",
+                        "type": "string"
+                    },
+                    "identifiers": {
+                        "description": "Zero or more legacy identifiers for this subject record (or for sources used to create this subject record).",
+                        "type": "array",
+                        "items": {
+                            "description": "A legacy identifier for this subject record (or for a source record used to create this subject record).",
+                            "type": "object",
+                            "properties": {
+                                "system": {
+                                    "description": "The source namespace or accounting system which produced this identifier (e.g. 'GDC').",
+                                    "type": "string"
+                                },
+                                "field_name": {
+                                    "description": "The specific location within the source system from which this identifier was extracted or derived (e.g. 'case.case_submitter_id').",
+                                    "type": "string"
+                                },
+                                "value": {
+                                    "description": "The identifier itself (e.g. a UUID).",
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "system",
+                                "field_name",
+                                "value"
+                            ]
+                        },
+                        "uniqueItems": true
+                    },
+                    "species": {
+                        "description": "The species of this subject.",
+                        "type": "string"
+                    },
+                    "sex": {
+                        "description": "The sex of this subject.",
+                        "type": "string"
+                    },
+                    "race": {
+                        "description": "The (self-identified) race of this subject.",
+                        "type": "string"
+                    },
+                    "ethnicity": {
+                        "description": "The (self-identified) ethnicity of this subject.",
+                        "type": "string"
+                    },
+                    "days_to_birth": {
+                        "description": "Number of days between the date used for index and the date from a person's date of birth represented as a calculated negative number of days.",
+                        "type": "integer"
+                    },
+                    "vital_status": {
+                        "description": "Value indicating the state or condition of being living or deceased (or unknown).",
+                        "type": "string"
+                    },
+                    "days_to_death": {
+                        "description": "Number of days between the date used for index and the date from a person's date of death represented as a calculated number of days.",
+                        "type": "integer"
+                    },
+                    "cause_of_death": {
+                        "description": "Value indicating the circumstance or condition that resulted in the death of the subject.",
+                        "type": "string"
+                    },
+                    "subject_associated_projects": {
+                        "description": "One or more projects associated with this subject.",
+                        "type": "array",
+                        "items": {
+                            "description": "A project associated with this subject.",
+                            "type": "string"
+                        },
+                        "uniqueItems": true
+                    },
+                    "research_subjects": {
+                        "description": "One or more research_subject records associated with this subject.",
+                        "type": "array",
+                        "items": {
+                            "description": "The unique identifier for a research_subject record associated with this subject.",
+                            "type": "string"
+                        },
+                        "uniqueItems": true
+                    }
+                },
+                "required": [
+                    "id",
+                    "identifiers",
+                    "subject_associated_projects",
+                    "research_subjects"
+                ]
+            },
+            "uniqueItems": true
+        }
+    },
+    "required": [
+        "diagnosis",
+        "treatment",
+        "specimen",
+        "subject"
+    ]
+}
+

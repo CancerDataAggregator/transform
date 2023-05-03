@@ -1,0 +1,174 @@
+{
+    "file": [
+        {
+            "id": "file_1",
+            "identifiers": [
+                {
+                    "system": "GDC",
+                    "field_name": "file.file_id",
+                    "value": "73eg6-876-97ce397dv39-o83yeyg3cyg3uoevyt"
+                }
+            ],
+            "label": "alignment_results_12.bam",
+            "data_category": "WGS computational analysis output",
+            "data_type": "nucleotide sequence alignment results",
+            "file_format": "BAM",
+            "drs_uri": "drs://dg.4DFC:73eg6-876-97ce397dv39-o83yeyg3cyg3uoevyt",
+            "byte_size": 47782653,
+            "checksum": "acbdfe765fdceb9879bcaedcabecabdf",
+            "data_modality": "Genomic",
+            "imaging_modality": "",
+            "dbgap_accession_number": "phs01234567",
+            "imaging_series": "",
+            "associated_projects": [
+                "project_four"
+            ],
+            "subjects": [
+                "subject_1"
+            ],
+            "research_subjects": [
+                "research_subject_1"
+            ],
+            "specimens": [
+                "specimen_1"
+            ]
+        }
+    ],
+    "diagnosis": [
+        {
+            "id": "diagnosis_1",
+            "identifiers": [
+                {
+                    "system": "GDC",
+                    "field_name": "case.case_id",
+                    "value": "000-000-00000-0000000-ABCDEFGHI"
+                },
+                {
+                    "system": "GDC",
+                    "field_name": "case.submitter_id",
+                    "value": "TCGA-005-XV-42AH-01"
+                }
+            ],
+            "primary_diagnosis": "cancer",
+            "age_at_diagnosis": 99,
+            "morphology": "gross",
+            "stage": "XII",
+            "grade": "D-",
+            "method_of_diagnosis": "wild guess",
+            "treatments": [
+                "treatment_1"
+            ]
+        }
+    ],
+    "treatment": [
+        {
+            "id": "treatment_1",
+            "identifiers": [
+                {
+                    "system": "PDC",
+                    "field_name": "Case.diagnoses.treatments.treatment_submitter_id",
+                    "value": "TCGA-005-XV-42AH-01-T001"
+                }
+            ],
+            "treatment_type": "Radiation therapy",
+            "treatment_outcome": "Not great",
+            "days_to_treatment_start": -456,
+            "days_to_treatment_end": -401,
+            "therapeutic_agent": "Organic goat cheese",
+            "treatment_anatomic_site": "Stomach",
+            "treatment_effect": "Copious vomiting",
+            "treatment_end_reason": "Turns out the subject is allergic to goat cheese",
+            "number_of_cycles": 1
+        }
+    ],
+    "research_subject": [
+        {
+            "id": "research_subject_1",
+            "identifiers": [
+                {
+                    "system": "GDC",
+                    "field_name": "case.case_id",
+                    "value": "2133125-2345345345-45346546"
+                }
+            ],
+            "primary_diagnosis_condition": "Fingernail cancer",
+            "primary_diagnosis_site": "Fingernail",
+            "member_of_research_project": "project_four",
+            "diagnoses": [
+                "diagnosis_1"
+            ],
+            "treatments": [
+                "treatment_1"
+            ],
+            "specimens": [
+                "specimen_1"
+            ]
+        },
+        {
+            "id": "research_subject_2",
+            "identifiers": [
+                {
+                    "system": "GDC",
+                    "field_name": "case.case_id",
+                    "value": "2133125-2345345345-45346546a"
+                }
+            ],
+            "primary_diagnosis_condition": "Toenail cancer",
+            "primary_diagnosis_site": "Toenail",
+            "member_of_research_project": "project_five",
+            "diagnoses": [],
+            "treatments": [],
+            "specimens": []
+        }
+    ],
+    "subject": [
+        {
+            "id": "subject_1",
+            "identifiers": [
+                {
+                    "system": "GDC",
+                    "field_name": "case.submitter_id",
+                    "value": "VBNN78.1a4bQ"
+                }
+            ],
+            "species": "Homo sapiens",
+            "sex": "F",
+            "race": "Other",
+            "ethnicity": "Not Hispanic or Latino",
+            "days_to_birth": -18273,
+            "vital_status": "Dead",
+            "days_to_death": 1001,
+            "cause_of_death": "Parachute failure",
+            "subject_associated_projects": [
+                "project_four",
+                "project_five"
+            ],
+            "research_subjects": [
+                "research_subject_1",
+                "research_subject_2"
+            ]
+        }
+    ],
+    "specimen": [
+        {
+            "id": "specimen_1",
+            "identifiers": [
+                {
+                    "system": "IDC",
+                    "field_name": "tcga_biosample.sample_id",
+                    "value": "1234-56-7890-XXX"
+                }
+            ],
+            "days_to_collection": 10,
+            "primary_disease_type": "Tongue cancer",
+            "anatomical_site": "Buccal mucosa",
+            "source_material_type": "cheek swab",
+            "specimen_type": "slide",
+            "associated_project": "project_four",
+            "derived_from_specimen": null,
+            "derived_from_subject": "subject_1"
+        }
+    ]
+}
+
+

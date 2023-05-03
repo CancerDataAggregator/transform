@@ -1,12 +1,25 @@
+# Python
+**/*.pyc
+**/__pycache__
+
 # pip install -e generated
 cdatransform.egg-info/
 
 # Intellij
 .idea/
 
-# Python
-*.pyc
-**/__pycache__
+# Google credentials files
+**/GCS-service-account-key.*
 
-#Google Credentials file
-GCS-service-account-key.json
+# Virtual environment files
+/venv*/
+
+# Data subdirs
+/extracted_data/
+/merged_data/
+/transformed_data/
+/cda_tsvs/
+/BigQuery_JSONL/
+/SQL_data/
+
+

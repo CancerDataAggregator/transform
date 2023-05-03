@@ -1,0 +1,1383 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 14.4
+-- Dumped by pg_dump version 15.1
+
+-- Started on 2023-02-28 17:11:39 EST
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 5 (class 2615 OID 2200)
+-- Name: public; Type: SCHEMA; Schema: -; Owner: -
+--
+
+-- *not* creating schema, since initdb creates it
+
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 209 (class 1259 OID 16466)
+-- Name: diagnosis; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.diagnosis (
+    id text NOT NULL,
+    primary_diagnosis text,
+    age_at_diagnosis integer,
+    morphology text,
+    stage text,
+    grade text,
+    method_of_diagnosis text
+);
+
+
+--
+-- TOC entry 4075 (class 0 OID 0)
+-- Dependencies: 209
+-- Name: TABLE diagnosis; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.diagnosis IS 'A collection of characteristics that describe an abnormal condition of the body as assessed at a point in time. May be used to capture information about neoplastic and non-neoplastic conditions.';
+
+
+--
+-- TOC entry 4076 (class 0 OID 0)
+-- Dependencies: 209
+-- Name: COLUMN diagnosis.id; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.diagnosis.id IS 'The ''logical'' identifier of the entity in the repository, e.g. a UUID.  This ''id'' is unique within a given system. The identified entity may have a different ''id'' in a different system.';
+
+
+--
+-- TOC entry 4077 (class 0 OID 0)
+-- Dependencies: 209
+-- Name: COLUMN diagnosis.primary_diagnosis; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.diagnosis.primary_diagnosis IS 'The diagnosis instance that qualified a subject for inclusion on a ResearchProject.';
+
+
+--
+-- TOC entry 4078 (class 0 OID 0)
+-- Dependencies: 209
+-- Name: COLUMN diagnosis.age_at_diagnosis; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.diagnosis.age_at_diagnosis IS 'The age in days of the individual at the time of diagnosis.';
+
+
+--
+-- TOC entry 4079 (class 0 OID 0)
+-- Dependencies: 209
+-- Name: COLUMN diagnosis.morphology; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.diagnosis.morphology IS 'Code that represents the histology of the disease using the third edition of the International Classification of Diseases for Oncology, published in 2000, used principally in tumor and cancer registries for coding the site (topography) and the histology (morphology) of neoplasms.';
+
+
+--
+-- TOC entry 4080 (class 0 OID 0)
+-- Dependencies: 209
+-- Name: COLUMN diagnosis.stage; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.diagnosis.stage IS 'The extent of a cancer in the body. Staging is usually based on the size of the tumor, whether lymph nodes contain cancer, and whether the cancer has spread from the original site to other parts of the body.';
+
+
+--
+-- TOC entry 4081 (class 0 OID 0)
+-- Dependencies: 209
+-- Name: COLUMN diagnosis.grade; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.diagnosis.grade IS 'The degree of abnormality of cancer cells, a measure of differentiation, the extent to which cancer cells are similar in appearance and function to healthy cells of the same tissue type. The degree of differentiation often relates to the clinical behavior of the particular tumor. Based on the microscopic findings, tumor grade is commonly described by one of four degrees of severity. Histopathologic grade of a tumor may be used to plan treatment and estimate the future course, outcome, and overall prognosis of disease. Certain types of cancers, such as soft tissue sarcoma, primary brain tumors, lymphomas, and breast have special grading systems.';
+
+
+--
+-- TOC entry 4082 (class 0 OID 0)
+-- Dependencies: 209
+-- Name: COLUMN diagnosis.method_of_diagnosis; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.diagnosis.method_of_diagnosis IS 'The method used to confirm the subjects malignant diagnosis.';
+
+
+--
+-- TOC entry 223 (class 1259 OID 16714)
+-- Name: diagnosis_identifier; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.diagnosis_identifier (
+    diagnosis_id text NOT NULL,
+    system text NOT NULL,
+    value text NOT NULL
+);
+
+
+--
+-- TOC entry 4083 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: TABLE diagnosis_identifier; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.diagnosis_identifier IS 'A ''business'' identifier or accession number for a Diagnosis, typically as provided by an external system or authority, that persists across implementing systems (i.e. a ''logical'' identifier).';
+
+
+--
+-- TOC entry 4084 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: COLUMN diagnosis_identifier.system; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.diagnosis_identifier.system IS 'The system or namespace that defines the identifier.';
+
+
+--
+-- TOC entry 4085 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: COLUMN diagnosis_identifier.value; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.diagnosis_identifier.value IS 'The value of the identifier, as defined by the system.';
+
+
+--
+-- TOC entry 210 (class 1259 OID 16471)
+-- Name: diagnosis_treatment; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.diagnosis_treatment (
+    diagnosis_id text NOT NULL,
+    treatment_id text NOT NULL
+);
+
+
+--
+-- TOC entry 211 (class 1259 OID 16486)
+-- Name: file; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.file (
+    id text NOT NULL,
+    label text,
+    data_category text,
+    data_type text,
+    file_format text,
+    drs_uri text,
+    byte_size integer,
+    checksum text,
+    data_modality text,
+    imaging_modality text,
+    dbgap_accession_number text,
+    imaging_series text
+);
+
+
+--
+-- TOC entry 4086 (class 0 OID 0)
+-- Dependencies: 211
+-- Name: TABLE file; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.file IS 'The core collection of File records.';
+
+
+--
+-- TOC entry 4087 (class 0 OID 0)
+-- Dependencies: 211
+-- Name: COLUMN file.id; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.file.id IS 'The ''logical'' identifier of the entity in the repository, e.g. a UUID.  This ''id'' is unique within a given system. The identified entity may have a different ''id'' in a different system.';
+
+
+--
+-- TOC entry 4088 (class 0 OID 0)
+-- Dependencies: 211
+-- Name: COLUMN file.label; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.file.label IS 'Short name or abbreviation for dataset. Maps to rdfs:label.';
+
+
+--
+-- TOC entry 4089 (class 0 OID 0)
+-- Dependencies: 211
+-- Name: COLUMN file.data_category; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.file.data_category IS 'Broad categorization of the contents of the data file.';
+
+
+--
+-- TOC entry 4090 (class 0 OID 0)
+-- Dependencies: 211
+-- Name: COLUMN file.data_type; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.file.data_type IS 'Specific content type of the data file.';
+
+
+--
+-- TOC entry 4091 (class 0 OID 0)
+-- Dependencies: 211
+-- Name: COLUMN file.file_format; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.file.file_format IS 'Format of the data files.';
+
+
+--
+-- TOC entry 4092 (class 0 OID 0)
+-- Dependencies: 211
+-- Name: COLUMN file.drs_uri; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.file.drs_uri IS 'A string of characters used to identify a resource on the Data Repo Service(DRS).';
+
+
+--
+-- TOC entry 4093 (class 0 OID 0)
+-- Dependencies: 211
+-- Name: COLUMN file.byte_size; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.file.byte_size IS 'Size of the file in bytes. Maps to dcat:byteSize.';
+
+
+--
+-- TOC entry 4094 (class 0 OID 0)
+-- Dependencies: 211
+-- Name: COLUMN file.checksum; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.file.checksum IS 'A digit representing the sum of the correct digits in a piece of stored or transmitted digital data, against which later comparisons can be made to detect errors in the data.';
+
+
+--
+-- TOC entry 4095 (class 0 OID 0)
+-- Dependencies: 211
+-- Name: COLUMN file.data_modality; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.file.data_modality IS 'Data modality describes the biological nature of the information gathered as the result of an Activity, independent of the technology or methods used to produce the information.';
+
+
+--
+-- TOC entry 4096 (class 0 OID 0)
+-- Dependencies: 211
+-- Name: COLUMN file.imaging_modality; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.file.imaging_modality IS 'An imaging modality describes the imaging equipment and/or method used to acquire certain structural or functional information about the body. These include but are not limited to computed tomography (CT) and magnetic resonance imaging (MRI). Taken from the DICOM standard.';
+
+
+--
+-- TOC entry 4097 (class 0 OID 0)
+-- Dependencies: 211
+-- Name: COLUMN file.dbgap_accession_number; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.file.dbgap_accession_number IS 'The dbgap accession number for the project.';
+
+
+--
+-- TOC entry 4098 (class 0 OID 0)
+-- Dependencies: 211
+-- Name: COLUMN file.imaging_series; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.file.imaging_series IS 'The ''logical'' identifier of the series or grouping of imaging files in the system of record which the file is a part of.';
+
+
+--
+-- TOC entry 213 (class 1259 OID 16496)
+-- Name: file_associated_project; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.file_associated_project (
+    file_id text NOT NULL,
+    associated_project text NOT NULL
+);
+
+
+--
+-- TOC entry 4099 (class 0 OID 0)
+-- Dependencies: 213
+-- Name: TABLE file_associated_project; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.file_associated_project IS 'A reference to the Project(s) of which this File is a member. The associated_project may be embedded using the $ref definition or may be a reference to the id for the Project - or a URI expressed as a string to an existing entity.';
+
+
+--
+-- TOC entry 228 (class 1259 OID 16774)
+-- Name: file_identifier; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.file_identifier (
+    file_id text NOT NULL,
+    system text NOT NULL,
+    value text NOT NULL
+);
+
+
+--
+-- TOC entry 4100 (class 0 OID 0)
+-- Dependencies: 228
+-- Name: TABLE file_identifier; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.file_identifier IS 'A ''business'' identifier or accession number for a File, typically as provided by an external system or authority, that persists across implementing systems (i.e. a ''logical'' identifier).';
+
+
+--
+-- TOC entry 4101 (class 0 OID 0)
+-- Dependencies: 228
+-- Name: COLUMN file_identifier.system; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.file_identifier.system IS 'The system or namespace that defines the identifier.';
+
+
+--
+-- TOC entry 4102 (class 0 OID 0)
+-- Dependencies: 228
+-- Name: COLUMN file_identifier.value; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.file_identifier.value IS 'The value of the identifier, as defined by the system.';
+
+
+--
+-- TOC entry 229 (class 1259 OID 16787)
+-- Name: file_specimen; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.file_specimen (
+    file_id text NOT NULL,
+    specimen_id text NOT NULL
+);
+
+
+--
+-- TOC entry 212 (class 1259 OID 16491)
+-- Name: file_subject; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.file_subject (
+    file_id text NOT NULL,
+    subject_id text NOT NULL
+);
+
+
+--
+-- TOC entry 214 (class 1259 OID 16506)
+-- Name: researchsubject; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.researchsubject (
+    id text NOT NULL,
+    member_of_research_project text,
+    primary_diagnosis_condition text,
+    primary_diagnosis_site text
+);
+
+
+--
+-- TOC entry 4103 (class 0 OID 0)
+-- Dependencies: 214
+-- Name: TABLE researchsubject; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.researchsubject IS 'A research subject is the entity of interest in a specific research study or project, typically a human being or an animal, but can also be a device, group of humans or animals, or a tissue sample. Human research subjects are usually not traceable to a particular person to protect the subject''s privacy.  This entity plays the role of the case_id in existing data.';
+
+
+--
+-- TOC entry 4104 (class 0 OID 0)
+-- Dependencies: 214
+-- Name: COLUMN researchsubject.id; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.researchsubject.id IS 'The ''logical'' identifier of the entity in the system of record, e.g. a UUID.  This ''id'' is unique within a given system. The identified entity may have a different ''id'' in a different system. For CDA, this is case_id.';
+
+
+--
+-- TOC entry 4105 (class 0 OID 0)
+-- Dependencies: 214
+-- Name: COLUMN researchsubject.member_of_research_project; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.researchsubject.member_of_research_project IS 'A reference to the Study(s) of which this ResearchSubject is a member.';
+
+
+--
+-- TOC entry 4106 (class 0 OID 0)
+-- Dependencies: 214
+-- Name: COLUMN researchsubject.primary_diagnosis_condition; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.researchsubject.primary_diagnosis_condition IS 'The text term used to describe the type of malignant disease, as categorized by the World Health Organization''s (WHO) International Classification of Diseases for Oncology (ICD-O).   This attribute represents the disease that qualified the subject for inclusion on the ResearchProject.';
+
+
+--
+-- TOC entry 4107 (class 0 OID 0)
+-- Dependencies: 214
+-- Name: COLUMN researchsubject.primary_diagnosis_site; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.researchsubject.primary_diagnosis_site IS 'The text term used to describe the primary site of disease, as categorized by the World Health Organization''s (WHO) International Classification of Diseases for Oncology (ICD-O). This categorization groups cases into general categories.  This attribute represents the primary site of disease that qualified the subject for inclusion on the ResearchProject.';
+
+
+--
+-- TOC entry 215 (class 1259 OID 16511)
+-- Name: researchsubject_diagnosis; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.researchsubject_diagnosis (
+    researchsubject_id text NOT NULL,
+    diagnosis_id text NOT NULL
+);
+
+
+--
+-- TOC entry 227 (class 1259 OID 16762)
+-- Name: researchsubject_identifier; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.researchsubject_identifier (
+    researchsubject_id text NOT NULL,
+    system text NOT NULL,
+    value text NOT NULL
+);
+
+
+--
+-- TOC entry 4108 (class 0 OID 0)
+-- Dependencies: 227
+-- Name: TABLE researchsubject_identifier; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.researchsubject_identifier IS 'A ''business'' identifier or accession number for a ResearchSubject, typically as provided by an external system or authority, that persists across implementing systems (i.e. a ''logical'' identifier).';
+
+
+--
+-- TOC entry 4109 (class 0 OID 0)
+-- Dependencies: 227
+-- Name: COLUMN researchsubject_identifier.system; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.researchsubject_identifier.system IS 'The system or namespace that defines the identifier.';
+
+
+--
+-- TOC entry 4110 (class 0 OID 0)
+-- Dependencies: 227
+-- Name: COLUMN researchsubject_identifier.value; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.researchsubject_identifier.value IS 'The value of the identifier, as defined by the system.';
+
+
+--
+-- TOC entry 216 (class 1259 OID 16516)
+-- Name: researchsubject_specimen; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.researchsubject_specimen (
+    researchsubject_id text NOT NULL,
+    specimen_id text NOT NULL
+);
+
+
+--
+-- TOC entry 217 (class 1259 OID 16521)
+-- Name: researchsubject_treatment; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.researchsubject_treatment (
+    researchsubject_id text NOT NULL,
+    treatment_id text NOT NULL
+);
+
+
+--
+-- TOC entry 218 (class 1259 OID 16531)
+-- Name: specimen; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.specimen (
+    id text NOT NULL,
+    associated_project text,
+    days_to_collection integer,
+    primary_disease_type text,
+    anatomical_site text,
+    source_material_type text,
+    specimen_type text,
+    derived_from_specimen text,
+    derived_from_subject text
+);
+
+
+--
+-- TOC entry 4111 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: TABLE specimen; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.specimen IS 'Any material taken as a sample from a biological entity (living or dead), or from a physical object or the environment. Specimens are usually collected as an example of their kind, often for use in some investigation.';
+
+
+--
+-- TOC entry 4112 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN specimen.id; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.specimen.id IS 'The ''logical'' identifier of the entity in the system of record, e.g. a UUID.  This ''id'' is unique within a given system. The identified entity may have a different ''id'' in a different system.';
+
+
+--
+-- TOC entry 4113 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN specimen.associated_project; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.specimen.associated_project IS 'The Project associated with the specimen.';
+
+
+--
+-- TOC entry 4114 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN specimen.days_to_collection; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.specimen.days_to_collection IS 'The number of days from the index date to either the date a sample was collected for a specific study or project, or the date a subject underwent a procedure (e.g. surgical resection) yielding a sample that was eventually used for research.';
+
+
+--
+-- TOC entry 4115 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN specimen.primary_disease_type; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.specimen.primary_disease_type IS 'The text term used to describe the type of malignant disease, as categorized by the World Health Organization''s (WHO) International Classification of Diseases for Oncology (ICD-O).   This attribute represents the disease that qualified the subject for inclusion on the ResearchProject.';
+
+
+--
+-- TOC entry 4116 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN specimen.anatomical_site; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.specimen.anatomical_site IS 'Per GDC Dictionary, the text term that represents the name of the primary disease site of the submitted tumor sample; recommend dropping tumor; biospecimen_anatomic_site.';
+
+
+--
+-- TOC entry 4117 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN specimen.source_material_type; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.specimen.source_material_type IS 'The general kind of material from which the specimen was derived, indicating the physical nature of the source material.';
+
+
+--
+-- TOC entry 4118 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN specimen.specimen_type; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.specimen.specimen_type IS 'The high-level type of the specimen, based on its how it has been derived from the original extracted sample.';
+
+
+--
+-- TOC entry 4119 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN specimen.derived_from_specimen; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.specimen.derived_from_specimen IS 'A source/parent specimen from which this one was directly derived.';
+
+
+--
+-- TOC entry 4120 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN specimen.derived_from_subject; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.specimen.derived_from_subject IS 'The Patient/ResearchSubject, or Biologically Derived Materal (e.g. a cell line, tissue culture, organoid) from which the specimen was directly or indirectly derived.';
+
+
+--
+-- TOC entry 226 (class 1259 OID 16750)
+-- Name: specimen_identifier; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.specimen_identifier (
+    specimen_id text NOT NULL,
+    system text NOT NULL,
+    value text NOT NULL
+);
+
+
+--
+-- TOC entry 4121 (class 0 OID 0)
+-- Dependencies: 226
+-- Name: TABLE specimen_identifier; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.specimen_identifier IS 'A ''business'' identifier or accession number for a Specimen, typically as provided by an external system or authority, that persists across implementing systems (i.e. a ''logical'' identifier).';
+
+
+--
+-- TOC entry 4122 (class 0 OID 0)
+-- Dependencies: 226
+-- Name: COLUMN specimen_identifier.system; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.specimen_identifier.system IS 'The system or namespace that defines the identifier.';
+
+
+--
+-- TOC entry 4123 (class 0 OID 0)
+-- Dependencies: 226
+-- Name: COLUMN specimen_identifier.value; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.specimen_identifier.value IS 'The value of the identifier, as defined by the system.';
+
+
+--
+-- TOC entry 219 (class 1259 OID 16541)
+-- Name: subject; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.subject (
+    id text NOT NULL,
+    species text,
+    sex text,
+    race text,
+    ethnicity text,
+    days_to_birth integer,
+    vital_status text,
+    days_to_death integer,
+    cause_of_death text
+);
+
+
+--
+-- TOC entry 4124 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: TABLE subject; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.subject IS 'The core collection of Subject records.';
+
+
+--
+-- TOC entry 4125 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: COLUMN subject.id; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.subject.id IS 'The ''logical'' identifier of the entity in the system of record, e.g. a UUID.  This ''id'' is unique within a given system. The identified entity may have a different ''id'' in a different system.';
+
+
+--
+-- TOC entry 4126 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: COLUMN subject.species; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.subject.species IS 'The taxonomic group (e.g. species) of the patient. For MVP, since taxonomy vocabulary is consistent between GDC and PDC, using text.  Ultimately, this will be a term returned by the vocabulary service.';
+
+
+--
+-- TOC entry 4127 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: COLUMN subject.sex; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.subject.sex IS 'The biologic character or quality that distinguishes male and female from one another as expressed by analysis of the person''s gonadal, morphologic (internal and external), chromosomal, and hormonal characteristics.';
+
+
+--
+-- TOC entry 4128 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: COLUMN subject.race; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.subject.race IS 'An arbitrary classification of a taxonomic group that is a division of a species. It usually arises as a consequence of geographical isolation within a species and is characterized by shared heredity, physical attributes and behavior, and in the case of humans, by common history, nationality, or geographic distribution. The provided values are based on the categories defined by the U.S. Office of Management and Business and used by the U.S. Census Bureau.';
+
+
+--
+-- TOC entry 4129 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: COLUMN subject.ethnicity; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.subject.ethnicity IS 'An individual''s self-described social and cultural grouping, specifically whether an individual describes themselves as Hispanic or Latino. The provided values are based on the categories defined by the U.S. Office of Management and Business and used by the U.S. Census Bureau.';
+
+
+--
+-- TOC entry 4130 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: COLUMN subject.days_to_birth; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.subject.days_to_birth IS 'Number of days between the date used for index and the date from a person''s date of birth represented as a calculated negative number of days.';
+
+
+--
+-- TOC entry 4131 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: COLUMN subject.vital_status; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.subject.vital_status IS 'Coded value indicating the state or condition of being living or deceased; also includes the case where the vital status is unknown.';
+
+
+--
+-- TOC entry 4132 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: COLUMN subject.days_to_death; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.subject.days_to_death IS 'Number of days between the date used for index and the date from a person''s date of death represented as a calculated number of days.';
+
+
+--
+-- TOC entry 4133 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: COLUMN subject.cause_of_death; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.subject.cause_of_death IS 'Coded value indicating the circumstance or condition that results in the death of the subject.';
+
+
+--
+-- TOC entry 221 (class 1259 OID 16551)
+-- Name: subject_associated_project; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.subject_associated_project (
+    subject_id text NOT NULL,
+    associated_project text NOT NULL
+);
+
+
+--
+-- TOC entry 225 (class 1259 OID 16738)
+-- Name: subject_identifier; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.subject_identifier (
+    subject_id text NOT NULL,
+    system text NOT NULL,
+    value text NOT NULL
+);
+
+
+--
+-- TOC entry 4134 (class 0 OID 0)
+-- Dependencies: 225
+-- Name: TABLE subject_identifier; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.subject_identifier IS 'A ''business'' identifier or accession number for a Subject, typically as provided by an external system or authority, that persists across implementing systems (i.e. a ''logical'' identifier).';
+
+
+--
+-- TOC entry 4135 (class 0 OID 0)
+-- Dependencies: 225
+-- Name: COLUMN subject_identifier.system; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.subject_identifier.system IS 'The system or namespace that defines the identifier.';
+
+
+--
+-- TOC entry 4136 (class 0 OID 0)
+-- Dependencies: 225
+-- Name: COLUMN subject_identifier.value; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.subject_identifier.value IS 'The value of the identifier, as defined by the system.';
+
+
+--
+-- TOC entry 220 (class 1259 OID 16546)
+-- Name: subject_researchsubject; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.subject_researchsubject (
+    subject_id text NOT NULL,
+    researchsubject_id text NOT NULL
+);
+
+
+--
+-- TOC entry 222 (class 1259 OID 16561)
+-- Name: treatment; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.treatment (
+    id text NOT NULL,
+    treatment_type text,
+    treatment_outcome text,
+    days_to_treatment_start integer,
+    days_to_treatment_end integer,
+    therapeutic_agent text,
+    treatment_anatomic_site text,
+    treatment_effect text,
+    treatment_end_reason text,
+    number_of_cycles integer
+);
+
+
+--
+-- TOC entry 4137 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: TABLE treatment; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.treatment IS 'Represent medication administration or other treatment types.';
+
+
+--
+-- TOC entry 4138 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: COLUMN treatment.id; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.treatment.id IS 'The ''logical'' identifier of the entity in the repository, e.g. a UUID.  This ''id'' is unique within a given system. The identified entity may have a different ''id'' in a different system.';
+
+
+--
+-- TOC entry 4139 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: COLUMN treatment.treatment_type; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.treatment.treatment_type IS 'The treatment type including medication/therapeutics or other procedures.';
+
+
+--
+-- TOC entry 4140 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: COLUMN treatment.treatment_outcome; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.treatment.treatment_outcome IS 'The final outcome of the treatment.';
+
+
+--
+-- TOC entry 4141 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: COLUMN treatment.days_to_treatment_start; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.treatment.days_to_treatment_start IS 'The timepoint at which the treatment started.';
+
+
+--
+-- TOC entry 4142 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: COLUMN treatment.days_to_treatment_end; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.treatment.days_to_treatment_end IS 'The timepoint at which the treatment ended.';
+
+
+--
+-- TOC entry 4143 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: COLUMN treatment.therapeutic_agent; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.treatment.therapeutic_agent IS 'One or more therapeutic agents as part of this treatment.';
+
+
+--
+-- TOC entry 4144 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: COLUMN treatment.treatment_anatomic_site; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.treatment.treatment_anatomic_site IS 'The anatomical site that the treatment targets.';
+
+
+--
+-- TOC entry 4145 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: COLUMN treatment.treatment_effect; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.treatment.treatment_effect IS 'The effect of a treatment on the diagnosis or tumor.';
+
+
+--
+-- TOC entry 4146 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: COLUMN treatment.treatment_end_reason; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.treatment.treatment_end_reason IS 'The reason the treatment ended.';
+
+
+--
+-- TOC entry 4147 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: COLUMN treatment.number_of_cycles; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.treatment.number_of_cycles IS 'The number of treatment cycles the subject received.';
+
+
+--
+-- TOC entry 224 (class 1259 OID 16726)
+-- Name: treatment_identifier; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.treatment_identifier (
+    treatment_id text NOT NULL,
+    system text NOT NULL,
+    value text NOT NULL
+);
+
+
+--
+-- TOC entry 4148 (class 0 OID 0)
+-- Dependencies: 224
+-- Name: TABLE treatment_identifier; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.treatment_identifier IS 'A ''business'' identifier or accession number for a Treatment, typically as provided by an external system or authority, that persists across implementing systems (i.e. a ''logical'' identifier).';
+
+
+--
+-- TOC entry 4149 (class 0 OID 0)
+-- Dependencies: 224
+-- Name: COLUMN treatment_identifier.system; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.treatment_identifier.system IS 'The system or namespace that defines the identifier.';
+
+
+--
+-- TOC entry 4150 (class 0 OID 0)
+-- Dependencies: 224
+-- Name: COLUMN treatment_identifier.value; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.treatment_identifier.value IS 'The value of the identifier, as defined by the system.';
+
+
+--
+-- TOC entry 3896 (class 2606 OID 16720)
+-- Name: diagnosis_identifier diagnosis_identifier_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.diagnosis_identifier
+    ADD CONSTRAINT diagnosis_identifier_pkey PRIMARY KEY (diagnosis_id, system, value);
+
+
+--
+-- TOC entry 3868 (class 2606 OID 16576)
+-- Name: diagnosis diagnosis_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.diagnosis
+    ADD CONSTRAINT diagnosis_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3870 (class 2606 OID 16572)
+-- Name: diagnosis_treatment diagnosis_treatment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.diagnosis_treatment
+    ADD CONSTRAINT diagnosis_treatment_pkey PRIMARY KEY (diagnosis_id, treatment_id);
+
+
+--
+-- TOC entry 3876 (class 2606 OID 16580)
+-- Name: file_associated_project file_associated_project_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file_associated_project
+    ADD CONSTRAINT file_associated_project_pkey PRIMARY KEY (file_id, associated_project);
+
+
+--
+-- TOC entry 3906 (class 2606 OID 16780)
+-- Name: file_identifier file_identifier_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file_identifier
+    ADD CONSTRAINT file_identifier_pkey PRIMARY KEY (file_id, system, value);
+
+
+--
+-- TOC entry 3872 (class 2606 OID 16584)
+-- Name: file file_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file
+    ADD CONSTRAINT file_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3908 (class 2606 OID 16793)
+-- Name: file_specimen file_specimen_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file_specimen
+    ADD CONSTRAINT file_specimen_pkey PRIMARY KEY (file_id, specimen_id);
+
+
+--
+-- TOC entry 3874 (class 2606 OID 16578)
+-- Name: file_subject file_subject_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file_subject
+    ADD CONSTRAINT file_subject_pkey PRIMARY KEY (file_id, subject_id);
+
+
+--
+-- TOC entry 3880 (class 2606 OID 16586)
+-- Name: researchsubject_diagnosis researchsubject_diagnosis_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.researchsubject_diagnosis
+    ADD CONSTRAINT researchsubject_diagnosis_pkey PRIMARY KEY (researchsubject_id, diagnosis_id);
+
+
+--
+-- TOC entry 3904 (class 2606 OID 16768)
+-- Name: researchsubject_identifier researchsubject_identifier_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.researchsubject_identifier
+    ADD CONSTRAINT researchsubject_identifier_pkey PRIMARY KEY (researchsubject_id, system, value);
+
+
+--
+-- TOC entry 3878 (class 2606 OID 16594)
+-- Name: researchsubject researchsubject_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.researchsubject
+    ADD CONSTRAINT researchsubject_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3882 (class 2606 OID 16588)
+-- Name: researchsubject_specimen researchsubject_specimen_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.researchsubject_specimen
+    ADD CONSTRAINT researchsubject_specimen_pkey PRIMARY KEY (researchsubject_id, specimen_id);
+
+
+--
+-- TOC entry 3884 (class 2606 OID 16590)
+-- Name: researchsubject_treatment researchsubject_treatment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.researchsubject_treatment
+    ADD CONSTRAINT researchsubject_treatment_pkey PRIMARY KEY (researchsubject_id, treatment_id);
+
+
+--
+-- TOC entry 3902 (class 2606 OID 16756)
+-- Name: specimen_identifier specimen_identifier_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.specimen_identifier
+    ADD CONSTRAINT specimen_identifier_pkey PRIMARY KEY (specimen_id, system, value);
+
+
+--
+-- TOC entry 3886 (class 2606 OID 16598)
+-- Name: specimen specimen_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.specimen
+    ADD CONSTRAINT specimen_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3892 (class 2606 OID 16602)
+-- Name: subject_associated_project subject_associated_project_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subject_associated_project
+    ADD CONSTRAINT subject_associated_project_pkey PRIMARY KEY (subject_id, associated_project);
+
+
+--
+-- TOC entry 3900 (class 2606 OID 16744)
+-- Name: subject_identifier subject_identifier_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subject_identifier
+    ADD CONSTRAINT subject_identifier_pkey PRIMARY KEY (subject_id, system, value);
+
+
+--
+-- TOC entry 3888 (class 2606 OID 16606)
+-- Name: subject subject_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subject
+    ADD CONSTRAINT subject_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3890 (class 2606 OID 16600)
+-- Name: subject_researchsubject subject_researchsubject_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subject_researchsubject
+    ADD CONSTRAINT subject_researchsubject_pkey PRIMARY KEY (subject_id, researchsubject_id);
+
+
+--
+-- TOC entry 3898 (class 2606 OID 16732)
+-- Name: treatment_identifier treatment_identifier_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.treatment_identifier
+    ADD CONSTRAINT treatment_identifier_pkey PRIMARY KEY (treatment_id, system, value);
+
+
+--
+-- TOC entry 3894 (class 2606 OID 16610)
+-- Name: treatment treatment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.treatment
+    ADD CONSTRAINT treatment_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 3923 (class 2606 OID 16721)
+-- Name: diagnosis_identifier diagnosis_identifier_diagnosis_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.diagnosis_identifier
+    ADD CONSTRAINT diagnosis_identifier_diagnosis_id_fkey FOREIGN KEY (diagnosis_id) REFERENCES public.diagnosis(id);
+
+
+--
+-- TOC entry 3909 (class 2606 OID 16613)
+-- Name: diagnosis_treatment diagnosis_treatment_diagnosis_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.diagnosis_treatment
+    ADD CONSTRAINT diagnosis_treatment_diagnosis_id_fkey FOREIGN KEY (diagnosis_id) REFERENCES public.diagnosis(id);
+
+
+--
+-- TOC entry 3910 (class 2606 OID 16618)
+-- Name: diagnosis_treatment diagnosis_treatment_treatment_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.diagnosis_treatment
+    ADD CONSTRAINT diagnosis_treatment_treatment_id_fkey FOREIGN KEY (treatment_id) REFERENCES public.treatment(id);
+
+
+--
+-- TOC entry 3913 (class 2606 OID 16638)
+-- Name: file_associated_project file_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file_associated_project
+    ADD CONSTRAINT file_id_fkey FOREIGN KEY (file_id) REFERENCES public.file(id);
+
+
+--
+-- TOC entry 3928 (class 2606 OID 16781)
+-- Name: file_identifier file_identifier_file_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file_identifier
+    ADD CONSTRAINT file_identifier_file_id_fkey FOREIGN KEY (file_id) REFERENCES public.file(id);
+
+
+--
+-- TOC entry 3929 (class 2606 OID 16794)
+-- Name: file_specimen file_specimen_file_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file_specimen
+    ADD CONSTRAINT file_specimen_file_id_fkey FOREIGN KEY (file_id) REFERENCES public.file(id);
+
+
+--
+-- TOC entry 3930 (class 2606 OID 16799)
+-- Name: file_specimen file_specimen_specimen_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file_specimen
+    ADD CONSTRAINT file_specimen_specimen_id_fkey FOREIGN KEY (specimen_id) REFERENCES public.specimen(id);
+
+
+--
+-- TOC entry 3911 (class 2606 OID 16628)
+-- Name: file_subject file_subject_file_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file_subject
+    ADD CONSTRAINT file_subject_file_id_fkey FOREIGN KEY (file_id) REFERENCES public.file(id);
+
+
+--
+-- TOC entry 3912 (class 2606 OID 16633)
+-- Name: file_subject file_subject_subject_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file_subject
+    ADD CONSTRAINT file_subject_subject_id_fkey FOREIGN KEY (subject_id) REFERENCES public.subject(id);
+
+
+--
+-- TOC entry 3914 (class 2606 OID 16648)
+-- Name: researchsubject_diagnosis researchsubject_diagnosis_diagnosis_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.researchsubject_diagnosis
+    ADD CONSTRAINT researchsubject_diagnosis_diagnosis_id_fkey FOREIGN KEY (diagnosis_id) REFERENCES public.diagnosis(id);
+
+
+--
+-- TOC entry 3915 (class 2606 OID 16653)
+-- Name: researchsubject_diagnosis researchsubject_diagnosis_researchsubject_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.researchsubject_diagnosis
+    ADD CONSTRAINT researchsubject_diagnosis_researchsubject_id_fkey FOREIGN KEY (researchsubject_id) REFERENCES public.researchsubject(id);
+
+
+--
+-- TOC entry 3927 (class 2606 OID 16769)
+-- Name: researchsubject_identifier researchsubject_identifier_researchsubect_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.researchsubject_identifier
+    ADD CONSTRAINT researchsubject_identifier_researchsubect_id_fkey FOREIGN KEY (researchsubject_id) REFERENCES public.researchsubject(id);
+
+
+--
+-- TOC entry 3916 (class 2606 OID 16658)
+-- Name: researchsubject_specimen researchsubject_specimen_researchsubject_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.researchsubject_specimen
+    ADD CONSTRAINT researchsubject_specimen_researchsubject_id_fkey FOREIGN KEY (researchsubject_id) REFERENCES public.researchsubject(id);
+
+
+--
+-- TOC entry 3917 (class 2606 OID 16663)
+-- Name: researchsubject_specimen researchsubject_specimen_specimen_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.researchsubject_specimen
+    ADD CONSTRAINT researchsubject_specimen_specimen_id_fkey FOREIGN KEY (specimen_id) REFERENCES public.specimen(id);
+
+
+--
+-- TOC entry 3918 (class 2606 OID 16668)
+-- Name: researchsubject_treatment researchsubject_treatment_researchsubject_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.researchsubject_treatment
+    ADD CONSTRAINT researchsubject_treatment_researchsubject_id_fkey FOREIGN KEY (researchsubject_id) REFERENCES public.researchsubject(id);
+
+
+--
+-- TOC entry 3919 (class 2606 OID 16673)
+-- Name: researchsubject_treatment researchsubject_treatment_treatment_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.researchsubject_treatment
+    ADD CONSTRAINT researchsubject_treatment_treatment_id_fkey FOREIGN KEY (treatment_id) REFERENCES public.treatment(id);
+
+
+--
+-- TOC entry 3926 (class 2606 OID 16757)
+-- Name: specimen_identifier specimen_identifier_specimen_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.specimen_identifier
+    ADD CONSTRAINT specimen_identifier_specimen_id_fkey FOREIGN KEY (specimen_id) REFERENCES public.specimen(id);
+
+
+--
+-- TOC entry 3922 (class 2606 OID 16698)
+-- Name: subject_associated_project subject_associated_project_subject_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subject_associated_project
+    ADD CONSTRAINT subject_associated_project_subject_id_fkey FOREIGN KEY (subject_id) REFERENCES public.subject(id) NOT VALID;
+
+
+--
+-- TOC entry 3925 (class 2606 OID 16745)
+-- Name: subject_identifier subject_identifier_subject_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subject_identifier
+    ADD CONSTRAINT subject_identifier_subject_id_fkey FOREIGN KEY (subject_id) REFERENCES public.subject(id);
+
+
+--
+-- TOC entry 3920 (class 2606 OID 16688)
+-- Name: subject_researchsubject subject_researchsubject_researchsubject_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subject_researchsubject
+    ADD CONSTRAINT subject_researchsubject_researchsubject_id_fkey FOREIGN KEY (researchsubject_id) REFERENCES public.researchsubject(id);
+
+
+--
+-- TOC entry 3921 (class 2606 OID 16693)
+-- Name: subject_researchsubject subject_researchsubject_subject_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subject_researchsubject
+    ADD CONSTRAINT subject_researchsubject_subject_id_fkey FOREIGN KEY (subject_id) REFERENCES public.subject(id);
+
+
+--
+-- TOC entry 3924 (class 2606 OID 16733)
+-- Name: treatment_identifier treatment_identifier_treatment_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.treatment_identifier
+    ADD CONSTRAINT treatment_identifier_treatment_id_fkey FOREIGN KEY (treatment_id) REFERENCES public.treatment(id);
+
+
+-- Completed on 2023-02-28 17:11:46 EST
+
+--
+-- PostgreSQL database dump complete
+--
+
