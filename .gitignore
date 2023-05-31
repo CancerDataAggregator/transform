@@ -3,7 +3,7 @@
 **/__pycache__
 
 # pip install -e generated
-cdatransform.egg-info/
+*.egg-info/
 
 # Intellij
 .idea/
