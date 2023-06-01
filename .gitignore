@@ -4,6 +4,10 @@
 # Python
 **/*.pyc
 **/__pycache__
+build/
+dist/
+zz00_build.bash
+zz01_install_somewhere.bash
 
 # pip install -e generated
 *.egg-info/
