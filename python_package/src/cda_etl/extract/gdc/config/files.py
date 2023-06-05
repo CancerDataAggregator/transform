@@ -128,8 +128,7 @@ association_maps = {
     'file_in_archive' : dict(),
     'file_in_case' : dict(),
     'read_group_in_analysis' : dict(),
-    'read_group_qc_in_read_group' : dict(),
-    'file_has_acl' : dict()
+    'read_group_qc_in_read_group' : dict()
 }
 
 # Do we need to load association data by recursively scanning substructures
