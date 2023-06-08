@@ -6,8 +6,8 @@
 **/__pycache__
 build/
 dist/
-zz00_build.bash
-zz01_install_somewhere.bash
+zz00_build
+zz01_install_somewhere
 
 # pip install -e generated
 *.egg-info/
