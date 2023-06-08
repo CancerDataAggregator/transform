@@ -1,7 +1,0 @@
-#!/bin/bash
-
-export VERSION=WHATEVER_VERSION
-
-pip install --extra-index-url https://test.pypi.org/simple/ cda_etl==$VERSION
-
-
