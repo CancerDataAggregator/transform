@@ -1,0 +1,17 @@
+#!/bin/bash
+
+chmod 755 ./package_root/auxiliary_scripts/*py
+
+echo ./package_root/auxiliary_scripts/400_count_distinct_values_by_table_and_column.extracted_fragmented_unmerged_PDC_data.py
+./package_root/auxiliary_scripts/400_count_distinct_values_by_table_and_column.extracted_fragmented_unmerged_PDC_data.py
+
+echo ./package_root/auxiliary_scripts/401_count_distinct_values_by_table_and_column.extracted_merged_PDC_data.py
+./package_root/auxiliary_scripts/401_count_distinct_values_by_table_and_column.extracted_merged_PDC_data.py
+
+echo ./package_root/auxiliary_scripts/402_count_distinct_values_by_table_and_column.PDC_CDA_data.py
+./package_root/auxiliary_scripts/402_count_distinct_values_by_table_and_column.PDC_CDA_data.py
+
+echo ./package_root/auxiliary_scripts/403_count_distinct_values_by_table_and_column.merged_PDC_and_GDC_CDA_data.py
+./package_root/auxiliary_scripts/403_count_distinct_values_by_table_and_column.merged_PDC_and_GDC_CDA_data.py
+
+

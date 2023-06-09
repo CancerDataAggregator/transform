@@ -1,0 +1,17 @@
+#!/bin/bash
+
+chmod 755 ./package_root/auxiliary_scripts/*py
+
+echo ./package_root/auxiliary_scripts/101_count_distinct_values_by_table_and_column.all_extracted_GDC_data.py
+./package_root/auxiliary_scripts/101_count_distinct_values_by_table_and_column.all_extracted_GDC_data.py
+
+echo ./package_root/auxiliary_scripts/102_count_distinct_values_by_table_and_column.GDC_CDA_data.py
+./package_root/auxiliary_scripts/102_count_distinct_values_by_table_and_column.GDC_CDA_data.py
+
+echo ./package_root/auxiliary_scripts/103_summarize_GDC_entities_by_program_name_and_project_submitter_id.py
+./package_root/auxiliary_scripts/103_summarize_GDC_entities_by_program_name_and_project_submitter_id.py
+
+echo ./package_root/auxiliary_scripts/104_enumerate_gdc_program_project_hierarchy.py
+./package_root/auxiliary_scripts/104_enumerate_gdc_program_project_hierarchy.py
+
+
