@@ -118,6 +118,23 @@ seen_broken_spectral_count_rows = set()
 
 while not returned_nothing:
     
+    # This now breaks the PDC GraphQL server. Makes it cry, vomit, complain. Poor server.
+
+    # api_query_json = {
+    #     'query': '''            {
+    #         getPaginatedGenes( ''' + f"offset: {offset}, limit: {offset_increment}" + ''' ) {
+    #             genesProper {
+    #                 ''' + '\n                        '.join(scalar_gene_fields) + '''
+    #                 spectral_counts {
+    #                     ''' + '\n                            '.join(scalar_spectral_count_fields) + '''
+    #                 }
+    #             }
+    #         }
+    #     }'''
+    # }
+
+    # This works.
+
     api_query_json = {
         'query': '''            {
             getPaginatedGenes( ''' + f"offset: {offset}, limit: {offset_increment}, acceptDUA: true" + ''' ) {
