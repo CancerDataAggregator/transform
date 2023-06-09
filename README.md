@@ -19,7 +19,6 @@ Planned code-level updates include:
     * IDC dicom\_all.crdc\_instance\_uuid
     * all from list of cross-ref fields above
     * check for others
-* sync extracted\_data/, other processing subdirs for full inter-DC interop
 * build architecture for ingest audit trails
     * encapsulate into a single phase within each DC flow
     * includes "as stored" and "as indexed" data exposed to user
@@ -27,8 +26,6 @@ Planned code-level updates include:
     * version metadata
     * source-field provenance metadata
     * precomputed count stats for release data
-* check GDC v37 data model update/diff and patch if needed
-    * specifically check diagnoses.sites\_of\_involvement
 * add GDC index files as regular file records
 * Collect GDC transformation-phase code into a Python object
 * build mutation processing into ETL
