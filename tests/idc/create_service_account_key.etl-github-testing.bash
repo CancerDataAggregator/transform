@@ -1,5 +1,0 @@
-#!/bin/bash
-
-echo "THIS INFORMATION IS MASKED FOR SECURITY REASONS."
-
-
