@@ -54,7 +54,7 @@ def load_tsv_as_dict( input_file ):
             
             values = line.split('\t')
 
-            # Assumes first column is a unique ID column; if this
+            # Assumes first column is a unique ID column. If this
             # doesn't end up being true, only the last record will
             # be stored for any repeated ID.
 
