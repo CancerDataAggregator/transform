@@ -17,7 +17,7 @@
       "foreignKeys": [
         {
           "fields": [
-            "case_barcode"
+            "cda_subject_id"
           ],
           "type": "SINGLE",
           "tableName": "{MutationsTable}",

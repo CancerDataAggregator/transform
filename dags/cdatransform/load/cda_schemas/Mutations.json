@@ -2,19 +2,29 @@
   "tableName": "{MutationsTable}",
   "tableAlias": "Mutation",
   "fieldConfigs": {
+    "cda_subject_id":{
+        "foreignKeys": [
+            {
+              "fields": [
+                "subject_id"
+              ],
+              "type": "SINGLE",
+              "tableName": "{SubjectsTable}",
+              "tableAlias": "subjects"
+            }
+          ]
+    },
     "case_barcode": {
       "partitionBy": true,
-      "foreignKeys": [
+      "countByFields": [
         {
-          "fields": [
-            "subject_id"
-          ],
-          "type": "SINGLE",
-          "tableName": "{SubjectsTable}",
-          "tableAlias": "subjects"
+            "field": "case_barcode",
+            "type": "TOTAL" ,
+            "alias" : "total"
         }
       ]
     },
+
     "Tumor_Sample_UUID": {
       "foreignKeys": [
         {

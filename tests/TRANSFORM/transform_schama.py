@@ -14,9 +14,10 @@ transformed_schema_bucket = "gs://broad-cda-dev/airflow_testing/api-schema"
 
 
 def test_transform_schema():
-    subject_dest_table = "all_merged_subjects"
-    files_dest_table = "all_merged_files"
-    mutation_dest_table = "somatic_mutation_hg38_gdc_r10"
+    subject_dest_table = "all_merged_subjects_v3_3_final"
+    files_dest_table = "all_merged_files_v3_3_final"
+    mutation_dest_table = "somatic_mutation_hg38_gdc_r36_v3_3_final"
+
     load_result = {
         "Subjects": subject_dest_table,
         "Files": files_dest_table,
@@ -26,7 +27,7 @@ def test_transform_schema():
         load_result=load_result,
         destination_bucket=transformed_schema_bucket,
         project="gdc-bq-sample",
-        dataset="yet_another_sandbox",
+        dataset="dev",
     ).transform()
 
 

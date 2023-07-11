@@ -93,7 +93,6 @@ class TransformSchema:
 
         schema_dict: Dict = {
             "tableAlias": table_data["tableAlias"],
-            "tableName": self.__replaceTableName(table_data["tableName"]),
             "definitions": self.process_schema_definitions(
                 table_data["fieldConfigs"], table.schema, ""
             ),
