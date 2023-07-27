@@ -17,7 +17,7 @@ if not path.isfile( 'GCS-service-account-key.etl-github-testing.json' ):
 idc = IDC_extractor(
     
     gsa_key = 'GCS-service-account-key.etl-github-testing.json',
-    source_version = 'v14',
+    source_version = 'v15',
     source_table = 'auxiliary_metadata',
     dest_table = f'{bq_project_name}.{target_table_path}',
     dest_bucket = intermediate_bucket,

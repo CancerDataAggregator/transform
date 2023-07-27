@@ -119,7 +119,7 @@ for case_id in case_id_to_sample_id:
         
         if sample_id not in sample_id_to_aliquot_id:
             
-            sys.exit(f"WTF? {sample_id}\n")
+            sys.exit(f"Unexpected failure? {sample_id}\n")
 
         for aliquot_id in sample_id_to_aliquot_id[sample_id]:
             

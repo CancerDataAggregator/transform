@@ -114,7 +114,7 @@ class CDA_loader:
 
                         if file_id in output_records:
                             
-                            sys.exit(f"WTF? Duplicate file record {file_id}; aborting.")
+                            sys.exit(f"Unexpected failure? Duplicate file record {file_id}; aborting.")
 
                         else:
                             
@@ -361,7 +361,7 @@ class CDA_loader:
 
                 if subject_id in subject:
                     
-                    sys.exit(f"WTF? Duplicate subject record {subject_id}; aborting.")
+                    sys.exit(f"Unexpected failure? Duplicate subject record {subject_id}; aborting.")
 
                 else:
                     
@@ -400,7 +400,7 @@ class CDA_loader:
 
                 if subject_id not in subject:
                     
-                    sys.exit(f"WTF? Subject with subject_id {subject_id} found in subject_identifier.tsv but not in subject.tsv; aborting.\n")
+                    sys.exit(f"Unexpected failure? Subject with subject_id {subject_id} found in subject_identifier.tsv but not in subject.tsv; aborting.\n")
 
                 subject[subject_id]['identifier'].append( { 'system': system, 'field_name' : field_name, 'value' : value } )
 
@@ -418,7 +418,7 @@ class CDA_loader:
 
                 if subject_id not in subject:
                     
-                    sys.exit(f"WTF? Subject with subject_id {subject_id} found in subject_associated_project.tsv but not in subject.tsv; aborting.\n")
+                    sys.exit(f"Unexpected failure? Subject with subject_id {subject_id} found in subject_associated_project.tsv but not in subject.tsv; aborting.\n")
 
                 subject[subject_id]['subject_associated_project'].add( associated_project )
 
@@ -442,7 +442,7 @@ class CDA_loader:
 
                 if rs_id in researchsubject:
                     
-                    sys.exit(f"WTF? Duplicate researchsubject record {rs_id}; aborting.")
+                    sys.exit(f"Unexpected failure? Duplicate researchsubject record {rs_id}; aborting.")
 
                 else:
                     
@@ -476,7 +476,7 @@ class CDA_loader:
 
                 if rs_id not in researchsubject:
                     
-                    sys.exit(f"WTF? ResearchSubject with rs_id {rs_id} found in rs_identifier.tsv but not in researchsubject.tsv; aborting.\n")
+                    sys.exit(f"Unexpected failure? ResearchSubject with rs_id {rs_id} found in rs_identifier.tsv but not in researchsubject.tsv; aborting.\n")
 
                 researchsubject[rs_id]['identifier'].append( { 'system': system, 'field_name' : field_name, 'value' : value } )
 
@@ -494,7 +494,7 @@ class CDA_loader:
 
                 if diagnosis_id in diagnosis:
                     
-                    sys.exit(f"WTF? Duplicate diagnosis record {diagnosis_id}; aborting.")
+                    sys.exit(f"Unexpected failure? Duplicate diagnosis record {diagnosis_id}; aborting.")
 
                 else:
                     
@@ -531,7 +531,7 @@ class CDA_loader:
 
                 if diagnosis_id not in diagnosis:
                     
-                    sys.exit(f"WTF? Diagnosis record with diagnosis_id {diagnosis_id} found in diagnosis_identifier.tsv but not in diagnosis.tsv; aborting.\n")
+                    sys.exit(f"Unexpected failure? Diagnosis record with diagnosis_id {diagnosis_id} found in diagnosis_identifier.tsv but not in diagnosis.tsv; aborting.\n")
 
                 diagnosis[diagnosis_id]['identifier'].append( { 'system': system, 'field_name' : field_name, 'value' : value } )
 
@@ -549,7 +549,7 @@ class CDA_loader:
 
                 if treatment_id in treatment:
                     
-                    sys.exit(f"WTF? Duplicate treatment record {treatment_id}; aborting.")
+                    sys.exit(f"Unexpected failure? Duplicate treatment record {treatment_id}; aborting.")
 
                 else:
                     
@@ -587,7 +587,7 @@ class CDA_loader:
 
                 if treatment_id not in treatment:
                     
-                    sys.exit(f"WTF? Treatment record with treatment_id {treatment_id} found in treatment_identifier.tsv but not in treatment.tsv; aborting.\n")
+                    sys.exit(f"Unexpected failure? Treatment record with treatment_id {treatment_id} found in treatment_identifier.tsv but not in treatment.tsv; aborting.\n")
 
                 treatment[treatment_id]['identifier'].append( { 'system': system, 'field_name' : field_name, 'value' : value } )
 
@@ -605,7 +605,7 @@ class CDA_loader:
 
                 if specimen_id in specimen:
                     
-                    sys.exit(f"WTF? Duplicate specimen record {specimen_id}; aborting.")
+                    sys.exit(f"Unexpected failure? Duplicate specimen record {specimen_id}; aborting.")
 
                 else:
                     
@@ -641,7 +641,7 @@ class CDA_loader:
 
                 if specimen_id not in specimen:
                     
-                    sys.exit(f"WTF? Specimen with specimen_id {specimen_id} found in specimen_identifier.tsv but not in specimen.tsv; aborting.\n")
+                    sys.exit(f"Unexpected failure? Specimen with specimen_id {specimen_id} found in specimen_identifier.tsv but not in specimen.tsv; aborting.\n")
 
                 specimen[specimen_id]['identifier'].append( { 'system': system, 'field_name' : field_name, 'value' : value } )
 

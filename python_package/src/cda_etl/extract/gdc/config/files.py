@@ -38,7 +38,6 @@ prefixes_to_filter = {
     'annotations',
     'cases',
     'downstream_analyses\.output_files',
-    'index_files',
     'metadata_files'
 }
 
@@ -54,7 +53,6 @@ fields_to_use = {
     'annotations.annotation_id',
     'cases.case_id',
     'downstream_analyses.output_files.file_id',
-    'index_files.file_id',
     'metadata_files.file_id'
 }
 
@@ -72,7 +70,6 @@ substructures_to_filter = {
     'associated_entities',
     'cases',
     'downstream_analyses\.output_files',
-    'index_files',
     'metadata_files',
 
     # I know this makes 'downstream_analyses\.output_files' above redundant,
@@ -82,7 +79,11 @@ substructures_to_filter = {
     # records will be merged, and we don't want to create what looks like a new
     # and separate entity type.
 
-    'downstream_analyses'
+    'downstream_analyses',
+
+    # 'index_files' records will be saved as 'file' entities.
+
+    'index_files'
 }
 
 # Substructures containing statistical summaries, not sub-entity records.
@@ -108,7 +109,8 @@ array_entities = {
 
 save_entity_list_as = {
     
-    'downstream_analyses': 'analysis'
+    'downstream_analyses': 'analysis',
+    'index_files': 'file'
 }
 
 # Dicts in which to store association relationship data.

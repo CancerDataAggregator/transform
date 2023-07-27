@@ -2,85 +2,9 @@
 
 import sys
 
+from cda_etl.lib import map_columns_one_to_one, map_columns_one_to_many
+
 from os import path, makedirs, rename
-
-# SUBROUTINES
-
-def map_columns_one_to_one( input_file, from_field, to_field ):
-    
-    return_map = dict()
-
-    with open( input_file ) as IN:
-        
-        header = next(IN).rstrip('\n')
-
-        column_names = header.split('\t')
-
-        if from_field not in column_names or to_field not in column_names:
-            
-            sys.exit( f"FATAL: One or both requested map fields ('{from_field}', '{to_field}') not found in specified input file '{input_file}'; aborting.\n" )
-
-        for line in [ next_line.rstrip('\n') for next_line in IN ]:
-            
-            values = line.split('\t')
-
-            current_from = ''
-
-            current_to = ''
-
-            for i in range( 0, len( column_names ) ):
-                
-                if column_names[i] == from_field:
-                    
-                    current_from = values[i]
-
-                if column_names[i] == to_field:
-                    
-                    current_to = values[i]
-
-            return_map[current_from] = current_to
-
-    return return_map
-
-def map_columns_one_to_many( input_file, from_field, to_field ):
-    
-    return_map = dict()
-
-    with open( input_file ) as IN:
-        
-        header = next(IN).rstrip('\n')
-
-        column_names = header.split('\t')
-
-        if from_field not in column_names or to_field not in column_names:
-            
-            sys.exit( f"FATAL: One or both requested map fields ('{from_field}', '{to_field}') not found in specified input file '{input_file}'; aborting.\n" )
-
-        for line in [ next_line.rstrip('\n') for next_line in IN ]:
-            
-            values = line.split('\t')
-
-            current_from = ''
-
-            current_to = ''
-
-            for i in range( 0, len( column_names ) ):
-                
-                if column_names[i] == from_field:
-                    
-                    current_from = values[i]
-
-                if column_names[i] == to_field:
-                    
-                    current_to = values[i]
-
-            if current_from not in return_map:
-                
-                return_map[current_from] = set()
-
-            return_map[current_from].add(current_to)
-
-    return return_map
 
 # PARAMETERS
 
@@ -89,6 +13,8 @@ input_root = 'extracted_data/pdc'
 input_dir = path.join( input_root, 'CasesSamplesAliquots' )
 
 aliquot_input_tsv = path.join( input_dir, 'Aliquot.tsv' )
+
+aliquot_aliquot_run_metadata_input_tsv = path.join( input_dir, 'Aliquot.aliquot_run_metadata.tsv' )
 
 biospecimen_input_tsv = path.join( input_root, 'Biospecimen', 'Biospecimen.tsv' )
 
@@ -113,6 +39,8 @@ file_aliquot_output_tsv = path.join( output_root, 'File', 'File.aliquot_id.tsv' 
 sample_aliquot_output_tsv = path.join( output_root, 'Sample', 'Sample.aliquot_id.tsv' )
 
 aliquot_output_tsv = path.join( output_dir, 'Aliquot.tsv' )
+
+aliquot_id_to_aliquot_run_metadata_id_tsv = path.join( output_dir, 'Aliquot.aliquot_run_metadata_id.tsv' )
 
 aliquot_id_to_study_id_output_tsv = path.join( output_dir, 'Aliquot.study_id.tsv' )
 
@@ -181,6 +109,11 @@ pdc_study_id_to_study_id = map_columns_one_to_one( study_input_tsv, 'pdc_study_i
 # Load the map between aliquot_id and pdc_study_id.
 
 aliquot_id_to_pdc_study_id = map_columns_one_to_many( biospecimen_study_input_tsv, 'aliquot_id', 'pdc_study_id' )
+
+# Load the map between aliquot_id and aliquot_run_metadata_id (for ISB-CGC downstream consumption only;
+# we don't use this association and we don't load AliquotRunMetadata records).
+
+aliquot_id_to_aliquot_run_metadata_id = map_columns_one_to_many( aliquot_aliquot_run_metadata_input_tsv, 'aliquot_id', 'aliquot_run_metadata_id' )
 
 # Load the map between aliquot_id and case_id, from fileMetadata(): file_id <-> aliquot_id <-> case_id
 # (noted in ingest policy document).
@@ -303,11 +236,12 @@ for sample_id in sample_id_to_submitter_id:
 
 removed_overlaps = set()
 
-with open( aliquot_output_tsv, 'w' ) as OUT:
+with open( aliquot_output_tsv, 'w' ) as OUT, open( aliquot_id_to_aliquot_run_metadata_id_tsv, 'w' ) as ARM:
     
-    # Header row.
+    # Header rows.
 
     print( *aliquot_fields, sep='\t', end='\n', file=OUT )
+    print( *[ 'aliquot_id', 'aliquot_run_metadata_id' ], sep='\t', end='\n', file=ARM )
 
     # Data rows.
 
@@ -334,6 +268,12 @@ with open( aliquot_output_tsv, 'w' ) as OUT:
             output_row = [ current_id ] + [ aliquots[current_id][field_name] for field_name in aliquot_fields[1:] ]
 
             print( *output_row, sep='\t', end='\n', file=OUT )
+
+            if current_id in aliquot_id_to_aliquot_run_metadata_id:
+                
+                for arm_id in sorted( aliquot_id_to_aliquot_run_metadata_id[current_id] ):
+                    
+                    print( *[ current_id, arm_id ], sep='\t', end='\n', file=ARM )
 
         else:
             

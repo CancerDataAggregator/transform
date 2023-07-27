@@ -2,45 +2,8 @@
 
 import sys
 
+from cda_etl.lib import map_columns_one_to_one, map_columns_one_to_many
 from os import makedirs, path
-
-# SUBROUTINES
-
-def map_columns_one_to_one( input_file, from_field, to_field ):
-    
-    return_map = dict()
-
-    with open( input_file ) as IN:
-        
-        header = next(IN).rstrip('\n')
-
-        column_names = header.split('\t')
-
-        if from_field not in column_names or to_field not in column_names:
-            
-            sys.exit( f"FATAL: One or both requested map fields ('{from_field}', '{to_field}') not found in specified input file '{input_file}'; aborting.\n" )
-
-        for line in [ next_line.rstrip('\n') for next_line in IN ]:
-            
-            values = line.split('\t')
-
-            current_from = ''
-
-            current_to = ''
-
-            for i in range( 0, len( column_names ) ):
-                
-                if column_names[i] == from_field:
-                    
-                    current_from = values[i]
-
-                if column_names[i] == to_field:
-                    
-                    current_to = values[i]
-
-            return_map[current_from] = current_to
-
-    return return_map
 
 # PARAMETERS
 
@@ -52,6 +15,7 @@ case_in_project_input_tsv = path.join( input_dir, 'case_in_project.tsv' )
 file_input_tsv = path.join( input_dir, 'file.tsv' )
 file_in_case_input_tsv = path.join( input_dir, 'file_in_case.tsv' )
 file_associated_with_entity_input_tsv = path.join( input_dir, 'file_associated_with_entity.tsv' )
+file_has_index_file_input_tsv = path.join( input_dir, 'file_has_index_file.tsv' )
 
 program_input_tsv = path.join( input_dir, 'program.tsv' )
 
@@ -122,7 +86,7 @@ with open( file_input_tsv ) as IN:
 
         if id in output_records:
             
-            sys.exit(f"WTF? Duplicate file record {id}; aborting.")
+            sys.exit(f"Unexpected failure? Duplicate file record {id}; aborting.")
 
         else:
             
@@ -158,7 +122,7 @@ with open( file_in_case_input_tsv ) as IN:
 
         if file_id not in output_records:
             
-            sys.exit(f"WTF? file_id {file_id} from file_in_case.tsv not loaded from file.tsv; aborting.")
+            sys.exit(f"Unexpected failure? file_id {file_id} from file_in_case.tsv not loaded from file.tsv; aborting.")
 
         else:
             
@@ -173,6 +137,8 @@ with open( file_in_case_input_tsv ) as IN:
 project_id_to_program_id = map_columns_one_to_one( project_in_program_input_tsv, 'project_id', 'program_id' )
 
 program_name = map_columns_one_to_one( program_input_tsv, 'program_id', 'name' )
+
+program_dbgap_accession_number = map_columns_one_to_one( program_input_tsv, 'program_id', 'dbgap_accession_number' )
 
 project_in_program = dict()
 
@@ -234,7 +200,10 @@ for id in output_records:
     
     output_records[id]['Subjects'] = sorted(output_records[id]['Subjects'])
 
-# Load project.dbgap_accession_number for all relevant projects.
+# Load project.dbgap_accession_number for all relevant projects. If this field
+# is null for a particular project, then the relevant dbGaP accession has been
+# helpfully attached to the _parent_program_ of that project instead; retrieve
+# it from there.
 
 with open( project_input_tsv ) as IN:
     
@@ -250,7 +219,13 @@ with open( project_input_tsv ) as IN:
             
             for file_id in project_has_file[project_id]:
                 
-                output_records[file_id]['dbgap_accession_number'] = record['dbgap_accession_number'] if record['dbgap_accession_number'] != "" else None
+                if record['dbgap_accession_number'] != "":
+                    
+                    output_records[file_id]['dbgap_accession_number'] = record['dbgap_accession_number']
+
+                else:
+                    
+                    output_records[file_id]['dbgap_accession_number'] = program_dbgap_accession_number[project_id_to_program_id[project_id]]
 
 # Get specimen submitter_ids for all potential Specimen records so we can make IDs.
 
@@ -302,6 +277,8 @@ for specimen_type in case_maps:
 
 # Mine associated_entities for Specimen IDs.
 
+file_has_index_file = map_columns_one_to_many( file_has_index_file_input_tsv, 'file_id', 'index_file_id' )
+
 with open( file_associated_with_entity_input_tsv ) as IN:
     
     colnames = IN.readline().rstrip('\n').split('\t')
@@ -314,13 +291,27 @@ with open( file_associated_with_entity_input_tsv ) as IN:
 
         if file_id not in output_records:
             
-            sys.exit(f"WTF? file_id {file_id} from file_associated_with_entity.tsv not loaded from file.tsv; aborting.")
+            sys.exit(f"Unexpected failure? file_id {file_id} from file_associated_with_entity.tsv not loaded from file.tsv; aborting.")
 
         else:
             
             if record['entity_type'] in { 'aliquot', 'portion', 'slide' }:
                 
                 output_records[file_id]['Specimens'].add( specimen_cda_id[record['entity_type']][record['entity_id']] )
+
+                # Index files don't appear as normal results from the `files` endpoint, so we need to attach them manually to related Specimens (transitively via the associations with the main [indexed] files).
+
+                if file_id in file_has_index_file:
+                    
+                    for index_file_id in file_has_index_file[file_id]:
+                        
+                        if index_file_id not in output_records:
+                            
+                            sys.exit(f"Unexpected failure? index_file_id {index_file_id} from file_associated_with_entity.tsv (via {file_id}) not loaded from file.tsv; aborting.")
+
+                        else:
+                            
+                            output_records[index_file_id]['Specimens'].add( specimen_cda_id[record['entity_type']][record['entity_id']] )
 
 # Convert 'Specimens' sets to lists.
 

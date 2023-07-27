@@ -517,7 +517,18 @@ class GDC_extractor:
                     
                     print(*(sorted(complex_structures)), sep='\n', file=OUT)
 
-            # Now load all data in atomic fields and save this data to output_tsv.
+            # Save names of list substructures that have been aliased to the top-level entity type
+            # (e.g. "save contents of `index_files` as `file` records).
+
+            lists_to_promote = set()
+
+            for substructure_name in self.save_entity_list_as:
+                
+                if self.save_entity_list_as[substructure_name] == self.endpoint_singular:
+                    
+                    lists_to_promote.add(substructure_name)
+
+            # Now load all data in atomic fields (and any substructures flagged to load as the top-level entity) and save this data to output_tsv.
 
             with gzip.open(input_file) as IN:
                 
@@ -543,6 +554,8 @@ class GDC_extractor:
 
                         out_fields.append(record[id_field])
 
+                        # Load values for target atomic fields and print to the base table file.
+
                         for key in sorted(fields_to_include):
                             
                             if key in record and record[key] is not None:
@@ -554,6 +567,38 @@ class GDC_extractor:
                                 out_fields.append('')
 
                         print(*out_fields, sep='\t', file=OUT)
+
+                        # Load records from any substructures flagged as lists of top-level entity records (e.g. "load index_files as file records").
+
+                        for subrecord_list_name in sorted( lists_to_promote ):
+                            
+                            if subrecord_list_name in record and record[subrecord_list_name] is not None:
+                                
+                                for subrecord in record[subrecord_list_name]:
+                                    
+                                    # Doesn't matter if we overwrite same-named `out_fields` list as above: we're not using the antecedent list any more.
+
+                                    out_fields = list()
+
+                                    if id_field not in subrecord:
+                                        
+                                        sys.exit(f"FATAL: encountered '{self.endpoint_singular}.{subrecord_list_name}' record with no {id_field} field. Aborting.")
+
+                                    out_fields.append( subrecord[id_field] )
+
+                                    # Load values for target atomic fields and print to the base table file.
+
+                                    for key in sorted( fields_to_include ):
+                                        
+                                        if key in subrecord and subrecord[key] is not None:
+                                            
+                                            out_fields.append( subrecord[key] )
+
+                                        else:
+                                            
+                                            out_fields.append( '' )
+
+                                    print( *out_fields, sep='\t', file=OUT )
 
             # Sort the TSV output.
 
@@ -632,9 +677,13 @@ class GDC_extractor:
                     
                     if entity_type in self.save_entity_list_as:
                         
-                        # Process these as the designated entity type.
+                        # Aliases to top-level entity records are handled elsewhere, in make_base_table().
 
-                        self.__traverse_substructure( self.save_entity_list_as[entity_type], item, output_files, seen_ids, field_lists )
+                        if self.save_entity_list_as[entity_type] != self.endpoint_singular:
+                            
+                            # Process these as the designated entity type.
+
+                            self.__traverse_substructure( self.save_entity_list_as[entity_type], item, output_files, seen_ids, field_lists )
 
                     else:
                         
@@ -1300,6 +1349,14 @@ class GDC_extractor:
                         if 'cases' in record and 'file_in_case' in association_maps:
                             
                             associate_id_list_with_parent( record, self_id, 'cases', 'case_id', association_maps['file_in_case'] )
+
+                            # Index files don't appear as normal results from the `files` endpoint and so must be manually connected to their corresponding cases (transitively via the case associations with the files for which they are indexes).
+
+                            if 'index_files' in record:
+                                
+                                for index_file in record['index_files']:
+                                    
+                                    associate_id_list_with_parent( record, index_file['file_id'], 'cases', 'case_id', association_maps['file_in_case'] )
 
                         # file_associated_with_entity
 

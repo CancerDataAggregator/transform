@@ -129,7 +129,7 @@ while ( chomp( my $line = <IN> ) ) {
                 
                 if ( $parity == 0 ) {
                     
-                    die("WTF?! line $line_count\n");
+                    die("Unexpected failure?! line $line_count\n");
 
                 } else {
                     
@@ -152,7 +152,7 @@ while ( chomp( my $line = <IN> ) ) {
 
                     if ( $current_term eq '' ) {
                         
-                        print("WTF line $line_count\n");
+                        print("Unexpected failure line $line_count\n");
                     }
 
                 } else {

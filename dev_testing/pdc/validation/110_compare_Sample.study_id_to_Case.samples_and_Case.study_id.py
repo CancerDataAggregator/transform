@@ -119,7 +119,7 @@ for case_id in case_id_to_sample_id:
     
     if case_id not in case_id_to_study_id:
         
-        sys.exit( f"WTF? {case_id}\n" )
+        sys.exit( f"Unexpected failure? {case_id}\n" )
 
     for sample_id in case_id_to_sample_id[case_id]:
         
