@@ -14,4 +14,11 @@ echo ./package_root/auxiliary_scripts/103_summarize_GDC_entities_by_program_name
 echo ./package_root/auxiliary_scripts/104_enumerate_gdc_program_project_hierarchy.py
 ./package_root/auxiliary_scripts/104_enumerate_gdc_program_project_hierarchy.py
 
+# The postprocessed output of the following script does not go into CDA public releases; we prepare
+# it upstream of ISB-CGC's analytic consumption of the data as a courtesy, but responsibility
+# for this level of curation rests firmly with the CRDC data centers and not with CDA.
+
+echo ./package_root/auxiliary_scripts/105_rewire_and_fix_GDC_subsample_provenance.py
+./package_root/auxiliary_scripts/105_rewire_and_fix_GDC_subsample_provenance.py
+
 

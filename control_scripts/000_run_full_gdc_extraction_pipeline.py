@@ -6,7 +6,7 @@ endpoint_list = [ 'files', 'cases', 'projects', 'annotations' ]
 
 for endpoint in endpoint_list:
     
-    extractor = GDC_extractor(endpoint)
+    extractor = GDC_extractor( endpoint )
 
     extractor.extract()
 

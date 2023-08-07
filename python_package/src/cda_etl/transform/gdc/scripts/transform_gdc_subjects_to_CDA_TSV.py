@@ -422,7 +422,7 @@ with open( specimen_tsvs['sample'] ) as IN:
 
             specimen[sample_cda_id]['primary_disease_type'] = researchsubject[rs_id]['primary_diagnosis_condition']
             specimen[sample_cda_id]['anatomical_site'] = record['biospecimen_anatomic_site'] if record['biospecimen_anatomic_site'] != '' else None
-            specimen[sample_cda_id]['source_material_type'] = record['sample_type'] if record['sample_type'] != '' else None
+            specimen[sample_cda_id]['source_material_type'] = record['tissue_type'] if record['tissue_type'] != '' else None
             specimen[sample_cda_id]['specimen_type'] = 'sample'
             specimen[sample_cda_id]['derived_from_specimen'] = 'initial specimen'
             specimen[sample_cda_id]['derived_from_subject'] = researchsubject_in_subject[rs_id]

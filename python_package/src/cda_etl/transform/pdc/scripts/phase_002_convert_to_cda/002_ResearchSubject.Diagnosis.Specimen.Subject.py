@@ -398,7 +398,7 @@ with open( case_input_tsv ) as CASE_IN, open( researchsubject_output_tsv, 'w' ) 
 
                         sample_records[sample_id]['primary_disease_type'] = input_case_record['disease_type']
                         sample_records[sample_id]['anatomical_site'] = sample[sample_id]['biospecimen_anatomic_site']
-                        sample_records[sample_id]['source_material_type'] = sample[sample_id]['sample_type']
+                        sample_records[sample_id]['source_material_type'] = sample[sample_id]['tissue_type']
                         sample_records[sample_id]['specimen_type'] = 'sample'
                         sample_records[sample_id]['derived_from_specimen'] = 'initial specimen'
                         sample_records[sample_id]['derived_from_subject'] = subject_id
