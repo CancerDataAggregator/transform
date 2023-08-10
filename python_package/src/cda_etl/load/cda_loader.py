@@ -27,6 +27,12 @@ class CDA_loader:
 
         self.sql_output_dir = 'SQL_data'
 
+        # List of indexes and constraints currently applied to the RDBMS. This file
+        # will need to be replaced once the cloud environment is understood, as will
+        # the out-of-band script that queries the PostgreSQL instance to generate it.
+
+        self.index_and_constraint_def_file = 'indexes_and_constraints.txt'
+
         for target_dir in [ self.merged_tsv_dir, self.jsonl_output_dir, self.jsonl_log_dir, self.sql_output_dir ]:
             
             if not path.isdir( target_dir ):
@@ -695,116 +701,241 @@ class CDA_loader:
 
     def transform_files_to_SQL( self ):
         
-        initial_command_file = path.join( self.sql_output_dir, 'clear_tables_and_drop_indices.sql' )
+        preprocess_command_file = path.join( self.sql_output_dir, 'clear_table_data_indices_and_constraints.sql' )
 
-        run_first_dir = path.join( self.sql_output_dir, 'run_first' )
+        insert_dir = path.join( self.sql_output_dir, 'new_table_data' )
 
-        run_second_dir = path.join( self.sql_output_dir, 'run_second' )
+        postprocess_command_file = path.join( self.sql_output_dir, 'rebuild_indices_and_constraints.sql' )
 
-        for output_dir in [ run_first_dir, run_second_dir ]:
+        for output_dir in [ insert_dir ]:
             
             if not path.exists( output_dir ):
                 
                 makedirs( output_dir )
 
-        # Save second-pass SQL delete commands to be executed prior to DB repopulation.
-        # (Dump the first-pass commands inline into `initial_command_file` as we go
-        # through the following loop.)
+        # Drop all indexes and constraints prior to data refresh, then rebuild
+        # after INSERTs have all completed. Avoids validation overhead during record insertion.
 
-        second_round_delete_commands = []
+        preprocess_foreign_keys = list()
 
-        with open( initial_command_file, 'w' ) as CMD:
+        preprocess_primary_keys = list()
+
+        preprocess_indexes = list()
+
+        postprocess_foreign_keys = list()
+
+        postprocess_primary_keys = list()
+
+        postprocess_indexes = list()
+
+        with open( self.index_and_constraint_def_file ) as IN:
             
-            for input_file_basename in sorted( listdir( self.merged_tsv_dir ) ):
+            for line in [ next_line.rstrip( '\n' ) for next_line in IN ]:
                 
-                if re.search( r'\.tsv\.gz$', input_file_basename ) is not None:
+                # Ignore indexes built automatically as side effects of primary key constraint definitions.
+
+                if ( re.search( r'CREATE UNIQUE INDEX', line ) is None or re.search( r'_pkey ', line ) is None ):
                     
-                    input_file = path.join( self.merged_tsv_dir, input_file_basename )
+                    if re.search( r'^CREATE', line ) is not None:
+                        
+                        postprocess_indexes.append( f"{line};" )
 
-                    print( input_file_basename )
+                        line = re.sub( r'^CREATE.*(INDEX\s+\S+).*$', r'DROP \1', line )
 
-                    # Figure out which fields are integers.
+                        preprocess_indexes.append( f"{line};" )
 
-                    integer_colnames = set()
+                    elif re.search( r'^ALTER TABLE ONLY.* FOREIGN KEY', line ) is not None:
+                        
+                        postprocess_foreign_keys.append( f"{line};" )
 
-                    with gzip.open( input_file, 'rt' ) as IN:
+                        line = re.sub( r'^(ALTER TABLE ONLY.*) ADD CONSTRAINT (\S+) FOREIGN KEY.*$', r'\1 DROP CONSTRAINT \2', line )
+
+                        preprocess_foreign_keys.append( f"{line};" )
+
+                    elif re.search( r'^ALTER TABLE ONLY.* PRIMARY KEY', line ) is not None:
+                        
+                        postprocess_primary_keys.append( f"{line};" )
+
+                        line = re.sub( r'^(ALTER TABLE ONLY.*) ADD CONSTRAINT (\S+) PRIMARY KEY.*$', r'\1 DROP CONSTRAINT \2', line )
+
+                        preprocess_primary_keys.append( f"{line};" )
+
+                    elif re.search( r'^ALTER TABLE', line ) is not None:
+                        
+                        sys.exit( f"Unexpected ALTER TABLE statement encountered; aborting. Offending statement:\n\n{line}\n\n" )
+
+                    else:
+                        
+                        sys.exit( f"Unexpected line encountered in SQL index and constraint definitions file; aborting. Offending statement:\n\n{line}\n" )
+
+        table_drop_commands = list()
+
+        for input_file_basename in sorted( listdir( self.merged_tsv_dir ) ):
+            
+            if re.search( r'\.tsv\.gz$', input_file_basename ) is not None:
+                
+                input_file = path.join( self.merged_tsv_dir, input_file_basename )
+
+                print( input_file_basename )
+
+                '''
+                # Figure out which fields are integers.
+
+                integer_colnames = set()
+
+                with gzip.open( input_file, 'rt' ) as IN:
+                    
+                    colnames = next(IN).rstrip('\n').split('\t')
+
+                    column_all_integers = dict( zip( colnames, [ True ] * len( colnames ) ) )
+
+                    column_null_count = dict( zip( colnames, [ 0 ] * len( colnames ) ) )
+
+                    row_count = 0
+
+                    for next_line in IN:
+                        
+                        line = next_line.rstrip('\n')
+                        
+                        row_count = row_count + 1
+
+                        values = line.split('\t')
+
+                        for i in range( 0, len( values ) ):
+                            
+                            if values[i] == '':
+                                
+                                column_null_count[colnames[i]] = column_null_count[colnames[i]] + 1
+
+                            elif re.search( r'^-?\d+$', values[i] ) is None:
+                                
+                                # We don't have any of these right now, but if they crop up, they'll need
+                                # their own handling for SQL translation, so vomit loudly if any are encountered.
+
+                                if re.search( r'^-?\d+(\.\d+)?$', values[i] ) is not None:
+                                    
+                                    sys.exit( f"Floating-point value detected in column {colnames[i]}, row {row_count}; aborting.\n" )
+                                
+                                column_all_integers[colnames[i]] = False
+
+                    for colname in colnames:
+                        
+                        if column_all_integers[colname] and row_count > 0 and column_null_count[colname] < row_count:
+                            
+                            integer_colnames.add( colname )
+
+                '''
+                # Translate rows to SQL INSERT statements and create a prepared statement to
+                # (clear previous table and) populate the table corresponding to the TSV being scanned.
+
+                target_table = re.sub( r'\.tsv\.gz$', '', input_file_basename )
+
+                output_file_basename = re.sub( r'\.tsv\.gz$', '.sql.gz', input_file_basename )
+
+                output_file = path.join( insert_dir, output_file_basename )
+
+                table_drop_commands.append( f"TRUNCATE {target_table};" )
+
+                '''
+                with gzip.open( input_file, 'rt' ) as IN:
+                    
+                    with gzip.open( output_file, 'wt' ) as OUT:
                         
                         colnames = next(IN).rstrip('\n').split('\t')
-
-                        column_all_integers = dict( zip( colnames, [ True ] * len( colnames ) ) )
-
-                        column_null_count = dict( zip( colnames, [ 0 ] * len( colnames ) ) )
-
-                        row_count = 0
 
                         for next_line in IN:
                             
                             line = next_line.rstrip('\n')
-                            
-                            row_count = row_count + 1
 
-                            values = line.split('\t')
+                            # Escape quote marks for SQL compliance.
 
-                            for i in range( 0, len( values ) ):
-                                
-                                if values[i] == '':
-                                    
-                                    column_null_count[colnames[i]] = column_null_count[colnames[i]] + 1
+                            record = dict( zip( colnames, [ re.sub( r"'", "''", value ) for value in line.split('\t') ] ) )
 
-                                elif re.search( r'^-?\d+$', values[i] ) is None:
-                                    
-                                    # We don't have any of these right now, but if they crop up, they'll need
-                                    # their own handling for SQL translation, so vomit loudly if any are encountered.
+                            print( f"INSERT INTO {target_table} ( " + ', '.join( colnames ) + ' ) VALUES ( ' + ', '.join( [ 'NULL' if len( record[colname] ) == 0 else f"'{record[colname]}'" if colname not in integer_colnames else f"{record[colname]}" for colname in colnames ] ) + ' );', end='\n', file=OUT )
+                '''
 
-                                    if re.search( r'^-?\d+(\.\d+)?$', values[i] ) is not None:
-                                        
-                                        sys.exit( f"Floating-point value detected in column {colnames[i]}, row {row_count}; aborting.\n" )
-                                    
-                                    column_all_integers[colnames[i]] = False
+        # Remove foreign keys first, then primary keys (which also
+        # drops their btree indexes), then the remaining (non-PK) indexes.
 
-                        for colname in colnames:
-                            
-                            if column_all_integers[colname] and row_count > 0 and column_null_count[colname] < row_count:
-                                
-                                integer_colnames.add( colname )
+        with open( preprocess_command_file, 'w' ) as PRE_CMD:
+            
+            print( '--', file=PRE_CMD )
 
-                    # Translate rows to SQL INSERT statements and create a prepared statement to
-                    # (clear previous table and) populate the table corresponding to the TSV being scanned.
+            print( '-- drop foreign key constraints:', file=PRE_CMD )
 
-                    target_table = re.sub( r'\.tsv\.gz$', '', input_file_basename )
+            print( '--', file=PRE_CMD )
 
-                    output_file_basename = re.sub( r'\.tsv\.gz$', '.sql.gz', input_file_basename )
-
-                    output_file = path.join( run_first_dir, output_file_basename )
-
-                    if re.search( r'_', output_file_basename ) is not None:
-                        
-                        output_file = path.join( run_second_dir, output_file_basename )
-                        
-                        print( f"TRUNCATE {target_table};", end='\n\n', file=CMD )
-
-                    else:
-                        
-                        second_round_delete_commands.append( f"TRUNCATE {target_table} CASCADE;" )
-
-                    with gzip.open( input_file, 'rt' ) as IN:
-                        
-                        with gzip.open( output_file, 'wt' ) as OUT:
-                            
-                            colnames = next(IN).rstrip('\n').split('\t')
-
-                            for next_line in IN:
-                                
-                                line = next_line.rstrip('\n')
-
-                                # Escape quote marks for SQL compliance.
-
-                                record = dict( zip( colnames, [ re.sub( r"'", "''", value ) for value in line.split('\t') ] ) )
-
-                                print( f"INSERT INTO {target_table} ( " + ', '.join( colnames ) + ' ) VALUES ( ' + ', '.join( [ 'NULL' if len( record[colname] ) == 0 else f"'{record[colname]}'" if colname not in integer_colnames else f"{record[colname]}" for colname in colnames ] ) + ' );', end='\n', file=OUT )
-
-            for delete_command in second_round_delete_commands:
+            for line in preprocess_foreign_keys:
                 
-                print( delete_command, end='\n\n', file=CMD )
+                print( line, file=PRE_CMD )
+
+            print( '--', file=PRE_CMD )
+
+            print( '-- drop primary key constraints:', file=PRE_CMD )
+
+            print( '--', file=PRE_CMD )
+
+            for line in preprocess_primary_keys:
+                
+                print( line, file=PRE_CMD )
+
+            print( '--', file=PRE_CMD )
+
+            print( '-- drop (non-PK) indexes:', file=PRE_CMD )
+
+            print( '--', file=PRE_CMD )
+
+            for line in preprocess_indexes:
+                
+                print( line, file=PRE_CMD )
+
+            print( '--', file=PRE_CMD )
+
+            print( '-- delete old table rows:', file=PRE_CMD )
+
+            print( '--', file=PRE_CMD )
+
+            for line in table_drop_commands:
+                
+                print( line, file=PRE_CMD )
+
+        # Then delete all table rows and replace them with the new data
+        # (via the .sql files in insert_dir/ ).
+
+        # Then rebuild indexes and key constraints grouped in the reverse
+        # order of that in which they were dropped, i.e. first rebuild indexes,
+        # then primary key constraints, then foreign key constraints.
+
+        with open( postprocess_command_file, 'w' ) as POST_CMD:
+            
+            print( '--', file=POST_CMD )
+
+            print( '-- rebuild (non-PK) indexes:', file=POST_CMD )
+
+            print( '--', file=POST_CMD )
+
+            for line in postprocess_indexes:
+                
+                print( line, file=POST_CMD )
+
+            print( '--', file=POST_CMD )
+
+            print( '-- rebuild primary key constraints:', file=POST_CMD )
+
+            print( '--', file=POST_CMD )
+
+            for line in postprocess_primary_keys:
+                
+                print( line, file=POST_CMD )
+
+            print( '--', file=POST_CMD )
+
+            print( '-- rebuild foreign key constraints:', file=POST_CMD )
+
+            print( '--', file=POST_CMD )
+
+            for line in postprocess_foreign_keys:
+                
+                print( line, file=POST_CMD )
 
 
