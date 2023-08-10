@@ -778,7 +778,6 @@ class CDA_loader:
 
                 print( input_file_basename )
 
-                '''
                 # Figure out which fields are integers.
 
                 integer_colnames = set()
@@ -824,7 +823,6 @@ class CDA_loader:
                             
                             integer_colnames.add( colname )
 
-                '''
                 # Translate rows to SQL INSERT statements and create a prepared statement to
                 # (clear previous table and) populate the table corresponding to the TSV being scanned.
 
@@ -836,7 +834,6 @@ class CDA_loader:
 
                 table_drop_commands.append( f"TRUNCATE {target_table};" )
 
-                '''
                 with gzip.open( input_file, 'rt' ) as IN:
                     
                     with gzip.open( output_file, 'wt' ) as OUT:
@@ -852,7 +849,6 @@ class CDA_loader:
                             record = dict( zip( colnames, [ re.sub( r"'", "''", value ) for value in line.split('\t') ] ) )
 
                             print( f"INSERT INTO {target_table} ( " + ', '.join( colnames ) + ' ) VALUES ( ' + ', '.join( [ 'NULL' if len( record[colname] ) == 0 else f"'{record[colname]}'" if colname not in integer_colnames else f"{record[colname]}" for colname in colnames ] ) + ' );', end='\n', file=OUT )
-                '''
 
         # Remove foreign keys first, then primary keys (which also
         # drops their btree indexes), then the remaining (non-PK) indexes.
