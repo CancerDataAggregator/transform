@@ -81,9 +81,9 @@ while ( chomp( my $line = <IN> ) ) {
                 print STDERR "WHAT!\n";
             }
 
-            if ( $pdcStudy eq 'TCGA COAD Proteome S016-1' ) {
+            if ( $pdcID eq 'PDC000359' or $pdcID eq 'PDC000360' ) {
                 
-#                print STDERR "$line\n";
+#                print STDERR "$id: $line\n";
             }
         }
     }

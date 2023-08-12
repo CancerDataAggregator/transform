@@ -379,7 +379,7 @@ with open( case_input_tsv ) as CASE_IN, open( researchsubject_output_tsv, 'w' ) 
                 
                 for sample_id in sorted( case_sample[case_id] ):
                     
-                    sample_cda_id = f"{rs_id}.{sample_submitter_id[sample_id]}"
+                    sample_cda_id = f"{rs_id}.sample.{sample_submitter_id[sample_id]}"
 
                     print( *[ rs_id, sample_cda_id ], sep='\t', end='\n', file=RS_SPECIMEN )
 
@@ -412,7 +412,7 @@ with open( case_input_tsv ) as CASE_IN, open( researchsubject_output_tsv, 'w' ) 
                         
                         for aliquot_id in sorted( sample_aliquot[sample_id] ):
                             
-                            aliquot_cda_id = f"{rs_id}.{aliquot_submitter_id[aliquot_id]}"
+                            aliquot_cda_id = f"{rs_id}.aliquot.{aliquot_submitter_id[aliquot_id]}"
 
                             print( *[ rs_id, aliquot_cda_id ], sep='\t', end='\n', file=RS_SPECIMEN )
 

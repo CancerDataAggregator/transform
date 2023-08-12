@@ -1,0 +1,281 @@
+follow_up_id	follow_up_submitter_id	adverse_event	barretts_esophagus_goblet_cells_present	bmi	cause_of_response	comorbidity	comorbidity_method_of_diagnosis	days_to_adverse_event	days_to_comorbidity	days_to_follow_up	days_to_progression	days_to_progression_free	days_to_recurrence	diabetes_treatment_type	disease_response	dlco_ref_predictive_percent	ecog_performance_status	fev1_ref_post_bronch_percent	fev1_ref_pre_bronch_percent	fev1_fvc_pre_bronch_percent	fev1_fvc_post_bronch_percent	height	hepatitis_sustained_virological_response	hpv_positive_type	karnofsky_performance_status	menopause_status	pancreatitis_onset_year	progression_or_recurrence	progression_or_recurrence_anatomic_site	progression_or_recurrence_type	reflux_treatment_type	risk_factor	risk_factor_treatment	viral_hepatitis_serologies	weight	adverse_event_grade	aids_risk_factors	body_surface_area	cd4_count	cdc_hiv_risk_factors	days_to_imaging	evidence_of_recurrence_type	eye_color	haart_treatment_indicator	history_of_tumor	history_of_tumor_type	hiv_viral_load	hormonal_contraceptive_type	hormonal_contraceptive_use	hormone_replacement_therapy_type	hysterectomy_margins_involved	hysterectomy_type	imaging_result	imaging_type	immunosuppressive_treatment_type	nadir_cd4_count	pregnancy_outcome	procedures_performed	recist_targeted_regions_number	recist_targeted_regions_sum	scan_tracer_used	undescended_testis_corrected	undescended_testis_corrected_age	undescended_testis_corrected_laterality	undescended_testis_corrected_method	undescended_testis_history	undescended_testis_history_laterality	case_id	case_submitter_id	project_id	project_submitter_id
+000ffca5-f23a-49d6-a405-0781da6c6996	14-00083-FL									874																																																													
+007202a1-ed61-4508-9619-6b8543168704	C3L-00622-FL			28.74		Hypothyroidism				1041			172		Not Reported		5					173.500			0			Yes							86.50																																				
+02a592c4-cd61-4987-bfeb-25d9173290ae	C3L-00913-FL			16.91						73						86.00	Not Reported	84.00	76.00	85.00	87.00	182.000			Not Reported										56.00																																				
+03e67b99-88b4-4416-b17c-8a5714409f15	16-01219-FL									214																																																													
+041940c2-4f61-4188-88b7-831fcac5ede6	C3L-00589-FL			27.43		Hypertension				1397					CR-Complete Response		Not Reported					175.000			Not Reported										84.00																																				
+04768fcf-1450-44ee-a05b-8962f50425d7	C3L-00893-FL			29.10						23					Unknown		Unknown					172.720			Unknown										86.82																																				
+057acfdb-ca34-4e1f-af04-324bc8060948	C3L-01455-FL			26.58						16					Unknown		Unknown					182.880			Unknown										88.90																																				
+060a149c-a5ea-439f-a647-66d79f73a371	C3L-00790-FL			38.99		Hypertension				441					CR-Complete Response		0					170.180			100										112.94																																				
+06c877fa-9806-45ae-b815-1037461f349f	C3L-00098-FL			20.28						1748					CR-Complete Response		Not Reported					157.000			Not Reported										50.00																																				
+06d45ae9-0cc6-4104-8085-3ed7d1a41dff	C3L-00083-FL			29.37						1790					CR-Complete Response		Not Reported	88.00	81.00	100.00	100.00	177.000			Not Reported										92.00																																				
+071ae404-d177-45d1-a9f4-3be3e491bf90	C3L-00599-FL			25.05		Hyperlipidemia				1305			1034		PD-Progressive Disease		5					176.000			0			Yes							77.60																																				
+0754bbb3-f48b-4966-a464-491458e2fb76	C3L-00930-FL			25.29		Hypothyroidism																165.100													68.95																																				
+07958c74-6b1e-413c-a696-7ba8342732b4	C3L-01253-FL			31.83						1001					CR-Complete Response		0					152.400			100										73.94																																				
+07a1118b-b549-4134-b776-2aba4c68d3bc	C3L-01287-FL			25.31						630					PD-Progressive Disease		Not Reported					177.800			Not Reported										80.00																																				
+0985c90d-e85a-4d32-aa7a-627509f14428	C3L-00907-FL			47.25						1369					CR-Complete Response		Not Reported					177.980			Not Reported										149.69																																				
+0a332e53-a5d0-442e-bfbb-eb5a6e92e1c8	14-00488-FL									342																																																													
+0d21a83a-eb22-476a-a78b-2a6bb46b6d87	14-00240-FL									37																																																													
+10701f9a-9940-4385-9292-72a878a64dc8	C3L-01313-FL			29.38						1229			456				Not Reported					165.000			Not Reported			Yes							80.00																																				
+10b07f86-f48c-4d13-9ec7-2ed5928732a9	C3L-00581-FL			33.66						1230			389				Not Reported					168.000			Not Reported			Yes							95.00																																				
+11169a7a-8de8-44d3-95f3-712ffe87bc41	C3L-00938-FL			45.53		Hypertension				697					CR-Complete Response		0					154.940			100										109.32																																				
+137f9edb-e44f-4762-9f6a-f5d1c07bcb99	16-00479-FL									232																																																													
+13c2e0fc-7532-4625-a180-775283d7a969	16-01138-FL									424																																																													
+13e3a0f9-d180-4a1f-b884-88814ae93a1a	AP-U8MP-FL									365			365															Yes		Distant																																									
+13f7345d-0520-4a72-9f7d-436787cf3c3f	C3L-00263-FL			22.77						1157					Unknown		Unknown					187.960			Unknown										80.46																																				
+1433383c-b537-483c-b22b-a2b1d9d15ba4	C3L-01632-FL			40.67						717			298				Not Reported					177.000			Not Reported			Yes							127.40																																				
+14eb782e-c701-45de-8a79-d77726e0bc14	AP-G79N-FL									670			670															Yes		Distant																																									
+17b6abfb-552d-4cfc-84fb-011478a3b82e	17-00613-FL									370																																																													
+1800f0c7-5c75-4d6a-8e93-4c3410852b98	16-00611-FL									972																																																													
+19485f30-bf60-4283-b0a7-3e811bd8f0f5	C3L-01031-FL			27.99		Pancreatitis				369					Unknown		Not Reported					168.000			Not Reported										79.00																																				
+19acfce6-0a3d-4385-9cb8-21680a067081	AP-DN2V-FL									689			689															Yes		Distant																																									
+19e28e2c-cc18-4593-b0e1-84477fb4153d	C3L-00032-FL			51.19						1710					CR-Complete Response		Not Reported					163.000			Not Reported										136.00																																				
+1a160c92-943e-4089-99f6-ef46e8b18db7	C3L-00606-FL			42.33		Hypertension				1045			780		PD-Progressive Disease		Not Reported					157.500			Not Reported			Yes							105.00																																				
+1aed2e64-8173-4238-b454-880b179f89b2	C3L-01049-FL			29.07						69					PD-Progressive Disease		2					172.000			70										86.00																																				
+1b27043f-13a0-4917-b0f0-d8fd947847ca	C3L-00601-FL			25.03						1354					CR-Complete Response		Not Reported					157.400			Not Reported										62.00																																				
+1d4fad6d-93ef-407d-969f-4a22c15f1683	C3L-00932-FL			47.82		Hypertension				1166					CR-Complete Response		0					160.020			100										122.47																																				
+1e2b0a03-78b7-4e7a-9329-19edd31cc255	C3L-00904-FL			19.47						761			546			42.00	Not Reported	51.00	48.00	38.00	40.00	165.000			Not Reported			Yes							53.00																																				
+1f1e91e7-1e72-4dc8-8720-ed0502beb801	C3L-01156-FL			24.96						182			178		PD-Progressive Disease		4					171.000			30			Yes							73.00																																				
+1fb03e25-73c7-4872-a403-383bc044d3e9	C3L-00412-FL			25.12						162			72				Not Reported					182.880			Not Reported			Yes							84.00																																				
+21989069-44a2-4dd4-af0d-e46674c20e75	C3L-00997-FL			21.83						442					Unknown		Unknown					163.000			Unknown										58.00																																				
+2279897c-6b0e-4dd5-a5be-b6eb5949fcbb	C3L-00189-FL			34.28		Hypertension				1036			424		PD-Progressive Disease		5					157.000			0			Yes							84.50																																				
+230b2bcd-16d6-40c9-88a7-feab34940905	C3L-00771-FL			22.86		Tuberculosis				134							4					157.480			0										56.70																																				
+236584ef-835a-4286-bb87-88e4731e280c	C3L-00361-FL			42.98						1707					CR-Complete Response		Not Reported					165.000			Not Reported										117.00																																				
+24f6b62c-5c3c-4cb5-bad1-1c9bf3a1d915	C3L-00563-FL			34.72						1785					CR-Complete Response		Not Reported					168.000			Not Reported										98.00																																				
+250b713f-2acb-4c30-a2d3-692e59027b7c	C3L-00917-FL			45.37		Psoriasis				1422					CR-Complete Response		Not Reported					185.420			Not Reported										156.00																																				
+26102833-7c0d-40ae-b68e-798bb8cca2a7	16-01253-FL									1586																																																													
+26125f84-5b18-4385-88ee-e8263dd4ed07	C3L-01285-FL			21.39						1420			610		CR-Complete Response		Not Reported					177.000			Not Reported			Yes							67.00																																				
+26b71866-bcea-424f-bfa8-f59e24e4e55b	C3L-00923-FL			36.76						1361					CR-Complete Response	85.00	Not Reported		96.00			149.000			Not Reported										81.60																																				
+2763d93c-7079-45b1-8521-5bf120a4af5f	C3L-00993-FL			22.72						-1							5					178.000			0										72.00																																				
+2843b633-c7da-454a-84d0-3a27cca28e95	C3L-01247-FL			38.44						1106					CR-Complete Response		0					160.020			100										98.43																																				
+296e3715-d474-41f0-accb-579bda614836	11LU022-FL			21.76						7					Unknown		Unknown					159.000			Unknown										55.00																																				
+2b0dd3dd-da5a-4110-b659-4f34ca66fd98	C3L-01043-FL			24.22						1							Not Reported					170.000			0										70.00																																				
+2b60caed-b136-4834-81ca-312d8c1bf225	C3L-01453-FL			28.24						5					Unknown		Unknown					167.640			Unknown										79.38																																				
+2bf46bc3-2130-4942-9edb-db94f181173f	C3L-00780-FL			46.41		Hypertension				1053				Insulin	CR-Complete Response		3					160.020			70										118.84																																				
+2f22dc95-eb17-4b59-b557-ec4b56597893	AP-FX68-FL									375			375															Yes		Distant																																									
+31ea0768-9933-4bbe-aacc-dc3a14acf774	C3L-00183-FL			36.39		Asthma				227					Unknown		Unknown					157.480			Unknown										90.26																																				
+328ac225-ce97-4c10-a17f-7ffc2fe3f4a3	C3L-01312-FL			31.96						1431					CR-Complete Response		Not Reported					165.000			Not Reported										87.00																																				
+32d171e9-a0d3-469b-b61e-20ea616fa5ef	C3L-01142-FL			23.14						0					Not Reported		Not Reported					165.000			Not Reported										63.00																																				
+32d4287d-0dac-4837-a284-ae7b5c74be18	16-00494-FL									148																																																													
+32e5d13b-9c14-4277-aa27-ed280fc0977c	C3L-00961-FL			28.50						1045					CR-Complete Response		0					170.180			100										82.55																																				
+32f7fe94-f750-4879-b8dd-712d367a011d	AP-MJ52-FL									734			734															Yes		Distant																																									
+339def1e-a611-4da6-81f1-78e718011712	C3L-00674-FL			27.44						385			245				Unknown					193.000			Unknown			Yes							102.20																																				
+35d31cca-f738-4d0d-b901-84b558e6f88c	C3L-01553-FL			46.17						384					Unknown		Unknown					185.420			Unknown										158.76																																				
+35e027ef-351f-4bec-9278-1ab3eaf11389	C3L-00009-FL			28.67						545				Insulin	CR-Complete Response		Not Reported					171.980			Not Reported										84.82																																				
+3660aa5b-9afa-43ab-ba84-61d0299665d1	C3L-00096-FL			27.44						68							Not Reported					185.000			Not Reported										93.90																																				
+369ed482-1c7d-47da-9009-11f7c4ebd944	C3L-01637-FL			26.05						715			268		PD-Progressive Disease		Not Reported					165.100			Not Reported			Yes							71.00																																				
+36cd6033-8792-402d-aef0-f106038242cc	C3L-00359-FL			42.92		Hypothyroidism				1779			1402		PD-Progressive Disease		Not Reported					165.100			Not Reported			Yes							117.00																																				
+374ab68f-2398-401b-9bd9-7eb0dd49db44	AP-EFHT-FL									617			617															Yes		Distant																																									
+38352b83-e9ef-4a10-bc74-0e65682c96ba	C3L-00156-FL			27.83		Sleep apnea				1776				Insulin	CR-Complete Response		Not Reported					172.700			Not Reported										83.00																																				
+3963b353-a1b4-46a3-841e-7687f16d0c33	AP-YF3B-FL									1571			1571															Yes		Distant																																									
+3aaa1d8b-dd8b-498e-a1e6-63b35bd1f9a1	C3L-00445-FL			29.98						3							Not Reported					178.000			Not Reported										95.00																																				
+3ab8aba6-d75e-4b08-9d67-53dcdc28eabe	AP-EZEX-FL									639			639															Yes		Distant																																									
+3bf4138d-3031-4ca7-a0ee-d2f637e55745	C3L-00769-FL			46.64						1248					CR-Complete Response		0					167.640			100										131.09																																				
+3c2c158f-40d3-471a-99e5-b0695ca46ff8	C3L-01249-FL			38.89						1210					CR-Complete Response		0					167.640			100										109.32																																				
+3c90e625-5de8-4f4f-84d8-7128f5a6fba5	C3L-00918-FL			43.00						1176			1154				Not Reported					162.560			Not Reported			Yes							113.63																																				
+3d445a31-491a-4321-9a38-d6c4ca37ff1b	17-00638-FL									1																																																													
+3dfbd3d7-2fdb-4266-a45d-8e83bc3f80a3	AP-K24D-FL									103			103															Yes		Distant																																									
+3dfdd5c1-f1b1-4529-8071-4dcdb71e288f	C3L-00088-FL			32.82						687					CR-Complete Response		Not Reported					178.000			Not Reported										104.00																																				
+3fd1c6d8-156e-4e65-abfa-a170f01ef8da	C3L-00157-FL			34.84						1396			1337		PD-Progressive Disease		Not Reported					162.500			Not Reported			Yes							92.00																																				
+450fd364-4b20-4e0e-b2a5-7c0782a66899	C3L-00902-FL			19.72						1415					CR-Complete Response		Not Reported					170.000			Not Reported										57.00																																				
+45127493-a19b-426e-95ee-26f783c001a7	C3L-00079-FL			37.88		Colon Polyps				245							Not Reported					175.000			Not Reported										116.00																																				
+46b83cb5-943c-4cc1-b838-8616a33555c8	17-00177-FL									289																																																													
+48812162-71e0-4da7-90fe-139ac9b5696d	C3L-01124-FL			28.25		Pancreatitis				399					Unknown		1					154.000			90										67.00																																				
+4990538a-e6c5-4501-b927-31cb863cae09	16-00886-FL									129																																																													
+49ddeffb-2805-4cf6-8368-2cc97fe14510	C3L-01275-FL			32.06						1104			657		Unknown		0					160.020			90			Yes							82.10																																				
+4aa2e951-692b-4d99-9778-5985fd839f7b	C3L-00905-FL			44.81		Obesity				1393					CR-Complete Response		Not Reported					165.000			Not Reported										122.00																																				
+4b037ecd-6222-47ac-b7ba-c72d01d08e6b	17-00444-FL									93																																																													
+4b88951d-1383-41d2-8ab1-b8a34021983c	C3L-00799-FL			35.66						495					Unknown		Unknown					176.530			Unknown										111.13																																				
+4b949ddb-deb9-4bfd-8fb4-cf7a052262eb	AP-WDKZ-FL									330			330															Yes		Distant																																									
+4c0b117e-ab7f-4a2c-9493-4b536243056f	C3L-00910-FL			36.36						1426					CR-Complete Response		Not Reported					152.000			Not Reported										84.00																																				
+4c465fa3-6573-4db5-92f5-ad278cb38d34	AP-9PXS-FL									1825			1825															Yes		Distant																																									
+4c9f5a63-598a-4c98-a2fa-8b1e7e92d4f2	Standard ref-FL																																																																						
+4cbbc4f5-73f7-4ad9-9257-b2703cd3673c	AP-8MWD-FL									516			516															Yes		Distant																																									
+4d57dd0a-aa94-4222-9f27-c35a66d1263b	C3L-01252-FL			38.41						1100				Insulin	CR-Complete Response		0					157.480			100										95.25																																				
+4d6097bf-d93e-43df-8081-43bdde5c33e8	C3L-00447-FL			36.57		Gout				671					CR-Complete Response		Not Reported					180.000			Not Reported										118.50																																				
+4de0bc15-9984-406e-afc3-c0470d14ddc6	AP-KGMR-FL									190			190															Yes		Distant																																									
+4e4c25a9-dfab-46de-912a-02ff92c6d3c7	C3L-00987-FL			24.15						429					Unknown		Unknown					182.000			Unknown										80.00																																				
+4e779016-6c3b-47a8-8a6c-7f3bbd781ea2	C3L-01051-FL			27.46						0					Unknown		Unknown					186.000			Unknown										95.00																																				
+4f80cb2b-a08e-4e3d-afb1-b2b438f17724	C3L-01155-FL			27.17						362					Unknown		1					183.000			90										91.00																																				
+51876ceb-14c6-4854-a4df-a80b6413e2d0	C3L-00881-FL			29.60						3					Unknown		Unknown					175.260			Unknown										90.91																																				
+51e8218a-dfe4-4325-b9d3-00fbd50b7352	C3L-00947-FL			36.84						1020					CR-Complete Response		0					154.940			100										88.45																																				
+525353f6-5414-4962-bb9a-beeb8ced2777	C3L-00026-FL			28.23						1769					CR-Complete Response		Not Reported					163.000			Not Reported										75.00																																				
+52853f5a-cd90-432e-a665-7039fe53de3b	C3L-00603-FL			35.68						1396					CR-Complete Response	90.00	Not Reported	75.00	69.00	82.00	88.00	177.800			Not Reported										112.80																																				
+52f3e27e-0c15-4971-b225-e11fb41d5510	C3L-00137-FL			25.68						823					CR-Complete Response		Not Reported					165.100			Not Reported										70.00																																				
+533e0618-80e1-47d3-aac1-bf915c802480	C3L-01000-FL			33.21						1099					CR-Complete Response		1		51.00	87.00		182.000			90										110.00																																				
+53f2c3b7-32e2-4869-9848-f6b6ab9e76aa	C3L-00161-FL			68.39						1775			1369		PD-Progressive Disease		3					154.940			Not Reported			Yes							164.20																																				
+54058104-62f5-4168-82a8-546f0af9ada7	C3L-00994-FL			21.74						133			133				1					182.000			70			Yes							72.00																																				
+54602ed8-f75d-4745-b070-9ed8601bce44	C3L-00965-FL			23.53						1470					CR-Complete Response		0					161.000			80										61.00																																				
+54ef9e75-1210-41d1-ab59-94dca9598324	C3L-01607-FL			27.52						1406					CR-Complete Response		Not Reported					177.800			Not Reported										87.00																																				
+56a9a858-a5c6-4196-8c32-0067203b01ea	C3L-01149-FL			30.41						666			584		PD-Progressive Disease		Not Reported					173.000			Not Reported			Yes							91.00																																				
+589e5686-b55b-41da-9bb4-fff81b448f5b	C3L-00999-FL			26.47		Pancreatitis				1137			446		PD-Progressive Disease		1					176.000			80		2017	Yes							82.00																																				
+5a32a0ea-e70e-4f1a-9085-efef900e4dbe	AP-ZLDH-FL									510			510															Yes		Distant																																									
+5bc47940-35c2-4ee8-9d45-340b01c7588e	13-00515-FL									658																																																													
+5c25589c-ee89-47b1-9715-f7f4ee0ca017	C3L-00928-FL			45.83						755			683		PD-Progressive Disease		Not Reported					167.640			Not Reported			Yes							128.82																																				
+5c9ff4c2-f329-4a62-b936-460dbc310cc6	C3L-00093-FL			34.08						1698			1176		PD-Progressive Disease		Not Reported		97.00	69.00	74.00	157.000			Not Reported			Yes							84.00																																				
+5dfa634f-12dd-434d-9642-4a09b8fd36cd	C3L-00415-FL			27.64		Hypothyroidism				1786			356		PD-Progressive Disease		Not Reported					158.000			Not Reported			Yes							69.00																																				
+6016ca66-e084-4de9-aa67-1421b4eed03b	C3L-01352-FL			26.95						233					Unknown		Unknown					162.560			Unknown										71.21																																				
+614ba19d-1e6a-4ec4-97a9-13e46a0f214b	C3L-01284-FL			21.23						357					Not Reported		Not Reported					155.000			Not Reported										51.00																																				
+64eab365-2d47-4a54-90cf-31d56fe9003c	AP-WTXJ-FL									453			453															Yes		Distant																																									
+65335833-4ce5-4244-9de3-b52a844b40bc	C3L-01248-FL			59.78						798					CR-Complete Response		Not Reported					149.860			Not Reported										134.26																																				
+6540ba51-5442-47b3-95d7-d17a6d03d78d	15-00051-FL									1715																																																													
+6801ab26-72c1-4feb-8270-ae57aed88458	C3L-00448-FL			26.18		Arthritis				1758			779		CR-Complete Response		Not Reported					185.400			Not Reported			Yes							90.00																																				
+68dc983b-8d9c-46f8-ab4f-015c65347a19	14-00537-FL									74																																																													
+695dee21-064b-45ba-bb84-a57cb6d4db23	C3L-01286-FL			46.17						1028			594	Insulin	PD-Progressive Disease		Not Reported					185.000			Not Reported			Yes							158.00																																				
+6c7f6bdd-f8d1-464f-91e0-0efd766c6271	C3L-00401-FL			22.42						1262			532		PD-Progressive Disease		5					164.000			0			Yes							60.30																																				
+6c85b10f-76dc-4e3a-aab9-e58307d712f4	C3L-01246-FL			39.14						1132					CR-Complete Response		0					160.020			100										100.24																																				
+6d2df940-d68d-4811-b55f-a0c8b16e1da5	C3L-00368-FL			29.21						141					CR-Complete Response		Not Reported					157.000			Not Reported										72.00																																				
+6ec2dbd1-b1f7-4fc7-a4bb-df9d166726b5	14-00034-FL									2733																																																													
+6eeca2b1-dd9e-4922-b879-e737a448cbcc	C3L-01036-FL			25.25		Pancreatitis				1247			834		PD-Progressive Disease		5					178.000			0			Yes							80.00																																				
+6f560439-c3aa-4a99-8d40-50834a6c0e84	C3L-01288-FL			39.45						1435			1416		PD-Progressive Disease		Not Reported					160.000			Not Reported			Yes							101.00																																				
+707bf0b6-d276-4e48-8281-2ffaf97a3181	C3L-00449-FL			27.82						1749					CR-Complete Response		Not Reported					162.000			Not Reported										73.00																																				
+72387015-5d4e-4368-99e8-f773adefa3d5	AP-D35H-FL									750			750															Yes		Distant																																									
+74f31726-3e5a-44d6-85e0-18f5c8212b07	16-00981-FL									255																																																													
+7545506a-4b2d-4687-b13a-d4219f1f4e6e	C3L-01311-FL			37.11						1357					CR-Complete Response		Not Reported					160.000			Not Reported										95.00																																				
+7667e7b3-26a9-46ad-8add-90b1a8949323	C3L-00568-FL			28.52						93					Not Reported		Not Reported					160.000			Not Reported										73.00																																				
+7936403e-3e93-46de-be67-d328e7fd3bd6	C3L-01302-FL			36.00						53							Not Reported					165.000			Not Reported										98.00																																				
+797de5f1-6890-45fc-ae0a-3033a98cb7e9	16-00474-FL									424																																																													
+7b8bdc1b-c0d7-4e26-a9ac-8c51c4c89d6c	C3L-00598-FL			16.00						422			348		PD-Progressive Disease		1					163.000			80			Yes							42.50																																				
+7b8ed032-8ee8-492c-a177-0098c0370a44	C3L-00963-FL			34.89						810					CR-Complete Response		0					160.020			100										89.36																																				
+7c2c2dde-832c-4b51-84c3-41dfa61b6bba	C3L-00365-FL			20.61		Depression				280							Not Reported					162.000			Not Reported										54.10																																				
+7c5a5f5a-db05-409e-895f-5ea4815d641e	C3L-01138-FL			21.13						367					Unknown		Unknown					182.000			Unknown										70.00																																				
+7cb64140-983f-41ad-bcb6-6e6a3e56e095	C3L-01328-FL			26.85						271			250		Unknown		Unknown					173.990			Unknown			Yes							81.27																																				
+7de38c25-c170-4d06-bf01-d1c9bb99a98e	C3L-01282-FL			31.96						1413					CR-Complete Response		Not Reported					176.000			Not Reported										99.00																																				
+80bc7ac8-345e-4e82-8129-bc555f84b331	C3L-00095-FL			34.61		Anxiety				1794				Insulin	CR-Complete Response	91.00	Not Reported	65.00	65.00	67.00	60.00	175.000			Not Reported										106.00																																				
+81a35e22-ac57-44c6-9840-9aa914c79fae	C3L-00995-FL			20.76						-10							2					170.000			80										60.00																																				
+83ce953b-5a6c-428e-a0db-001ab37cacc6	C3L-01146-FL			31.35						508			336				Unknown					175.000			0			Yes							96.00																																				
+84024b43-7fc7-4804-8b55-e051be86d8fc	C3L-00416-FL			32.00						608					Unknown		Not Reported					175.000			Not Reported										98.00																																				
+84d5f2b3-6c8b-4cc5-a4f7-1e77fe95991a	C3L-00766-FL			68.59		Crohn's Disease				266					CR-Complete Response		0					156.210			100										167.38																																				
+85184350-6466-4f82-ae86-4657b49fe2e1	C3L-00144-FL			26.08						578					CR-Complete Response	41.00	Not Reported	41.00	41.00	41.00	43.00	165.000			Not Reported										71.00																																				
+86d9e1a2-f551-4d4c-bd3e-d578f86fb7e3	C3L-00395-FL			27.41		Coronary Artery Disease				1099			524		PD-Progressive Disease		2					174.000			70			Yes							83.00																																				
+877b8e05-ebc8-4d94-a8d0-3f42ca6628ba	14-00495-FL									568																																																													
+87e18652-d4ad-42d3-bcd3-f7977dd80164	C3L-00561-FL			27.47						1796			368		PD-Progressive Disease		Not Reported					185.000			Not Reported			Yes							94.00																																				
+87f89d30-9b24-49a6-af9e-b45d7b95d9fe	AP-352Q-FL									592			592															Yes		Distant																																									
+89f44e34-41f6-4121-9b89-7c088dddd52f	C3L-01052-FL			20.94						725			565		Not Reported		4					165.000			50			Yes							57.00																																				
+8a4f7fd7-5b48-4fe5-b540-0b2d8b81d0d3	AP-MAZ4-FL									480			480															Yes		Distant																																									
+8bcba4f2-7983-463b-83b6-aa2ee7a87248	13-00602-FL									1346																																																													
+8beb6d7a-5223-4b40-aae7-8152a98ed87b	AP-3FY5-FL									225			225															Yes		Distant																																									
+8d453ea5-9570-4c68-8dc3-c357636357d6	C3L-00103-FL			28.70						1659			833				Not Reported					180.000			Not Reported			Yes							93.00																																				
+8f1eecf2-3155-4164-9888-3503f3f64f33	AP-9D3B-FL									1132			1132															Yes		Distant																																									
+8f2cb472-335b-4e21-b5d1-6f986acf0b13	C3L-00084-FL			49.23						335					Unknown		Not Reported					162.500			Not Reported										130.00																																				
+8fc39244-64bb-4c9e-ae33-1e6a5ad30d60	C3L-00791-FL			29.49						708					CR-Complete Response		0					172.720			100										88.00																																				
+91ea0495-2acb-4564-af95-508057d53c3a	C3L-01257-FL			17.11						603					CR-Complete Response		Unknown					167.640			Unknown										48.08																																				
+922c2a50-ec99-41c0-a16d-f2bdb38f13ab	AP-JDN4-FL									184			184															Yes		Distant																																									
+92a96020-c15b-4195-9389-dfe5a38c15f9	C3L-01053-FL			32.39						20					Not Reported		0					162.000			100										85.00																																				
+93eb711f-afed-4b00-95bb-776e88949bf9	C3L-00081-FL			32.29						472			188				Not Reported	86.00	86.00	89.00	90.00	157.000			Not Reported			Yes							79.60																																				
+97c3fe8c-8627-483d-ae24-02b715f2e1d6	C3L-00010-FL			34.15						896					CR-Complete Response		Not Reported					177.000			Not Reported										107.00																																				
+98976401-bb3b-4038-81e9-11961e64b5eb	C3L-00090-FL			32.69		Allergies				1279			50		PD-Progressive Disease		Not Reported					165.000			Not Reported			Yes							89.00																																				
+9a0efcfe-d5b0-409a-9f09-6eada3e5ad73	AP-V6UJ-FL									589			589															Yes		Distant																																									
+9a5916f7-4fc5-4cc5-8acd-2363a4d3d1ae	C3L-01330-FL			40.11						1317					Unknown		Not Reported					167.640			Not Reported										112.73																																				
+9a76c1b3-8be4-4887-9846-d24bad23c2ca	C3L-01154-FL			27.18						496			230				2					165.000			70			Yes							74.00																																				
+9aeeafe9-48f2-4ab0-9c1d-94ddfd7b2f74	C3L-00001-FL			22.03		Sjogren's Syndrome				1837					CR-Complete Response		Not Reported					180.300			Not Reported										71.60																																				
+9c106be9-0732-4311-990c-4da6558269db	C3L-00625-FL			22.23						1198			417		PD-Progressive Disease		5					167.000			0			Yes							62.00																																				
+9c8be5d3-21fc-4231-930f-a09309753618	C3L-00800-FL			29.01						344					CR-Complete Response		0					180.340			100										94.35																																				
+9cb493fc-1a0a-4d9d-85f2-00b889a6fd37	C3L-00977-FL			33.21		Pancreatitis				1112			853		PD-Progressive Disease		1					182.000			90		2013	Yes							110.00																																				
+9ceadeee-c711-4d30-8502-c41c99480778	16-01227-FL									433																																																													
+9cee9fcc-eede-4dbc-a0b9-9e5c977f7f82	Cell based ref-FL																																																																						
+9d87688f-01c7-443d-85fd-1b09dc0e750a	AP-67ZV-FL									1246			1246															Yes		Distant																																									
+9dabac65-20f8-40e6-ad63-d1e222a59c1c	C3L-01307-FL			31.63						181							Not Reported					162.000			Not Reported										83.00																																				
+9e811e7b-91d5-4b4d-8410-f6c97be9ef4c	C3L-00946-FL			17.64						995					CR-Complete Response		0					158.750			100										44.45																																				
+9e8a311c-5314-42ae-a6d0-81d0813c3166	C3L-00104-FL			32.54						128			101				Not Reported					188.000			Not Reported			Yes							115.00																																				
+a137ee85-dba0-4eda-bf8c-a00e757f964d	C3L-01046-FL			32.14						195			195				Not Reported					185.000			0			Yes							110.00																																				
+a16c9082-f6e9-4d97-be08-ee3e030ee491	C3L-00006-FL			38.88		Sleep apnea				737					CR-Complete Response		Not Reported					152.400			Not Reported										90.30																																				
+a29bd769-08a7-4252-92ca-900a1b98d366	C3L-01048-FL			24.45						806			216		PD-Progressive Disease		Not Reported					168.000			Not Reported			Yes							69.00																																				
+a2e6d9b1-7502-49f1-86e0-d6e0db6812fc	C3L-01283-FL			30.86						735					Unknown		Not Reported					180.000			Not Reported										100.00																																				
+a49ee4f1-fdd9-4b54-a7f5-5984fff2f4f9	C3L-00796-FL			30.81		Hypertension				333					CR-Complete Response		0					187.960			100										108.86																																				
+a62187a5-b786-4239-90fb-379ecfe8481d	C3L-00418-FL			59.88		Hypertension				1714					CR-Complete Response		Not Reported					168.000			Not Reported										169.00																																				
+a6f81bd1-7519-438e-bfa9-b25ef03a498f	C3L-01281-FL			34.76						1423			876		PD-Progressive Disease		Not Reported					167.640			Not Reported			Yes							97.70																																				
+a7908ba0-505d-49a7-ad89-fdff4dd10c44	C3L-00942-FL			31.58		Gout				1011					CR-Complete Response		0					162.560			100										83.46																																				
+abe6f8e7-aaa3-49ad-894d-8d542a162eca	C3L-00094-FL			36.10						889			638				Not Reported	55.00	48.00	81.00	85.00	188.000			Not Reported			Yes							127.60																																				
+acebaf59-b994-4c32-8139-947d59371bb6	C3L-00413-FL			42.19						1767					CR-Complete Response		Not Reported					160.000			Not Reported										108.00																																				
+ad241031-4348-4341-97d1-f123c71d84ed	AP-DM87-FL									1825			1825															Yes		Distant																																									
+ae7d86c5-2f9d-4719-9483-813dc1bf3d86	C3L-00767-FL			65.71		Hypertension				419					CR-Complete Response		0					160.020			100										168.28																																				
+aebe4b1d-5360-454f-8bb4-320000d23d3a	11LU035-FL			20.20						7					Unknown		Unknown					168.000			Unknown										57.00																																				
+af1d992a-1c5f-46bf-8f58-3881121bf549	C3L-01040-FL			24.22						608			559		Unknown		Unknown					170.000			Unknown			Yes							70.00																																				
+af9d548f-52e3-4734-a6b8-1ad1a2e20229	C3L-00139-FL			21.57						422							Not Reported					162.560			Not Reported										57.00																																				
+afecc98b-2f1a-4d61-bfd3-f187b7247279	C3L-00008-FL			39.76		Hypertension				898					CR-Complete Response		Not Reported					162.500			Not Reported										105.00																																				
+b033354b-ce78-46c4-a937-2050b3564d77	AP-DT88-FL									304			304															Yes		Distant																																									
+b08cd590-8d33-468a-98e6-9d9def7afedd	C3L-00607-FL			37.96						768			733	Insulin			Unknown					171.450			Unknown			Yes							111.58																																				
+b0aa55ff-2a4c-4851-b24b-53f395358de3	12-00211-FL									3476																																																													
+b0dc32e7-2d88-4c74-b543-783952ff7451	16-00278-FL									636																																																													
+b320f2ea-0a4e-4b36-a9a0-c58ca13d3c0c	C3L-00927-FL			26.31						1432					CR-Complete Response	71.00	Not Reported	67.00	64.00	60.00	62.00	188.000			Not Reported										93.00																																				
+b41e4c66-a3b5-45fc-81fe-6a4469db1de9	C3L-00102-FL			26.93		Hypertension				249			172		PD-Progressive Disease		Not Reported					182.800			Not Reported			Yes							90.00																																				
+b6a5118e-31e4-49b4-8f4c-44956f4a6988	C3L-00605-FL			38.54						1399					CR-Complete Response		Not Reported					157.000			Not Reported										95.00																																				
+b7c6f6c9-40f6-4ec2-b769-0820c043f5cc	C3L-00004-FL			22.80		Cataracts				384					Unknown		Not Reported					170.000			Not Reported										65.90																																				
+ba05de01-4a0e-4bed-9381-04c3ef98ff26	AP-JBET-FL									1387			1387															Yes		Distant																																									
+bb58ff84-2ad7-40ca-a944-58947c588c2a	C3L-00819-FL			29.86						601			327		PD-Progressive Disease		Not Reported					183.000			Not Reported			Yes							100.00																																				
+bba20522-60db-4936-9615-ebaf2775a463	C3L-00677-FL			19.32						155							1					164.470			70										52.27																																				
+bc1d82b7-a1bb-4717-a025-743ba76f060c	C3L-00145-FL			36.57		Hypertension				1799					CR-Complete Response		Not Reported					167.000			Not Reported										102.00																																				
+bc822a55-67ed-4045-94d9-213b3a6a1aa4	C3L-01327-FL			25.07						2							Unknown					175.260			Unknown										77.00																																				
+bdf278cf-0db3-4a83-a8df-b9d3aab518de	AP-9UHJ-FL									272			272															Yes		Distant																																									
+be6639aa-ee0e-41c1-857e-9fb9da99ae51	C3L-00973-FL			61.62		Coronary Artery Disease				1131					CR-Complete Response		1					169.000			80										176.00																																				
+c2a6d20e-d1fe-4454-a044-185d430b7691	C3L-00817-FL			33.96						966					CR-Complete Response		0					175.260			100										104.33																																				
+c4c0b2a3-1925-4105-82bc-3aa6529c9c4c	14-00127-FL									207																																																													
+c53b6a6f-f679-44f1-bcd0-8a53ecd1cfd8	14-00045-FL									582																																																													
+c64c8456-c2ae-4f6a-879c-9cbcaeab4463	C3L-00362-FL			55.86						1745					CR-Complete Response		Not Reported					178.000			Not Reported										177.00																																				
+c78053de-b530-40a6-a749-34856cca8ad3	11LU013-FL			21.37													Not Reported					156.000													52.00																																				
+c7fee11c-291d-4e1b-a7ff-557c7de8a6d1	C3L-01237-FL			17.43						20					Unknown		Unknown					176.000			Unknown										54.00																																				
+c8445e88-63fa-460e-ac6f-68563169843c	C3L-00814-FL			30.56		Hypertension				15					Unknown		Unknown					177.800			Unknown										96.62																																				
+c8984755-bb06-4972-9cfa-fadd251130d8	C3L-01256-FL			34.37						1107					CR-Complete Response		0					152.400			100										79.83																																				
+c9df83f8-3835-4bab-8396-106267584e55	C3L-01054-FL			20.76						860			457		PD-Progressive Disease		5					170.000			0			Yes							60.00																																				
+cad94e8c-f6da-437e-9227-f01a83e08999	C3L-00140-FL			20.99						1802					CR-Complete Response	54.00	Not Reported	79.00	75.00	94.00	86.00	180.000			Not Reported										68.00																																				
+cc195fc8-41c6-4074-9cd3-07d9f47e6f08	C3L-00812-FL			27.04		Hypertension				8					Unknown		Unknown					163.830			Unknown										72.57																																				
+ce1740af-f7e9-4bde-b705-5322ae0fecef	16-01225-FL									316																																																													
+d0511c90-fd50-4ffd-8586-d950a95a47c3	C3L-00640-FL			19.68						594			585		PD-Progressive Disease		Unknown					162.560			Unknown			Yes							52.00																																				
+d0590f59-69b0-4200-8759-4712a9094ae4	AP-QD4Q-FL									1022			1022															Yes		Distant																																									
+d09723a5-1a9b-43a1-b57d-1691e233bdbc	C3L-00136-FL			55.67		Anxiety				1794					CR-Complete Response		Not Reported					162.500			Not Reported										147.00																																				
+d17de126-6e6b-461b-b574-70468da0bf3d	C3L-00143-FL			34.26		Arthritis				1708					CR-Complete Response		Not Reported					170.000			Not Reported										99.00																																				
+d1e26cf8-9d85-4052-9952-d46156dbe3a1	AP-TBFQ-FL									480			480															Yes		Distant																																									
+d276aefb-43c2-495a-aa09-72ff1ab5d84a	C3L-00813-FL			19.49						5					Unknown		Unknown					175.260			Unknown										59.87																																				
+d33d2da8-52e6-4588-bd16-a7d2559e852f	AP-8PRJ-FL									601			601															Yes		Distant																																									
+d34036ca-844c-4e55-8fd5-2b7c0b608ad7	C3L-00610-FL			40.74		Hypertension				1093					CR-Complete Response		0					160.020			100										104.33																																				
+d3817d98-c744-4616-923c-2f56e3ab29c0	C3L-00097-FL			36.81						1735					CR-Complete Response		Not Reported					175.200			Not Reported										113.00																																				
+d3b5240b-ee58-47ac-9ece-1efb3250fcae	17-00676-FL									1																																																													
+d6696733-edbd-4e27-a834-2cc126a1bd3b	13-00034-FL									16																																																													
+d734bd23-478b-4e99-8cf9-ce89b8c05b32	C3L-00921-FL			32.32						1419					CR-Complete Response		Not Reported					165.000			Not Reported										88.00																																				
+d7826c48-2add-457f-987f-9c4a11103463	C3L-00586-FL			21.45		Anxiety				1417					CR-Complete Response		Not Reported					170.000			Not Reported										62.00																																				
+d7d0d87b-c006-43c6-afb0-265858de0635	C3L-00017-FL			28.36		Hyperlipidemia				426					Unknown		Unknown					172.200			Unknown										84.09																																				
+d85ef33b-e0d2-4c4a-993b-891a1e0962b1	AP-XVLY-FL									188			188															Yes		Distant																																									
+d87281ac-4601-4d87-a71f-78406647881d	AP-KX5B-FL									521			521															Yes		Distant																																									
+d88c5142-88f0-43df-b14b-979a2daedfe5	C3L-00011-FL			27.47						229							Not Reported					180.000			Not Reported										89.00																																				
+d9558494-5809-4788-b1c3-118ef95c8ca6	C3L-00356-FL			25.37		Hyperlipidemia				1351			934				Not Reported					162.500			Not Reported			Yes							67.00																																				
+d9a9ae59-3c9a-4122-8650-c849b226ad22	C3L-00369-FL			27.35						91							Not Reported					175.260			Not Reported										84.00																																				
+da91ea2e-c0e2-4b96-b50a-163e2084d9b5	C3L-01304-FL			41.44						1531					CR-Complete Response		Not Reported					149.000			Not Reported										92.00																																				
+daf43b53-8f53-449e-8f43-6a244415faff	C3L-01557-FL			48.46						329					CR-Complete Response		0					157.480			100										120.20																																				
+db0bfa9e-5588-4279-b970-867ed16dca61	C3L-00781-FL			32.59		Anemia				1519					CR-Complete Response		Not Reported					160.020			Not Reported										83.46																																				
+dbd3b397-84e4-4860-b734-416da9efb4ec	C3L-01560-FL			38.08						250					CR-Complete Response		0					160.020			100										97.52																																				
+dda40bb1-3d9b-4751-9fba-6c7f9edcf257	C3L-01045-FL			22.04						0							Not Reported					165.000			0										60.00																																				
+dde6cb3f-879d-4cc8-8993-0b2d3969b5cf	14-00359-FL									1250																																																													
+de47f40b-99cc-417b-ae2b-e8efa93da404	C3L-00422-FL			39.05		Hypercholesterolemia				1426					Unknown		Not Reported					160.020			Not Reported										100.00																																				
+de4ce7fc-75b7-424a-abf0-35648e535145	C3L-01061-FL			25.69						840			343		PD-Progressive Disease		Not Reported					172.000			Not Reported			Yes							76.00																																				
+deca0a5c-5f83-473f-98a0-533b5d2b403d	C3L-00908-FL			27.85						1419					CR-Complete Response		Not Reported					163.000			Not Reported										74.00																																				
+df135c69-a3eb-433c-af7f-a59dee0235ae	AP-5JDU-FL									913			913															Yes		Distant																																									
+df4443b9-9c77-4da3-834e-34cdea39c634	C3L-01598-FL			37.79						913			288		PD-Progressive Disease		Not Reported					165.100			Not Reported			Yes							103.00																																				
+dfcc4ee1-d409-4711-a85e-90e5409ef4be	Universal Ref-FL																																																																						
+e053a90d-196d-4b80-8cb5-c644f533bc31	15-00464-FL									288																																																													
+e0aae7e1-66f6-433c-89db-b7469a1d87d1	C3L-00358-FL			26.22		Hypertension				164					PD-Progressive Disease		Not Reported					168.000			Not Reported										74.00																																				
+e13c46b7-69c6-405f-aadb-420e37a69fe1	C3L-01606-FL			31.35						1429					CR-Complete Response	74.00	Not Reported	79.00	77.00	63.00	64.00	175.000			Not Reported										96.00																																				
+e22f0de5-d47a-4ad2-9595-480764d2d015	C3L-00510-FL			31.35		Osteoarthritis				38					Unknown		Unknown					165.100			Unknown										85.46																																				
+e2d6a341-fd42-4915-ae25-ef96791d0b06	C3L-01157-FL			28.58						984							5					162.000			0										75.00																																				
+e321b119-40e8-4479-93ef-87cea730a404	C3L-00277-FL			24.00						730					Unknown		Unknown					182.880			Unknown										80.29																																				
+e4653dd8-3514-4849-a644-200f4152813c	17-00093-FL									35																																																													
+e52b52bd-26ad-496c-b141-283285355f26	C3L-01037-FL			26.51						300					PD-Progressive Disease		4					178.000			0										84.00																																				
+e6f5d875-b803-41d2-bebe-33c56f88abfd	C3L-00949-FL			37.69		Hypertension				1001					CR-Complete Response		0					152.400			100										87.54																																				
+e72ddf59-5ca2-4374-827f-baca8ce7827e	C3L-00604-FL			21.75		Hypothyroidism				1374			332		PD-Progressive Disease		Not Reported					170.180			Not Reported			Yes							63.00																																				
+e9290c64-2468-45fa-91ab-e97b02fd5ed4	C3L-00080-FL			30.62						1805			1000		PD-Progressive Disease	45.00	Not Reported	77.00	73.00	79.00	76.00	170.000			Not Reported			Yes							88.50																																				
+eb15a2c5-a33f-46fc-9c2d-a9c0500b8199	AP-HMFR-FL									1219			1219															Yes		Distant																																									
+eba606bf-bea4-40e4-98ac-02c6daedff79	C3L-00279-FL			27.45		Arthritis				606					Unknown		Unknown					165.100			Unknown										74.84																																				
+ed050783-ee70-40e1-8a9c-d954e7c011c2	AP-DMUM-FL									676			676															Yes		Distant																																									
+ee5a5ce2-130b-4f8d-8778-d9a2dc1463a5	C3L-00360-FL			38.94						1780					CR-Complete Response		Not Reported					177.000			Not Reported										122.00																																				
+f0db68a4-36a7-4cfd-aece-1553ef83b08e	C3L-00765-FL			21.96						1098					CR-Complete Response		0					160.020			100										56.25																																				
+f2d7321e-8cc0-425f-aeda-0161701510d2	15-00276-FL									870																																																													
+f3acfedf-c1e7-4128-a0f1-2d568f10b3fe	C3L-00583-FL			37.72		Asthma				301					CR-Complete Response		Not Reported					162.000			Not Reported										99.00																																				
+f6ddc2e6-4104-4633-9327-3208c5d6756d	16-01259-FL									316																																																													
+f7a69177-f98f-4e15-bc05-fd34fb9a36a0	C3L-01603-FL			42.77						1354					CR-Complete Response		Not Reported					173.000			Not Reported										128.00																																				
+f7b79983-67fa-47f1-9aea-934b9ee02c42	15-00701-FL									302																																																													
+f9402484-8ce9-4d0a-a594-faf184bb619a	C3L-00792-FL			29.60		Congestive Heart Failure (CHF)				1094				Insulin	CR-Complete Response		0					170.180			100										85.73																																				
+f9fd7b18-6a3a-4a94-88c5-f1b9e10e704d	C3L-00770-FL			45.83		Hypertension				1547					CR-Complete Response		0					162.560			100										121.11																																				
+fad86714-2493-4272-9541-9d5258c1d068	16-01102-FL									373																																																													
+fcb46b5f-70b4-4966-8773-a48c3f2d55d5	13-00166-FL									1020																																																													
+fd7f1f2c-da98-4365-8557-0a75af436860	15-00756-FL									552																																																													
+fe188b9e-e870-499f-a1e7-7b3650df9824	11LU016-FL			18.73						445							Unknown					165.000			Unknown										51.00																																				

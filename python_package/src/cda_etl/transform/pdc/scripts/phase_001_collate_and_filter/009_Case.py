@@ -99,7 +99,7 @@ case_id_to_sample_id_input_tsv = path.join( input_dir, 'Case.samples.tsv' )
 
 biospecimen_input_tsv = path.join( input_root, 'Biospecimen', 'Biospecimen.tsv' )
 
-clinical_study_input_tsv = path.join( input_root, 'Clinical', 'Clinical.Study.tsv' )
+biospecimen_study_input_tsv = path.join( input_root, 'Biospecimen', 'Biospecimen.Study.tsv' )
 
 project_input_tsv = path.join( input_root, 'Project', 'Project.tsv' )
 
@@ -175,7 +175,25 @@ pdc_study_id_to_study_id = map_columns_one_to_one( study_input_tsv, 'pdc_study_i
 
 # Load the map from case_id to pdc_study_id.
 
-case_id_to_pdc_study_id = map_columns_one_to_many( clinical_study_input_tsv, 'case_id', 'pdc_study_id' )
+case_id_to_aliquot_id = map_columns_one_to_many( biospecimen_input_tsv, 'case_id', 'aliquot_id' )
+
+aliquot_id_to_pdc_study_id = map_columns_one_to_many( biospecimen_study_input_tsv, 'aliquot_id', 'pdc_study_id' )
+
+case_id_to_pdc_study_id = dict()
+
+for case_id in case_id_to_aliquot_id:
+    
+    for aliquot_id in case_id_to_aliquot_id[case_id]:
+        
+        # We want this to break with a KeyError if something goes wrong with the referential integrity of the source data.
+
+        for pdc_study_id in aliquot_id_to_pdc_study_id[aliquot_id]:
+            
+            if case_id not in case_id_to_pdc_study_id:
+                
+                case_id_to_pdc_study_id[case_id] = set()
+
+            case_id_to_pdc_study_id[case_id].add( pdc_study_id )
 
 # Load the map from project_submitter_id to project_id.
 

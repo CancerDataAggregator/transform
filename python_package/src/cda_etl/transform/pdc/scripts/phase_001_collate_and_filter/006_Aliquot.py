@@ -48,10 +48,6 @@ aliquot_id_to_case_id_output_tsv = path.join( output_dir, 'Aliquot.case_id.tsv' 
 
 aliquot_id_to_project_id_output_tsv = path.join( output_dir, 'Aliquot.project_id.tsv' )
 
-log_dir = path.join( output_root, '__filtration_logs' )
-
-sample_overlap_filtration_log = path.join( log_dir, 'Aliquot.same_study_sample_submitter_ID_duplicates.removed_ids.txt' )
-
 input_files_to_scan = {
     'CasesSamplesAliquots_Aliquot': aliquot_input_tsv,
     'Biospecimen': biospecimen_input_tsv
@@ -92,7 +88,7 @@ processing_order = [
 
 # EXECUTION
 
-for target_dir in [ output_dir, log_dir ]:
+for target_dir in [ output_dir ]:
     
     if not path.exists( target_dir ):
         
@@ -232,9 +228,7 @@ for sample_id in sample_id_to_submitter_id:
 
     sample_submitter_id_to_study_id[sample_submitter_id].add(study_id)
 
-# Write the main Aliquot table. Keep track of removed records by ID.
-
-removed_overlaps = set()
+# Write the main Aliquot table.
 
 with open( aliquot_output_tsv, 'w' ) as OUT, open( aliquot_id_to_aliquot_run_metadata_id_tsv, 'w' ) as ARM:
     
@@ -249,79 +243,15 @@ with open( aliquot_output_tsv, 'w' ) as OUT, open( aliquot_id_to_aliquot_run_met
         
         aliquot_submitter_id = aliquots[current_id]['aliquot_submitter_id']
 
-        conflict_clear = True
+        output_row = [ current_id ] + [ aliquots[current_id][field_name] for field_name in aliquot_fields[1:] ]
 
-        # We want this to break with a KeyError if the target doesn't exist, because it should exist.
+        print( *output_row, sep='\t', end='\n', file=OUT )
 
-        for pdc_study_id in aliquot_id_to_pdc_study_id[current_id]:
+        if current_id in aliquot_id_to_aliquot_run_metadata_id:
             
-            aliquot_study_id = pdc_study_id_to_study_id[pdc_study_id]
-
-            # Filter duplicate study_id+submitter_id pairs.
-
-            if aliquot_submitter_id in sample_submitter_id_to_study_id and aliquot_study_id in sample_submitter_id_to_study_id[aliquot_submitter_id]:
+            for arm_id in sorted( aliquot_id_to_aliquot_run_metadata_id[current_id] ):
                 
-                conflict_clear = False
-
-        if conflict_clear:
-            
-            output_row = [ current_id ] + [ aliquots[current_id][field_name] for field_name in aliquot_fields[1:] ]
-
-            print( *output_row, sep='\t', end='\n', file=OUT )
-
-            if current_id in aliquot_id_to_aliquot_run_metadata_id:
-                
-                for arm_id in sorted( aliquot_id_to_aliquot_run_metadata_id[current_id] ):
-                    
-                    print( *[ current_id, arm_id ], sep='\t', end='\n', file=ARM )
-
-        else:
-            
-            removed_overlaps.add( current_id )
-
-# Log the removed Aliquot records by aliquot_id.
-
-with open( sample_overlap_filtration_log, 'w' ) as OUT:
-    
-    for aliquot_id in sorted( removed_overlaps ):
-        
-        print( aliquot_id, file=OUT )
-
-# Filter the File->aliquot_id map to remove banned IDs.
-
-with open( file_aliquot_output_tsv ) as IN, open( path.join( output_root, 'temp' ), 'w' ) as OUT:
-    
-    header = next(IN).rstrip('\n')
-
-    print( header, end='\n', file=OUT )
-
-    for line in [ next_line.rstrip('\n') for next_line in IN ]:
-        
-        [ file_id, aliquot_id ] = line.split('\t')
-
-        if aliquot_id not in removed_overlaps:
-            
-            print( *[ file_id, aliquot_id ], sep='\t', end='\n', file=OUT )
-
-rename( path.join( output_root, 'temp' ), file_aliquot_output_tsv )
-
-# Filter the Sample->aliquot_id map to remove banned IDs.
-
-with open( sample_aliquot_output_tsv ) as IN, open( path.join( output_root, 'temp' ), 'w' ) as OUT:
-    
-    header = next(IN).rstrip('\n')
-
-    print( header, end='\n', file=OUT )
-
-    for line in [ next_line.rstrip('\n') for next_line in IN ]:
-        
-        [ sample_id, aliquot_id ] = line.split('\t')
-
-        if aliquot_id not in removed_overlaps:
-            
-            print( *[ sample_id, aliquot_id ], sep='\t', end='\n', file=OUT )
-
-rename( path.join( output_root, 'temp' ), sample_aliquot_output_tsv )
+                print( *[ current_id, arm_id ], sep='\t', end='\n', file=ARM )
 
 # Write the map between aliquot_id and study_id and the map between aliquot_id and project_id.
 
@@ -338,23 +268,21 @@ with open( aliquot_id_to_study_id_output_tsv, 'w' ) as ALIQUOT_STUDY, open( aliq
 
     for aliquot_id in sorted( aliquot_id_to_pdc_study_id ):
         
-        if aliquot_id not in removed_overlaps:
+        for pdc_study_id in sorted( aliquot_id_to_pdc_study_id[aliquot_id] ):
             
-            for pdc_study_id in sorted( aliquot_id_to_pdc_study_id[aliquot_id] ):
+            # We want this to break with a KeyError if the target doesn't exist, because it should exist.
+
+            study_id = pdc_study_id_to_study_id[pdc_study_id]
+
+            print( *[ aliquot_id, study_id ], sep='\t', end='\n', file=ALIQUOT_STUDY )
+
+            project_id = study_id_to_project_id[study_id]
+
+            if aliquot_id not in printed_aliquot_project:
                 
-                # We want this to break with a KeyError if the target doesn't exist, because it should exist.
+                printed_aliquot_project[aliquot_id] = project_id
 
-                study_id = pdc_study_id_to_study_id[pdc_study_id]
-
-                print( *[ aliquot_id, study_id ], sep='\t', end='\n', file=ALIQUOT_STUDY )
-
-                project_id = study_id_to_project_id[study_id]
-
-                if aliquot_id not in printed_aliquot_project:
-                    
-                    printed_aliquot_project[aliquot_id] = project_id
-
-                    print( *[ aliquot_id, project_id ], sep='\t', end='\n', file=ALIQUOT_PROJECT )
+                print( *[ aliquot_id, project_id ], sep='\t', end='\n', file=ALIQUOT_PROJECT )
 
 # Write the map between aliquot_id and case_id.
 
@@ -368,7 +296,7 @@ with open( aliquot_id_to_case_id_output_tsv, 'w' ) as OUT:
 
     for aliquot_id in sorted( aliquot_id_to_case_id ):
         
-        if aliquot_id in aliquots and aliquot_id not in removed_overlaps:
+        if aliquot_id in aliquots:
             
             print( *[ aliquot_id, aliquot_id_to_case_id[aliquot_id] ], sep='\t', end='\n', file=OUT )
 
