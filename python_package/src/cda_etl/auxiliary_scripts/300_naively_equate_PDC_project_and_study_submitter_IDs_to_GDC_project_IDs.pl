@@ -108,6 +108,4 @@ foreach my $gdcProject ( sort { $a cmp $b } keys %$gdcProjectToPdcStudy ) {
 
 close OUT;
 
-print STDERR "\nDon't forget to hand-edit the project map before proceeding!\n\n";
-
 

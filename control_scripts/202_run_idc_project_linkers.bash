@@ -20,4 +20,6 @@ output_file=./auxiliary_metadata/__project_crossrefs/naive_GDC-IDC_project_id_ma
 
 $worker_script $idc_file $gdc_file $output_file
 
+>&2 echo "\nDon't forget to hand-edit the project map before proceeding!\n\n";
+
 
