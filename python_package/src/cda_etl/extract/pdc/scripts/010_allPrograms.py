@@ -1,5 +1,6 @@
 #!/usr/bin/env python -u
 
+import re
 import requests
 import json
 import sys
@@ -65,6 +66,8 @@ study_study_run_metadata_tsv = f"{study_out_dir}/Study.study_run_metadata.tsv"
 contact_tsv = f"{study_out_dir}/Contact.tsv"
 
 allPrograms_json_output_file = f"{json_out_dir}/allPrograms.json"
+
+study_names_json_output_file = f"{json_out_dir}/study.study_name.json"
 
 scalar_program_fields = (
     'program_id',
@@ -176,6 +179,12 @@ api_query_json = {
     }'''
 }
 
+study_name_query_json_template = '''    {
+        study( study_id: "__STUDY_ID__" ) {
+            study_name
+        }
+    }'''
+
 # EXECUTION
 
 for output_dir in ( json_out_dir, program_out_dir, project_out_dir, study_out_dir ):
@@ -240,7 +249,8 @@ output_tsv_keywords = (
     'STUDY_PROJECT',
     'STUDY_STUDY_RUN_METADATA',
     'STUDY_DISEASE_TYPES',
-    'STUDY_PRIMARY_SITES'
+    'STUDY_PRIMARY_SITES',
+    'STUDY_NAMES_JSON'
 )
 
 output_tsv_filenames = (
@@ -260,7 +270,8 @@ output_tsv_filenames = (
     study_project_tsv,
     study_study_run_metadata_tsv,
     study_disease_types_tsv,
-    study_primary_sites_tsv
+    study_primary_sites_tsv,
+    study_names_json_output_file
 )
 
 output_tsvs = dict( zip( output_tsv_keywords, [ open(file_name, 'w') for file_name in output_tsv_filenames ] ) )
@@ -348,13 +359,46 @@ for program in result['data']['allPrograms']:
 
                     for field_name in scalar_study_fields:
                         
-                        if study[field_name] is not None:
+                        # At time of writing, allPrograms() reports incorrect study_name values and must be corrected by a separate call to study().
+
+                        if field_name != 'study_name' and study[field_name] is not None:
                             
                             study_row.append(study[field_name])
 
+                        elif field_name == 'study_name':
+                            
+                            study_subquery = re.sub( r'__STUDY_ID__', study['study_id'], study_name_query_json_template )
+
+                            subquery_json = {
+                                
+                                'query': study_subquery
+                            }
+
+                            subquery_response = requests.post( api_url, json=subquery_json )
+
+                            if not subquery_response.ok:
+                                
+                                print( subquery_json['query'], file=sys.stderr )
+
+                                subquery_response.raise_for_status()
+
+                            subquery_result = json.loads( subquery_response.content )
+
+                            print( json.dumps( subquery_result, indent=4, sort_keys=False ), file=output_tsvs['STUDY_NAMES_JSON'] )
+
+                            study_name = ''
+
+                            for subquery_study in subquery_result['data']['study']:
+                                
+                                if subquery_study['study_name'] is not None and subquery_study['study_name'] != '':
+                                    
+                                    study_name = subquery_study['study_name']
+
+                            study_row.append( study_name )
+
                         else:
                             
-                            study_row.append('')
+                            study_row.append( '' )
 
                     print( *study_row, sep='\t', end='\n', file=output_tsvs['STUDY'] )
 
