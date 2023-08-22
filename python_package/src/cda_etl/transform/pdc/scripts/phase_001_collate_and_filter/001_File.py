@@ -20,9 +20,7 @@ association_fields = {
         'study_id'
     },
     'FileMetadata': {
-        'instrument',
-        'study_run_metadata_id',
-        'study_run_metadata_submitter_id'
+        'instrument'
     }
 }
 
@@ -33,6 +31,8 @@ fields_to_ignore = {
         'study_submitter_id'
     },
     'FileMetadata' : {
+        'study_run_metadata_id',
+        'study_run_metadata_submitter_id'
     }
 }
 
@@ -52,6 +52,8 @@ file_output_dir = f"{output_root}/File"
 file_output_tsv = f"{file_output_dir}/File.tsv"
 
 file_id_to_aliquot_id_tsv = f"{file_output_dir}/File.aliquot_id.tsv"
+
+file_id_to_study_run_metadata_ids_tsv = f"{file_output_dir}/File.study_run_metadata_ids.tsv"
 
 file_metadata_aliquot_tsv = f"{input_root}/FileMetadata/Aliquot.tsv"
 
@@ -90,6 +92,11 @@ file_associations = dict()
 # document. note further: this is the only way to recover this relationship).
 
 file_associations['case_id'] = dict()
+
+# Maintain (file_id, study_run_metadata_id, study_run_metadata_submitter_id) association triples
+# instead of pairwise maps, because the SRM IDs can't be recoupled if disconnected from one another.
+
+file_id_to_srm_ids = dict()
 
 # We'll load this automatically from the first column in each input file.
 
@@ -130,6 +137,28 @@ for input_file_label in processing_order:
 
             if current_id in files:
                 
+                if input_file_label == 'FileMetadata':
+                    
+                    # Save File<->StudyRunMetadata ID associations as clusters, not pairwise. Unavailability of StudyRunMetadata records anywhere else makes recoupling impossible once separated.
+
+                    srm_uuid_field_index = column_names.index( 'study_run_metadata_id' )
+                    srm_submitter_id_field_index = column_names.index( 'study_run_metadata_submitter_id' )
+
+                    srm_uuid = values[srm_uuid_field_index]
+                    srm_submitter_id = values[srm_submitter_id_field_index]
+
+                    if srm_uuid is not None and srm_uuid != '' and srm_uuid != 'N/A' and srm_submitter_id is not None and srm_submitter_id != '' and srm_submitter_id != 'N/A':
+                        
+                        if current_id not in file_id_to_srm_ids:
+                            
+                            file_id_to_srm_ids[current_id] = dict()
+
+                        if srm_uuid not in file_id_to_srm_ids[current_id]:
+                            
+                            file_id_to_srm_ids[current_id][srm_uuid] = set()
+
+                        file_id_to_srm_ids[current_id][srm_uuid].add( srm_submitter_id )
+
                 # Link file_id to case_id from pre-loaded maps (via aliquot_id).
 
                 if current_id in file_id_to_aliquot_id:
@@ -265,6 +294,20 @@ with open( file_id_to_aliquot_id_tsv, 'w' ) as OUT:
             for aliquot_id in sorted( file_id_to_aliquot_id[file_id] ):
                 
                 print( *[ file_id, aliquot_id ], sep='\t', end='\n', file=OUT )
+
+# Write the map between file IDs and StudyRunMetadata IDs.
+
+with open( file_id_to_study_run_metadata_ids_tsv, 'w' ) as OUT:
+    
+    print( *[ 'file_id', 'study_run_metadata_id', 'study_run_metadata_submitter_id' ], sep='\t', file=OUT )
+
+    for file_id in sorted( file_id_to_srm_ids ):
+        
+        for study_run_metadata_id in sorted( file_id_to_srm_ids[file_id] ):
+            
+            for study_run_metadata_submitter_id in sorted( file_id_to_srm_ids[file_id][study_run_metadata_id] ):
+                
+                print( *[ file_id, study_run_metadata_id, study_run_metadata_submitter_id ], sep='\t', file=OUT )
 
 # Write the other association tables.
 
