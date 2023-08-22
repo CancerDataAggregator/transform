@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ln -sf venv/lib/python*/site-packages/cda_etl package_root
 

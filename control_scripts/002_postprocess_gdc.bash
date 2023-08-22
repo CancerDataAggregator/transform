@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 chmod 755 ./package_root/auxiliary_scripts/*py
 

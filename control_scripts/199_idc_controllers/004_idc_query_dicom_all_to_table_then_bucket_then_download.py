@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3 -u
 
 from cda_etl.extract.idc.idc_extractor import IDC_extractor
 

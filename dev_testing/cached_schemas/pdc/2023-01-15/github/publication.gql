@@ -1,0 +1,19 @@
+type Publication {
+	publication_id: String
+	program_name: String
+	pubmed_id: String
+	group_name: String
+	doi: String
+	author: String
+	title_legacy: String
+	title: String
+	journal: String
+	journal_url: String
+	year: String
+	abstract: String
+	citation: String
+	studies: [Study]
+	disease_types: [String]
+	supplementary_data: [String]
+}
+

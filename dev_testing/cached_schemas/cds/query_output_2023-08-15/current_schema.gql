@@ -1,0 +1,1080 @@
+scalar DynamicProperties
+
+type FileInfo {
+  subject_id: String
+  file_name: String
+  file_type: String
+  association: String
+  file_description: String
+  file_size: Float
+  file_id: String
+  md5sum: String
+}
+
+type FileOverview {
+  study_acronym: String
+  accesses: String
+  phs_accession: String
+  subject_id: String
+  sample_id: String
+  experimental_strategy: String
+  gender: String
+  analyte_type: String
+  is_tumor: String
+  file_name: String
+  file_type: String
+  file_size: Float
+  file_id: String
+  md5sum: String
+}
+
+type GS_About {
+  page: String
+  title: String
+  type: String
+  text: String
+}
+
+type GS_File {
+  type: String
+  subject_id: String
+  sample_id: String
+  file_id: String
+  file_name: String
+  file_type: String
+  accesses: String
+  acl: String
+  experimental_strategies: [String]
+  instrument_models: [String]
+  library_layouts: [String]
+  library_selections: [String]
+  library_sources: [String]
+  library_strategies: [String]
+  platforms: [String]
+  reference_genome_assemblies: [String]
+  sites: [String]
+}
+
+type GS_Model {
+  type: String
+  node_name: String
+  property_name: String
+  property_description: String
+  property_required: String
+  property_type: String
+  value: String
+  highlight: String
+}
+
+type GS_Program {
+  program_name: String
+  program_short_description: String
+  program_full_description: String
+  program_external_url: String
+  program_sort_order: String
+  type: String
+}
+
+type GS_Sample {
+  type: String
+  sample_id: String
+  is_tumor: String
+  analyte_type: String
+}
+
+type GS_Study {
+  type: String
+  phs_accession: String
+  study_data_types: String
+  study_name: String
+  study_code: String
+}
+
+type GS_Subject {
+  type: String
+  study: String
+  subject_id: String
+  site: String
+  gender: String
+}
+
+type GlobalSearchResult {
+  study_count: Int
+  studies: [GS_Study]
+  subject_count: Int
+  subjects: [GS_Subject]
+  sample_count: Int
+  samples: [GS_Sample]
+  file_count: Int
+  files: [GS_File]
+  program_count: Int
+  programs: [GS_Program]
+  about_count: Int
+  about_page: [GS_About]
+  model_count: Int
+  model: [GS_Model]
+}
+
+type GroupCount {
+  group: String
+  subjects: Int
+}
+
+type GroupCountNeo4j {
+  group: String
+  subjects: Int
+}
+
+type IdsLists {
+  subjectIds: [String]
+}
+
+type Mutation {
+  createFileInfo(subject_id: String, file_name: String, file_type: String, association: String, file_description: String, file_size: Float, file_id: String, md5sum: String): FileInfo!
+  createGroupCountNeo4j(group: String, subjects: Int): GroupCountNeo4j!
+  createIdsLists(subjectIds: [String]): IdsLists!
+  createProgramDetail(program: String, program_name: String, program_url: String, program_short_description: String, num_studies: Int, num_participants: Int, num_files: Int, num_samples: Int, num_disease_sites: Int): ProgramDetail!
+  createProgramDetailStudy(accession: String, study_access: String, study_name: String, study_description: String, short_description: String, num_participants: Int, num_samples: Int): ProgramDetailStudy!
+  createProgramListEntry(acronym: String, name: String, website: String, num_studies: Int): ProgramListEntry!
+  createStudyDetail(study_name: String, phs_accession: String, study_acronym: String, study_description: String, data_types: String, study_external_url: String, numberOfSubjects: Int, numberOfSamples: Int, numberOfDiseaseSites: Int, numberOfFiles: Int): StudyDetail!
+  createStudyInfo(study_name: String, phs_accession: String, data_type: String, numberOfSubjects: Int, numberOfFiles: Int, study_access: String): StudyInfo!
+  createSubjectDetail(subject_id: String, study_acronym: String, study_name: String, gender: String, site: [String], numberOfSamples: Int, numberOfDiseaseSites: Int, numberOfFiles: Int): SubjectDetail!
+  creatediagnosis(diagnosis_id: String, disease_type: String, vital_status: String, primary_diagnosis: String, primary_site: String, age_at_diagnosis: Int, tumor_grade: String, tumor_stage_clinical_m: String, tumor_stage_clinical_n: String, tumor_stage_clinical_t: String, morphology: String, incidence_type: String, progression_or_recurrence: String, days_to_recurrence: Int, days_to_last_followup: Int, last_known_disease_status: String, days_to_last_known_status: Int): diagnosis!
+  createfile(file_id: String, file_name: String, file_type: String, file_description: String, file_size: Float, md5sum: String, file_url_in_cds: String, experimental_strategy_and_data_subtypes: String): file!
+  creategenomic_info(library_id: String, bases: Int, number_of_reads: Int, avg_read_length: Float, coverage: Float, reference_genome_assembly: String, custom_assembly_fasta_file_for_alignment: String, design_description: String, library_strategy: String, library_layout: String, library_source: String, library_selection: String, platform: String, instrument_model: String, sequence_alignment_software: String): genomic_info!
+  createparticipant(participant_id: String, race: String, gender: String, ethnicity: String, dbGaP_subject_id: String): participant!
+  createprogram(program_name: String, program_acronym: String, program_short_description: String, program_full_description: String, program_external_url: String, program_sort_order: Int): program!
+  createsample(sample_id: String, sample_type: String, sample_tumor_status: String, sample_anatomic_site: String, sample_age_at_collection: Int, derived_from_specimen: String, biosample_accession: String): sample!
+  createspecimen(specimen_id: String): specimen!
+  createstudy(study_name: String, study_acronym: String, study_description: String, short_description: String, study_external_url: String, primary_investigator_name: String, primary_investigator_email: String, co_investigator_name: String, co_investigator_email: String, phs_accession: String, bioproject_accession: String, index_date: String, cds_requestor: String, funding_agency: String, funding_source_program_name: String, grant_id: String, clinical_trial_system: String, clinical_trial_identifier: String, clinical_trial_arm: String, organism_species: String, adult_or_childhood_study: String, data_types: String, file_types: String, data_access_level: String, cds_primary_bucket: String, cds_secondary_bucket: String, cds_tertiary_bucket: String, number_of_participants: Float, number_of_samples: Float, study_data_types: String, file_types_and_format: String, size_of_data_being_uploaded: Float, size_of_data_being_uploaded_unit: String, size_of_data_being_uploaded_original: Float, size_of_data_being_uploaded_original_unit: String, acl: String, study_access: String): study!
+  createtreatment(treatment_id: String, treatment_type: String, treatment_outcome: String, days_to_treatment: Int, therapeutic_agents: String): treatment!
+}
+
+type ProgramDetail {
+  program: String
+  program_name: String
+  program_url: String
+  program_short_description: String
+  num_studies: Int
+  num_participants: Int
+  num_files: Int
+  num_samples: Int
+  num_disease_sites: Int
+  study_participants(first: Int, offset: Int, orderBy: [_GroupCountNeo4jOrdering!], filter: _GroupCountNeo4jFilter): [GroupCountNeo4j]
+  studies(first: Int, offset: Int, orderBy: [_ProgramDetailStudyOrdering!], filter: _ProgramDetailStudyFilter): [ProgramDetailStudy]
+}
+
+type ProgramDetailStudy {
+  accession: String
+  study_access: String
+  study_name: String
+  study_description: String
+  short_description: String
+  num_participants: Int
+  num_samples: Int
+}
+
+type ProgramListEntry {
+  acronym: String
+  name: String
+  website: String
+  num_studies: Int
+}
+
+type QueryType {
+  schemaVersion: String
+  numberOfStudies: Int
+  numberOfSubjects: Int
+  numberOfSamples: Int
+  numberOfFiles: Int
+  numberOfDiseaseSites: Int
+  """Get lists of all subject ids, used by Local Find"""
+  idsLists: IdsLists
+  """ Study Detail Page"""
+  studyDetail(phs_accession: String): StudyDetail
+  """ Subject Detail Page"""
+  subjectDetail(subject_id: String): SubjectDetail
+  samplesForSubjectId(subject_id: String!, first: Int, offset: Int, orderBy: [_sampleOrdering!], filter: _sampleFilter): [sample]
+  studyList(first: Int, offset: Int, orderBy: [_StudyInfoOrdering!], filter: _StudyInfoFilter): [StudyInfo]
+  programDetail(program_name: String!): ProgramDetail
+  programList(first: Int, offset: Int, orderBy: [_ProgramListEntryOrdering!], filter: _ProgramListEntryFilter): [ProgramListEntry]
+  fileInfo(subject_id: String, file_name: String, file_type: String, association: String, file_description: String, file_size: Float, file_id: String, md5sum: String, filter: _FileInfoFilter, first: Int, offset: Int, orderBy: [_FileInfoOrdering!]): [FileInfo!]!
+  groupCountNeo4j(group: String, subjects: Int, filter: _GroupCountNeo4jFilter, first: Int, offset: Int, orderBy: [_GroupCountNeo4jOrdering!]): [GroupCountNeo4j!]!
+  programDetailStudy(accession: String, study_access: String, study_name: String, study_description: String, short_description: String, num_participants: Int, num_samples: Int, filter: _ProgramDetailStudyFilter, first: Int, offset: Int, orderBy: [_ProgramDetailStudyOrdering!]): [ProgramDetailStudy!]!
+  programListEntry(acronym: String, name: String, website: String, num_studies: Int, filter: _ProgramListEntryFilter, first: Int, offset: Int, orderBy: [_ProgramListEntryOrdering!]): [ProgramListEntry!]!
+  studyInfo(study_name: String, phs_accession: String, data_type: String, numberOfSubjects: Int, numberOfFiles: Int, study_access: String, filter: _StudyInfoFilter, first: Int, offset: Int, orderBy: [_StudyInfoOrdering!]): [StudyInfo!]!
+  diagnosis(diagnosis_id: String, disease_type: String, vital_status: String, primary_diagnosis: String, primary_site: String, age_at_diagnosis: Int, tumor_grade: String, tumor_stage_clinical_m: String, tumor_stage_clinical_n: String, tumor_stage_clinical_t: String, morphology: String, incidence_type: String, progression_or_recurrence: String, days_to_recurrence: Int, days_to_last_followup: Int, last_known_disease_status: String, days_to_last_known_status: Int, filter: _diagnosisFilter, first: Int, offset: Int, orderBy: [_diagnosisOrdering!]): [diagnosis!]!
+  file(file_id: String, file_name: String, file_type: String, file_description: String, file_size: Float, md5sum: String, file_url_in_cds: String, experimental_strategy_and_data_subtypes: String, filter: _fileFilter, first: Int, offset: Int, orderBy: [_fileOrdering!]): [file!]!
+  genomic_info(library_id: String, bases: Int, number_of_reads: Int, avg_read_length: Float, coverage: Float, reference_genome_assembly: String, custom_assembly_fasta_file_for_alignment: String, design_description: String, library_strategy: String, library_layout: String, library_source: String, library_selection: String, platform: String, instrument_model: String, sequence_alignment_software: String, filter: _genomic_infoFilter, first: Int, offset: Int, orderBy: [_genomic_infoOrdering!]): [genomic_info!]!
+  participant(participant_id: String, race: String, gender: String, ethnicity: String, dbGaP_subject_id: String, filter: _participantFilter, first: Int, offset: Int, orderBy: [_participantOrdering!]): [participant!]!
+  program(program_name: String, program_acronym: String, program_short_description: String, program_full_description: String, program_external_url: String, program_sort_order: Int, filter: _programFilter, first: Int, offset: Int, orderBy: [_programOrdering!]): [program!]!
+  sample(sample_id: String, sample_type: String, sample_tumor_status: String, sample_anatomic_site: String, sample_age_at_collection: Int, derived_from_specimen: String, biosample_accession: String, filter: _sampleFilter, first: Int, offset: Int, orderBy: [_sampleOrdering!]): [sample!]!
+  specimen(specimen_id: String, filter: _specimenFilter, first: Int, offset: Int, orderBy: [_specimenOrdering!]): [specimen!]!
+  study(study_name: String, study_acronym: String, study_description: String, short_description: String, study_external_url: String, primary_investigator_name: String, primary_investigator_email: String, co_investigator_name: String, co_investigator_email: String, phs_accession: String, bioproject_accession: String, index_date: String, cds_requestor: String, funding_agency: String, funding_source_program_name: String, grant_id: String, clinical_trial_system: String, clinical_trial_identifier: String, clinical_trial_arm: String, organism_species: String, adult_or_childhood_study: String, data_types: String, file_types: String, data_access_level: String, cds_primary_bucket: String, cds_secondary_bucket: String, cds_tertiary_bucket: String, number_of_participants: Float, number_of_samples: Float, study_data_types: String, file_types_and_format: String, size_of_data_being_uploaded: Float, size_of_data_being_uploaded_unit: String, size_of_data_being_uploaded_original: Float, size_of_data_being_uploaded_original_unit: String, acl: String, study_access: String, filter: _studyFilter, first: Int, offset: Int, orderBy: [_studyOrdering!]): [study!]!
+  treatment(treatment_id: String, treatment_type: String, treatment_outcome: String, days_to_treatment: Int, therapeutic_agents: String, filter: _treatmentFilter, first: Int, offset: Int, orderBy: [_treatmentOrdering!]): [treatment!]!
+  searchSubjects(subject_ids: [String], accesses: [String], acl: [String], experimental_strategies: [String], file_types: [String], genders: [String], instrument_models: [String], is_tumor: [String], library_layouts: [String], library_selections: [String], library_sources: [String], library_strategies: [String], number_of_study_participants: [Float], number_of_study_samples: [Float], phs_accession: [String], platforms: [String], primary_diagnoses: [String], reference_genome_assemblies: [String], site: [String], studies: [String], study_data_types: [String]): SearchResult
+  subjectOverview(subject_ids: [String], accesses: [String], acl: [String], experimental_strategies: [String], file_types: [String], genders: [String], instrument_models: [String], is_tumor: [String], library_layouts: [String], library_selections: [String], library_sources: [String], library_strategies: [String], number_of_study_participants: [Float], number_of_study_samples: [Float], phs_accession: [String], platforms: [String], primary_diagnoses: [String], reference_genome_assemblies: [String], site: [String], studies: [String], study_data_types: [String], order_by: String, sort_direction: String, first: Int, offset: Int): [SubjectOverview]
+  sampleOverview(subject_ids: [String], sample_ids: [String], accesses: [String], acl: [String], experimental_strategies: [String], file_types: [String], genders: [String], instrument_models: [String], is_tumor: [String], library_layouts: [String], library_selections: [String], library_sources: [String], library_strategies: [String], number_of_study_participants: [Float], number_of_study_samples: [Float], phs_accession: [String], platforms: [String], primary_diagnoses: [String], reference_genome_assemblies: [String], site: [String], studies: [String], study_data_types: [String], order_by: String, sort_direction: String, first: Int, offset: Int): [SampleOverview]
+  fileOverview(subject_ids: [String], sample_ids: [String], file_ids: [String], accesses: [String], acl: [String], experimental_strategies: [String], file_types: [String], genders: [String], instrument_models: [String], is_tumor: [String], library_layouts: [String], library_selections: [String], library_sources: [String], library_strategies: [String], number_of_study_participants: [Float], number_of_study_samples: [Float], phs_accession: [String], platforms: [String], primary_diagnoses: [String], reference_genome_assemblies: [String], site: [String], studies: [String], study_data_types: [String], order_by: String, sort_direction: String, first: Int, offset: Int): [FileOverview]
+  fileIDsFromList(subject_ids: [String], sample_ids: [String], file_names: [String], file_ids: [String]): [String]
+  findSubjectIdsInList(subject_ids: [String]): [SubjectResult]
+  globalSearch(input: String, first: Int, offset: Int): GlobalSearchResult
+}
+
+type RangeCount {
+  lowerBound: Float
+  upperBound: Float
+  subjects: Int
+}
+
+enum RelationDirection {
+  IN
+  OUT
+  BOTH
+}
+
+type SampleOverview {
+  study_acronym: String
+  phs_accession: String
+  subject_id: String
+  sample_id: String
+  is_tumor: String
+  analyte_type: String
+  files: [String]
+}
+
+type SearchResult {
+  numberOfStudies: Int
+  numberOfSubjects: Int
+  numberOfSamples: Int
+  numberOfFiles: Int
+  numberOfDiseaseSites: Int
+  subjectCountByStudy: [GroupCount]
+  subjectCountByExperimentalStrategy: [GroupCount]
+  subjectCountByAccess: [GroupCount]
+  subjectCountByGender: [GroupCount]
+  subjectCountByIsTumor: [GroupCount]
+  subjectCountByAnalyteType: [GroupCount]
+  subjectCountByFileType: [GroupCount]
+  subjectCountByDiseaseSite: [GroupCount]
+  subjectCountByLibraryStrategy: [GroupCount]
+  subjectCountByLibrarySource: [GroupCount]
+  subjectCountByLibrarySelection: [GroupCount]
+  subjectCountByLibraryLayout: [GroupCount]
+  subjectCountByPlatform: [GroupCount]
+  subjectCountByInstrumentModel: [GroupCount]
+  subjectCountByReferenceGenomeAssembly: [GroupCount]
+  subjectCountByPrimaryDiagnosis: [GroupCount]
+  subjectCountByPhsAccession: [GroupCount]
+  subjectCountByStudyDataType: [GroupCount]
+  subjectCountByAcl: [GroupCount]
+  filterSubjectCountByStudy: [GroupCount]
+  filterSubjectCountByExperimentalStrategy: [GroupCount]
+  filterSubjectCountByAccess: [GroupCount]
+  filterSubjectCountByGender: [GroupCount]
+  filterSubjectCountByIsTumor: [GroupCount]
+  filterSubjectCountByFileType: [GroupCount]
+  filterSubjectCountByAnalyteType: [GroupCount]
+  filterSubjectCountByDiseaseSite: [GroupCount]
+  filterSubjectCountByLibraryStrategy: [GroupCount]
+  filterSubjectCountByLibrarySource: [GroupCount]
+  filterSubjectCountByLibrarySelection: [GroupCount]
+  filterSubjectCountByLibraryLayout: [GroupCount]
+  filterSubjectCountByPlatform: [GroupCount]
+  filterSubjectCountByInstrumentModel: [GroupCount]
+  filterSubjectCountByReferenceGenomeAssembly: [GroupCount]
+  filterSubjectCountByPrimaryDiagnosis: [GroupCount]
+  filterSubjectCountByPhsAccession: [GroupCount]
+  filterSubjectCountByStudyDataType: [GroupCount]
+  filterSubjectCountByAcl: [GroupCount]
+  filterSubjectCountByNumberOfStudyParticipants: RangeCount
+  filterSubjectCountByNumberOfStudySamples: RangeCount
+}
+
+enum SortDirection {
+  ASC
+  DESC
+}
+
+type StudyDetail {
+  study_name: String
+  phs_accession: String
+  study_acronym: String
+  study_description: String
+  data_types: String
+  study_external_url: String
+  numberOfSubjects: Int
+  numberOfSamples: Int
+  numberOfDiseaseSites: Int
+  numberOfFiles: Int
+}
+
+type StudyInfo {
+  study_name: String
+  phs_accession: String
+  data_type: String
+  numberOfSubjects: Int
+  numberOfFiles: Int
+  study_access: String
+}
+
+type SubjectDetail {
+  subject_id: String
+  study_acronym: String
+  study_name: String
+  gender: String
+  site: [String]
+  files(first: Int, offset: Int, orderBy: [_fileOrdering!], filter: _fileFilter): [file]
+  samples(first: Int, offset: Int, orderBy: [_sampleOrdering!], filter: _sampleFilter): [sample]
+  numberOfSamples: Int
+  numberOfDiseaseSites: Int
+  numberOfFiles: Int
+}
+
+type SubjectOverview {
+  subject_id: String
+  study_acronym: String
+  phs_accession: String
+  gender: String
+  site: [String]
+  samples: [String]
+  files: [String]
+}
+
+type SubjectResult {
+  subject_id: String
+  phs_accession: String
+}
+
+input _FileInfoFilter {
+}
+
+input _FileInfoInput {
+}
+
+enum _FileInfoOrdering {
+  subject_id_asc
+  subject_id_desc
+  file_name_asc
+  file_name_desc
+  file_type_asc
+  file_type_desc
+  association_asc
+  association_desc
+  file_description_asc
+  file_description_desc
+  file_size_asc
+  file_size_desc
+  file_id_asc
+  file_id_desc
+  md5sum_asc
+  md5sum_desc
+}
+
+input _GroupCountNeo4jFilter {
+}
+
+input _GroupCountNeo4jInput {
+}
+
+enum _GroupCountNeo4jOrdering {
+  group_asc
+  group_desc
+  subjects_asc
+  subjects_desc
+}
+
+input _IdsListsFilter {
+}
+
+input _IdsListsInput {
+}
+
+enum _IdsListsOrdering {
+  subjectIds_asc
+  subjectIds_desc
+}
+
+type _Neo4jDate {
+  year: Int
+  month: Int
+  day: Int
+  formatted: String
+}
+
+input _Neo4jDateInput {
+}
+
+type _Neo4jDateTime {
+  year: Int
+  month: Int
+  day: Int
+  hour: Int
+  minute: Int
+  second: Int
+  millisecond: Int
+  microsecond: Int
+  nanosecond: Int
+  timezone: String
+  formatted: String
+}
+
+input _Neo4jDateTimeInput {
+}
+
+type _Neo4jLocalDateTime {
+  year: Int
+  month: Int
+  day: Int
+  hour: Int
+  minute: Int
+  second: Int
+  millisecond: Int
+  microsecond: Int
+  nanosecond: Int
+  formatted: String
+}
+
+input _Neo4jLocalDateTimeInput {
+}
+
+type _Neo4jLocalTime {
+  hour: Int
+  minute: Int
+  second: Int
+  millisecond: Int
+  microsecond: Int
+  nanosecond: Int
+  formatted: String
+}
+
+input _Neo4jLocalTimeInput {
+}
+
+type _Neo4jPoint {
+  """ The first element of the Coordinate"""
+  x: Float
+  """ The second element of the Coordinate"""
+  y: Float
+  """ The third element of the Coordinate"""
+  z: Float
+  """ The first element of the Coordinate for geographic CRS, degrees East of the prime meridian
+ Range -180.0 to 180.0"""
+  longitude: Float
+  """ The second element of the Coordinate for geographic CRS, degrees North of the equator
+ Range -90.0 to 90.0"""
+  latitude: Float
+  """ The third element of the Coordinate for geographic CRS, meters above the ellipsoid defined by the datum (WGS-84)"""
+  height: Float
+  """ The coordinate reference systems (CRS)
+ -------------------------------------
+ posible values:
+ * `wgs-84`: A 2D geographic point in the WGS 84 CRS is specified in one of two ways:
+   * longitude and latitude (if these are specified, and the crs is not, then the crs is assumed to be WGS-84)
+   * x and y (in this case the crs must be specified, or will be assumed to be Cartesian)
+ * `wgs-84-3d`: A 3D geographic point in the WGS 84 CRS is specified one of in two ways:
+   * longitude, latitude and either height or z (if these are specified, and the crs is not, then the crs is assumed to be WGS-84-3D)
+   * x, y and z (in this case the crs must be specified, or will be assumed to be Cartesian-3D)
+ * `cartesian`: A 2D point in the Cartesian CRS is specified with a map containing x and y coordinate values
+ * `cartesian-3d`: A 3D point in the Cartesian CRS is specified with a map containing x, y and z coordinate values"""
+  crs: String
+  """ The internal Neo4j ID for the CRS
+ One of:
+ * `4326`: represents CRS `wgs-84`
+ * `4979`: represents CRS `wgs-84-3d`
+ * `7203`: represents CRS `cartesian`
+ * `9157`: represents CRS `cartesian-3d`"""
+  srid: Int
+}
+
+input _Neo4jPointInput {
+}
+
+type _Neo4jTime {
+  hour: Int
+  minute: Int
+  second: Int
+  millisecond: Int
+  microsecond: Int
+  nanosecond: Int
+  timezone: String
+  formatted: String
+}
+
+input _Neo4jTimeInput {
+}
+
+input _ProgramDetailFilter {
+}
+
+input _ProgramDetailInput {
+}
+
+enum _ProgramDetailOrdering {
+  program_asc
+  program_desc
+  program_name_asc
+  program_name_desc
+  program_url_asc
+  program_url_desc
+  program_short_description_asc
+  program_short_description_desc
+  num_studies_asc
+  num_studies_desc
+  num_participants_asc
+  num_participants_desc
+  num_files_asc
+  num_files_desc
+  num_samples_asc
+  num_samples_desc
+  num_disease_sites_asc
+  num_disease_sites_desc
+}
+
+input _ProgramDetailStudyFilter {
+}
+
+input _ProgramDetailStudyInput {
+}
+
+enum _ProgramDetailStudyOrdering {
+  accession_asc
+  accession_desc
+  study_access_asc
+  study_access_desc
+  study_name_asc
+  study_name_desc
+  study_description_asc
+  study_description_desc
+  short_description_asc
+  short_description_desc
+  num_participants_asc
+  num_participants_desc
+  num_samples_asc
+  num_samples_desc
+}
+
+input _ProgramListEntryFilter {
+}
+
+input _ProgramListEntryInput {
+}
+
+enum _ProgramListEntryOrdering {
+  acronym_asc
+  acronym_desc
+  name_asc
+  name_desc
+  website_asc
+  website_desc
+  num_studies_asc
+  num_studies_desc
+}
+
+input _StudyDetailFilter {
+}
+
+input _StudyDetailInput {
+}
+
+enum _StudyDetailOrdering {
+  study_name_asc
+  study_name_desc
+  phs_accession_asc
+  phs_accession_desc
+  study_acronym_asc
+  study_acronym_desc
+  study_description_asc
+  study_description_desc
+  data_types_asc
+  data_types_desc
+  study_external_url_asc
+  study_external_url_desc
+  numberOfSubjects_asc
+  numberOfSubjects_desc
+  numberOfSamples_asc
+  numberOfSamples_desc
+  numberOfDiseaseSites_asc
+  numberOfDiseaseSites_desc
+  numberOfFiles_asc
+  numberOfFiles_desc
+}
+
+input _StudyInfoFilter {
+}
+
+input _StudyInfoInput {
+}
+
+enum _StudyInfoOrdering {
+  study_name_asc
+  study_name_desc
+  phs_accession_asc
+  phs_accession_desc
+  data_type_asc
+  data_type_desc
+  numberOfSubjects_asc
+  numberOfSubjects_desc
+  numberOfFiles_asc
+  numberOfFiles_desc
+  study_access_asc
+  study_access_desc
+}
+
+input _SubjectDetailFilter {
+}
+
+input _SubjectDetailInput {
+}
+
+enum _SubjectDetailOrdering {
+  subject_id_asc
+  subject_id_desc
+  study_acronym_asc
+  study_acronym_desc
+  study_name_asc
+  study_name_desc
+  gender_asc
+  gender_desc
+  site_asc
+  site_desc
+  numberOfSamples_asc
+  numberOfSamples_desc
+  numberOfDiseaseSites_asc
+  numberOfDiseaseSites_desc
+  numberOfFiles_asc
+  numberOfFiles_desc
+}
+
+input _diagnosisFilter {
+}
+
+input _diagnosisInput {
+}
+
+enum _diagnosisOrdering {
+  diagnosis_id_asc
+  diagnosis_id_desc
+  disease_type_asc
+  disease_type_desc
+  vital_status_asc
+  vital_status_desc
+  primary_diagnosis_asc
+  primary_diagnosis_desc
+  primary_site_asc
+  primary_site_desc
+  age_at_diagnosis_asc
+  age_at_diagnosis_desc
+  tumor_grade_asc
+  tumor_grade_desc
+  tumor_stage_clinical_m_asc
+  tumor_stage_clinical_m_desc
+  tumor_stage_clinical_n_asc
+  tumor_stage_clinical_n_desc
+  tumor_stage_clinical_t_asc
+  tumor_stage_clinical_t_desc
+  morphology_asc
+  morphology_desc
+  incidence_type_asc
+  incidence_type_desc
+  progression_or_recurrence_asc
+  progression_or_recurrence_desc
+  days_to_recurrence_asc
+  days_to_recurrence_desc
+  days_to_last_followup_asc
+  days_to_last_followup_desc
+  last_known_disease_status_asc
+  last_known_disease_status_desc
+  days_to_last_known_status_asc
+  days_to_last_known_status_desc
+}
+
+input _fileFilter {
+}
+
+input _fileInput {
+}
+
+enum _fileOrdering {
+  file_id_asc
+  file_id_desc
+  file_name_asc
+  file_name_desc
+  file_type_asc
+  file_type_desc
+  file_description_asc
+  file_description_desc
+  file_size_asc
+  file_size_desc
+  md5sum_asc
+  md5sum_desc
+  file_url_in_cds_asc
+  file_url_in_cds_desc
+  experimental_strategy_and_data_subtypes_asc
+  experimental_strategy_and_data_subtypes_desc
+}
+
+input _genomic_infoFilter {
+}
+
+input _genomic_infoInput {
+}
+
+enum _genomic_infoOrdering {
+  library_id_asc
+  library_id_desc
+  bases_asc
+  bases_desc
+  number_of_reads_asc
+  number_of_reads_desc
+  avg_read_length_asc
+  avg_read_length_desc
+  coverage_asc
+  coverage_desc
+  reference_genome_assembly_asc
+  reference_genome_assembly_desc
+  custom_assembly_fasta_file_for_alignment_asc
+  custom_assembly_fasta_file_for_alignment_desc
+  design_description_asc
+  design_description_desc
+  library_strategy_asc
+  library_strategy_desc
+  library_layout_asc
+  library_layout_desc
+  library_source_asc
+  library_source_desc
+  library_selection_asc
+  library_selection_desc
+  platform_asc
+  platform_desc
+  instrument_model_asc
+  instrument_model_desc
+  sequence_alignment_software_asc
+  sequence_alignment_software_desc
+}
+
+input _participantFilter {
+}
+
+input _participantInput {
+}
+
+enum _participantOrdering {
+  participant_id_asc
+  participant_id_desc
+  race_asc
+  race_desc
+  gender_asc
+  gender_desc
+  ethnicity_asc
+  ethnicity_desc
+  dbGaP_subject_id_asc
+  dbGaP_subject_id_desc
+}
+
+input _programFilter {
+}
+
+input _programInput {
+}
+
+enum _programOrdering {
+  program_name_asc
+  program_name_desc
+  program_acronym_asc
+  program_acronym_desc
+  program_short_description_asc
+  program_short_description_desc
+  program_full_description_asc
+  program_full_description_desc
+  program_external_url_asc
+  program_external_url_desc
+  program_sort_order_asc
+  program_sort_order_desc
+}
+
+input _sampleFilter {
+}
+
+input _sampleInput {
+}
+
+enum _sampleOrdering {
+  sample_id_asc
+  sample_id_desc
+  sample_type_asc
+  sample_type_desc
+  sample_tumor_status_asc
+  sample_tumor_status_desc
+  sample_anatomic_site_asc
+  sample_anatomic_site_desc
+  sample_age_at_collection_asc
+  sample_age_at_collection_desc
+  derived_from_specimen_asc
+  derived_from_specimen_desc
+  biosample_accession_asc
+  biosample_accession_desc
+}
+
+input _specimenFilter {
+}
+
+input _specimenInput {
+}
+
+enum _specimenOrdering {
+  specimen_id_asc
+  specimen_id_desc
+}
+
+input _studyFilter {
+}
+
+input _studyInput {
+}
+
+enum _studyOrdering {
+  study_name_asc
+  study_name_desc
+  study_acronym_asc
+  study_acronym_desc
+  study_description_asc
+  study_description_desc
+  short_description_asc
+  short_description_desc
+  study_external_url_asc
+  study_external_url_desc
+  primary_investigator_name_asc
+  primary_investigator_name_desc
+  primary_investigator_email_asc
+  primary_investigator_email_desc
+  co_investigator_name_asc
+  co_investigator_name_desc
+  co_investigator_email_asc
+  co_investigator_email_desc
+  phs_accession_asc
+  phs_accession_desc
+  bioproject_accession_asc
+  bioproject_accession_desc
+  index_date_asc
+  index_date_desc
+  cds_requestor_asc
+  cds_requestor_desc
+  funding_agency_asc
+  funding_agency_desc
+  funding_source_program_name_asc
+  funding_source_program_name_desc
+  grant_id_asc
+  grant_id_desc
+  clinical_trial_system_asc
+  clinical_trial_system_desc
+  clinical_trial_identifier_asc
+  clinical_trial_identifier_desc
+  clinical_trial_arm_asc
+  clinical_trial_arm_desc
+  organism_species_asc
+  organism_species_desc
+  adult_or_childhood_study_asc
+  adult_or_childhood_study_desc
+  data_types_asc
+  data_types_desc
+  file_types_asc
+  file_types_desc
+  data_access_level_asc
+  data_access_level_desc
+  cds_primary_bucket_asc
+  cds_primary_bucket_desc
+  cds_secondary_bucket_asc
+  cds_secondary_bucket_desc
+  cds_tertiary_bucket_asc
+  cds_tertiary_bucket_desc
+  number_of_participants_asc
+  number_of_participants_desc
+  number_of_samples_asc
+  number_of_samples_desc
+  study_data_types_asc
+  study_data_types_desc
+  file_types_and_format_asc
+  file_types_and_format_desc
+  size_of_data_being_uploaded_asc
+  size_of_data_being_uploaded_desc
+  size_of_data_being_uploaded_unit_asc
+  size_of_data_being_uploaded_unit_desc
+  size_of_data_being_uploaded_original_asc
+  size_of_data_being_uploaded_original_desc
+  size_of_data_being_uploaded_original_unit_asc
+  size_of_data_being_uploaded_original_unit_desc
+  acl_asc
+  acl_desc
+  study_access_asc
+  study_access_desc
+}
+
+input _treatmentFilter {
+}
+
+input _treatmentInput {
+}
+
+enum _treatmentOrdering {
+  treatment_id_asc
+  treatment_id_desc
+  treatment_type_asc
+  treatment_type_desc
+  treatment_outcome_asc
+  treatment_outcome_desc
+  days_to_treatment_asc
+  days_to_treatment_desc
+  therapeutic_agents_asc
+  therapeutic_agents_desc
+}
+
+type diagnosis {
+  diagnosis_id: String
+  disease_type: String
+  vital_status: String
+  primary_diagnosis: String
+  primary_site: String
+  age_at_diagnosis: Int
+  tumor_grade: String
+  tumor_stage_clinical_m: String
+  tumor_stage_clinical_n: String
+  tumor_stage_clinical_t: String
+  morphology: String
+  incidence_type: String
+  progression_or_recurrence: String
+  days_to_recurrence: Int
+  days_to_last_followup: Int
+  last_known_disease_status: String
+  days_to_last_known_status: Int
+  participant: participant
+}
+
+type file {
+  file_id: String
+  file_name: String
+  file_type: String
+  file_description: String
+  file_size: Float
+  md5sum: String
+  file_url_in_cds: String
+  experimental_strategy_and_data_subtypes: String
+  study: study
+  samples(first: Int, offset: Int, orderBy: [_sampleOrdering!], filter: _sampleFilter): [sample]
+  genomic_info: genomic_info
+}
+
+type genomic_info {
+  library_id: String
+  bases: Int
+  number_of_reads: Int
+  avg_read_length: Float
+  coverage: Float
+  reference_genome_assembly: String
+  custom_assembly_fasta_file_for_alignment: String
+  design_description: String
+  library_strategy: String
+  library_layout: String
+  library_source: String
+  library_selection: String
+  platform: String
+  instrument_model: String
+  sequence_alignment_software: String
+  files(first: Int, offset: Int, orderBy: [_fileOrdering!], filter: _fileFilter): [file]
+  samples(first: Int, offset: Int, orderBy: [_sampleOrdering!], filter: _sampleFilter): [sample]
+  file: file
+}
+
+type participant {
+  participant_id: String
+  race: String
+  gender: String
+  ethnicity: String
+  dbGaP_subject_id: String
+  study: study
+  diagnoses(first: Int, offset: Int, orderBy: [_diagnosisOrdering!], filter: _diagnosisFilter): [diagnosis]
+  specimens(first: Int, offset: Int, orderBy: [_specimenOrdering!], filter: _specimenFilter): [specimen]
+  samples(first: Int, offset: Int, orderBy: [_sampleOrdering!], filter: _sampleFilter): [sample]
+}
+
+type program {
+  program_name: String
+  program_acronym: String
+  program_short_description: String
+  program_full_description: String
+  program_external_url: String
+  program_sort_order: Int
+  studies(first: Int, offset: Int, orderBy: [_studyOrdering!], filter: _studyFilter): [study]
+}
+
+type sample {
+  sample_id: String
+  sample_type: String
+  sample_tumor_status: String
+  sample_anatomic_site: String
+  sample_age_at_collection: Int
+  derived_from_specimen: String
+  biosample_accession: String
+  participant: participant
+  specimen: specimen
+  files(first: Int, offset: Int, orderBy: [_fileOrdering!], filter: _fileFilter): [file]
+  genomic_info(first: Int, offset: Int, orderBy: [_genomic_infoOrdering!], filter: _genomic_infoFilter): [genomic_info]
+}
+
+type specimen {
+  specimen_id: String
+  participant: participant
+  samples(first: Int, offset: Int, orderBy: [_sampleOrdering!], filter: _sampleFilter): [sample]
+}
+
+type study {
+  study_name: String
+  study_acronym: String
+  study_description: String
+  short_description: String
+  study_external_url: String
+  primary_investigator_name: String
+  primary_investigator_email: String
+  co_investigator_name: String
+  co_investigator_email: String
+  phs_accession: String
+  bioproject_accession: String
+  index_date: String
+  cds_requestor: String
+  funding_agency: String
+  funding_source_program_name: String
+  grant_id: String
+  clinical_trial_system: String
+  clinical_trial_identifier: String
+  clinical_trial_arm: String
+  organism_species: String
+  adult_or_childhood_study: String
+  data_types: String
+  file_types: String
+  data_access_level: String
+  cds_primary_bucket: String
+  cds_secondary_bucket: String
+  cds_tertiary_bucket: String
+  number_of_participants: Float
+  number_of_samples: Float
+  study_data_types: String
+  file_types_and_format: String
+  size_of_data_being_uploaded: Float
+  size_of_data_being_uploaded_unit: String
+  size_of_data_being_uploaded_original: Float
+  size_of_data_being_uploaded_original_unit: String
+  acl: String
+  study_access: String
+  program: program
+  participants(first: Int, offset: Int, orderBy: [_participantOrdering!], filter: _participantFilter): [participant]
+  files(first: Int, offset: Int, orderBy: [_fileOrdering!], filter: _fileFilter): [file]
+}
+
+type treatment {
+  treatment_id: String
+  treatment_type: String
+  treatment_outcome: String
+  days_to_treatment: Int
+  therapeutic_agents: String
+}
+

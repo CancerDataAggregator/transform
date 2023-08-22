@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 from cda_etl.extract.gdc.gdc_extractor import GDC_extractor
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3 -u
 
 import requests
 import json
@@ -9,7 +9,7 @@ from os import makedirs, path
 
 url = 'https://dataservice.datacommons.cancer.gov/v1/graphql/'
 
-output_dir = path.join( 'auxiliary_data', '__schemas' )
+output_dir = path.join( 'auxiliary_metadata', '__schemas' )
 
 if not path.exists( output_dir ):
     

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 chmod 755 ./package_root/extract/pdc/scripts/*py
 

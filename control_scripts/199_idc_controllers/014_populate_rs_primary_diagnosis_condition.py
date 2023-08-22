@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3 -u
 
 from cda_etl.transform.idc.idc_transformer import IDC_transformer
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 rm -f extracted_data/pdc_postprocessed/__filtration_logs/*
 

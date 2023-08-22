@@ -1,0 +1,1789 @@
+type Aliquot {
+  aliquot_id: String
+  aliquot_submitter_id: String
+  status: String
+  aliquot_is_ref: String
+  pool: String
+  sample_id: String
+  sample_submitter_id: String
+  case_id: String
+  case_submitter_id: String
+  aliquot_quantity: Float
+  aliquot_volume: Float
+  amount: Float
+  analyte_type: String
+  concentration: Float
+  aliquot_run_metadata: [AliquotRunMetadata]
+  sample: Sample
+  project: Project
+}
+
+type AliquotRunMetadata {
+  aliquot_run_metadata_id: String
+  aliquot_submitter_id: String
+  aliquot_id: String
+  label: String
+  experiment_number: Int
+  fraction: String
+  replicate_number: String
+  date: Date
+  alias: String
+  analyte: String
+  aliquot: Aliquot
+  protocol: Protocol
+  study: Study
+}
+
+type Biospecimen {
+  aliquot_id: String
+  sample_id: String
+  case_id: String
+  case_submitter_id: String
+  aliquot_submitter_id: String
+  case_status: String
+  case_is_ref: String
+  aliquot_is_ref: String
+  aliquot_status: String
+  sample_status: String
+  sample_submitter_id: String
+  project_name: String
+  sample_type: String
+  disease_type: String
+  primary_site: String
+  pool: String
+  taxon: String
+  externalReferences: [EntityReference]
+}
+
+type Case {
+  case_id: String
+  case_submitter_id: String
+  project_submitter_id: String
+  project_id: String
+  case_is_ref: String
+  tissue_source_site_code: String
+  days_to_lost_to_followup: Int
+  disease_type: String
+  index_date: String
+  lost_to_followup: String
+  primary_site: String
+  consent_type: String
+  days_to_consent: String
+  externalReferences: [EntityReference]
+  demographics: [Demographic]
+  samples: [Sample]
+  diagnoses: [Diagnosis]
+  exposures: [Exposure]
+  family_histories: [FamilyHistory]
+  follow_ups: [FollowUp]
+  treatments: [Treatment]
+  count: Int
+}
+
+type CasePerFile {
+  file_id: String
+  case_id: String
+  case_submitter_id: String
+}
+
+type Clinical {
+  case_id: String
+  case_submitter_id: String
+  status: String
+  disease_type: String
+  primary_site: String
+  consent_type: String
+  days_to_consent: String
+  demographic_id: String
+  demographic_submitter_id: String
+  ethnicity: String
+  gender: String
+  race: String
+  vital_status: String
+  days_to_birth: String
+  days_to_death: String
+  year_of_birth: String
+  year_of_death: String
+  age_at_index: String
+  premature_at_birth: String
+  weeks_gestation_at_birth: String
+  age_is_obfuscated: String
+  cause_of_death_source: String
+  occupation_duration_years: String
+  country_of_residence_at_enrollment: String
+  diagnosis_id: String
+  diagnosis_submitter_id: String
+  age_at_diagnosis: String
+  classification_of_tumor: String
+  days_to_last_follow_up: String
+  days_to_last_known_disease_status: String
+  days_to_recurrence: String
+  last_known_disease_status: String
+  morphology: String
+  primary_diagnosis: String
+  progression_or_recurrence: String
+  site_of_resection_or_biopsy: String
+  tissue_or_organ_of_origin: String
+  tumor_grade: String
+  tumor_stage: String
+  tumor_cell_content: String
+  tumor_largest_dimension_diameter: String
+  prior_malignancy: String
+  ajcc_clinical_m: String
+  ajcc_clinical_n: String
+  ajcc_clinical_stage: String
+  ajcc_clinical_t: String
+  ajcc_pathologic_m: String
+  ajcc_pathologic_n: String
+  ajcc_pathologic_stage: String
+  ajcc_pathologic_t: String
+  ann_arbor_b_symptoms: String
+  ann_arbor_clinical_stage: String
+  ann_arbor_extranodal_involvement: String
+  ann_arbor_pathologic_stage: String
+  best_overall_response: String
+  burkitt_lymphoma_clinical_variant: String
+  cause_of_death: String
+  circumferential_resection_margin: String
+  colon_polyps_history: String
+  days_to_best_overall_response: String
+  days_to_diagnosis: String
+  days_to_hiv_diagnosis: String
+  days_to_new_event: String
+  figo_stage: String
+  hiv_positive: String
+  hpv_positive_type: String
+  hpv_status: String
+  iss_stage: String
+  laterality: String
+  ldh_level_at_diagnosis: String
+  ldh_normal_range_upper: String
+  lymph_nodes_positive: String
+  lymphatic_invasion_present: String
+  method_of_diagnosis: String
+  new_event_anatomic_site: String
+  new_event_type: String
+  overall_survival: String
+  perineural_invasion_present: String
+  prior_treatment: String
+  progression_free_survival: String
+  progression_free_survival_event: String
+  residual_disease: String
+  vascular_invasion_present: String
+  year_of_diagnosis: String
+  icd_10_code: String
+  synchronous_malignancy: String
+  anaplasia_present: String
+  anaplasia_present_type: String
+  child_pugh_classification: String
+  cog_liver_stage: String
+  cog_neuroblastoma_risk_group: String
+  cog_renal_stage: String
+  cog_rhabdomyosarcoma_risk_group: String
+  enneking_msts_grade: String
+  enneking_msts_metastasis: String
+  enneking_msts_stage: String
+  enneking_msts_tumor_site: String
+  esophageal_columnar_dysplasia_degree: String
+  esophageal_columnar_metaplasia_present: String
+  first_symptom_prior_to_diagnosis: String
+  gastric_esophageal_junction_involvement: String
+  goblet_cells_columnar_mucosa_present: String
+  gross_tumor_weight: String
+  inpc_grade: String
+  inpc_histologic_group: String
+  inrg_stage: String
+  inss_stage: String
+  irs_group: String
+  irs_stage: String
+  ishak_fibrosis_score: String
+  lymph_nodes_tested: String
+  medulloblastoma_molecular_classification: String
+  metastasis_at_diagnosis: String
+  metastasis_at_diagnosis_site: String
+  mitosis_karyorrhexis_index: String
+  peripancreatic_lymph_nodes_positive: String
+  peripancreatic_lymph_nodes_tested: String
+  supratentorial_localization: String
+  tumor_confined_to_organ_of_origin: String
+  tumor_focality: String
+  tumor_regression_grade: String
+  vascular_invasion_type: String
+  wilms_tumor_histologic_subtype: String
+  breslow_thickness: String
+  gleason_grade_group: String
+  igcccg_stage: String
+  international_prognostic_index: String
+  largest_extrapelvic_peritoneal_focus: String
+  masaoka_stage: String
+  non_nodal_regional_disease: String
+  non_nodal_tumor_deposits: String
+  ovarian_specimen_status: String
+  ovarian_surface_involvement: String
+  percent_tumor_invasion: String
+  peritoneal_fluid_cytological_status: String
+  primary_gleason_grade: String
+  secondary_gleason_grade: String
+  weiss_assessment_score: String
+  adrenal_hormone: String
+  ann_arbor_b_symptoms_described: String
+  diagnosis_is_primary_disease: String
+  eln_risk_classification: String
+  figo_staging_edition_year: String
+  gleason_grade_tertiary: String
+  gleason_patterns_percent: String
+  margin_distance: String
+  margins_involved_site: String
+  pregnant_at_diagnosis: String
+  satellite_nodule_present: String
+  sites_of_involvement: String
+  tumor_depth: String
+  who_cns_grade: String
+  who_nte_grade: String
+  auxiliary_data: String
+  diagnosis_uuid: String
+  exposures: [Exposure]
+  family_histories: [FamilyHistory]
+  follow_ups: [FollowUp]
+  treatments: [Treatment]
+  samples: [Sample]
+  externalReferences: [EntityReference]
+}
+
+type ClinicalMetadata {
+  aliquot_id: String
+  aliquot_submitter_id: String
+  morphology: String
+  primary_diagnosis: String
+  tumor_grade: String
+  tumor_stage: String
+  tumor_largest_dimension_diameter: String
+}
+
+type Contact {
+  contact_id: String
+  name: String
+  institution: String
+  email: String
+  url: String
+}
+
+"""Date custom scalar type"""
+scalar Date
+
+type Demographic {
+  demographic_id: String
+  demographic_submitter_id: String
+  case_id: String
+  case_submitter_id: String
+  ethnicity: String
+  gender: String
+  race: String
+  cause_of_death: String
+  days_to_birth: String
+  days_to_death: String
+  vital_status: String
+  year_of_birth: String
+  year_of_death: String
+  age_at_index: String
+  premature_at_birth: String
+  weeks_gestation_at_birth: String
+  age_is_obfuscated: String
+  cause_of_death_source: String
+  occupation_duration_years: String
+  country_of_residence_at_enrollment: String
+  case: Case
+  project: Project
+}
+
+type Diagnosis {
+  diagnosis_id: String
+  diagnosis_submitter_id: String
+  case_id: String
+  case_submitter_id: String
+  external_case_id: String
+  project_id: String
+  project_submitter_id: String
+  age_at_diagnosis: String
+  classification_of_tumor: String
+  days_to_last_follow_up: String
+  days_to_last_known_disease_status: String
+  days_to_recurrence: String
+  last_known_disease_status: String
+  disease_type: String
+  morphology: String
+  primary_diagnosis: String
+  progression_or_recurrence: String
+  site_of_resection_or_biopsy: String
+  tissue_or_organ_of_origin: String
+  tumor_grade: String
+  tumor_stage: String
+  tumor_largest_dimension_diameter: String
+  prior_malignancy: String
+  ajcc_clinical_m: String
+  ajcc_clinical_n: String
+  ajcc_clinical_stage: String
+  ajcc_clinical_t: String
+  ajcc_pathologic_m: String
+  ajcc_pathologic_n: String
+  ajcc_pathologic_stage: String
+  ajcc_pathologic_t: String
+  ajcc_staging_system_edition: String
+  ann_arbor_b_symptoms: String
+  ann_arbor_clinical_stage: String
+  ann_arbor_extranodal_involvement: String
+  ann_arbor_pathologic_stage: String
+  best_overall_response: String
+  burkitt_lymphoma_clinical_variant: String
+  circumferential_resection_margin: String
+  colon_polyps_history: String
+  days_to_best_overall_response: String
+  days_to_diagnosis: String
+  days_to_hiv_diagnosis: String
+  days_to_new_event: String
+  figo_stage: String
+  hiv_positive: String
+  hpv_positive_type: String
+  hpv_status: String
+  iss_stage: String
+  laterality: String
+  ldh_level_at_diagnosis: String
+  ldh_normal_range_upper: String
+  lymph_nodes_positive: String
+  lymphatic_invasion_present: String
+  method_of_diagnosis: String
+  new_event_anatomic_site: String
+  new_event_type: String
+  overall_survival: String
+  perineural_invasion_present: String
+  prior_treatment: String
+  progression_free_survival: String
+  progression_free_survival_event: String
+  residual_disease: String
+  vascular_invasion_present: String
+  year_of_diagnosis: String
+  icd_10_code: String
+  synchronous_malignancy: String
+  anaplasia_present: String
+  anaplasia_present_type: String
+  child_pugh_classification: String
+  cog_liver_stage: String
+  cog_neuroblastoma_risk_group: String
+  cog_renal_stage: String
+  cog_rhabdomyosarcoma_risk_group: String
+  enneking_msts_grade: String
+  enneking_msts_metastasis: String
+  enneking_msts_stage: String
+  enneking_msts_tumor_site: String
+  esophageal_columnar_dysplasia_degree: String
+  esophageal_columnar_metaplasia_present: String
+  first_symptom_prior_to_diagnosis: String
+  gastric_esophageal_junction_involvement: String
+  goblet_cells_columnar_mucosa_present: String
+  gross_tumor_weight: String
+  inpc_grade: String
+  inpc_histologic_group: String
+  inrg_stage: String
+  inss_stage: String
+  irs_group: String
+  irs_stage: String
+  ishak_fibrosis_score: String
+  lymph_nodes_tested: String
+  medulloblastoma_molecular_classification: String
+  metastasis_at_diagnosis: String
+  metastasis_at_diagnosis_site: String
+  mitosis_karyorrhexis_index: String
+  peripancreatic_lymph_nodes_positive: String
+  peripancreatic_lymph_nodes_tested: String
+  supratentorial_localization: String
+  tumor_confined_to_organ_of_origin: String
+  tumor_focality: String
+  tumor_regression_grade: String
+  vascular_invasion_type: String
+  wilms_tumor_histologic_subtype: String
+  breslow_thickness: String
+  gleason_grade_group: String
+  igcccg_stage: String
+  international_prognostic_index: String
+  largest_extrapelvic_peritoneal_focus: String
+  masaoka_stage: String
+  non_nodal_regional_disease: String
+  non_nodal_tumor_deposits: String
+  ovarian_specimen_status: String
+  ovarian_surface_involvement: String
+  percent_tumor_invasion: String
+  peritoneal_fluid_cytological_status: String
+  primary_gleason_grade: String
+  secondary_gleason_grade: String
+  weiss_assessment_score: String
+  adrenal_hormone: String
+  ann_arbor_b_symptoms_described: String
+  diagnosis_is_primary_disease: String
+  eln_risk_classification: String
+  figo_staging_edition_year: String
+  gleason_grade_tertiary: String
+  gleason_patterns_percent: String
+  margin_distance: String
+  margins_involved_site: String
+  pregnant_at_diagnosis: String
+  satellite_nodule_present: String
+  sites_of_involvement: String
+  tumor_depth: String
+  tumor_cell_content: String
+  who_cns_grade: String
+  who_nte_grade: String
+  diagnosis_uuid: String
+  auxiliary_data: String
+  annotation: String
+  cases_count: Int
+  case: Case
+  project: Project
+  studies: [Study]
+  samples: [Sample]
+}
+
+type EntityReference {
+  reference_id: String
+  entity_type: String
+  entity_id: String
+  external_reference_id: String
+  reference_type: String
+  reference_entity_type: String
+  reference_entity_alias: String
+  submitter_id_name: String
+  reference_resource_name: String
+  reference_resource_shortname: String
+  reference_entity_location: String
+  annotation: String
+}
+
+type Experiment {
+  experiment_type: String
+  tissue_or_organ_of_origin: String
+  disease_type: String
+}
+
+type ExperimentalMetadata {
+  study_id: String
+  study_submitter_id: String
+  pdc_study_id: String
+  experiment_type: String
+  analytical_fraction: String
+  instrument: String
+  study_run_metadata: [StudyRunMetadata]
+}
+
+type ExperimentProjects {
+  experiment_type: String
+  project_submitter_id: String
+  name: String
+}
+
+type Exposure {
+  exposure_id: String
+  exposure_submitter_id: String
+  case_id: String
+  case_submitter_id: String
+  project_id: String
+  project_submitter_id: String
+  alcohol_days_per_week: String
+  alcohol_drinks_per_day: String
+  alcohol_history: String
+  alcohol_intensity: String
+  asbestos_exposure: String
+  cigarettes_per_day: String
+  coal_dust_exposure: String
+  environmental_tobacco_smoke_exposure: String
+  pack_years_smoked: String
+  radon_exposure: String
+  respirable_crystalline_silica_exposure: String
+  smoking_frequency: String
+  time_between_waking_and_first_smoke: String
+  tobacco_smoking_onset_year: String
+  tobacco_smoking_quit_year: String
+  tobacco_smoking_status: String
+  type_of_smoke_exposure: String
+  type_of_tobacco_used: String
+  years_smoked: String
+  age_at_onset: String
+  alcohol_type: String
+  exposure_duration: String
+  exposure_duration_years: String
+  exposure_type: String
+  marijuana_use_per_week: String
+  parent_with_radiation_exposure: String
+  secondhand_smoke_as_child: String
+  smokeless_tobacco_quit_age: String
+  tobacco_use_per_day: String
+}
+
+type FamilyHistory {
+  family_history_id: String
+  family_history_submitter_id: String
+  case_id: String
+  case_submitter_id: String
+  project_id: String
+  project_submitter_id: String
+  relationship_type: String
+  relationship_gender: String
+  relationship_age_at_diagnosis: String
+  relationship_primary_diagnosis: String
+  relative_with_cancer_history: String
+  relatives_with_cancer_history_count: String
+}
+
+type File {
+  file_id: String
+  study_id: String
+  study_submitter_id: String
+  pdc_study_id: String
+  file_name: String
+  file_type: String
+  data_category: String
+  md5sum: String
+  file_size: Int
+  files_count: Int
+  file_location: String
+  downloadable: String
+  study_run_metadata: [StudyRunMetadata]
+  studies: [Study]
+}
+
+type FileMetadata {
+  file_id: String
+  file_name: String
+  file_location: String
+  md5sum: String
+  file_size: String
+  aliquots: [Aliquot]
+  file_submitter_id: String
+  data_category: String
+  file_type: String
+  file_format: String
+  analyte: String
+  instrument: String
+  plex_or_dataset_name: String
+  fraction_number: String
+  experiment_type: String
+  study_run_metadata_submitter_id: String
+  study_run_metadata_id: String
+}
+
+type FilePerStudy {
+  study_id: String
+  study_submitter_id: String
+  pdc_study_id: String
+  study_name: String
+  file_id: String
+  file_name: String
+  file_submitter_id: String
+  file_type: String
+  data_category: String
+  file_location: String
+  md5sum: String
+  file_size: String
+  file_format: String
+  signedUrl: SignedUrl
+}
+
+type FilterItem {
+  filterUsed: String
+  filterAppCount: Int
+  filterName: String
+  filterValue: String
+}
+
+type FollowUp {
+  follow_up_id: String
+  follow_up_submitter_id: String
+  case_id: String
+  case_submitter_id: String
+  project_id: String
+  project_submitter_id: String
+  adverse_event: String
+  barretts_esophagus_goblet_cells_present: String
+  bmi: String
+  cause_of_response: String
+  comorbidity: String
+  comorbidity_method_of_diagnosis: String
+  days_to_adverse_event: String
+  days_to_comorbidity: String
+  days_to_follow_up: String
+  days_to_progression: String
+  days_to_progression_free: String
+  days_to_recurrence: String
+  diabetes_treatment_type: String
+  disease_response: String
+  dlco_ref_predictive_percent: String
+  ecog_performance_status: String
+  fev1_ref_post_bronch_percent: String
+  fev1_ref_pre_bronch_percent: String
+  fev1_fvc_pre_bronch_percent: String
+  fev1_fvc_post_bronch_percent: String
+  height: String
+  hepatitis_sustained_virological_response: String
+  hpv_positive_type: String
+  karnofsky_performance_status: String
+  menopause_status: String
+  pancreatitis_onset_year: String
+  progression_or_recurrence: String
+  progression_or_recurrence_anatomic_site: String
+  progression_or_recurrence_type: String
+  reflux_treatment_type: String
+  risk_factor: String
+  risk_factor_treatment: String
+  viral_hepatitis_serologies: String
+  weight: String
+  adverse_event_grade: String
+  aids_risk_factors: String
+  body_surface_area: String
+  cd4_count: String
+  cdc_hiv_risk_factors: String
+  days_to_imaging: String
+  evidence_of_recurrence_type: String
+  eye_color: String
+  haart_treatment_indicator: String
+  history_of_tumor: String
+  history_of_tumor_type: String
+  hiv_viral_load: String
+  hormonal_contraceptive_type: String
+  hormonal_contraceptive_use: String
+  hormone_replacement_therapy_type: String
+  hysterectomy_margins_involved: String
+  hysterectomy_type: String
+  imaging_result: String
+  imaging_type: String
+  immunosuppressive_treatment_type: String
+  nadir_cd4_count: String
+  pregnancy_outcome: String
+  procedures_performed: String
+  recist_targeted_regions_number: String
+  recist_targeted_regions_sum: String
+  scan_tracer_used: String
+  undescended_testis_corrected: String
+  undescended_testis_corrected_age: String
+  undescended_testis_corrected_laterality: String
+  undescended_testis_corrected_method: String
+  undescended_testis_history: String
+  undescended_testis_history_laterality: String
+}
+
+type Gene {
+  gene_id: String
+  gene_name: String
+  NCBI_gene_id: String
+  authority: String
+  description: String
+  organism: String
+  chromosome: String
+  locus: String
+  proteins: String
+  assays: String
+  spectral_counts: [Spectral_count]
+}
+
+type GeneSp {
+  gene_id: String
+  gene_name: String
+  ncbi_gene_id: String
+  authority: String
+  description: String
+  organism: String
+  chromosome: String
+  locus: String
+  proteins: String
+  assays: String
+  spectral_counts: [UISpectralCount]
+}
+
+type HeatmapFilters {
+  filterCount: String
+  disease_types: [String]
+  primary_sites: [String]
+  analytical_fractions: [String]
+}
+
+type LabelAliquot {
+  aliquot_run_metadata_id: String
+  aliquot_submitter_id: String
+  aliquot_id: String
+  label: String
+}
+
+type LegacyPublication {
+  publication_id: String
+  pubmed_id: String
+  doi: String
+  author: String
+  title_legacy: String
+  title: String
+  journal: String
+  journal_url: String
+  year: String
+  abstract: String
+  citation: String
+  studies: [Study]
+  disease_types: [String]
+  supplementary_data: [String]
+}
+
+type LegacyStudy {
+  study_id: String
+  study_submitter_id: String
+  pdc_study_id: String
+  submitter_id_name: String
+  study_description: String
+  project_submitter_id: String
+  analytical_fraction: String
+  experiment_type: String
+  embargo_date: Date
+  cptac_phase: String
+  acquisition_type: String
+  sort_order: Int
+  supplementaryFilesCount: [File]
+  nonSupplementaryFilesCount: [File]
+  publications: [LegacyPublication]
+}
+
+type Paginated {
+  total: Int
+  uiStudies: [UIStudy]
+  uiFiles: [UIFile]
+  uiLegacyFiles: [UIFile]
+  uiCases: [UICase]
+  uiClinical: [UIClinical]
+  uiGenes: [UIGene]
+  uiGeneStudySpectralCounts: [UIGeneStudySpectralCount]
+  uiGeneAliquotSpectralCounts: [UIGeneStudySpectralCount]
+  uiPtm: [UIPtm]
+  uiPublication: [Publication]
+  files: [File]
+  cases: [Case]
+  genesProper: [Gene]
+  caseDiagnosesPerStudy: [Case]
+  caseDemographicsPerStudy: [Case]
+  caseExposuresPerStudy: [Case]
+  caseFamilyHistoriesPerStudy: [Case]
+  caseFollowUpsPerStudy: [Case]
+  caseTreatmentsPerStudy: [Case]
+  casesSamplesAliquots: [Case]
+  genes: [SearchRecord]
+  genesWithProtein: [SearchRecord]
+  studies: [SearchStudyRecord]
+  searchCases: [SearchCaseRecord]
+  searchAliquots: [SearchAliquotRecord]
+  spectralCounts: [Spectral_count]
+  dataMatrix: [[String]]
+  ptmDataMatrix: [[String]]
+  pagination: Pagination
+}
+
+type Pagination {
+  count: Int
+  sort: String
+  from: Int
+  page: Int
+  total: Int
+  pages: Int
+  size: Int
+}
+
+type PdcDataStats {
+  program: Int
+  study: Int
+  spectra: Int
+  protein: Int
+  project: Int
+  peptide: Int
+  data_size: Int
+  data_label: String
+  data_file: Int
+}
+
+type PDCMetrics {
+  name: String
+  programs: Int
+  projects: Int
+  studies: Int
+  cases: Int
+  files: Int
+  data_size_TB: Int
+}
+
+type Program {
+  program_id: String
+  program_submitter_id: String
+  name: String
+  sponsor: String
+  start_date: Date
+  end_date: Date
+  program_manager: String
+  project_count: Int
+  study_count: Int
+  data_size_TB: Int
+  data_file_count: Int
+  projects: [Project]
+}
+
+type Project {
+  project_id: String
+  project_submitter_id: String
+  name: String
+  program: Program
+  studies: [Study]
+  cases: [Case]
+}
+
+type Protocol {
+  protocol_id: String
+  protocol_submitter_id: String
+  project_submitter_id: String
+  study_id: String
+  study_submitter_id: String
+  pdc_study_id: String
+  program_id: String
+  program_submitter_id: String
+  protocol_name: String
+  protocol_date: String
+  document_name: String
+  quantitation_strategy: String
+  experiment_type: String
+  label_free_quantitation: String
+  labeled_quantitation: String
+  isobaric_labeling_reagent: String
+  reporter_ion_ms_level: String
+  starting_amount: String
+  starting_amount_uom: String
+  digestion_reagent: String
+  alkylation_reagent: String
+  enrichment_strategy: String
+  enrichment: String
+  chromatography_dimensions_count: String
+  one_d_chromatography_type: String
+  two_d_chromatography_type: String
+  fractions_analyzed_count: String
+  column_type: String
+  amount_on_column: String
+  amount_on_column_uom: String
+  column_length: String
+  column_length_uom: String
+  column_inner_diameter: String
+  column_inner_diameter_uom: String
+  particle_size: String
+  particle_size_uom: String
+  particle_type: String
+  gradient_length: String
+  gradient_length_uom: String
+  instrument_make: String
+  instrument_model: String
+  dissociation_type: String
+  ms1_resolution: String
+  ms2_resolution: String
+  dda_topn: String
+  normalized_collision_energy: String
+  acquistion_type: String
+  dia_multiplexing: String
+  dia_ims: String
+  auxiliary_data: String
+  cud_label: String
+  study: Study
+}
+
+type Publication {
+  publication_id: String
+  program_name: String
+  pubmed_id: String
+  group_name: String
+  doi: String
+  author: String
+  title_legacy: String
+  title: String
+  journal: String
+  journal_url: String
+  year: String
+  abstract: String
+  citation: String
+  studies: [Study]
+  disease_types: [String]
+  supplementary_data: [String]
+}
+
+type PublicationFilters {
+  filterCount: String
+  disease_types: [String]
+  years: [String]
+  programs: [String]
+}
+
+type PublicCase {
+  case_id: String
+  case_submitter_id: String
+  project_id: String
+  project_submitter_id: String
+  disease_type: String
+  primary_site: String
+  externalReferences: [EntityReference]
+}
+
+type QuantitiveData {
+  gene_abundance_id: String
+  gene_id: String
+  gene_name: String
+  study_id: String
+  study_submitter_id: String
+  pdc_study_id: String
+  study_run_metadata_id: String
+  study_run_metadata_submitter_id: String
+  analytical_fraction: String
+  experiment_type: String
+  aliquot_id: String
+  aliquot_submitter_id: String
+  aliquot_run_metadata_id: String
+  project_id: String
+  project_submitter_id: String
+  aliquot_alias: String
+  log2_ratio: String
+  unshared_log2_ratio: String
+  unshared_precursor_area: String
+  precursor_area: String
+  cud_label: String
+}
+
+type Query {
+  aliquot(aliquot_id: String, aliquot_submitter_id: String, source: String, acceptDUA: Boolean): [Aliquot]
+  aliquotSearch(name: String!, offset: Int, limit: Int): Paginated
+  aliquotSpectralCount(gene_name: String!, dataset_alias: String!, source: String, acceptDUA: Boolean): [Gene]
+  allCases(acceptDUA: Boolean): [PublicCase]
+  allExperimentTypes(experiment_type: String, tissue_or_organ_of_origin: String, disease_type: String, acceptDUA: Boolean): [Experiment]
+  allPrograms(acceptDUA: Boolean): [Program]
+  biospecimenPerStudy(study_id: String, pdc_study_id: String, study_submitter_id: String, source: String, acceptDUA: Boolean): [Biospecimen]
+  case(case_submitter_id: String, case_id: String, study_id: String, pdc_study_id: String, source: String, acceptDUA: Boolean): [Case]
+  casePerFile(file_id: String!, acceptDUA: Boolean): [CasePerFile]
+  caseSearch(name: String!, offset: Int, limit: Int): Paginated
+  clinicalMetadata(study_id: String, study_submitter_id: String, pdc_study_id: String, acceptDUA: Boolean): [ClinicalMetadata]
+  clinicalPerStudy(study_id: String, pdc_study_id: String, study_submitter_id: String, acceptDUA: Boolean): [Clinical]
+  dataStatsPerProgram(acceptDUA: Boolean): [Program]
+  diseasesAvailable(disease_type: String, tissue_or_organ_of_origin: String, project_submitter_id: String, project_id: String, acceptDUA: Boolean): [Diagnosis]
+  diseaseTypesPerProject(project_submitter_id: String, project_id: String, acceptDUA: Boolean): [Study]
+  experimentalMetadata(study_id: String, study_submitter_id: String, pdc_study_id: String, acceptDUA: Boolean): [ExperimentalMetadata]
+  fileMetadata(file_id: String, file_name: String, file_submitter_id: String, data_category: String, file_type: String, file_format: String, offset: Int, limit: Int, acceptDUA: Boolean): [FileMetadata]
+  filesCountPerStudy(study_submitter_id: String, study_id: String, pdc_study_id: String, file_type: String, acceptDUA: Boolean): [File]
+  filesPerStudy(study_id: String, pdc_study_id: String, study_submitter_id: String, file_type: String, file_name: String, data_category: String, file_format: String, acceptDUA: Boolean): [FilePerStudy]
+  filterStats(filter_name: String, ranking: Int): [FilterItem]
+  geneSearch(name: String!, offset: Int, limit: Int): Paginated
+  geneSpectralCount(gene_name: String!, source: String, acceptDUA: Boolean): [Gene]
+  getPaginatedCases(offset: Int, limit: Int, acceptDUA: Boolean): Paginated
+  getPaginatedFiles(study_id: String, study_submitter_id: String, pdc_study_id: String, file_type: String, file_name: String, offset: Int, limit: Int, acceptDUA: Boolean): Paginated
+  getPaginatedGenes(gene_name: String, offset: Int, limit: Int, acceptDUA: Boolean): Paginated
+  getPaginatedUICase(program_name: String, project_name: String, study_name: String, study_version: String, disease_type: String, primary_site: String, analytical_fraction: String, experiment_type: String, ethnicity: String, race: String, gender: String, morphology: String, primary_diagnosis: String, site_of_resection_or_biopsy: String, tissue_or_organ_of_origin: String, tumor_grade: String, tumor_stage: String, data_category: String, file_type: String, downloadable: String, access: String, sample_type: String, acquisition_type: String, gene_name: String, biospecimen_status: String, case_status: String, sort: String, source: String, offset: Int, limit: Int, getAll: Boolean): Paginated
+  getPaginatedUIClinical(program_name: String, project_name: String, study_name: String, study_version: String, disease_type: String, primary_site: String, analytical_fraction: String, experiment_type: String, ethnicity: String, race: String, gender: String, morphology: String, primary_diagnosis: String, site_of_resection_or_biopsy: String, tissue_or_organ_of_origin: String, tumor_grade: String, tumor_stage: String, data_category: String, file_type: String, downloadable: String, access: String, sample_type: String, acquisition_type: String, gene_name: String, case_status: String, biospecimen_status: String, sort: String, source: String, offset: Int, limit: Int, getAll: Boolean): Paginated
+  getPaginatedUIFile(program_name: String, project_name: String, study_name: String, study_version: String, disease_type: String, primary_site: String, analytical_fraction: String, experiment_type: String, ethnicity: String, race: String, gender: String, morphology: String, primary_diagnosis: String, site_of_resection_or_biopsy: String, tissue_or_organ_of_origin: String, tumor_grade: String, tumor_stage: String, data_category: String, file_type: String, downloadable: String, access: String, sample_type: String, acquisition_type: String, gene_name: String, biospecimen_status: String, case_status: String, sort: String, source: String, offset: Int, limit: Int): Paginated
+  getPaginatedUIGene(gene_name: String, program_name: String, project_name: String, study_name: String, study_version: String, disease_type: String, primary_site: String, analytical_fraction: String, experiment_type: String, ethnicity: String, race: String, gender: String, morphology: String, primary_diagnosis: String, site_of_resection_or_biopsy: String, tissue_or_organ_of_origin: String, tumor_grade: String, tumor_stage: String, data_category: String, file_type: String, downloadable: String, access: String, sample_type: String, acquisition_type: String, biospecimen_status: String, case_status: String, sort: String, source: String, offset: Int, limit: Int, getAll: Boolean): Paginated
+  getPaginatedUIGeneAliquotSpectralCount(gene_name: String!, source: String, offset: Int, limit: Int): Paginated
+  getPaginatedUIGeneAliquotSpectralCountFiltered(program_name: String, project_name: String, study_name: String, disease_type: String, primary_site: String, analytical_fraction: String, experiment_type: String, ethnicity: String, race: String, gender: String, morphology: String, primary_diagnosis: String, site_of_resection_or_biopsy: String, tissue_or_organ_of_origin: String, tumor_grade: String, tumor_stage: String, sample_type: String, acquisition_type: String, gene_name: String!, source: String, sort: String, offset: Int, limit: Int): Paginated
+  getPaginatedUIGeneStudySpectralCount(gene_name: String!, source: String, offset: Int, limit: Int): Paginated
+  getPaginatedUIGeneStudySpectralCountFiltered(program_name: String, project_name: String, study_name: String, disease_type: String, primary_site: String, analytical_fraction: String, experiment_type: String, ethnicity: String, race: String, gender: String, morphology: String, primary_diagnosis: String, site_of_resection_or_biopsy: String, tissue_or_organ_of_origin: String, tumor_grade: String, tumor_stage: String, sample_type: String, acquisition_type: String, gene_name: String!, sort: String, source: String, offset: Int, limit: Int): Paginated
+  getPaginatedUILegacyFile(study_id: String, file_type: String, data_source: String, data_category: String, sort: String, offset: Int, limit: Int): Paginated
+  getPaginatedUIPtm(gene_name: String!, source: String, offset: Int, limit: Int): Paginated
+  getPaginatedUIPublication(disease_type: String, year: String, program: String, pubmed_id: String, offset: Int, limit: Int): Paginated
+  getPaginatedUIStudy(program_name: String, project_name: String, study_name: String, study_version: String, disease_type: String, primary_site: String, analytical_fraction: String, experiment_type: String, study_submitter_id: String, pdc_study_id: String, ethnicity: String, race: String, gender: String, morphology: String, primary_diagnosis: String, site_of_resection_or_biopsy: String, tissue_or_organ_of_origin: String, tumor_grade: String, tumor_stage: String, data_category: String, file_type: String, downloadable: String, access: String, sample_type: String, acquisition_type: String, gene_name: String, biospecimen_status: String, case_status: String, source: String, sort: String, offset: Int, limit: Int, getAll: Boolean): Paginated
+  getPDCMetrics(acceptDUA: Boolean): PDCMetrics
+  getUIHeatmapFilters: HeatmapFilters
+  getUIPtmMultiGenes(genes: String!, source: String): [UIPtm]
+  getUIPtmAlphabetically(gene: String!): [UIPtm]
+  getUIPublicationFilters: PublicationFilters
+  objectSearched(type: String, parameterType: String, parameterValue: String): String
+  paginatedCaseDemographicsPerStudy(study_id: String, pdc_study_id: String, study_name: String, study_submitter_id: String, offset: Int, limit: Int, acceptDUA: Boolean): Paginated
+  paginatedCaseDiagnosesPerStudy(study_id: String, pdc_study_id: String, study_name: String, study_submitter_id: String, offset: Int, limit: Int, acceptDUA: Boolean): Paginated
+  paginatedCaseExposuresPerStudy(study_id: String, pdc_study_id: String, study_name: String, study_submitter_id: String, offset: Int, limit: Int, acceptDUA: Boolean): Paginated
+  paginatedCaseFollowUpsPerStudy(study_id: String, pdc_study_id: String, study_name: String, study_submitter_id: String, offset: Int, limit: Int, acceptDUA: Boolean): Paginated
+  paginatedCaseFamilyHistoriesPerStudy(study_id: String, pdc_study_id: String, study_name: String, study_submitter_id: String, offset: Int, limit: Int, acceptDUA: Boolean): Paginated
+  paginatedCaseTreatmentsPerStudy(study_id: String, pdc_study_id: String, study_name: String, study_submitter_id: String, offset: Int, limit: Int, acceptDUA: Boolean): Paginated
+  paginatedCasesSamplesAliquots(program_name: String, project_name: String, study_name: String, program_submitter_id: String, project_submitter_id: String, study_id: String, study_submitter_id: String, pdc_study_id: String, offset: Int, limit: Int, acceptDUA: Boolean): Paginated
+  paginatedDataMatrix(study_submitter_id: String!, data_type: String!, offset: Int, limit: Int, acceptDUA: Boolean): Paginated
+  paginatedPtmDataMatrix(study_submitter_id: String, pdc_study_id: String, offset: Int, limit: Int, acceptDUA: Boolean): Paginated
+  paginatedSpectralCountPerStudyAliquot(study_id: String, study_submitter_id: String, pdc_study_id: String, plex_name: String, gene_name: String, offset: Int, limit: Int, acceptDUA: Boolean): Paginated
+  pdcDataStats(acceptDUA: Boolean): [PdcDataStats]
+  pdcEntityReference(entity_type: String, entity_id: String, reference_type: String!, source: String, acceptDUA: Boolean): [EntityReference]
+  program(program_submitter_id: String, program_id: String, acceptDUA: Boolean): Program
+  programsProjectsStudies(disease_type: String, instrument_model: String, analytical_fraction: String, experiment_type: String, acceptDUA: Boolean): [Program]
+  projectsPerExperimentType(experiment_type: String, acceptDUA: Boolean): [ExperimentProjects]
+  projectsPerInstrument(instrument: String, acceptDUA: Boolean): [Protocol]
+  protein(protein: String!, acceptDUA: Boolean): [Gene]
+  proteinSearch(name: String!, offset: Int, limit: Int): Paginated
+  protocolPerStudy(study_id: String, pdc_study_id: String, study_submitter_id: String, acceptDUA: Boolean): [Protocol]
+  quantDataMatrix(study_id: String, study_submitter_id: String, pdc_study_id: String, data_type: String!, acceptDUA: Boolean): [[String]]
+  quantDataMatrixDb(study_submitter_id: String!, data_type: String!, attempt: Int!, numOfAliquot: Int, numOfGene: Int, acceptDUA: Boolean): [[String]]
+  quantitiveDataCPTAC2(study_submitter_id: String, pdc_study_id: String, experiment_type: String, acceptDUA: Boolean): [QuantitiveData]
+  reference(entity_type: String, entity_id: String, reference_type: String, source: String, acceptDUA: Boolean): [Reference]
+  sample(sample_id: String, sample_submitter_id: String, source: String, acceptDUA: Boolean): [Sample]
+  searchStats(ranking: Int): [SearchItem]
+  study(study_id: String, pdc_study_id: String, study_submitter_id: String, source: String, acceptDUA: Boolean): [Study]
+  studyCatalog(pdc_study_id: String, acceptDUA: Boolean): [StudyCatalogEntry]
+  studyExperimentalDesign(study_id: String, pdc_study_id: String, study_submitter_id: String, label_aliquot_id: String, source: String, acceptDUA: Boolean): [StudyExperimentalDesign]
+  studySearch(name: String!, offset: Int, limit: Int): Paginated
+  studySearchByExternalId(reference_entity_alias: String!, offset: Int, limit: Int): Paginated
+  studySearchByPDCStudyId(pdc_study_id: String!, offset: Int, limit: Int): Paginated
+  tissueSitesAvailable(tissue_or_organ_of_origin: String, project_submitter_id: String, project_id: String, acceptDUA: Boolean): [Diagnosis]
+  uiAliquotSummary(aliquot_id: String, aliquot_submitter_id: String, source: String): [Aliquot]
+  uiAllPrograms(acceptDUA: Boolean): [Program]
+  uiAnalyticalFractionsCount(program_name: String, project_name: String, study_name: String, disease_type: String, primary_site: String, analytical_fraction: String, experiment_type: String, study_submitter_id: String, pdc_study_id: String, ethnicity: String, race: String, gender: String, morphology: String, primary_diagnosis: String, site_of_resection_or_biopsy: String, tissue_or_organ_of_origin: String, tumor_grade: String, tumor_stage: String, data_category: String, file_type: String, downloadable: String, access: String, sample_type: String, acquisition_type: String, gene_name: String, biospecimen_status: String, case_status: String): [UIExperimentType]
+  uiBiospecimenPerStudy(study_id: String, pdc_study_id: String, study_submitter_id: String, source: String, acceptDUA: Boolean): [Biospecimen]
+  uiCase(program_name: String, project_name: String, study_name: String, disease_type: String, primary_site: String, analytical_fraction: String, experiment_type: String, case_submitter_id: String, case_id: String, source: String): [UICase]
+  uiCasePerFile(file_id: String!, acceptDUA: Boolean): [CasePerFile]
+  uiCaseSummary(case_submitter_id: String, case_id: String, study_id: String, pdc_study_id: String, source: String, acceptDUA: Boolean): [Case]
+  uiDataCategoryFileCount(case_submitter_id: String, case_id: String, source: String): [UIFileCount]
+  uiDataCategoryFileTypeMapping: [File]
+  uiDataVersionSoftwareVersion: [UIDataVersionSoftwareVersion]
+  uiDiseasesAvailable(disease_type: String, tissue_or_organ_of_origin: String, project_submitter_id: String, project_id: String, acceptDUA: Boolean): [Diagnosis]
+  uiExperimentBar(program_name: String, project_name: String, study_name: String, disease_type: String, primary_site: String, analytical_fraction: String, experiment_type: String, study_submitter_id: String, pdc_study_id: String, ethnicity: String, race: String, gender: String, morphology: String, primary_diagnosis: String, site_of_resection_or_biopsy: String, tissue_or_organ_of_origin: String, tumor_grade: String, tumor_stage: String, data_category: String, file_type: String, downloadable: String, access: String, sample_type: String, acquisition_type: String, gene_name: String, biospecimen_status: String, case_status: String): [UIExperimentType]
+  uiExperimentFileCount(case_submitter_id: String, case_id: String, source: String): [UIFileCount]
+  uiExperimentPie(program_name: String, project_name: String, study_name: String, disease_type: String, primary_site: String, analytical_fraction: String, experiment_type: String, study_submitter_id: String, pdc_study_id: String, ethnicity: String, race: String, gender: String, morphology: String, primary_diagnosis: String, site_of_resection_or_biopsy: String, tissue_or_organ_of_origin: String, tumor_grade: String, tumor_stage: String, data_category: String, file_type: String, downloadable: String, access: String, sample_type: String, acquisition_type: String, gene_name: String, biospecimen_status: String, case_status: String): [UIExperimentType]
+  uiFile(program_name: String, project_name: String, study_name: String, disease_type: String, primary_site: String, analytical_fraction: String, experiment_type: String): [UIFile]
+  uiFileMetadata(file_id: String, file_name: String, file_submitter_id: String, data_category: String, file_type: String, file_format: String, offset: Int, limit: Int, acceptDUA: Boolean): [FileMetadata]
+  uiFilesCountPerStudy(study_submitter_id: String, study_id: String, pdc_study_id: String, file_type: String, acceptDUA: Boolean): [File]
+  uiFilesPerStudy(study_id: String, pdc_study_id: String, study_submitter_id: String, file_type: String, file_name: String, data_category: String, file_format: String, acceptDUA: Boolean): [FilePerStudy]
+  uiFilters(file_type: String, access: String, biospecimen_status: String, case_status: String, program_name: String, project_name: String, study_name: String, disease_type: String, primary_site: String, analytical_fraction: String, experiment_type: String, study_submitter_id: String, pdc_study_id: String, ethnicity: String, race: String, gender: String, morphology: String, primary_diagnosis: String, site_of_resection_or_biopsy: String, tissue_or_organ_of_origin: String, tumor_grade: String, tumor_stage: String, data_category: String, downloadable: String, sample_type: String, acquisition_type: String): UIFilter
+  uiGeneAliquotSpectralCount(gene_name: String!, source: String): [UIGeneStudySpectralCount]
+  uiGeneSpectralCount(gene_name: String!, source: String, acceptDUA: Boolean): GeneSp
+  uiGeneStudySpectralCount(gene_name: String!, source: String): [UIGeneStudySpectralCount]
+  uiHeatmapStudies(primary_site: String, disease_type: String, analytical_fraction: String, sort: String): [UIHeatmapStudy]
+  uiLegacyFilesPerStudy(study_id: String, pdc_study_id: String, study_submitter_id: String, file_type: String, file_name: String, data_category: String, file_format: String): [FilePerStudy]
+  uiLegacyStudies(project_submitter_id: String, study_id: String, study_submitter_id: String, pdc_study_id: String): [LegacyStudy]
+  uiLegacyStudyReference(entity_id: String, reference_type: String, acceptDUA: Boolean): [EntityReference]
+  uiPdcDataStats(acceptDUA: Boolean): [PdcDataStats]
+  uiPdcEntityReference(entity_type: String, entity_id: String, reference_type: String!, source: String, acceptDUA: Boolean): [EntityReference]
+  uiPrimarySiteCaseCount: [UIHumanBody]
+  uiProgramsProjectsStudies(disease_type: String, instrument_model: String, analytical_fraction: String, experiment_type: String, acceptDUA: Boolean): [Program]
+  uiProtein(protein: String!, source: String, acceptDUA: Boolean): Gene
+  uiProtocol(study_id: String, pdc_study_id: String, study_submitter_id: String, source: String): [Protocol]
+  uiPublication(study_submitter_id: String, pdc_study_id: String, study_id: String, source: String): [Publication]
+  uiSampleSummary(sample_id: String, sample_submitter_id: String, source: String): [Sample]
+  uiStudy(program_name: String, project_name: String, study_name: String, disease_type: String, primary_site: String, analytical_fraction: String, experiment_type: String, study_submitter_id: String, pdc_study_id: String, ethnicity: String, race: String, gender: String, morphology: String, primary_diagnosis: String, site_of_resection_or_biopsy: String, tissue_or_organ_of_origin: String, tumor_grade: String, tumor_stage: String, data_category: String, downloadable: String, sample_type: String, acquisition_type: String, source: String): [UIStudy]
+  uiStudyExperimentalDesign(study_id: String, pdc_study_id: String, study_submitter_id: String, label_aliquot_id: String, source: String, acceptDUA: Boolean): [StudyExperimentalDesign]
+  uiStudyFilesCountBySource(study_id: String!): [StudyFileSource]
+  uiStudySummary(study_id: String, pdc_study_id: String, study_submitter_id: String, source: String): [Study]
+  uiSunburstChart: [UISunburst]
+  uiTissueSiteCaseCount: [Diagnosis]
+  uiTissueSitesAvailable(tissue_or_organ_of_origin: String, project_submitter_id: String, project_id: String, acceptDUA: Boolean): [Diagnosis]
+  uiWorkflowMetadata(workflow_metadata_submitter_id: String, study_submitter_id: String, pdc_study_id: String, study_id: String, source: String, acceptDUA: Boolean): [WorkflowMetadata]
+  workflowMetadata(workflow_metadata_id: String, workflow_metadata_submitter_id: String, study_submitter_id: String, pdc_study_id: String, study_id: String, source: String, acceptDUA: Boolean): [WorkflowMetadata]
+}
+
+type Reference {
+  reference_id: String
+  entity_type: String
+  entity_id: String
+  entity_submitter_id: String
+  reference_type: String
+  reference_entity_type: String
+  reference_entity_alias: String
+  reference_entity_id: String
+  reference_resource_name: String
+  reference_resource_shortname: String
+  reference_entity_location: String
+  annotation: String
+}
+
+type Sample {
+  sample_id: String
+  gdc_sample_id: String
+  gdc_project_id: String
+  sample_submitter_id: String
+  case_submitter_id: String
+  sample_type: String
+  sample_is_ref: String
+  status: String
+  pool: String
+  biospecimen_anatomic_site: String
+  composition: String
+  current_weight: Float
+  days_to_collection: Int
+  days_to_sample_procurement: Int
+  diagnosis_pathologically_confirmed: String
+  freezing_method: String
+  initial_weight: Float
+  intermediate_dimension: String
+  longest_dimension: String
+  method_of_sample_procurement: String
+  pathology_report_uuid: String
+  preservation_method: String
+  sample_type_id: String
+  shortest_dimension: String
+  time_between_clamping_and_freezing: String
+  time_between_excision_and_freezing: String
+  tissue_type: String
+  tumor_code: String
+  tumor_code_id: String
+  tumor_descriptor: String
+  biospecimen_laterality: String
+  catalog_reference: String
+  distance_normal_to_tumor: String
+  distributor_reference: String
+  growth_rate: String
+  passage_count: String
+  sample_ordinal: String
+  tissue_collection_type: String
+  annotation: String
+  aliquots: [Aliquot]
+  diagnoses: [Diagnosis]
+  case: Case
+  project: Project
+}
+
+type SearchAliquotRecord {
+  aliquot_id: String
+  aliquot_submitter_id: String
+}
+
+type SearchCaseRecord {
+  record_type: String
+  name: String
+  submitter_id_name: String
+  case_id: String
+  description: String
+  proteins: String
+}
+
+type SearchItem {
+  type: String
+  value: String
+  count: Int
+}
+
+type SearchRecord {
+  record_type: String
+  name: String
+  submitter_id_name: String
+  description: String
+  proteins: String
+}
+
+type SearchStudyRecord {
+  record_type: String
+  name: String
+  submitter_id_name: String
+  study_id: String
+  study_submitter_id: String
+  pdc_study_id: String
+  description: String
+  proteins: String
+}
+
+type SignedUrl {
+  url: String
+}
+
+type Spectral_count {
+  study_id: String
+  study_submitter_id: String
+  pdc_study_id: String
+  project_submitter_id: String
+  project_id: String
+  plex: String
+  spectral_count: Int
+  distinct_peptide: Int
+  unshared_peptide: Int
+}
+
+type Study {
+  study_id: String
+  study_submitter_id: String
+  pdc_study_id: String
+  submitter_id_name: String
+  study_name: String
+  study_shortname: String
+  study_version: String
+  is_latest_version: String
+  embargo_date: Date
+  program_name: String
+  project_name: String
+  program_id: String
+  project_id: String
+  project_submitter_id: String
+  disease_type: String
+  primary_site: String
+  disease_types: [String]
+  primary_sites: [String]
+  analytical_fraction: String
+  experiment_type: String
+  acquisition_type: String
+  project: Project
+  cases_count: Int
+  aliquots_count: Int
+  contacts: [Contact]
+  filesCount: [File]
+  diagnoses: [Diagnosis]
+  cases: [Case]
+  files: [File]
+  study_run_metadata: [StudyRunMetadata]
+}
+
+type StudyCatalogEntry {
+  pdc_study_id: String
+  versions: [Study]
+}
+
+type StudyExperimentalDesign {
+  study_run_metadata_id: String
+  study_run_metadata_submitter_id: String
+  study_id: String
+  study_submitter_id: String
+  pdc_study_id: String
+  aliquot_is_ref: String
+  experiment_number: Int
+  experiment_type: String
+  plex_dataset_name: String
+  acquisition_type: String
+  number_of_fractions: String
+  analyte: String
+  label_free_asi: String
+  itraq_113_asi: String
+  itraq_114_asi: String
+  itraq_115_asi: String
+  itraq_116_asi: String
+  itraq_117_asi: String
+  itraq_118_asi: String
+  itraq_119_asi: String
+  itraq_121_asi: String
+  tmt_126_asi: String
+  tmt_127n_asi: String
+  tmt_127c_asi: String
+  tmt_128n_asi: String
+  tmt_128c_asi: String
+  tmt_129n_asi: String
+  tmt_129c_asi: String
+  tmt_129cc_asi: String
+  tmt_130n_asi: String
+  tmt_131_asi: String
+  tmt_131c_asi: String
+  tmt_132n_asi: String
+  tmt_132c_asi: String
+  tmt_133n_asi: String
+  tmt_133c_asi: String
+  tmt_134n_asi: String
+  tmt_134c_asi: String
+  tmt_135n_asi: String
+  label_free: [LabelAliquot]
+  itraq_113: [LabelAliquot]
+  itraq_114: [LabelAliquot]
+  itraq_115: [LabelAliquot]
+  itraq_116: [LabelAliquot]
+  itraq_117: [LabelAliquot]
+  itraq_118: [LabelAliquot]
+  itraq_119: [LabelAliquot]
+  itraq_121: [LabelAliquot]
+  tmt_126: [LabelAliquot]
+  tmt_127n: [LabelAliquot]
+  tmt_127c: [LabelAliquot]
+  tmt_128n: [LabelAliquot]
+  tmt_128c: [LabelAliquot]
+  tmt_129n: [LabelAliquot]
+  tmt_129c: [LabelAliquot]
+  tmt_130c: [LabelAliquot]
+  tmt_130n: [LabelAliquot]
+  tmt_131: [LabelAliquot]
+  tmt_131c: [LabelAliquot]
+  tmt_132n: [LabelAliquot]
+  tmt_132c: [LabelAliquot]
+  tmt_133n: [LabelAliquot]
+  tmt_133c: [LabelAliquot]
+  tmt_134n: [LabelAliquot]
+  tmt_134c: [LabelAliquot]
+  tmt_135n: [LabelAliquot]
+}
+
+type StudyFileSource {
+  study_id: String
+  study_submitter_id: String
+  pdc_study_id: String
+  data_source: String
+  fileCounts: [File]
+}
+
+type StudyRunMetadata {
+  study_run_metadata_id: String
+  study_run_metadata_submitter_id: String
+  experiment_number: Int
+  experiment_type: String
+  folder_name: String
+  fraction: String
+  analyte: String
+  date: Date
+  alias: String
+  replicate_number: String
+  label_free: String
+  itraq_113: String
+  itraq_114: String
+  itraq_115: String
+  itraq_116: String
+  itraq_117: String
+  itraq_118: String
+  itraq_119: String
+  itraq_121: String
+  tmt_126: String
+  tmt_127n: String
+  tmt_127c: String
+  tmt_128n: String
+  tmt_128c: String
+  tmt_129n: String
+  tmt_129c: String
+  tmt_129cc: String
+  tmt_130n: String
+  tmt_131: String
+  tmt_131c: String
+  study: Study
+  protocol: Protocol
+  aliquot_run_metadata: [AliquotRunMetadata]
+  files: [File]
+}
+
+type Treatment {
+  treatment_id: String
+  treatment_submitter_id: String
+  case_id: String
+  case_submitter_id: String
+  project_id: String
+  project_submitter_id: String
+  days_to_treatment_end: String
+  days_to_treatment_start: String
+  initial_disease_status: String
+  regimen_or_line_of_therapy: String
+  therapeutic_agents: String
+  treatment_anatomic_site: String
+  treatment_effect: String
+  treatment_intent_type: String
+  treatment_or_therapy: String
+  treatment_outcome: String
+  treatment_type: String
+  chemo_concurrent_to_radiation: String
+  number_of_cycles: String
+  reason_treatment_ended: String
+  route_of_administration: String
+  treatment_arm: String
+  treatment_dose: String
+  treatment_dose_units: String
+  treatment_effect_indicator: String
+  treatment_frequency: String
+}
+
+type UICase {
+  aliquot_id: String
+  sample_id: String
+  case_id: String
+  case_submitter_id: String
+  aliquot_submitter_id: String
+  case_status: String
+  case_is_ref: String
+  aliquot_is_ref: String
+  aliquot_status: String
+  aliquot_quantity: String
+  aliquot_volume: String
+  amount: String
+  analyte_type: String
+  concentration: String
+  sample_status: String
+  sample_submitter_id: String
+  sample_is_ref: String
+  biospecimen_anatomic_site: String
+  composition: String
+  current_weight: String
+  days_to_collection: String
+  days_to_sample_procurement: String
+  diagnosis_pathologically_confirmed: String
+  freezing_method: String
+  initial_weight: String
+  intermediate_dimension: String
+  longest_dimension: String
+  method_of_sample_procurement: String
+  pathology_report_uuid: String
+  preservation_method: String
+  sample_type_id: String
+  shortest_dimension: String
+  time_between_clamping_and_freezing: String
+  time_between_excision_and_freezing: String
+  tissue_type: String
+  tissue_collection_type: String
+  sample_ordinal: String
+  tumor_code: String
+  tumor_code_id: String
+  tumor_descriptor: String
+  program_name: String
+  project_name: String
+  sample_type: String
+  disease_type: String
+  primary_site: String
+  consent_type: String
+  days_to_consent: String
+  diagnoses: [Diagnosis]
+}
+
+type UIClinical {
+  case_id: String
+  case_submitter_id: String
+  status: String
+  external_case_id: String
+  disease_type: String
+  primary_site: String
+  consent_type: String
+  days_to_consent: String
+  program_name: String
+  project_name: String
+  ethnicity: String
+  gender: String
+  race: String
+  cause_of_death: String
+  days_to_birth: String
+  days_to_death: String
+  vital_status: String
+  year_of_birth: String
+  year_of_death: String
+  age_at_index: String
+  premature_at_birth: String
+  weeks_gestation_at_birth: String
+  age_is_obfuscated: String
+  cause_of_death_source: String
+  occupation_duration_years: String
+  country_of_residence_at_enrollment: String
+  morphology: String
+  diagnosis_id: String
+  primary_diagnosis: String
+  site_of_resection_or_biopsy: String
+  tissue_or_organ_of_origin: String
+  tumor_grade: String
+  tumor_stage: String
+  tumor_largest_dimension_diameter: String
+  age_at_diagnosis: String
+  classification_of_tumor: String
+  days_to_last_follow_up: String
+  days_to_last_known_disease_status: String
+  days_to_recurrence: String
+  last_known_disease_status: String
+  progression_or_recurrence: String
+  prior_malignancy: String
+  ajcc_clinical_m: String
+  ajcc_clinical_n: String
+  ajcc_clinical_stage: String
+  ajcc_clinical_t: String
+  ajcc_pathologic_m: String
+  ajcc_pathologic_n: String
+  ajcc_pathologic_stage: String
+  ajcc_pathologic_t: String
+  ajcc_staging_system_edition: String
+  ann_arbor_b_symptoms: String
+  ann_arbor_clinical_stage: String
+  ann_arbor_extranodal_involvement: String
+  ann_arbor_pathologic_stage: String
+  best_overall_response: String
+  burkitt_lymphoma_clinical_variant: String
+  circumferential_resection_margin: String
+  colon_polyps_history: String
+  days_to_best_overall_response: String
+  days_to_diagnosis: String
+  days_to_hiv_diagnosis: String
+  days_to_new_event: String
+  figo_stage: String
+  hiv_positive: String
+  hpv_positive_type: String
+  hpv_status: String
+  iss_stage: String
+  laterality: String
+  ldh_level_at_diagnosis: String
+  ldh_normal_range_upper: String
+  lymph_nodes_positive: String
+  lymphatic_invasion_present: String
+  method_of_diagnosis: String
+  new_event_anatomic_site: String
+  new_event_type: String
+  overall_survival: String
+  perineural_invasion_present: String
+  prior_treatment: String
+  progression_free_survival: String
+  progression_free_survival_event: String
+  residual_disease: String
+  vascular_invasion_present: String
+  year_of_diagnosis: String
+  icd_10_code: String
+  synchronous_malignancy: String
+  anaplasia_present: String
+  anaplasia_present_type: String
+  child_pugh_classification: String
+  cog_liver_stage: String
+  cog_neuroblastoma_risk_group: String
+  cog_renal_stage: String
+  cog_rhabdomyosarcoma_risk_group: String
+  enneking_msts_grade: String
+  enneking_msts_metastasis: String
+  enneking_msts_stage: String
+  enneking_msts_tumor_site: String
+  esophageal_columnar_dysplasia_degree: String
+  esophageal_columnar_metaplasia_present: String
+  first_symptom_prior_to_diagnosis: String
+  gastric_esophageal_junction_involvement: String
+  goblet_cells_columnar_mucosa_present: String
+  gross_tumor_weight: String
+  inpc_grade: String
+  inpc_histologic_group: String
+  inrg_stage: String
+  inss_stage: String
+  irs_group: String
+  irs_stage: String
+  ishak_fibrosis_score: String
+  lymph_nodes_tested: String
+  medulloblastoma_molecular_classification: String
+  metastasis_at_diagnosis: String
+  metastasis_at_diagnosis_site: String
+  mitosis_karyorrhexis_index: String
+  peripancreatic_lymph_nodes_positive: String
+  peripancreatic_lymph_nodes_tested: String
+  supratentorial_localization: String
+  tumor_confined_to_organ_of_origin: String
+  tumor_focality: String
+  tumor_regression_grade: String
+  vascular_invasion_type: String
+  wilms_tumor_histologic_subtype: String
+  breslow_thickness: String
+  gleason_grade_group: String
+  igcccg_stage: String
+  international_prognostic_index: String
+  largest_extrapelvic_peritoneal_focus: String
+  masaoka_stage: String
+  non_nodal_regional_disease: String
+  non_nodal_tumor_deposits: String
+  ovarian_specimen_status: String
+  ovarian_surface_involvement: String
+  percent_tumor_invasion: String
+  peritoneal_fluid_cytological_status: String
+  primary_gleason_grade: String
+  secondary_gleason_grade: String
+  weiss_assessment_score: String
+  adrenal_hormone: String
+  ann_arbor_b_symptoms_described: String
+  diagnosis_is_primary_disease: String
+  eln_risk_classification: String
+  figo_staging_edition_year: String
+  gleason_grade_tertiary: String
+  gleason_patterns_percent: String
+  margin_distance: String
+  margins_involved_site: String
+  pregnant_at_diagnosis: String
+  satellite_nodule_present: String
+  sites_of_involvement: String
+  tumor_depth: String
+  tumor_cell_content: String
+  auxiliary_data: String
+  who_cns_grade: String
+  who_nte_grade: String
+  diagnosis_uuid: String
+  exposures: [Exposure]
+  family_histories: [FamilyHistory]
+  follow_ups: [FollowUp]
+  treatments: [Treatment]
+  externalReferences: [EntityReference]
+  samples: [Sample]
+}
+
+type UIDataVersionSoftwareVersion {
+  data_release: String
+  build_tag: String
+}
+
+type UIExperimentType {
+  experiment_type: String
+  disease_type: String
+  analytical_fraction: String
+  primary_site: String
+  cases_count: Int
+}
+
+type UIFile {
+  file_id: String
+  study_id: String
+  pdc_study_id: String
+  submitter_id_name: String
+  embargo_date: Date
+  file_name: String
+  study_run_metadata_submitter_id: String
+  project_name: String
+  data_category: String
+  data_source: String
+  file_type: String
+  downloadable: String
+  access: String
+  md5sum: String
+  file_size: String
+}
+
+type UIFileCount {
+  acquisition_type: String
+  submitter_id_name: String
+  experiment_type: String
+  file_type: String
+  data_category: String
+  files_count: Int
+}
+
+type UIFilter {
+  project_name: [UIFilterElement]
+  primary_site: [UIFilterElement]
+  program_name: [UIFilterElement]
+  disease_type: [UIFilterElement]
+  analytical_fraction: [UIFilterElement]
+  experiment_type: [UIFilterElement]
+  acquisition_type: [UIFilterElement]
+  submitter_id_name: [UIFilterElement]
+  sample_type: [UIFilterElement]
+  ethnicity: [UIFilterElement]
+  race: [UIFilterElement]
+  gender: [UIFilterElement]
+  tumor_grade: [UIFilterElement]
+  data_category: [UIFilterElement]
+  file_type: [UIFilterElement]
+  downloadable: [UIFilterElement]
+  access: [UIFilterElement]
+  biospecimen_status: [UIFilterElement]
+  case_status: [UIFilterElement]
+}
+
+type UIFilterElement {
+  filterName: String
+  filterStudyCount: Int
+  filterValue: [String]
+}
+
+type UIGene {
+  gene_name: String
+  chromosome: String
+  locus: String
+  num_study: Int
+  proteins: String
+}
+
+type UIGeneStudySpectralCount {
+  study_submitter_id: String
+  pdc_study_id: String
+  submitter_id_name: String
+  experiment_type: String
+  aliquot_id: String
+  plex: String
+  label: String
+  spectral_count: Int
+  distinct_peptide: Int
+  unshared_peptide: Int
+  precursor_area: String
+  log2_ratio: String
+  unshared_log2_ratio: String
+  unshared_precursor_area: String
+  aliquots_count: Int
+  plexes_count: Int
+}
+
+type UIHeatmapStudy {
+  study_id: String
+  study_submitter_id: String
+  pdc_study_id: String
+  submitter_id_name: String
+  study_description: String
+  program_name: String
+  project_name: String
+  disease_type: String
+  primary_site: String
+  analytical_fraction: String
+  experiment_type: String
+  embargo_date: Date
+  heatmapFiles: [String]
+}
+
+type UIHumanBody {
+  major_primary_site: String
+  cases_count: Int
+  primarySites: [String]
+}
+
+type UIPtm {
+  gene_name: String
+  ptm_type: String
+  site: String
+  peptide: String
+}
+
+type UISpectralCount {
+  gene_name: String
+  study_submitter_id: String
+  project_submitter_id: String
+  aliquot_id: String
+  plex: String
+  spectral_count: Int
+  distinct_peptide: Int
+  unshared_peptide: Int
+}
+
+type UIStudy {
+  study_id: String
+  study_submitter_id: String
+  pdc_study_id: String
+  submitter_id_name: String
+  study_description: String
+  program_name: String
+  project_name: String
+  disease_type: String
+  primary_site: String
+  analytical_fraction: String
+  experiment_type: String
+  embargo_date: Date
+  cases_count: Int
+  aliquots_count: Int
+  filesCount: [File]
+  supplementaryFilesCount: [File]
+  nonSupplementaryFilesCount: [File]
+  contacts: [Contact]
+  versions: [Version]
+}
+
+type UISunburst {
+  project_submitter_id: String
+  tissue_or_organ_of_origin: String
+  disease_type: String
+  sample_type: String
+  cases_count: Int
+}
+
+type Version {
+  number: String
+  name: String
+}
+
+type WorkflowMetadata {
+  workflow_metadata_id: String
+  study_id: String
+  protocol_id: String
+  workflow_metadata_submitter_id: String
+  study_submitter_id: String
+  pdc_study_id: String
+  protocol_submitter_id: String
+  cptac_study_id: String
+  submitter_id_name: String
+  study_submitter_name: String
+  analytical_fraction: String
+  experiment_type: String
+  instrument: String
+  refseq_database_version: String
+  uniport_database_version: String
+  hgnc_version: String
+  raw_data_processing: String
+  raw_data_conversion: String
+  sequence_database_search: String
+  search_database_parameters: String
+  phosphosite_localization: String
+  ms1_data_analysis: String
+  psm_report_generation: String
+  cptac_dcc_mzidentml: String
+  mzidentml_refseq: String
+  mzidentml_uniprot: String
+  gene_to_prot: String
+  cptac_galaxy_workflows: String
+  cptac_galaxy_tools: String
+  cdap_reports: String
+  cptac_dcc_tools: String
+}
+

@@ -1,0 +1,7 @@
+type StudyFileSource {
+	study_id: String
+	study_submitter_id: String
+	pdc_study_id: String
+	data_source : String
+	fileCounts: [File]
+}

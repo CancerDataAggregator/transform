@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 KEY_FILE=GCS-service-account-key.etl-github-testing.json
 
