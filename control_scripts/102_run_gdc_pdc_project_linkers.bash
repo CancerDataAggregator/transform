@@ -11,6 +11,12 @@ echo ./package_root/auxiliary_scripts/201_enumerate_pdc_program_project_study_hi
 echo ./package_root/auxiliary_scripts/300_naively_equate_PDC_project_and_study_submitter_IDs_to_GDC_project_IDs.pl
 ./package_root/auxiliary_scripts/300_naively_equate_PDC_project_and_study_submitter_IDs_to_GDC_project_IDs.pl
 
->&2 echo "\nDon't forget to hand-edit the project map before proceeding!\n\n";
+>&2 echo
+
+>&2 echo "Don't forget to hand-edit the project map before proceeding!"
+
+>&2 echo
+
+>&2 echo
 
 

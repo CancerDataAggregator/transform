@@ -77,6 +77,6 @@ echo ./package_root/extract/pdc/scripts/100_uiPrimarySiteCaseCount.py
 echo ./package_root/extract/pdc/scripts/101_allExperimentTypes.py
 ./package_root/extract/pdc/scripts/101_allExperimentTypes.py
 
-echo 'all done! Don\'t forget to \"grep error \*\" all the API JSON results to make sure nothing server-side crashed partway through the extraction run.'
+echo "all done! Don't forget to 'grep error *' all the API JSON results to make sure nothing server-side crashed partway through the extraction run."
 
 

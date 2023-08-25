@@ -8,6 +8,7 @@ build/
 dist/
 zz00_build
 zz01_install_somewhere
+cds_sort_of_original_script_timestamps.txt
 
 # pip install -e generated
 *.egg-info/
