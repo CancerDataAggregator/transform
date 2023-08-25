@@ -42,23 +42,88 @@ def get_safe_value( record, field_name ):
         
         sys.exit(f"FATAL: The given record does not have the expected {field_name} field; aborting.")
 
-def load_tsv_as_dict( input_file ):
+def load_qualified_id_association( input_file, qualifier_field_name, id_one_field_name, id_two_field_name ):
     
     result = dict()
 
     with open( input_file ) as IN:
         
-        colnames = next(IN).rstrip('\n').split('\t')
+        colnames = next( IN ).rstrip( '\n' ).split( '\t' )
 
-        for line in [ next_line.rstrip('\n') for next_line in IN ]:
+        for line in [ next_line.rstrip( '\n' ) for next_line in IN ]:
             
-            values = line.split('\t')
+            values = line.split( '\t' )
 
-            # Assumes first column is a unique ID column. If this
-            # doesn't end up being true, only the last record will
-            # be stored for any repeated ID.
+            record = dict( zip( colnames, values ) )
 
-            result[values[0]] = dict( zip( colnames, values ) )
+            qualifier = record[qualifier_field_name]
+
+            id_one = record[id_one_field_name]
+
+            id_two = record[id_two_field_name]
+
+            if qualifier not in result:
+                
+                result[qualifier] = dict()
+
+            if id_one not in result[qualifier]:
+                
+                result[qualifier][id_one] = set()
+
+            result[qualifier][id_one].add( id_two )
+
+    return result
+
+def load_tsv_as_dict( input_file, id_column_count=1 ):
+    
+    result = dict()
+
+    with open( input_file ) as IN:
+        
+        colnames = next( IN ).rstrip( '\n' ).split( '\t' )
+
+        if id_column_count == 1:
+            
+            for line in [ next_line.rstrip( '\n' ) for next_line in IN ]:
+                
+                values = line.split( '\t' )
+
+                # First column is a unique ID column, according to id_column_count.
+                # If this doesn't end up being true, only the last record will
+                # be stored for any repeated ID.
+
+                result[values[0]] = dict( zip( colnames, values ) )
+
+        elif id_column_count < 1:
+            
+            sys.exit( f"load_tsv_as_dict(): FATAL: id_column_count cannot be less than 1 (your value: '{id_column_count}'). Aborting." )
+
+        elif id_column_count > 2:
+            
+            sys.exit( f"load_tsv_as_dict(): FATAL: id_column_count values greater than 2 (your value: '{id_column_count}') are not currently supported. Aborting." )
+
+        elif id_column_count != 2:
+            
+            sys.exit( f"load_tsv_as_dict(): FATAL: id_column_count value (your value: '{id_column_count}') must be a nonnegative integer. Aborting." )
+
+        else:
+            
+            for line in [ next_line.rstrip( '\n' ) for next_line in IN ]:
+                
+                values = line.split( '\t' )
+
+                key_one = values[0]
+
+                key_two = values[1]
+
+                if key_one not in result:
+                    
+                    result[key_one] = dict()
+
+                # First two columns comprise a unique composite ID, according to id_column_count.
+                # If this doesn't end up being true, only the last record will be stored for any repeated composite ID.
+
+                result[key_one][key_two] = dict( zip( colnames, values ) )
 
     return result
 
