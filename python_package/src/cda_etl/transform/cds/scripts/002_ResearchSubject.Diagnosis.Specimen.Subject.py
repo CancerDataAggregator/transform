@@ -96,6 +96,8 @@ subject_researchsubject_output_tsv = path.join( output_root, 'subject_researchsu
 
 cds_aux_dir = path.join( 'auxiliary_metadata', '__CDS_supplemental_metadata' )
 
+entity_ids_projects_and_types = path.join( cds_aux_dir, 'CDS_entity_submitter_id_to_program_and_study.tsv' )
+
 warning_log = path.join( cds_aux_dir, 'warning_log.txt' )
 
 rs_output_column_names = [
@@ -175,6 +177,8 @@ file_specimen = dict()
 printed_diagnosis = set()
 printed_sample = set()
 
+entity_studies_by_type = dict()
+
 with open( participant_input_tsv ) as PARTICIPANT_IN, open( researchsubject_output_tsv, 'w' ) as RS_OUT, open( researchsubject_identifier_output_tsv, 'w' ) as RS_IDENTIFIER, \
     open( researchsubject_diagnosis_output_tsv, 'w' ) as RS_DIAGNOSIS, open( researchsubject_specimen_output_tsv, 'w' ) as RS_SPECIMEN, \
     open( diagnosis_output_tsv, 'w' ) as DIAGNOSIS, open( diagnosis_identifier_output_tsv, 'w' ) as DIAGNOSIS_IDENTIFIER, \
@@ -198,6 +202,16 @@ with open( participant_input_tsv ) as PARTICIPANT_IN, open( researchsubject_outp
         study_name = input_participant_record['study_name']
 
         participant_id = input_participant_record['participant_id']
+
+        if 'participant' not in entity_studies_by_type:
+            
+            entity_studies_by_type['participant'] = dict()
+
+        if participant_id not in entity_studies_by_type['participant']:
+            
+            entity_studies_by_type['participant'][participant_id] = set()
+
+        entity_studies_by_type['participant'][participant_id].add( study_name )
 
         # Build one record per sample; don't duplicate as we iterate across Studies this Case is in.
 
@@ -234,6 +248,16 @@ with open( participant_input_tsv ) as PARTICIPANT_IN, open( researchsubject_outp
                 
                 for diagnosis_id in sorted( participant_diagnosis[study_name][participant_id] ):
                     
+                    if 'diagnosis' not in entity_studies_by_type:
+                        
+                        entity_studies_by_type['diagnosis'] = dict()
+
+                    if diagnosis_id not in entity_studies_by_type['diagnosis']:
+                        
+                        entity_studies_by_type['diagnosis'][diagnosis_id] = set()
+
+                    entity_studies_by_type['diagnosis'][diagnosis_id].add( study_name )
+
                     if diagnosis_id in diagnosis[study_name] and diagnosis[study_name][diagnosis_id]['age_at_diagnosis'] is not None and diagnosis[study_name][diagnosis_id]['age_at_diagnosis'] != '':
                         
                         # All CDS values are currently in years.
@@ -323,6 +347,16 @@ with open( participant_input_tsv ) as PARTICIPANT_IN, open( researchsubject_outp
                 
                 for sample_id in sorted( participant_sample[study_name][participant_id] ):
                     
+                    if 'sample' not in entity_studies_by_type:
+                        
+                        entity_studies_by_type['sample'] = dict()
+
+                    if sample_id not in entity_studies_by_type['sample']:
+                        
+                        entity_studies_by_type['sample'][sample_id] = set()
+
+                    entity_studies_by_type['sample'][sample_id].add( study_name )
+
                     sample_cda_id = f"{rs_id}.{sample_id}"
 
                     print( *[ rs_id, sample_cda_id ], sep='\t', file=RS_SPECIMEN )
@@ -380,7 +414,7 @@ with open( participant_input_tsv ) as PARTICIPANT_IN, open( researchsubject_outp
 
                         if output_record['primary_diagnosis_site'] != '' and output_record['primary_diagnosis_site'] != primary_diagnosis_site:
                             
-                            print( f"WARNING: RS {rs_id} participant_id ({study_name}) {participant_id} diagnosis.primary_site value '{primary_diagnosis_site}' differs from previously-recorded value '{output_record['primary_diagnosis_site']}'; aborting.", file=WARN )
+                            print( f"WARNING: RS {rs_id} participant_id ({study_name}) {participant_id} diagnosis.primary_site value '{primary_diagnosis_site}' differs from previously-recorded value '{output_record['primary_diagnosis_site']}'; overwriting with new value.", file=WARN )
 
                         output_record['primary_diagnosis_site'] = primary_diagnosis_site
 
@@ -421,6 +455,22 @@ with open( participant_input_tsv ) as PARTICIPANT_IN, open( researchsubject_outp
                             if current_row['derived_from_specimen'] != 'initial specimen':
                                 
                                 file_specimen[file_id].add( current_row['derived_from_specimen'] )
+
+# Print list of select entities by type with study/program affiliations for inter-DC cross-mapping.
+
+with open( entity_ids_projects_and_types, 'w' ) as ENTITIES_BY_STUDY:
+    
+    print( *[ 'entity_type', 'entity_id', 'program_acronym', 'study_name' ], sep='\t', file=ENTITIES_BY_STUDY )
+
+    for entity_type in sorted( entity_studies_by_type ):
+        
+        for entity_id in sorted( entity_studies_by_type[entity_type] ):
+            
+            for study_name in sorted( entity_studies_by_type[entity_type][entity_id] ):
+                
+                program_acronym = program[study_program[study_name]]['program_acronym']
+
+                print( *[ entity_type, entity_id, program_acronym, study_name ], sep='\t', file=ENTITIES_BY_STUDY )
 
 # Print collected Subject records.
 

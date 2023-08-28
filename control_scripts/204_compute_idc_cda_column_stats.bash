@@ -2,7 +2,10 @@
 
 chmod 755 ./package_root/auxiliary_scripts/*py
 
-echo ./package_root/auxiliary_scripts/600_count_distinct_values_by_table_and_column.IDC_CDA_data.py 
-./package_root/auxiliary_scripts/600_count_distinct_values_by_table_and_column.IDC_CDA_data.py 
+echo ./package_root/auxiliary_scripts/310_count_distinct_values_by_table_and_column.IDC_CDA_data.py
+./package_root/auxiliary_scripts/310_count_distinct_values_by_table_and_column.IDC_CDA_data.py
+
+echo ./package_root/auxiliary_scripts/311_count_distinct_values_by_table_and_column.merged_IDC_PDC_and_GDC_CDA_data.py
+./package_root/auxiliary_scripts/311_count_distinct_values_by_table_and_column.merged_IDC_PDC_and_GDC_CDA_data.py
 
 
