@@ -14,8 +14,8 @@ class IDC_aggregator:
         self.source_version = source_version
 
         self.extract_dir = path.join( 'extracted_data', 'idc', self.source_version )
+        self.idc_cda_dir = path.join( 'cda_tsvs', 'idc', self.source_version )
 
-        self.output_dir = path.join( 'cda_tsvs', 'idc', self.source_version )
         self.merged_input_dir = path.join( 'cda_tsvs', 'merged_gdc_and_pdc_tables' )
         self.merged_output_dir = path.join( 'cda_tsvs', 'merged_idc_gdc_and_pdc_tables' )
 
@@ -30,25 +30,15 @@ class IDC_aggregator:
             'pdc_project_affiliations' : path.join( self.project_crossref_dir, 'PDC_entity_submitter_id_to_program_project_and_study.tsv' ),
             'idc_to_pdc_project_map' : path.join( self.project_crossref_dir, 'naive_IDC-PDC_project_id_map.hand_edited_to_remove_false_positives.tsv' ),
             'gdc_pdc_merged_subject_ids' : path.join( self.merge_log_dir, 'PDC_subject_IDs_absorbed_into_corresponding_GDC_subject_IDs.tsv' ),
-            'subject_identifier' : path.join( self.output_dir, 'subject_identifier.tsv.gz' ),
-            'subject_associated_project' : path.join( self.output_dir, 'subject_associated_project.tsv.gz' )
-        }
-
-        self.merged_input_files = {
-            
-            '' : path.join( self.merged_input_dir, '' ),
-        }
-
-        self.merged_output_files = {
-            
-            '' : path.join( self.merged_output_dir, '' ),
+            'subject_identifier' : path.join( self.idc_cda_dir, 'subject_identifier.tsv.gz' ),
+            'subject_associated_project' : path.join( self.idc_cda_dir, 'subject_associated_project.tsv.gz' )
         }
 
         self.aux_files = {
             
             'idc_subject_id_to_gdc_subject_id' : path.join( self.merge_log_dir, 'idc_subject_id_to_gdc_subject_id.tsv' ),
             'idc_subject_id_to_pdc_subject_id' : path.join( self.merge_log_dir, 'idc_subject_id_to_pdc_subject_id.tsv' ),
-            'all_merged_subject_ids' : path.join( self.merge_log_dir, 'all_merged_subject_ids.tsv' ),
+            'all_merged_subject_ids_so_far' : path.join( self.merge_log_dir, 'merged_subject_ids.IDC_GDC_PDC.tsv' ),
             'idc_subject_id_to_cda_subject_id' : path.join( self.merge_log_dir, 'idc_subject_id_to_cda_subject_id.tsv' )
         }
 
@@ -280,21 +270,21 @@ class IDC_aggregator:
 
         gdc_subject_to_pdc_subject_observed = dict()
 
-        all_idc_subject_ids = set()
+        all_matched_idc_subject_ids = set()
 
         for idc_subject_id in sorted( idc_subject_to_gdc_subject ):
             
-            all_idc_subject_ids.add( idc_subject_id )
+            all_matched_idc_subject_ids.add( idc_subject_id )
 
         for idc_subject_id in sorted( idc_subject_to_pdc_subject ):
             
-            all_idc_subject_ids.add( idc_subject_id )
+            all_matched_idc_subject_ids.add( idc_subject_id )
 
-        with open( self.aux_files['all_merged_subject_ids'], 'w' ) as OUT:
+        with open( self.aux_files['all_merged_subject_ids_so_far'], 'w' ) as OUT:
             
             print( *[ 'IDC_subject_id', 'GDC_subject_id', 'PDC_subject_id' ], sep='\t', end='\n', file=OUT )
 
-            for idc_subject_id in sorted( all_idc_subject_ids ):
+            for idc_subject_id in sorted( all_matched_idc_subject_ids ):
                 
                 gdc_subject_id = ''
 
@@ -348,7 +338,7 @@ class IDC_aggregator:
 
                 gdc_pdc_merges[gdc_id].add( pdc_id )
 
-        with open( self.aux_files['all_merged_subject_ids'] ) as IN:
+        with open( self.aux_files['all_merged_subject_ids_so_far'] ) as IN:
             
             header = next(IN).rstrip('\n')
 
@@ -370,7 +360,7 @@ class IDC_aggregator:
 
     def __map_idc_subject_ids_to_cda_targets( self ):
         
-        with open( self.aux_files['all_merged_subject_ids'] ) as IN, open( self.aux_files['idc_subject_id_to_cda_subject_id'], 'w' ) as OUT:
+        with open( self.aux_files['all_merged_subject_ids_so_far'] ) as IN, open( self.aux_files['idc_subject_id_to_cda_subject_id'], 'w' ) as OUT:
             
             colnames = next(IN).rstrip('\n').split('\t')
 
@@ -410,15 +400,15 @@ class IDC_aggregator:
 
         cross_dc_subject_id_map = self.aux_files['idc_subject_id_to_cda_subject_id']
 
-        idc_file_subject_input_tsv = path.join( self.output_dir, 'file_subject.tsv.gz' )
+        idc_file_subject_input_tsv = path.join( self.idc_cda_dir, 'file_subject.tsv.gz' )
 
-        idc_subject_input_tsv = path.join( self.output_dir, 'subject.tsv.gz' )
+        idc_subject_input_tsv = path.join( self.idc_cda_dir, 'subject.tsv.gz' )
 
         idc_subject_associated_project_input_tsv = self.input_files['subject_associated_project']
 
         idc_subject_identifier_input_tsv = self.input_files['subject_identifier']
 
-        idc_subject_researchsubject_input_tsv = path.join( self.output_dir, 'subject_researchsubject.tsv.gz' )
+        idc_subject_researchsubject_input_tsv = path.join( self.idc_cda_dir, 'subject_researchsubject.tsv.gz' )
 
         file_subject_output_tsv = path.join( self.merged_output_dir, 'file_subject.tsv.gz' )
 
@@ -545,7 +535,7 @@ class IDC_aggregator:
 
         with gzip.open( file_subject_output_tsv, 'wt' ) as OUT:
             
-            # Copy over the records from GDC.
+            # Copy over the records from GDC+PDC.
 
             with open( cda_file_subject_input_tsv ) as IN:
                 
@@ -557,7 +547,7 @@ class IDC_aggregator:
                     
                     print( line, end='\n', file=OUT )
 
-            # Port over records from PDC, translating subject_id where appropriate.
+            # Port over records from IDC, translating subject_id where appropriate.
 
             with gzip.open( idc_file_subject_input_tsv, 'rt' ) as IN:
                 
@@ -741,7 +731,7 @@ class IDC_aggregator:
                 
                 cda_file_full_path = path.join( self.merged_input_dir, file_basename )
 
-                idc_file_full_path = path.join( self.output_dir, file_basename + '.gz' )
+                idc_file_full_path = path.join( self.idc_cda_dir, file_basename + '.gz' )
 
                 dest_file_full_path = path.join( self.merged_output_dir, file_basename + '.gz' )
 
@@ -771,7 +761,7 @@ class IDC_aggregator:
 
                 # File metadata is now too big to sort.
 
-                if re.search( r'file', file_basename ) is None:
+                if re.search( r'^file', file_basename ) is None:
                     
                     sort_file_with_header( dest_file_full_path, gzipped=True )
 

@@ -7,7 +7,7 @@ import sys
 
 from os import makedirs, path
 
-url = 'https://dataservice.datacommons.cancer.gov/v1/graphql/'
+url = 'https://caninecommons.cancer.gov/v1/graphql/'
 
 output_dir = path.join( 'auxiliary_metadata', '__schemas' )
 
@@ -15,9 +15,9 @@ if not path.exists( output_dir ):
     
     makedirs( output_dir )
 
-out_json = f"{output_dir}/CDS_schema.json"
+out_json = f"{output_dir}/ICDC_schema.json"
 
-out_gql = f"{output_dir}/CDS_schema.gql"
+out_gql = f"{output_dir}/ICDC_schema.gql"
 
 query = '''{
   __schema {
@@ -57,6 +57,10 @@ query = '''{
               ofType {
                 kind
                 name
+                ofType {
+                  kind
+                  name
+                }
               }
             }
           }

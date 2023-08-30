@@ -37,21 +37,25 @@ my $header = <IN>;
 
 my $cds_data = {};
 
+my $cds_study_name_to_id = {};
+
 my $cds_study_to_program = {};
 
 my $cds_program_to_study = {};
 
 while ( chomp( my $line = <IN> ) ) {
     
-    # entity_type	entity_id	program_acronym	study_name
+    # entity_type	entity_id	program_acronym	study_name	study_id
 
-    my ( $entity_type, $entity_id, $program_acronym, $study_name ) = split( /\t/, $line );
+    my ( $entity_type, $entity_id, $program_acronym, $study_name, $study_id ) = split( /\t/, $line );
 
     if ( exists( $type_map->{$entity_type} ) ) {
         
         my $target_type = $type_map->{$entity_type};
 
         $cds_data->{$target_type}->{$entity_id}->{$study_name} = 1;
+
+        $cds_study_name_to_id->{$study_name} = $study_id;
 
         $cds_study_to_program->{$study_name} = $program_acronym;
 
@@ -136,17 +140,19 @@ foreach my $target_type ( keys %$cds_data ) {
 
 open OUT, ">$out_file" or die("Can't open $out_file for writing.\n");
 
-print OUT join( "\t", 'match_count', 'CDS_program_acronym', 'CDS_study_name', 'IDC_collection_id' ) . "\n";
+print OUT join( "\t", 'match_count', 'CDS_program_acronym', 'CDS_study_name', 'CDS_study_id', 'IDC_collection_id' ) . "\n";
 
 foreach my $program_acronym ( sort { $cds_program_total_match_count->{$b} <=> $cds_program_total_match_count->{$a} } keys %$cds_program_total_match_count ) {
     
     foreach my $study_name ( sort { $cds_study_total_match_count->{$b} <=> $cds_study_total_match_count->{$a} } keys %{$cds_program_to_study->{$program_acronym}} ) {
         
+        my $study_id = $cds_study_name_to_id->{$study_name};
+
         foreach my $collection_id ( sort { $a cmp $b } keys %{$cds_to_idc_count->{$study_name}} ) {
             
             my $match_count = $cds_to_idc_count->{$study_name}->{$collection_id};
 
-            print OUT join( "\t", $match_count, $program_acronym, $study_name, $collection_id ) . "\n";
+            print OUT join( "\t", $match_count, $program_acronym, $study_name, $study_id, $collection_id ) . "\n";
         }
     }
 }

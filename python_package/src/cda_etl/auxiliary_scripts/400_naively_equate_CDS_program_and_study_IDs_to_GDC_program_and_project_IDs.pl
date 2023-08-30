@@ -29,6 +29,8 @@ my $type_map = {
     'participant' => 'case'
 };
 
+
+
 # EXECUTION
 
 open IN, "<$cds_file" or die("Can't open $cds_file for reading.\n");
@@ -37,21 +39,25 @@ my $header = <IN>;
 
 my $cds_data = {};
 
+my $cds_study_name_to_id = {};
+
 my $cds_study_to_program = {};
 
 my $cds_program_to_study = {};
 
 while ( chomp( my $line = <IN> ) ) {
     
-    # entity_type	entity_id	program_acronym	study_name
+    # entity_type	entity_id	program_acronym	study_name	study_id
 
-    my ( $entity_type, $entity_id, $program_acronym, $study_name ) = split( /\t/, $line );
+    my ( $entity_type, $entity_id, $program_acronym, $study_name, $study_id ) = split( /\t/, $line );
 
     if ( exists( $type_map->{$entity_type} ) ) {
         
         my $target_type = $type_map->{$entity_type};
 
         $cds_data->{$target_type}->{$entity_id}->{$study_name} = 1;
+
+        $cds_study_name_to_id->{$study_name} = $study_id;
 
         $cds_study_to_program->{$study_name} = $program_acronym;
 
@@ -135,7 +141,7 @@ foreach my $target_type ( keys %$cds_data ) {
 
 open OUT, ">$out_file" or die("Can't open $out_file for writing.\n");
 
-print OUT join( "\t", 'match_count', 'CDS_program_acronym', 'CDS_study_name', 'GDC_program_name', 'GDC_project_id' ) . "\n";
+print OUT join( "\t", 'match_count', 'CDS_program_acronym', 'CDS_study_name', 'CDS_study_id', 'GDC_program_name', 'GDC_project_id' ) . "\n";
 
 foreach my $program_acronym ( sort { $cds_program_total_match_count->{$b} <=> $cds_program_total_match_count->{$a} } keys %$cds_program_total_match_count ) {
     
@@ -147,7 +153,9 @@ foreach my $program_acronym ( sort { $cds_program_total_match_count->{$b} <=> $c
 
             my $program_name = $gdc_project_to_program->{$project_id};
 
-            print OUT join( "\t", $match_count, $program_acronym, $study_name, $program_name, $project_id ) . "\n";
+            my $study_id = $cds_study_name_to_id->{$study_name};
+
+            print OUT join( "\t", $match_count, $program_acronym, $study_name, $study_id, $program_name, $project_id ) . "\n";
         }
     }
 }

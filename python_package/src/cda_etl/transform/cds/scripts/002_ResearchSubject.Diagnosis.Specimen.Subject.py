@@ -460,7 +460,7 @@ with open( participant_input_tsv ) as PARTICIPANT_IN, open( researchsubject_outp
 
 with open( entity_ids_projects_and_types, 'w' ) as ENTITIES_BY_STUDY:
     
-    print( *[ 'entity_type', 'entity_id', 'program_acronym', 'study_name' ], sep='\t', file=ENTITIES_BY_STUDY )
+    print( *[ 'entity_type', 'entity_id', 'program_acronym', 'study_name', 'study_id' ], sep='\t', file=ENTITIES_BY_STUDY )
 
     for entity_type in sorted( entity_studies_by_type ):
         
@@ -470,7 +470,9 @@ with open( entity_ids_projects_and_types, 'w' ) as ENTITIES_BY_STUDY:
                 
                 program_acronym = program[study_program[study_name]]['program_acronym']
 
-                print( *[ entity_type, entity_id, program_acronym, study_name ], sep='\t', file=ENTITIES_BY_STUDY )
+                study_id = study[study_name]['phs_accession']
+
+                print( *[ entity_type, entity_id, program_acronym, study_name, study_id ], sep='\t', file=ENTITIES_BY_STUDY )
 
 # Print collected Subject records.
 
