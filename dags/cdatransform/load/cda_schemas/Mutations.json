@@ -52,17 +52,6 @@
       ]
     },
     "case_id": {
-      "foreignKeys": [
-        {
-          "fields": [
-            "researchsubject_id"
-          ],
-          "type": "SINGLE",
-          "tableName": "{SubjectsTable}",
-          "tableAlias": "researchsubjects",
-          "location": "ResearchSubject"
-        }
-      ]
     },
     "project_short_name": {
       "countByFields": [{

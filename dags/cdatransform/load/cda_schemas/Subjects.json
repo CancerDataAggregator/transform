@@ -78,25 +78,8 @@
         "field": "id",
         "alias": "total",
         "type": "TOTAL"
-      }],
-      "foreignKeys": [
-        {
-          "fields": [
-            "case_id"
-          ],
-          "type": "SINGLE",
-          "tableName": "{MutationsTable}",
-          "tableAlias": "mutations"
-        },
-        {
-          "fields": [
-            "ResearchSubjects"
-          ],
-          "type": "SINGLE",
-          "tableName": "{FilesTable}",
-          "tableAlias": "files"
-        }
-      ]
+      }]
+      
     },
     "ResearchSubject.identifier.system": {
       "partitionBy": true,
@@ -199,15 +182,6 @@
         "type": "TOTAL"
       }],
       "foreignKeys": [
-        {
-          "fields": [
-            "Tumor_Sample_UUID",
-            "Matched_Norm_Sample_UUID"
-          ],
-          "type": "COMPOSITE_OR",
-          "tableName": "{MutationsTable}",
-          "tableAlias": "mutations"
-        },
         {
           "fields": [
             "Specimens"
