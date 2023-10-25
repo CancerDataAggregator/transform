@@ -19,7 +19,7 @@ class CDA_loader:
 
         self.max_records_per_file = 20000000
 
-        self.merged_tsv_dir = path.join( 'cda_tsvs', 'merged_idc_gdc_and_pdc_tables' )
+        self.merged_tsv_dir = path.join( 'cda_tsvs', 'merged_cds_idc_gdc_and_pdc_tables' )
 
         self.jsonl_output_dir = 'BigQuery_JSONL'
 

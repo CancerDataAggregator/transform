@@ -18,9 +18,7 @@ api_url = 'https://caninecommons.cancer.gov/v1/graphql/'
 output_root = path.join( 'extracted_data', 'icdc' )
 
 case_out_dir = path.join( output_root, 'case' )
-
 case_output_tsv = path.join( case_out_dir, 'case.tsv' )
-
 case_cohort_output_tsv = path.join( case_out_dir, 'case.cohort_id.tsv' )
 case_study_output_tsv = path.join( case_out_dir, 'case.clinical_study_designation.tsv' )
 case_enrollment_output_tsv = path.join( case_out_dir, 'case.enrollment_id.tsv' )
@@ -193,6 +191,9 @@ case_api_query_json_template = f'''    {{
             study_arm {{
                 arm_id
             }}
+            adverse_event {{
+                adverse_event_term
+            }}
             off_study {{
                 ''' + '''
                 '''.join( scalar_off_study_fields ) + f'''
@@ -265,7 +266,7 @@ with open( case_output_json, 'w' ) as JSON, \
     print( *[ 'case_id', 'arm_id' ], sep='\t', file=CASE_STUDY_ARM )
     print( *[ 'case_id', 'diagnosis_id' ], sep='\t', file=CASE_DIAGNOSIS )
     print( *[ 'case_id', 'sample_id' ], sep='\t', file=CASE_SAMPLE )
-    print( *[ 'case_id', 'uuid' ], sep='\t', file=CASE_FILE )
+    print( *[ 'case_id', 'file.uuid' ], sep='\t', file=CASE_FILE )
     print( *[ 'case_id', 'visit_id' ], sep='\t', file=CASE_VISIT )
     print( *( [ 'case_id' ] + scalar_off_study_fields ), sep='\t', file=CASE_OFF_STUDY )
     print( *( [ 'case_id' ] + scalar_off_treatment_fields ), sep='\t', file=CASE_OFF_TREATMENT )
@@ -301,7 +302,7 @@ with open( case_output_json, 'w' ) as JSON, \
 
         else:
             
-            # Save case fields and association data as TSVs.
+            # Save fields and association data as TSVs.
 
             for case in case_result['data']['case']:
                 
@@ -326,23 +327,37 @@ with open( case_output_json, 'w' ) as JSON, \
 
                 if 'cohort' in case and case['cohort'] is not None and case['cohort']['cohort_id'] is not None:
                     
-                    print( *[ case_id, json.dumps( case['cohort']['cohort_id'] ).strip( '"' ) ], sep='\t', file=CASE_COHORT )
+                    print( *[ case_id, case['cohort']['cohort_id'] ], sep='\t', file=CASE_COHORT )
 
                 if 'study' in case and case['study'] is not None and case['study']['clinical_study_designation'] is not None:
                     
-                    print( *[ case_id, case['study']['clinical_study_designation'] ], sep='\t', file=CASE_STUDY )
+                    print( *[ case_id, json.dumps( case['study']['clinical_study_designation'] ).strip( '"' ) ], sep='\t', file=CASE_STUDY )
 
                 if 'enrollment' in case and case['enrollment'] is not None and case['enrollment']['enrollment_id'] is not None:
                     
                     print( *[ case_id, case['enrollment']['enrollment_id'] ], sep='\t', file=CASE_ENROLLMENT )
 
-                if 'demographic' in case and case['demographic'] is not None and case['demographic']['demographic_id'] is not None:
+                if 'demographic' in case and case['demographic'] is not None:
                     
-                    print( *[ case_id, case['demographic']['demographic_id'] ], sep='\t', file=CASE_DEMOGRAPHIC )
+                    demographic_id = ''
+
+                    # This shouldn't ever be null, but it sometimes is.
+
+                    if case['demographic']['demographic_id'] is not None:
+                        
+                        demographic_id = case['demographic']['demographic_id']
+                    
+                    print( *[ case_id, demographic_id ], sep='\t', file=CASE_DEMOGRAPHIC )
 
                 if 'study_arm' in case and case['study_arm'] is not None and case['study_arm']['arm_id'] is not None:
                     
                     print( *[ case_id, case['study_arm']['arm_id'] ], sep='\t', file=CASE_STUDY_ARM )
+
+                # Debug messages only. This info gets saved later from the adverse_event() query.
+
+                if 'adverse_event' in case and case['adverse_event'] is not None and 'adverse_event_term' in case['adverse_event'] and case['adverse_event']['adverse_event_term'] is not None:
+                    
+                    print( *[ case['adverse_event']['adverse_event_term'] ], file=sys.stderr )
 
                 if 'off_study' in case and case['off_study'] is not None:
                     
@@ -352,7 +367,7 @@ with open( case_output_json, 'w' ) as JSON, \
                         
                         if field_name in case['off_study'] and case['off_study'][field_name] is not None:
                             
-                            off_study_row.append( case['off_study'][field_name] )
+                            off_study_row.append( json.dumps( case['off_study'][field_name] ).strip( '"' ) )
 
                         else:
                             
@@ -368,7 +383,7 @@ with open( case_output_json, 'w' ) as JSON, \
                         
                         if field_name in case['off_treatment'] and case['off_treatment'][field_name] is not None:
                             
-                            off_treatment_row.append( case['off_treatment'][field_name] )
+                            off_treatment_row.append( json.dumps( case['off_treatment'][field_name] ).strip( '"' ) )
 
                         else:
                             
@@ -384,7 +399,7 @@ with open( case_output_json, 'w' ) as JSON, \
                         
                         if field_name in case['canine_individual'] and case['canine_individual'][field_name] is not None:
                             
-                            canine_individual_row.append( case['canine_individual'][field_name] )
+                            canine_individual_row.append( json.dumps( case['canine_individual'][field_name] ).strip( '"' ) )
 
                         else:
                             
@@ -400,7 +415,7 @@ with open( case_output_json, 'w' ) as JSON, \
                         
                         if field_name in follow_up and follow_up[field_name] is not None:
                             
-                            follow_up_row.append( follow_up[field_name] )
+                            follow_up_row.append( json.dumps( follow_up[field_name] ).strip( '"' ) )
 
                         else:
                             
@@ -422,7 +437,7 @@ with open( case_output_json, 'w' ) as JSON, \
                         
                         if field_name in registration and registration[field_name] is not None:
                             
-                            registration_row.append( registration[field_name] )
+                            registration_row.append( json.dumps( registration[field_name] ).strip( '"' ) )
 
                         else:
                             
