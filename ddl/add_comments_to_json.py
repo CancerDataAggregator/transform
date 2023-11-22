@@ -45,13 +45,13 @@ def main(args):
     newfilename = base + "_with_comments." + ext
     with open(newfilename, 'w') as jsonfile: 
         json.dump(schema, jsonfile, indent=1)
+    print("New file created: " + newfilename)
 
 
-parser = argparse.ArgumentParser(description="Just an example",
+parser = argparse.ArgumentParser(description="Add comments to the json and output a new json file <_with_comments>",
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser.add_argument("ddl", help="The ddl or mssql file")
 parser.add_argument("schema", help="The json file tranformed by sdp")
 args = parser.parse_args()
 config = vars(args)
-print(config)
 main(args)
