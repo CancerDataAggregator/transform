@@ -30,7 +30,7 @@ def main(args):
     for comment in comments:
         # COMMENT ON <table|column> <name> IS '<comment>'
         tokens = comment.split()
-        commentstring = " ".join(tokens[5:]).replace("'", "")
+        commentstring = " ".join(tokens[5:]).replace("'", "")[:-1] # get rid of trailing ;
         if tokens[2] == "TABLE":
             (skip, table) = tokens[3].split(".")
             table = find_table(table, schema)
