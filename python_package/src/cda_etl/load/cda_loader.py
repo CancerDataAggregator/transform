@@ -15,6 +15,10 @@ class CDA_loader:
 
         self.max_record_cache_size = 2000000
 
+        # Maximum number of file ID/alias pairs to cache in memory before each pass building the file_subject and file_specimen alias link tables.
+
+        self.max_alias_cache_size = 25000000
+
         # Maximum number of file records per JSONL output file.
 
         self.max_records_per_file = 20000000
@@ -699,28 +703,56 @@ class CDA_loader:
             
             { writer.write( subject[subject_id] ) for subject_id in sorted( subject ) }
 
+    def create_integer_aliases_for_file_researchsubject_subject_specimen( self ):
+        
+        for input_file_basename in [ 'file.tsv.gz', 'researchsubject.tsv.gz', 'specimen.tsv.gz', 'subject.tsv.gz' ]:
+            
+            input_file = path.join( self.merged_tsv_dir, input_file_basename )
+
+            print( input_file_basename )
+
+            output_file = path.join( self.merged_tsv_dir, re.sub( r'^(.*).tsv.gz', r'\1' + '_integer_aliases.tsv.gz', input_file_basename ) )
+
+            with gzip.open( input_file, 'rt' ) as IN, gzip.open( output_file, 'wt' ) as OUT:
+                
+                header = next(IN)
+
+                current_alias = 0
+
+                for next_line in IN:
+                    
+                    values = next_line.rstrip('\n').split('\t')
+
+                    print( *[ values[0], current_alias ], sep='\t', file=OUT )
+
+                    current_alias = current_alias + 1
+
     def transform_files_to_SQL( self ):
         
         preprocess_command_file = path.join( self.sql_output_dir, 'clear_table_data_indices_and_constraints.sql' )
 
-        insert_dir = path.join( self.sql_output_dir, 'new_table_data' )
+        table_file_dir = path.join( self.sql_output_dir, 'new_table_data' )
 
         postprocess_command_file = path.join( self.sql_output_dir, 'rebuild_indices_and_constraints.sql' )
 
-        for output_dir in [ insert_dir ]:
+        for output_dir in [ table_file_dir ]:
             
             if not path.exists( output_dir ):
                 
                 makedirs( output_dir )
 
         # Drop all indexes and constraints prior to data refresh, then rebuild
-        # after INSERTs have all completed. Avoids validation overhead during record insertion.
+        # after data rows have been inserted. Avoids validation overhead during insertion.
+
+        preprocess_unique_constraints = list()
 
         preprocess_foreign_keys = list()
 
         preprocess_primary_keys = list()
 
         preprocess_indexes = list()
+
+        postprocess_unique_constraints = list()
 
         postprocess_foreign_keys = list()
 
@@ -743,6 +775,14 @@ class CDA_loader:
                         line = re.sub( r'^CREATE.*(INDEX\s+\S+).*$', r'DROP \1', line )
 
                         preprocess_indexes.append( f"{line};" )
+
+                    elif re.search( r'^ALTER TABLE ONLY.* UNIQUE', line ) is not None:
+                        
+                        postprocess_unique_constraints.append( f"{line};" )
+
+                        line = re.sub( r'^(ALTER TABLE ONLY.*) ADD CONSTRAINT (\S+) UNIQUE.*$', r'\1 DROP CONSTRAINT \2', line )
+
+                        preprocess_unique_constraints.append( f"{line};" )
 
                     elif re.search( r'^ALTER TABLE ONLY.* FOREIGN KEY', line ) is not None:
                         
@@ -770,87 +810,99 @@ class CDA_loader:
 
         table_drop_commands = list()
 
+        # Data in these tables need to be refactored to use integer aliases (TSV versions in self.merged_tsv_dir contain full ID strings) before pushing to postgres.
+
+        tables_with_aliases = {
+            
+            'file_associated_project',
+            'file_identifier',
+            'file_specimen',
+            'file_subject',
+            'researchsubject_specimen',
+            'specimen_identifier',
+            'subject_researchsubject'
+        }
+
         for input_file_basename in sorted( listdir( self.merged_tsv_dir ) ):
             
-            if re.search( r'\.tsv\.gz$', input_file_basename ) is not None:
+            if re.search( r'_integer_aliases\.tsv\.gz$', input_file_basename ) is None and re.search( r'\.tsv\.gz$', input_file_basename ) is not None:
                 
                 input_file = path.join( self.merged_tsv_dir, input_file_basename )
 
                 print( input_file_basename )
 
-                # Figure out which fields are integers.
-
-                integer_colnames = set()
-
-                with gzip.open( input_file, 'rt' ) as IN:
-                    
-                    colnames = next(IN).rstrip('\n').split('\t')
-
-                    column_all_integers = dict( zip( colnames, [ True ] * len( colnames ) ) )
-
-                    column_null_count = dict( zip( colnames, [ 0 ] * len( colnames ) ) )
-
-                    row_count = 0
-
-                    for next_line in IN:
-                        
-                        line = next_line.rstrip('\n')
-                        
-                        row_count = row_count + 1
-
-                        values = line.split('\t')
-
-                        for i in range( 0, len( values ) ):
-                            
-                            if values[i] == '':
-                                
-                                column_null_count[colnames[i]] = column_null_count[colnames[i]] + 1
-
-                            elif re.search( r'^-?\d+$', values[i] ) is None:
-                                
-                                # We don't have any of these right now, but if they crop up, they'll need
-                                # their own handling for SQL translation, so vomit loudly if any are encountered.
-
-                                if re.search( r'^-?\d+(\.\d+)?$', values[i] ) is not None:
-                                    
-                                    sys.exit( f"Floating-point value detected in column {colnames[i]}, row {row_count}; aborting.\n" )
-                                
-                                column_all_integers[colnames[i]] = False
-
-                    for colname in colnames:
-                        
-                        if column_all_integers[colname] and row_count > 0 and column_null_count[colname] < row_count:
-                            
-                            integer_colnames.add( colname )
-
-                # Translate rows to SQL INSERT statements and create a prepared statement to
-                # (clear previous table and) populate the table corresponding to the TSV being scanned.
-
                 target_table = re.sub( r'\.tsv\.gz$', '', input_file_basename )
 
-                output_file_basename = re.sub( r'\.tsv\.gz$', '.sql.gz', input_file_basename )
-
-                output_file = path.join( insert_dir, output_file_basename )
+                # Clear previous table data via TRUNCATE.
 
                 table_drop_commands.append( f"TRUNCATE {target_table};" )
 
-                with gzip.open( input_file, 'rt' ) as IN:
+                # Transcode TSV rows into the body of a prepared SQL COPY statement, to populate the postgres table corresponding to the TSV being scanned.
+
+                if target_table not in tables_with_aliases:
                     
-                    with gzip.open( output_file, 'wt' ) as OUT:
+                    output_file_basename = re.sub( r'\.tsv\.gz$', '.sql.gz', input_file_basename )
+
+                    output_file = path.join( table_file_dir, output_file_basename )
+
+                    integer_alias_file = path.join( self.merged_tsv_dir, f"{target_table}_integer_aliases.tsv.gz" )
+
+                    if not path.exists( integer_alias_file ):
                         
-                        colnames = next(IN).rstrip('\n').split('\t')
+                        # No integer aliases have been created for this table. This table is either an unaliased main-entity table (like the "treatment"
+                        # table, at the time this comment was written) or an association table that doesn't use integer aliases (like "diagnosis_identifier"
+                        # at time of writing). Either way, transcode the TSV data directly into a COPY block.
 
-                        for next_line in IN:
+                        with gzip.open( input_file, 'rt' ) as IN, gzip.open( output_file, 'wt' ) as OUT:
                             
-                            line = next_line.rstrip('\n')
+                            colnames = next(IN).rstrip('\n').split('\t')
 
-                            # Escape quote marks for SQL compliance.
+                            # COPY public.diagnosis (id, primary_diagnosis, age_at_diagnosis, morphology, stage, grade, method_of_diagnosis) FROM stdin;
 
-                            record = dict( zip( colnames, [ re.sub( r"'", "''", value ) for value in line.split('\t') ] ) )
+                            print( f"COPY {target_table} (" + ', '.join( colnames ) + ') FROM stdin;', end='\n', file=OUT )
 
-                            print( f"INSERT INTO {target_table} ( " + ', '.join( colnames ) + ' ) VALUES ( ' + ', '.join( [ 'NULL' if len( record[colname] ) == 0 else f"'{record[colname]}'" if colname not in integer_colnames else f"{record[colname]}" for colname in colnames ] ) + ' );', end='\n', file=OUT )
+                            for next_line in IN:
+                                
+                                line = next_line.rstrip('\n')
+    
+                                record = dict( zip( colnames, [ value for value in line.split('\t') ] ) )
+    
+                                print( '\t'.join( [ r'\N' if len( record[colname] ) == 0 else record[colname] for colname in colnames ] ), end='\n', file=OUT )
+    
+                            print( r'\.', end='\n\n', file=OUT )
+    
+                    else:
+                        
+                        # Integer aliases have been created for this table: note that this will be a main entity table (like file or specimen) and not
+                        # an association table (like diagnosis_identifier): we take care of the latter in the section just above, and also below in
+                        # the create_integer_aliases_for_file_association_tables() and create_integer_aliases_for_other_association_tables() functions.
+                        # 
+                        # Transcode the TSV data into a COPY block, patching in the integer ID alias assigned to each entity record (adding
+                        # a new "integer_id_alias" column for that purpose).
 
-        # Remove foreign keys first, then primary keys (which also
+                        with gzip.open( input_file, 'rt' ) as IN, gzip.open( integer_alias_file, 'rt' ) as ALIAS, gzip.open( output_file, 'wt' ) as OUT:
+                            
+                            colnames = next(IN).rstrip('\n').split('\t')
+    
+                            colnames.append( 'integer_id_alias' )
+    
+                            print( f"COPY {target_table} (" + ', '.join( colnames ) + ') FROM stdin;', end='\n', file=OUT )
+    
+                            for next_line in IN:
+                                
+                                line = next_line.rstrip('\n')
+    
+                                record = dict( zip( colnames[:-1], [ value for value in line.split('\t') ] ) )
+    
+                                id_alias = next(ALIAS).rstrip('\n').split('\t')[1]
+    
+                                record['integer_id_alias'] = id_alias
+    
+                                print( '\t'.join( [ r'\N' if len( record[colname] ) == 0 else record[colname] for colname in colnames ] ), end='\n', file=OUT )
+    
+                            print( r'\.', end='\n\n', file=OUT )
+
+        # Remove foreign keys first, then (non-PK) uniqueness constraints, then primary keys (which also
         # drops their btree indexes), then the remaining (non-PK) indexes.
 
         with open( preprocess_command_file, 'w' ) as PRE_CMD:
@@ -862,6 +914,16 @@ class CDA_loader:
             print( '--', file=PRE_CMD )
 
             for line in preprocess_foreign_keys:
+                
+                print( line, file=PRE_CMD )
+
+            print( '--', file=PRE_CMD )
+
+            print( '-- drop (non-PK) uniqueness constraints:', file=PRE_CMD )
+
+            print( '--', file=PRE_CMD )
+
+            for line in preprocess_unique_constraints:
                 
                 print( line, file=PRE_CMD )
 
@@ -896,11 +958,11 @@ class CDA_loader:
                 print( line, file=PRE_CMD )
 
         # Then delete all table rows and replace them with the new data
-        # (via the .sql files in insert_dir/ ).
+        # (via the .sql files in table_file_dir/ ).
 
         # Then rebuild indexes and key constraints grouped in the reverse
         # order of that in which they were dropped, i.e. first rebuild indexes,
-        # then primary key constraints, then foreign key constraints.
+        # then primary key constraints, then (non-PK) uniqueness constraints, then foreign key constraints.
 
         with open( postprocess_command_file, 'w' ) as POST_CMD:
             
@@ -926,6 +988,16 @@ class CDA_loader:
 
             print( '--', file=POST_CMD )
 
+            print( '-- rebuild (non-PK) uniqueness constraints:', file=POST_CMD )
+
+            print( '--', file=POST_CMD )
+
+            for line in postprocess_unique_constraints:
+                
+                print( line, file=POST_CMD )
+
+            print( '--', file=POST_CMD )
+
             print( '-- rebuild foreign key constraints:', file=POST_CMD )
 
             print( '--', file=POST_CMD )
@@ -933,5 +1005,373 @@ class CDA_loader:
             for line in postprocess_foreign_keys:
                 
                 print( line, file=POST_CMD )
+
+    def create_integer_aliases_for_file_association_tables( self ):
+        
+        table_file_dir = path.join( self.sql_output_dir, 'new_table_data' )
+
+        full_link_table = {
+            
+            'associated_project': path.join( self.merged_tsv_dir, 'file_associated_project.tsv.gz' ),
+            'identifier': path.join( self.merged_tsv_dir, 'file_identifier.tsv.gz' ),
+            'specimen': path.join( self.merged_tsv_dir, 'file_specimen.tsv.gz' ),
+            'subject': path.join( self.merged_tsv_dir, 'file_subject.tsv.gz' )
+        }
+
+        output_link_table = {
+            
+            'associated_project': path.join( table_file_dir, 'file_associated_project.sql.gz' ),
+            'identifier': path.join( table_file_dir, 'file_identifier.sql.gz' ),
+            'specimen': path.join( table_file_dir, 'file_specimen.sql.gz' ),
+            'subject': path.join( table_file_dir, 'file_subject.sql.gz' )
+        }
+
+        file_id_alias_file = path.join( self.merged_tsv_dir, 'file_integer_aliases.tsv.gz' )
+
+        for type_to_link in [ 'associated_project', 'identifier' ]:
+            
+            scan_complete = False
+
+            first_pass = True
+
+            lines_to_skip = 0
+
+            input_file = full_link_table[type_to_link]
+
+            output_file = output_link_table[type_to_link]
+
+            while not scan_complete:
+                
+                print( f"file<->{type_to_link}: skipping {lines_to_skip} lines, loading next <= {self.max_alias_cache_size}...", file=sys.stderr )
+
+                # Load the next block from `file_id_alias_file`.
+
+                file_aliases = dict()
+
+                lines_read = 0
+
+                current_cache_size = 0
+
+                with gzip.open( file_id_alias_file, 'rt' ) as IN:
+                    
+                    for next_line in IN:
+                        
+                        if lines_read >= lines_to_skip:
+                            
+                            if current_cache_size < self.max_alias_cache_size:
+                                
+                                [ file_id, file_alias ] = next_line.rstrip('\n').split('\t')
+
+                                file_aliases[file_id] = file_alias
+
+                                current_cache_size = current_cache_size + 1
+                            
+                        lines_read = lines_read + 1
+
+                # Translate all matching records to aliased versions.
+
+                if first_pass:
+                    
+                    with gzip.open( input_file, 'rt' ) as IN, gzip.open( output_file, 'wt' ) as OUT:
+                        
+                        if type_to_link == 'identifier':
+                            
+                            print( f"COPY file_{type_to_link} ( file_alias, system, field_name, value ) FROM stdin;", end='\n', file=OUT )
+
+                            for next_line in IN:
+                                
+                                [ file_id, system, field_name, value ] = next_line.rstrip('\n').split('\t')
+
+                                # Note we don't have to handle header lines separately: they'll always fail the following test.
+
+                                if file_id in file_aliases:
+                                    
+                                    print( *[ file_aliases[file_id], system, field_name, value ], sep='\t', file=OUT )
+
+                        elif type_to_link == 'associated_project':
+                            
+                            print( f"COPY file_{type_to_link} ( file_alias, associated_project ) FROM stdin;", end='\n', file=OUT )
+
+                            for next_line in IN:
+                                
+                                [ file_id, associated_project ] = next_line.rstrip('\n').split('\t')
+
+                                # Note we don't have to handle header lines separately: they'll always fail the following test.
+
+                                if file_id in file_aliases:
+                                    
+                                    print( *[ file_aliases[file_id], associated_project ], sep='\t', file=OUT )
+
+                else:
+                    
+                    with gzip.open( input_file, 'rt' ) as IN, gzip.open( output_file, 'at' ) as OUT:
+                        
+                        if type_to_link == 'identifier':
+                            
+                            for next_line in IN:
+                                
+                                [ file_id, system, field_name, value ] = next_line.rstrip('\n').split('\t')
+
+                                if file_id in file_aliases:
+                                    
+                                    print( *[ file_aliases[file_id], system, field_name, value ], sep='\t', file=OUT )
+
+                        elif type_to_link == 'associated_project':
+                            
+                            for next_line in IN:
+                                
+                                [ file_id, associated_project ] = next_line.rstrip('\n').split('\t')
+
+                                if file_id in file_aliases:
+                                    
+                                    print( *[ file_aliases[file_id], associated_project ], sep='\t', file=OUT )
+
+                if current_cache_size < self.max_alias_cache_size:
+                    
+                    scan_complete = True
+
+                lines_to_skip = lines_to_skip + current_cache_size
+
+                first_pass = False
+
+            with gzip.open( output_file, 'at' ) as OUT:
+                
+                print( r'\.', end='\n\n', file=OUT )
+
+            print( f"file<->{type_to_link}: done", file=sys.stderr )
+
+        for type_to_link in [ 'specimen', 'subject' ]:
+            
+            link_id_alias_file = path.join( self.merged_tsv_dir, f"{type_to_link}_integer_aliases.tsv.gz" )
+
+            aliases_to_link = dict()
+
+            with gzip.open( link_id_alias_file, 'rt' ) as IN:
+                
+                for next_line in IN:
+                    
+                    [ original_id, integer_alias ] = next_line.rstrip('\n').split('\t')
+
+                    aliases_to_link[original_id] = integer_alias
+
+            scan_complete = False
+
+            first_pass = True
+
+            lines_to_skip = 0
+
+            input_file = full_link_table[type_to_link]
+
+            output_file = output_link_table[type_to_link]
+
+            while not scan_complete:
+                
+                print( f"file<->{type_to_link}: skipping {lines_to_skip} lines, loading next <= {self.max_alias_cache_size}...", file=sys.stderr )
+
+                # Load the next block from `file_id_alias_file`.
+
+                file_aliases = dict()
+
+                lines_read = 0
+
+                current_cache_size = 0
+
+                with gzip.open( file_id_alias_file, 'rt' ) as IN:
+                    
+                    for next_line in IN:
+                        
+                        if lines_read >= lines_to_skip:
+                            
+                            if current_cache_size < self.max_alias_cache_size:
+                                
+                                [ file_id, file_alias ] = next_line.rstrip('\n').split('\t')
+
+                                file_aliases[file_id] = file_alias
+
+                                current_cache_size = current_cache_size + 1
+                            
+                        lines_read = lines_read + 1
+
+                # Translate all matching records to aliased versions.
+
+                if first_pass:
+                    
+                    with gzip.open( input_file, 'rt' ) as IN, gzip.open( output_file, 'wt' ) as OUT:
+                        
+                        print( f"COPY file_{type_to_link} ( file_alias, {type_to_link}_alias ) FROM stdin;", end='\n', file=OUT )
+
+                        for next_line in IN:
+                            
+                            [ file_id, id_to_link ] = next_line.rstrip('\n').split('\t')
+
+                            if file_id in file_aliases:
+                                
+                                print( *[ file_aliases[file_id], aliases_to_link[id_to_link] ], sep='\t', file=OUT )
+
+                else:
+                    
+                    with gzip.open( input_file, 'rt' ) as IN, gzip.open( output_file, 'at' ) as OUT:
+                        
+                        for next_line in IN:
+                            
+                            [ file_id, id_to_link ] = next_line.rstrip('\n').split('\t')
+
+                            if file_id in file_aliases:
+                                
+                                print( *[ file_aliases[file_id], aliases_to_link[id_to_link] ], sep='\t', file=OUT )
+
+                if current_cache_size < self.max_alias_cache_size:
+                    
+                    scan_complete = True
+
+                lines_to_skip = lines_to_skip + current_cache_size
+
+                first_pass = False
+
+            with gzip.open( output_file, 'at' ) as OUT:
+                
+                print( r'\.', end='\n\n', file=OUT )
+
+            print( f"file<->{type_to_link}: done", file=sys.stderr )
+
+    def create_integer_aliases_for_other_association_tables( self ):
+        
+        table_file_dir = path.join( self.sql_output_dir, 'new_table_data' )
+
+        full_link_table = {
+            
+            'specimen_identifier': path.join( self.merged_tsv_dir, 'specimen_identifier.tsv.gz' ),
+            'subject_rs': path.join( self.merged_tsv_dir, 'subject_researchsubject.tsv.gz' ),
+            'rs_specimen': path.join( self.merged_tsv_dir, 'researchsubject_specimen.tsv.gz' )
+        }
+
+        output_link_table = {
+            
+            'specimen_identifier': path.join( table_file_dir, 'specimen_identifier.sql.gz' ),
+            'subject_rs': path.join( table_file_dir, 'subject_researchsubject.sql.gz' ),
+            'rs_specimen': path.join( table_file_dir, 'researchsubject_specimen.sql.gz' )
+        }
+
+        id_alias_file = {
+            'researchsubject': path.join( self.merged_tsv_dir, 'researchsubject_integer_aliases.tsv.gz' ),
+            'specimen': path.join( self.merged_tsv_dir, 'specimen_integer_aliases.tsv.gz' ),
+            'subject': path.join( self.merged_tsv_dir, 'subject_integer_aliases.tsv.gz' )
+        }
+
+        for type_to_link in sorted( full_link_table ):
+            
+            input_file = full_link_table[type_to_link]
+
+            output_file = output_link_table[type_to_link]
+
+            specimen_aliases = dict()
+            subject_aliases = dict()
+            rs_aliases = dict()
+
+            if type_to_link == 'specimen_identifier' or type_to_link == 'rs_specimen':
+                
+                with gzip.open( id_alias_file['specimen'], 'rt' ) as IN:
+                    
+                    for next_line in IN:
+                        
+                        [ specimen_id, specimen_alias ] = next_line.rstrip('\n').split('\t')
+
+                        specimen_aliases[specimen_id] = specimen_alias
+
+            if type_to_link == 'subject_rs' or type_to_link == 'rs_specimen':
+                
+                with gzip.open( id_alias_file['researchsubject'], 'rt' ) as IN:
+                    
+                    for next_line in IN:
+                        
+                        [ rs_id, rs_alias ] = next_line.rstrip('\n').split('\t')
+
+                        rs_aliases[rs_id] = rs_alias
+
+            if type_to_link == 'subject_rs':
+                        
+                with gzip.open( id_alias_file['subject'], 'rt' ) as IN:
+                    
+                    for next_line in IN:
+                        
+                        [ subject_id, subject_alias ] = next_line.rstrip('\n').split('\t')
+
+                        subject_aliases[subject_id] = subject_alias
+
+            # Translate all matching records to aliased versions.
+
+            with gzip.open( input_file, 'rt' ) as IN, gzip.open( output_file, 'wt' ) as OUT:
+                
+                if type_to_link == 'specimen_identifier':
+                    
+                    print( f"COPY {type_to_link} ( specimen_alias, system, field_name, value ) FROM stdin;", end='\n', file=OUT )
+
+                    header = True
+
+                    for next_line in IN:
+                        
+                        if not header:
+                            
+                            [ specimen_id, system, field_name, value ] = next_line.rstrip('\n').split('\t')
+
+                            if specimen_id in specimen_aliases:
+                                
+                                print( *[ specimen_aliases[specimen_id], system, field_name, value ], sep='\t', file=OUT )
+
+                            else:
+                                
+                                print( f"CRITICAL WARNING: specimen_id '{specimen_id}' not aliased: please investigate and fix!", file=sys.stderr )
+
+                        header = False
+
+                elif type_to_link == 'subject_rs':
+                    
+                    print( f"COPY subject_researchsubject ( subject_alias, researchsubject_alias ) FROM stdin;", end='\n', file=OUT )
+
+                    header = True
+
+                    for next_line in IN:
+                        
+                        if not header:
+                            
+                            [ subject_id, rs_id ] = next_line.rstrip('\n').split('\t')
+
+                            if subject_id in subject_aliases and rs_id in rs_aliases:
+                                
+                                print( *[ subject_aliases[subject_id], rs_aliases[rs_id] ], sep='\t', file=OUT )
+
+                            else:
+                                
+                                print( f"CRITICAL WARNING: one or both of subject_id '{subject_id}' and researchsubject_id '{rs_id}' not aliased: please investigate and fix!", file=sys.stderr )
+
+                        header = False
+
+                elif type_to_link == 'rs_specimen':
+                    
+                    print( f"COPY researchsubject_specimen ( researchsubject_alias, specimen_alias ) FROM stdin;", end='\n', file=OUT )
+
+                    header = True
+
+                    for next_line in IN:
+                        
+                        if not header:
+                            
+                            [ rs_id, specimen_id ] = next_line.rstrip('\n').split('\t')
+
+                            if rs_id in rs_aliases and specimen_id in specimen_aliases:
+                                
+                                print( *[ rs_aliases[rs_id], specimen_aliases[specimen_id] ], sep='\t', file=OUT )
+
+                            else:
+                                
+                                print( f"CRITICAL WARNING: one or both of researchsubject_id '{rs_id}' and specimen_id '{specimen_id}' not aliased: please investigate and fix!", file=sys.stderr )
+
+                        header = False
+
+            with gzip.open( output_file, 'at' ) as OUT:
+                
+                print( r'\.', end='\n\n', file=OUT )
+
+            print( f"{type_to_link}: done", file=sys.stderr )
 
 

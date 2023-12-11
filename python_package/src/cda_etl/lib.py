@@ -127,53 +127,61 @@ def load_tsv_as_dict( input_file, id_column_count=1 ):
 
     return result
 
-def map_columns_one_to_one( input_file, from_field, to_field, where_field=None, where_value=None ):
+def map_columns_one_to_one( input_file, from_field, to_field, where_field=None, where_value=None, gzipped=False ):
     
     return_map = dict()
 
-    with open( input_file ) as IN:
+    if gzipped:
         
-        header = next(IN).rstrip('\n')
+        IN = gzip.open( input_file, 'rt' )
 
-        column_names = header.split('\t')
+    else:
+        
+        IN = open( input_file )
 
-        if from_field not in column_names or to_field not in column_names:
+    header = next(IN).rstrip('\n')
+
+    column_names = header.split('\t')
+
+    if from_field not in column_names or to_field not in column_names:
+        
+        sys.exit( f"FATAL: One or both requested map fields ('{from_field}', '{to_field}') not found in specified input file '{input_file}'; aborting.\n" )
+
+    for line in [ next_line.rstrip('\n') for next_line in IN ]:
+        
+        values = line.split('\t')
+
+        current_from = ''
+
+        current_to = ''
+
+        passed_where = True
+
+        if where_field is not None:
             
-            sys.exit( f"FATAL: One or both requested map fields ('{from_field}', '{to_field}') not found in specified input file '{input_file}'; aborting.\n" )
+            passed_where = False
 
-        for line in [ next_line.rstrip('\n') for next_line in IN ]:
+        for i in range( 0, len( column_names ) ):
             
-            values = line.split('\t')
-
-            current_from = ''
-
-            current_to = ''
-
-            passed_where = True
-
-            if where_field is not None:
+            if column_names[i] == from_field:
                 
-                passed_where = False
+                current_from = values[i]
 
-            for i in range( 0, len( column_names ) ):
+            if column_names[i] == where_field:
                 
-                if column_names[i] == from_field:
+                if where_value is not None and values[i] is not None and where_value == values[i]:
                     
-                    current_from = values[i]
+                    passed_where = True
 
-                if column_names[i] == where_field:
-                    
-                    if where_value is not None and values[i] is not None and where_value == values[i]:
-                        
-                        passed_where = True
-
-                if column_names[i] == to_field:
-                    
-                    current_to = values[i]
-
-            if passed_where:
+            if column_names[i] == to_field:
                 
-                return_map[current_from] = current_to
+                current_to = values[i]
+
+        if passed_where:
+            
+            return_map[current_from] = current_to
+
+    IN.close()
 
     return return_map
 
