@@ -56,7 +56,7 @@ echo "[ETL `date`] Refreshing project credentials..."
 
 gcloud config set project $PROJECT
 
-echo "[ETL `date`] Clearing old table rows and dropping tables constraints and indices..."
+echo "[ETL `date`] Clearing old table rows and dropping constraints and indices..."
 
 gcloud sql import sql $DB_INSTANCE_NAME "gs://$PROJECT/$BUCKET_ROOT/$PREPROCESS_SCRIPT_NAME" --database=$DATABASE_NAME --user=$DATABASE_USERNAME --quiet
 

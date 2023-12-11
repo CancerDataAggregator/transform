@@ -18,7 +18,7 @@ do
         overwrite_table="false"
     fi
 
-    bq load --replace="${replace_string}" --schema="${files_schema}" --source_format=NEWLINE_DELIMITED_JSON dev.all_merged_files_v3_3_final "${input_file}"
+    bq load --replace="${replace_string}" --schema="${files_schema}" --source_format=NEWLINE_DELIMITED_JSON YOUR_DESTINATION_BQ_TABLE_HERE "${input_file}"
 done
 
 
