@@ -152,7 +152,7 @@ sample = load_tsv_as_dict( sample_input_tsv )
 
 case_demographic = map_columns_one_to_one( case_demographic_input_tsv, 'case_id', 'demographic_id' )
 
-case_diagnosis = map_columns_one_to_one( case_diagnosis_input_tsv, 'case_id', 'diagnosis_id' )
+case_diagnosis = map_columns_one_to_many( case_diagnosis_input_tsv, 'case_id', 'diagnosis_id' )
 
 case_sample = map_columns_one_to_many( case_sample_input_tsv, 'case_id', 'sample_id' )
 
@@ -356,22 +356,23 @@ with open( case_input_tsv ) as CASE_IN, open( researchsubject_output_tsv, 'w' ) 
 
             if case_id in case_diagnosis:
                 
-                diagnosis_pdc_id = case_diagnosis[case_id]
-
-                diagnosis_cda_id = f"{rs_id}.{diagnosis_submitter_id[diagnosis_pdc_id]}"
-
-                print( *[ rs_id, diagnosis_cda_id ], sep='\t', end='\n', file=RS_DIAGNOSIS )
-
-                if diagnosis_cda_id not in printed_diagnosis:
+                for diagnosis_pdc_id in case_diagnosis[case_id]:
                     
-                    print( *[ diagnosis_cda_id, 'PDC', 'Diagnosis.diagnosis_id', diagnosis_pdc_id ], sep='\t', end='\n', file=DIAGNOSIS_IDENTIFIER )
+                    diagnosis_cda_id = f"{rs_id}.{diagnosis_submitter_id[diagnosis_pdc_id]}.{diagnosis_pdc_id}"
 
-                    print( *[ diagnosis_cda_id, 'PDC', 'Diagnosis.diagnosis_submitter_id', diagnosis[diagnosis_pdc_id]['diagnosis_submitter_id'] ], sep='\t', end='\n', file=DIAGNOSIS_IDENTIFIER )
+                    print( *[ rs_id, diagnosis_cda_id ], sep='\t', end='\n', file=RS_DIAGNOSIS )
 
-                    print( *[ diagnosis_cda_id, diagnosis[diagnosis_pdc_id]['primary_diagnosis'], diagnosis[diagnosis_pdc_id]['age_at_diagnosis'], \
-                        diagnosis[diagnosis_pdc_id]['morphology'], diagnosis[diagnosis_pdc_id]['tumor_stage'], diagnosis[diagnosis_pdc_id]['tumor_grade'], diagnosis[diagnosis_pdc_id]['method_of_diagnosis'] ], sep='\t', end='\n', file=DIAGNOSIS )
+                    if diagnosis_cda_id not in printed_diagnosis:
+                        
+                        print( *[ diagnosis_cda_id, 'PDC', 'Diagnosis.diagnosis_id', diagnosis_pdc_id ], sep='\t', end='\n', file=DIAGNOSIS_IDENTIFIER )
 
-                    printed_diagnosis.add( diagnosis_cda_id )
+                        print( *[ diagnosis_cda_id, 'PDC', 'Diagnosis.diagnosis_submitter_id', diagnosis[diagnosis_pdc_id]['diagnosis_submitter_id'] ], sep='\t', end='\n', file=DIAGNOSIS_IDENTIFIER )
+
+                        print( *[ diagnosis_cda_id, diagnosis[diagnosis_pdc_id]['primary_diagnosis'], diagnosis[diagnosis_pdc_id]['age_at_diagnosis'], \
+                            diagnosis[diagnosis_pdc_id]['morphology'], diagnosis[diagnosis_pdc_id]['tumor_stage'], diagnosis[diagnosis_pdc_id]['tumor_grade'], \
+                            diagnosis[diagnosis_pdc_id]['method_of_diagnosis'] ], sep='\t', end='\n', file=DIAGNOSIS )
+
+                        printed_diagnosis.add( diagnosis_cda_id )
 
             # If samples are attached to this case, connect them and any downstream aliquots to this ResearchSubject record.
 
