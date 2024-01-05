@@ -673,7 +673,15 @@ def main():
 
     cleaner.remove_orphans( 'Case' )
 
-    for entity_type in [ 'Diagnosis', 'Aliquot', 'Sample', 'Demographic', 'Case' ]:
+    # Making an exception for Diagnosis at the request of ISB-CGC. Note that doing this
+    # will require us to rely on UUIDs to generate distinct CDA Diagnosis record IDs, which
+    # will in turn preclude aggregation across DCs because unambiguous submitter_id information
+    # (the basis on which we merge any mergeable records) can no longer be assumed to exist.
+    # This is okay for diagnosis records, but if the same problem crops up for Cases
+    # or (eventually) Samples, we're going to have a new integration problem to solve.
+
+    # for entity_type in [ 'Diagnosis', 'Aliquot', 'Sample', 'Demographic', 'Case' ]:
+    for   entity_type in [              'Aliquot', 'Sample', 'Demographic', 'Case' ]:
         
         cleaner.remove_study_and_submitter_id_pair_duplicates( entity_type )
 
