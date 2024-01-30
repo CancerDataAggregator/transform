@@ -35,8 +35,14 @@ echo ./package_root/extract/pdc/scripts/022_getPaginatedUIFile.py
 echo ./package_root/extract/pdc/scripts/023_filesPerStudy.py
 ./package_root/extract/pdc/scripts/023_filesPerStudy.py
 
-echo ./package_root/extract/pdc/scripts/030_case.py
-./package_root/extract/pdc/scripts/030_case.py
+echo ./package_root/extract/pdc/scripts/030_case_with_demographics_and_samples.py
+./package_root/extract/pdc/scripts/030_case_with_demographics_and_samples.py
+
+echo ./package_root/extract/pdc/scripts/030_case_with_diagnoses.py
+./package_root/extract/pdc/scripts/030_case_with_diagnoses.py
+
+echo ./package_root/extract/pdc/scripts/030_case_with_the_rest.py
+./package_root/extract/pdc/scripts/030_case_with_the_rest.py
 
 echo ./package_root/extract/pdc/scripts/033_paginatedCasesSamplesAliquots.py
 ./package_root/extract/pdc/scripts/033_paginatedCasesSamplesAliquots.py

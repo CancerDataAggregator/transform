@@ -76,15 +76,16 @@ while ( chomp( my $line = <IN> ) ) {
 
             $pdcStudyID->{$pdcStudy} = $pdcID;
 
-            if ( $count > 1 ) {
-                
-                print STDERR "WHAT!\n";
-            }
+#            if ( $count > 1 or $id eq '2697' ) {
+#                
+#                print STDERR "Multiple GDC projects assigned to a single submitter_ID: ($gdcProject) ($id)\n";
+#            }
 
-            if ( $pdcID eq 'PDC000359' or $pdcID eq 'PDC000360' ) {
-                
+#            if ( $pdcID eq 'PDC000359' or $pdcID eq 'PDC000360' ) {
+#            if ( $pdcID eq 'PDC000477' or $pdcID eq 'PDC000478' ) {
+#                
 #                print STDERR "$id: $line\n";
-            }
+#            }
         }
     }
 }
