@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-chmod 755 ./package_root/extract/cds/*py
+chmod 755 ./package_root/extract/cds/scripts/*py
 
 echo ./package_root/extract/cds/scripts/000_get_schema_via_introspection.py
 ./package_root/extract/cds/scripts/000_get_schema_via_introspection.py

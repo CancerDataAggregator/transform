@@ -8,7 +8,7 @@ from os import listdir, makedirs, path
 
 # PARAMETERS
 
-input_root = path.join( 'cda_tsvs', 'idc', 'v15' )
+input_root = path.join( 'cda_tsvs', 'idc', 'v17' )
 
 aux_root = 'auxiliary_metadata'
 

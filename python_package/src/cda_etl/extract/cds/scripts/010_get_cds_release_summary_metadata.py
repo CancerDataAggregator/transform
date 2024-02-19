@@ -4,8 +4,6 @@ import requests
 import json
 import sys
 
-from cda_etl.lib import sort_file_with_header
-
 from os import makedirs, path, rename
 
 # PARAMETERS

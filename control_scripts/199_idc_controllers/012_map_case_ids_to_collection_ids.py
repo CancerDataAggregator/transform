@@ -2,7 +2,7 @@
 
 from cda_etl.transform.idc.idc_transformer import IDC_transformer
 
-idc = IDC_transformer( source_version = 'v16' )
+idc = IDC_transformer( source_version = 'v17' )
 
 idc.map_case_ids_to_collection_ids()
 
