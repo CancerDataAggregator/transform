@@ -18,6 +18,12 @@ NEW_TABLE_DATA_SUBDIR=new_table_data
 
 POSTPROCESS_SCRIPT_NAME=rebuild_indices_and_constraints.sql
 
+# one time (ever) per instance:
+#   
+#   gcloud sql instances describe $DB_INSTANCE_NAME | grep serviceAccountEmailAddress
+#   [RESULT: something_something@something_something.gserviceaccount.com]
+#   gsutil iam ch serviceAccount:something_something@something_something.gserviceaccount.com:objectAdmin gs://$PROJECT
+
 # sometimes:
 # gcloud auth application-default login
 
