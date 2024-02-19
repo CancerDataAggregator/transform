@@ -1,0 +1,2577 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 14.9
+-- Dumped by pg_dump version 15.2
+
+-- Started on 2024-02-19 15:18:46 EST
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 5 (class 2615 OID 2200)
+-- Name: public; Type: SCHEMA; Schema: -; Owner: cloudsqlsuperuser
+--
+
+CREATE SCHEMA public;
+
+
+ALTER SCHEMA public OWNER TO cloudsqlsuperuser;
+
+--
+-- TOC entry 4020 (class 0 OID 0)
+-- Dependencies: 5
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON SCHEMA public IS 'standard public schema';
+
+
+--
+-- TOC entry 3523 (class 3456 OID 16483)
+-- Name: ascii; Type: COLLATION; Schema: public; Owner: cloudsqlsuperuser
+--
+
+CREATE COLLATION public.ascii (provider = libc, locale = 'POSIX');
+
+
+ALTER COLLATION public.ascii OWNER TO cloudsqlsuperuser;
+
+--
+-- TOC entry 856 (class 1247 OID 16486)
+-- Name: system_data; Type: TYPE; Schema: public; Owner: cloudsqlsuperuser
+--
+
+CREATE TYPE public.system_data AS (
+	system text,
+	field_name text,
+	value text
+);
+
+
+ALTER TYPE public.system_data OWNER TO cloudsqlsuperuser;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 210 (class 1259 OID 16487)
+-- Name: diagnosis; Type: TABLE; Schema: public; Owner: cloudsqlsuperuser
+--
+
+CREATE TABLE public.diagnosis (
+    id text NOT NULL,
+    primary_diagnosis text,
+    age_at_diagnosis integer,
+    morphology text,
+    stage text,
+    grade text,
+    method_of_diagnosis text,
+    integer_id_alias bigint NOT NULL
+);
+
+
+ALTER TABLE public.diagnosis OWNER TO cloudsqlsuperuser;
+
+--
+-- TOC entry 4022 (class 0 OID 0)
+-- Dependencies: 210
+-- Name: TABLE diagnosis; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON TABLE public.diagnosis IS 'A collection of characteristics that describe an abnormal condition of the body as assessed at a point in time. May be used to capture information about neoplastic and non-neoplastic conditions.';
+
+
+--
+-- TOC entry 4023 (class 0 OID 0)
+-- Dependencies: 210
+-- Name: COLUMN diagnosis.id; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.diagnosis.id IS 'The ''logical'' identifier of the entity in the repository, e.g. a UUID.  This ''id'' is unique within a given system. The identified entity may have a different ''id'' in a different system.';
+
+
+--
+-- TOC entry 4024 (class 0 OID 0)
+-- Dependencies: 210
+-- Name: COLUMN diagnosis.primary_diagnosis; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.diagnosis.primary_diagnosis IS 'The diagnosis instance that qualified a subject for inclusion on a ResearchProject.';
+
+
+--
+-- TOC entry 4025 (class 0 OID 0)
+-- Dependencies: 210
+-- Name: COLUMN diagnosis.age_at_diagnosis; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.diagnosis.age_at_diagnosis IS 'The age in days of the individual at the time of diagnosis.';
+
+
+--
+-- TOC entry 4026 (class 0 OID 0)
+-- Dependencies: 210
+-- Name: COLUMN diagnosis.morphology; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.diagnosis.morphology IS 'Code that represents the histology of the disease using the third edition of the International Classification of Diseases for Oncology, published in 2000, used principally in tumor and cancer registries for coding the site (topography) and the histology (morphology) of neoplasms.';
+
+
+--
+-- TOC entry 4027 (class 0 OID 0)
+-- Dependencies: 210
+-- Name: COLUMN diagnosis.stage; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.diagnosis.stage IS 'The extent of a cancer in the body. Staging is usually based on the size of the tumor, whether lymph nodes contain cancer, and whether the cancer has spread from the original site to other parts of the body.';
+
+
+--
+-- TOC entry 4028 (class 0 OID 0)
+-- Dependencies: 210
+-- Name: COLUMN diagnosis.grade; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.diagnosis.grade IS 'The degree of abnormality of cancer cells, a measure of differentiation, the extent to which cancer cells are similar in appearance and function to healthy cells of the same tissue type. The degree of differentiation often relates to the clinical behavior of the particular tumor. Based on the microscopic findings, tumor grade is commonly described by one of four degrees of severity. Histopathologic grade of a tumor may be used to plan treatment and estimate the future course, outcome, and overall prognosis of disease. Certain types of cancers, such as soft tissue sarcoma, primary brain tumors, lymphomas, and breast have special grading systems.';
+
+
+--
+-- TOC entry 4029 (class 0 OID 0)
+-- Dependencies: 210
+-- Name: COLUMN diagnosis.method_of_diagnosis; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.diagnosis.method_of_diagnosis IS 'The method used to confirm the subjects malignant diagnosis.';
+
+
+--
+-- TOC entry 211 (class 1259 OID 16492)
+-- Name: diagnosis_identifier; Type: TABLE; Schema: public; Owner: cloudsqlsuperuser
+--
+
+CREATE TABLE public.diagnosis_identifier (
+    diagnosis_alias bigint NOT NULL,
+    system text NOT NULL,
+    field_name text NOT NULL,
+    value text NOT NULL
+);
+
+
+ALTER TABLE public.diagnosis_identifier OWNER TO cloudsqlsuperuser;
+
+--
+-- TOC entry 4030 (class 0 OID 0)
+-- Dependencies: 211
+-- Name: TABLE diagnosis_identifier; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON TABLE public.diagnosis_identifier IS 'A ''business'' identifier or accession number for a Diagnosis, typically as provided by an external system or authority, that persists across implementing systems (i.e. a ''logical'' identifier).';
+
+
+--
+-- TOC entry 4031 (class 0 OID 0)
+-- Dependencies: 211
+-- Name: COLUMN diagnosis_identifier.system; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.diagnosis_identifier.system IS 'The system or namespace that defines the identifier.';
+
+
+--
+-- TOC entry 4032 (class 0 OID 0)
+-- Dependencies: 211
+-- Name: COLUMN diagnosis_identifier.value; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.diagnosis_identifier.value IS 'The value of the identifier, as defined by the system.';
+
+
+--
+-- TOC entry 212 (class 1259 OID 16497)
+-- Name: diagnosis_treatment; Type: TABLE; Schema: public; Owner: cloudsqlsuperuser
+--
+
+CREATE TABLE public.diagnosis_treatment (
+    diagnosis_alias bigint NOT NULL,
+    treatment_alias bigint NOT NULL
+);
+
+
+ALTER TABLE public.diagnosis_treatment OWNER TO cloudsqlsuperuser;
+
+--
+-- TOC entry 213 (class 1259 OID 16502)
+-- Name: file; Type: TABLE; Schema: public; Owner: cloudsqlsuperuser
+--
+
+CREATE TABLE public.file (
+    id text NOT NULL,
+    label text,
+    data_category text,
+    data_type text,
+    file_format text,
+    drs_uri text,
+    byte_size bigint,
+    checksum text,
+    data_modality text,
+    imaging_modality text,
+    dbgap_accession_number text,
+    imaging_series text,
+    integer_id_alias bigint NOT NULL
+);
+
+
+ALTER TABLE public.file OWNER TO cloudsqlsuperuser;
+
+--
+-- TOC entry 4033 (class 0 OID 0)
+-- Dependencies: 213
+-- Name: TABLE file; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON TABLE public.file IS 'The core collection of File records.';
+
+
+--
+-- TOC entry 4034 (class 0 OID 0)
+-- Dependencies: 213
+-- Name: COLUMN file.id; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.file.id IS 'The ''logical'' identifier of the entity in the repository, e.g. a UUID.  This ''id'' is unique within a given system. The identified entity may have a different ''id'' in a different system.';
+
+
+--
+-- TOC entry 4035 (class 0 OID 0)
+-- Dependencies: 213
+-- Name: COLUMN file.label; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.file.label IS 'Short name or abbreviation for dataset. Maps to rdfs:label.';
+
+
+--
+-- TOC entry 4036 (class 0 OID 0)
+-- Dependencies: 213
+-- Name: COLUMN file.data_category; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.file.data_category IS 'Broad categorization of the contents of the data file.';
+
+
+--
+-- TOC entry 4037 (class 0 OID 0)
+-- Dependencies: 213
+-- Name: COLUMN file.data_type; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.file.data_type IS 'Specific content type of the data file.';
+
+
+--
+-- TOC entry 4038 (class 0 OID 0)
+-- Dependencies: 213
+-- Name: COLUMN file.file_format; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.file.file_format IS 'Format of the data files.';
+
+
+--
+-- TOC entry 4039 (class 0 OID 0)
+-- Dependencies: 213
+-- Name: COLUMN file.drs_uri; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.file.drs_uri IS 'A string of characters used to identify a resource on the Data Repo Service(DRS).';
+
+
+--
+-- TOC entry 4040 (class 0 OID 0)
+-- Dependencies: 213
+-- Name: COLUMN file.byte_size; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.file.byte_size IS 'Size of the file in bytes. Maps to dcat:byteSize.';
+
+
+--
+-- TOC entry 4041 (class 0 OID 0)
+-- Dependencies: 213
+-- Name: COLUMN file.checksum; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.file.checksum IS 'A digit representing the sum of the correct digits in a piece of stored or transmitted digital data, against which later comparisons can be made to detect errors in the data.';
+
+
+--
+-- TOC entry 4042 (class 0 OID 0)
+-- Dependencies: 213
+-- Name: COLUMN file.data_modality; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.file.data_modality IS 'Data modality describes the biological nature of the information gathered as the result of an Activity, independent of the technology or methods used to produce the information.';
+
+
+--
+-- TOC entry 4043 (class 0 OID 0)
+-- Dependencies: 213
+-- Name: COLUMN file.imaging_modality; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.file.imaging_modality IS 'An imaging modality describes the imaging equipment and/or method used to acquire certain structural or functional information about the body. These include but are not limited to computed tomography (CT) and magnetic resonance imaging (MRI). Taken from the DICOM standard.';
+
+
+--
+-- TOC entry 4044 (class 0 OID 0)
+-- Dependencies: 213
+-- Name: COLUMN file.dbgap_accession_number; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.file.dbgap_accession_number IS 'The dbgap accession number for the project.';
+
+
+--
+-- TOC entry 4045 (class 0 OID 0)
+-- Dependencies: 213
+-- Name: COLUMN file.imaging_series; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.file.imaging_series IS 'The ''logical'' identifier of the series or grouping of imaging files in the system of record which the file is a part of.';
+
+
+--
+-- TOC entry 225 (class 1259 OID 116447)
+-- Name: file_associated_project; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.file_associated_project (
+    file_alias bigint NOT NULL,
+    associated_project text NOT NULL
+);
+
+
+ALTER TABLE public.file_associated_project OWNER TO postgres;
+
+--
+-- TOC entry 226 (class 1259 OID 116452)
+-- Name: file_identifier; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.file_identifier (
+    file_alias bigint NOT NULL,
+    system text NOT NULL,
+    field_name text NOT NULL,
+    value text NOT NULL
+);
+
+
+ALTER TABLE public.file_identifier OWNER TO postgres;
+
+--
+-- TOC entry 227 (class 1259 OID 116457)
+-- Name: file_specimen; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.file_specimen (
+    file_alias bigint NOT NULL,
+    specimen_alias bigint NOT NULL
+);
+
+
+ALTER TABLE public.file_specimen OWNER TO postgres;
+
+--
+-- TOC entry 228 (class 1259 OID 116460)
+-- Name: file_subject; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.file_subject (
+    file_alias bigint NOT NULL,
+    subject_alias bigint NOT NULL
+);
+
+
+ALTER TABLE public.file_subject OWNER TO postgres;
+
+--
+-- TOC entry 214 (class 1259 OID 16527)
+-- Name: researchsubject; Type: TABLE; Schema: public; Owner: cloudsqlsuperuser
+--
+
+CREATE TABLE public.researchsubject (
+    id text NOT NULL,
+    member_of_research_project text,
+    primary_diagnosis_condition text,
+    primary_diagnosis_site text,
+    integer_id_alias bigint NOT NULL
+);
+
+
+ALTER TABLE public.researchsubject OWNER TO cloudsqlsuperuser;
+
+--
+-- TOC entry 4046 (class 0 OID 0)
+-- Dependencies: 214
+-- Name: TABLE researchsubject; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON TABLE public.researchsubject IS 'A research subject is the entity of interest in a specific research study or project, typically a human being or an animal, but can also be a device, group of humans or animals, or a tissue sample. Human research subjects are usually not traceable to a particular person to protect the subject''s privacy.  This entity plays the role of the case_id in existing data.';
+
+
+--
+-- TOC entry 4047 (class 0 OID 0)
+-- Dependencies: 214
+-- Name: COLUMN researchsubject.id; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.researchsubject.id IS 'The ''logical'' identifier of the entity in the system of record, e.g. a UUID.  This ''id'' is unique within a given system. The identified entity may have a different ''id'' in a different system. For CDA, this is case_id.';
+
+
+--
+-- TOC entry 4048 (class 0 OID 0)
+-- Dependencies: 214
+-- Name: COLUMN researchsubject.member_of_research_project; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.researchsubject.member_of_research_project IS 'A reference to the Study(s) of which this ResearchSubject is a member.';
+
+
+--
+-- TOC entry 4049 (class 0 OID 0)
+-- Dependencies: 214
+-- Name: COLUMN researchsubject.primary_diagnosis_condition; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.researchsubject.primary_diagnosis_condition IS 'The text term used to describe the type of malignant disease, as categorized by the World Health Organization''s (WHO) International Classification of Diseases for Oncology (ICD-O).   This attribute represents the disease that qualified the subject for inclusion on the ResearchProject.';
+
+
+--
+-- TOC entry 4050 (class 0 OID 0)
+-- Dependencies: 214
+-- Name: COLUMN researchsubject.primary_diagnosis_site; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.researchsubject.primary_diagnosis_site IS 'The text term used to describe the primary site of disease, as categorized by the World Health Organization''s (WHO) International Classification of Diseases for Oncology (ICD-O). This categorization groups cases into general categories.  This attribute represents the primary site of disease that qualified the subject for inclusion on the ResearchProject.';
+
+
+--
+-- TOC entry 215 (class 1259 OID 16532)
+-- Name: researchsubject_diagnosis; Type: TABLE; Schema: public; Owner: cloudsqlsuperuser
+--
+
+CREATE TABLE public.researchsubject_diagnosis (
+    researchsubject_alias bigint NOT NULL,
+    diagnosis_alias bigint NOT NULL
+);
+
+
+ALTER TABLE public.researchsubject_diagnosis OWNER TO cloudsqlsuperuser;
+
+--
+-- TOC entry 216 (class 1259 OID 16537)
+-- Name: researchsubject_identifier; Type: TABLE; Schema: public; Owner: cloudsqlsuperuser
+--
+
+CREATE TABLE public.researchsubject_identifier (
+    researchsubject_alias bigint NOT NULL,
+    system text NOT NULL,
+    field_name text NOT NULL,
+    value text NOT NULL
+);
+
+
+ALTER TABLE public.researchsubject_identifier OWNER TO cloudsqlsuperuser;
+
+--
+-- TOC entry 4051 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: TABLE researchsubject_identifier; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON TABLE public.researchsubject_identifier IS 'A ''business'' identifier or accession number for a ResearchSubject, typically as provided by an external system or authority, that persists across implementing systems (i.e. a ''logical'' identifier).';
+
+
+--
+-- TOC entry 4052 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: COLUMN researchsubject_identifier.system; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.researchsubject_identifier.system IS 'The system or namespace that defines the identifier.';
+
+
+--
+-- TOC entry 4053 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: COLUMN researchsubject_identifier.value; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.researchsubject_identifier.value IS 'The value of the identifier, as defined by the system.';
+
+
+--
+-- TOC entry 229 (class 1259 OID 116463)
+-- Name: researchsubject_specimen; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.researchsubject_specimen (
+    researchsubject_alias bigint NOT NULL,
+    specimen_alias bigint NOT NULL
+);
+
+
+ALTER TABLE public.researchsubject_specimen OWNER TO postgres;
+
+--
+-- TOC entry 217 (class 1259 OID 16547)
+-- Name: researchsubject_treatment; Type: TABLE; Schema: public; Owner: cloudsqlsuperuser
+--
+
+CREATE TABLE public.researchsubject_treatment (
+    researchsubject_alias bigint NOT NULL,
+    treatment_alias bigint NOT NULL
+);
+
+
+ALTER TABLE public.researchsubject_treatment OWNER TO cloudsqlsuperuser;
+
+--
+-- TOC entry 218 (class 1259 OID 16552)
+-- Name: somatic_mutation; Type: TABLE; Schema: public; Owner: cloudsqlsuperuser
+--
+
+CREATE TABLE public.somatic_mutation (
+    project_short_name text,
+    case_barcode text,
+    cda_subject_id text NOT NULL,
+    primary_site text,
+    hugo_symbol text,
+    entrez_gene_id integer,
+    center text,
+    ncbi_build text,
+    chromosome text,
+    start_position integer,
+    end_position integer,
+    strand text,
+    variant_classification text,
+    variant_type text,
+    reference_allele text,
+    tumor_seq_allele1 text,
+    tumor_seq_allele2 text,
+    dbsnp_rs text,
+    dbsnp_val_status text,
+    tumor_aliquot_barcode text,
+    matched_norm_aliquot_barcode text,
+    match_norm_seq_allele1 text,
+    match_norm_seq_allele2 text,
+    tumor_validation_allele1 text,
+    tumor_validation_allele2 text,
+    match_norm_validation_allele1 text,
+    match_norm_validation_allele2 text,
+    verification_status text,
+    validation_status text,
+    mutation_status text,
+    sequencing_phase text,
+    sequence_source text,
+    validation_method text,
+    score text,
+    bam_file text,
+    sequencer text,
+    tumor_aliquot_uuid text,
+    matched_norm_aliquot_uuid text,
+    hgvsc text,
+    hgvsp text,
+    hgvsp_short text,
+    transcript_id text,
+    exon_number text,
+    t_depth integer,
+    t_ref_count integer,
+    t_alt_count integer,
+    n_depth integer,
+    n_ref_count text,
+    n_alt_count text,
+    all_effects text,
+    allele text,
+    gene text,
+    feature text,
+    feature_type text,
+    one_consequence text,
+    consequence text,
+    cdna_position text,
+    cds_position text,
+    protein_position text,
+    amino_acids text,
+    codons text,
+    existing_variation text,
+    distance text,
+    transcript_strand text,
+    symbol text,
+    symbol_source text,
+    hgnc_id text,
+    biotype text,
+    canonical text,
+    ccds text,
+    ensp text,
+    swissprot text,
+    trembl text,
+    uniparc text,
+    uniprot_isoform text,
+    refseq text,
+    mane text,
+    appris text,
+    flags text,
+    sift text,
+    polyphen text,
+    exon text,
+    intron text,
+    domains text,
+    thousg_af numeric(25,20),
+    thousg_afr_af numeric(25,20),
+    thousg_amr_af numeric(25,20),
+    thousg_eas_af numeric(25,20),
+    thousg_eur_af numeric(25,20),
+    thousg_sas_af numeric(25,20),
+    esp_aa_af numeric(25,20),
+    esp_ea_af numeric(25,20),
+    gnomad_af numeric(25,20),
+    gnomad_afr_af numeric(25,20),
+    gnomad_amr_af numeric(25,20),
+    gnomad_asj_af numeric(25,20),
+    gnomad_eas_af numeric(25,20),
+    gnomad_fin_af numeric(25,20),
+    gnomad_nfe_af numeric(25,20),
+    gnomad_oth_af numeric(25,20),
+    gnomad_sas_af numeric(25,20),
+    max_af numeric(25,20),
+    max_af_pops text,
+    gnomad_non_cancer_af numeric(25,20),
+    gnomad_non_cancer_afr_af numeric(25,20),
+    gnomad_non_cancer_ami_af numeric(25,20),
+    gnomad_non_cancer_amr_af numeric(25,20),
+    gnomad_non_cancer_asj_af numeric(25,20),
+    gnomad_non_cancer_eas_af numeric(25,20),
+    gnomad_non_cancer_fin_af numeric(25,20),
+    gnomad_non_cancer_mid_af numeric(25,20),
+    gnomad_non_cancer_nfe_af numeric(25,20),
+    gnomad_non_cancer_oth_af numeric(25,20),
+    gnomad_non_cancer_sas_af numeric(25,20),
+    gnomad_non_cancer_max_af_adj numeric(25,20),
+    gnomad_non_cancer_max_af_pops_adj text,
+    clin_sig text,
+    somatic text,
+    pubmed text,
+    transcription_factors text,
+    motif_name text,
+    motif_pos text,
+    high_inf_pos text,
+    motif_score_change text,
+    mirna text,
+    impact text,
+    pick text,
+    variant_class text,
+    tsl text,
+    hgvs_offset text,
+    pheno text,
+    gene_pheno text,
+    context text,
+    tumor_submitter_uuid text,
+    normal_submitter_uuid text,
+    case_id text,
+    gdc_filter text,
+    cosmic text,
+    hotspot boolean,
+    rna_support text,
+    rna_depth text,
+    rna_ref_count text,
+    rna_alt_count text,
+    callers text,
+    file_gdc_id text,
+    muse text,
+    mutect2 text,
+    pindel text,
+    varscan2 text,
+    sample_barcode_tumor text,
+    sample_barcode_normal text,
+    aliquot_barcode_tumor text,
+    aliquot_barcode_normal text,
+    cda_subject_alias bigint NOT NULL
+);
+ALTER TABLE ONLY public.somatic_mutation ALTER COLUMN symbol SET STATISTICS 3000;
+
+
+ALTER TABLE public.somatic_mutation OWNER TO cloudsqlsuperuser;
+
+--
+-- TOC entry 4054 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.project_short_name; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.project_short_name IS 'Project name abbreviation; the program name appended with a project name abbreviation; eg. TCGA-OV, etc.';
+
+
+--
+-- TOC entry 4055 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.case_barcode; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.case_barcode IS 'Original case barcode, eg TCGA-DX-A8BN';
+
+
+--
+-- TOC entry 4056 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.cda_subject_id; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.cda_subject_id IS 'CDA subject ID corresponding to value in case_barcode';
+
+
+--
+-- TOC entry 4057 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.primary_site; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.primary_site IS 'Anatomical site of the cancer under investigation or review';
+
+
+--
+-- TOC entry 4058 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.hugo_symbol; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.hugo_symbol IS 'HUGO symbol for the gene (HUGO symbols are always in all caps). Unknown is used for regions that do not correspond to a gene';
+
+
+--
+-- TOC entry 4059 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.entrez_gene_id; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.entrez_gene_id IS 'Entrez gene ID (an integer). 0 is used for regions that do not correspond to a gene region or Ensembl ID';
+
+
+--
+-- TOC entry 4060 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.center; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.center IS 'One or more genome sequencing center reporting the variant';
+
+
+--
+-- TOC entry 4061 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.ncbi_build; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.ncbi_build IS 'The reference genome used for the alignment (GRCh38)';
+
+
+--
+-- TOC entry 4062 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.chromosome; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.chromosome IS 'Chromosome, possible values: chr1-22, and chrX';
+
+
+--
+-- TOC entry 4063 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.start_position; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.start_position IS 'Lowest numeric position of the reported variant on the genomic reference sequence. Mutation start coordinate';
+
+
+--
+-- TOC entry 4064 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.end_position; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.end_position IS 'Highest numeric genomic position of the reported variant on the genomic reference sequence. Mutation end coordinate';
+
+
+--
+-- TOC entry 4065 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.strand; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.strand IS 'Either + or - to denote whether read mapped to the sense (+) or anti-sense (-) strand';
+
+
+--
+-- TOC entry 4066 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.variant_classification; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.variant_classification IS 'Translational effect of variant allele';
+
+
+--
+-- TOC entry 4067 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.variant_type; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.variant_type IS 'Type of mutation. TNP (tri-nucleotide polymorphism) is analogous to DNP (di-nucleotide polymorphism) but for three consecutive nucleotides. ONP (oligo-nucleotide polymorphism) is analogous to TNP but for consecutive runs of four or more (SNP, DNP, TNP, ONP, INS, DEL, or Consolidated)';
+
+
+--
+-- TOC entry 4068 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.reference_allele; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.reference_allele IS 'The plus strand reference allele at this position. Includes the deleted sequence for a deletion or - for an insertion';
+
+
+--
+-- TOC entry 4069 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.tumor_seq_allele1; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.tumor_seq_allele1 IS 'Primary data genotype for tumor sequencing (discovery) allele 1. A - symbol for a deletion represents a variant. A - symbol for an insertion represents wild-type allele. Novel inserted sequence for insertion does not include flanking reference bases';
+
+
+--
+-- TOC entry 4070 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.tumor_seq_allele2; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.tumor_seq_allele2 IS 'Primary data genotype for tumor sequencing (discovery) allele 2. A - symbol for a deletion represents a variant. A - symbol for an insertion represents wild-type allele. Novel inserted sequence for insertion does not include flanking reference bases';
+
+
+--
+-- TOC entry 4071 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.dbsnp_rs; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.dbsnp_rs IS 'The rs-IDs from the   dbSNP database, novel if not found in any database used, or null if there is no dbSNP record, but it is found in other databases';
+
+
+--
+-- TOC entry 4072 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.dbsnp_val_status; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.dbsnp_val_status IS 'The dbSNP validation status is reported as a semicolon-separated list of statuses. The union of all rs-IDs is taken when there are multiple';
+
+
+--
+-- TOC entry 4073 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.tumor_aliquot_barcode; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.tumor_aliquot_barcode IS 'Aliquot barcode for the tumor sample';
+
+
+--
+-- TOC entry 4074 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.matched_norm_aliquot_barcode; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.matched_norm_aliquot_barcode IS 'Aliquot barcode for the matched normal sample';
+
+
+--
+-- TOC entry 4075 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.match_norm_seq_allele1; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.match_norm_seq_allele1 IS 'Primary data genotype. Matched normal sequencing allele 1. A - symbol for a deletion represents a variant. A - symbol for an insertion represents wild-type allele. Novel inserted sequence for insertion does not include flanking reference bases (cleared in somatic MAF)';
+
+
+--
+-- TOC entry 4076 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.match_norm_seq_allele2; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.match_norm_seq_allele2 IS 'Matched normal sequencing allele 2';
+
+
+--
+-- TOC entry 4077 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.tumor_validation_allele1; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.tumor_validation_allele1 IS 'Secondary data from orthogonal technology. Tumor genotyping (validation) for allele 1. A - symbol for a deletion represents a variant. A - symbol for an insertion represents wild-type allele. Novel inserted sequence for insertion does not include flanking reference bases';
+
+
+--
+-- TOC entry 4078 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.tumor_validation_allele2; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.tumor_validation_allele2 IS 'Secondary data from orthogonal technology. Tumor genotyping (validation) for allele 2';
+
+
+--
+-- TOC entry 4079 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.match_norm_validation_allele1; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.match_norm_validation_allele1 IS 'Secondary data from orthogonal technology. Matched normal genotyping (validation) for allele 1. A - symbol for a deletion represents a variant. A - symbol for an insertion represents wild-type allele. Novel inserted sequence for insertion does not include flanking reference bases (cleared in somatic MAF)';
+
+
+--
+-- TOC entry 4080 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.match_norm_validation_allele2; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.match_norm_validation_allele2 IS 'Secondary data from orthogonal technology. Matched normal genotyping (validation) for allele 2 (cleared in somatic MAF)';
+
+
+--
+-- TOC entry 4081 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.verification_status; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.verification_status IS 'Second pass results from independent attempt using same methods as primary data source. Generally reserved for 3730 Sanger Sequencing';
+
+
+--
+-- TOC entry 4082 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.validation_status; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.validation_status IS 'Second pass results from orthogonal technology';
+
+
+--
+-- TOC entry 4083 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.mutation_status; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.mutation_status IS 'An assessment of the mutation as somatic, germline, LOH, post transcriptional modification, unknown, or none. The values allowed in this field are constrained by the value in the Validation_Status field';
+
+
+--
+-- TOC entry 4084 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.sequencing_phase; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.sequencing_phase IS 'TCGA sequencing phase (if applicable). Phase should change under any circumstance that the targets under consideration change';
+
+
+--
+-- TOC entry 4085 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.sequence_source; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.sequence_source IS 'Molecular assay type used to produce the analytes used for sequencing. Allowed values are a subset of the SRA 1.5 library_strategy field values. This subset matches those used at CGHub';
+
+
+--
+-- TOC entry 4086 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.validation_method; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.validation_method IS 'The assay platforms used for the validation call';
+
+
+--
+-- TOC entry 4087 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.score; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.score IS 'Not in use';
+
+
+--
+-- TOC entry 4088 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.bam_file; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.bam_file IS 'Not in use';
+
+
+--
+-- TOC entry 4089 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.sequencer; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.sequencer IS 'Instrument used to produce primary sequence data';
+
+
+--
+-- TOC entry 4090 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.tumor_aliquot_uuid; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.tumor_aliquot_uuid IS 'Unique GDC identifier for tumor aliquot (10189 unique)';
+
+
+--
+-- TOC entry 4091 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.matched_norm_aliquot_uuid; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.matched_norm_aliquot_uuid IS 'Unique GDC identifier for normal aliquot (10189 unique)';
+
+
+--
+-- TOC entry 4092 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.hgvsc; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.hgvsc IS 'The coding sequence of the variant in HGVS recommended format';
+
+
+--
+-- TOC entry 4093 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.hgvsp; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.hgvsp IS 'The protein sequence of the variant in HGVS recommended format. p.= signifies no change in the protein';
+
+
+--
+-- TOC entry 4094 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.hgvsp_short; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.hgvsp_short IS 'Same as the HGVSp column, but using 1-letter amino-acid codes';
+
+
+--
+-- TOC entry 4095 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.transcript_id; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.transcript_id IS 'Ensembl ID of the transcript affected by the variant';
+
+
+--
+-- TOC entry 4096 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.exon_number; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.exon_number IS 'The exon number (out of total number)';
+
+
+--
+-- TOC entry 4097 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.t_depth; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.t_depth IS 'Read depth across this locus in tumor BAM';
+
+
+--
+-- TOC entry 4098 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.t_ref_count; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.t_ref_count IS 'Read depth supporting the reference allele in tumor BAM';
+
+
+--
+-- TOC entry 4099 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.t_alt_count; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.t_alt_count IS 'Read depth supporting the variant allele in tumor BAM';
+
+
+--
+-- TOC entry 4100 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.n_depth; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.n_depth IS 'Read depth across this locus in normal BAM';
+
+
+--
+-- TOC entry 4101 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.n_ref_count; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.n_ref_count IS 'Read depth supporting the reference allele in normal BAM (cleared in somatic MAF)';
+
+
+--
+-- TOC entry 4102 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.n_alt_count; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.n_alt_count IS 'Read depth supporting the variant allele in normal BAM (cleared in somatic MAF)';
+
+
+--
+-- TOC entry 4103 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.all_effects; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.all_effects IS 'A semicolon delimited list of all possible variant effects, sorted by priority ([Symbol,Consequence,HGVSp_Short,Transcript_ID,RefSeq,HGVSc,Impact,Canonical,Sift,PolyPhen,Strand])';
+
+
+--
+-- TOC entry 4104 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.allele; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.allele IS 'The variant allele used to calculate the consequence';
+
+
+--
+-- TOC entry 4105 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.gene; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.gene IS 'The gene symbol. In this table, gene symbol is gene name e.g. ACADVL';
+
+
+--
+-- TOC entry 4106 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.feature; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.feature IS 'Stable Ensembl ID of feature (transcript, regulatory, motif)';
+
+
+--
+-- TOC entry 4107 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.feature_type; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.feature_type IS 'Type of feature. Currently one of Transcript, RegulatoryFeature, MotifFeature (or blank)';
+
+
+--
+-- TOC entry 4108 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.one_consequence; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.one_consequence IS 'The single consequence of the canonical transcript in  sequence ontology terms, eg missense_variant';
+
+
+--
+-- TOC entry 4109 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.consequence; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.consequence IS 'Consequence type of this variant; sequence ontology terms';
+
+
+--
+-- TOC entry 4110 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.cdna_position; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.cdna_position IS 'Relative position of base pair in the cDNA sequence as a fraction. A - symbol is displayed as the numerator if the variant does not appear in cDNA';
+
+
+--
+-- TOC entry 4111 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.cds_position; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.cds_position IS 'Relative position of base pair in coding sequence. A - symbol is displayed as the numerator if the variant does not appear in coding sequence';
+
+
+--
+-- TOC entry 4112 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.protein_position; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.protein_position IS 'Relative position of affected amino acid in protein. A - symbol is displayed as the numerator if the variant does not appear in coding sequence';
+
+
+--
+-- TOC entry 4113 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.amino_acids; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.amino_acids IS 'Amino acid substitution caused by the mutation. Only given if the variation affects the protein-coding sequence';
+
+
+--
+-- TOC entry 4114 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.codons; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.codons IS 'The alternative codons with the variant base in upper case';
+
+
+--
+-- TOC entry 4115 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.existing_variation; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.existing_variation IS 'Known identifier of existing variation';
+
+
+--
+-- TOC entry 4116 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.distance; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.distance IS 'Shortest distance from the variant to transcript';
+
+
+--
+-- TOC entry 4117 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.transcript_strand; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.transcript_strand IS 'The DNA strand (1 or -1) on which the transcript/feature lies';
+
+
+--
+-- TOC entry 4118 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.symbol; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.symbol IS 'Eg TP53, LRP1B, etc (same as Hugo_Symbol field except blank instead of Unknown';
+
+
+--
+-- TOC entry 4119 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.symbol_source; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.symbol_source IS 'The source of the gene symbol, usually HGNC, rarely blank, other sources include Uniprot_gn, EntrezGene, etc';
+
+
+--
+-- TOC entry 4120 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.hgnc_id; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.hgnc_id IS 'Gene identifier from the HUGO Gene Nomenclature Committee if applicable';
+
+
+--
+-- TOC entry 4121 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.biotype; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.biotype IS 'Biotype of transcript';
+
+
+--
+-- TOC entry 4122 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.canonical; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.canonical IS 'A flag (YES) indicating that the VEP-based canonical transcript, the longest translation, was used for this gene. If not, the value is null';
+
+
+--
+-- TOC entry 4123 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.ccds; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.ccds IS 'The  CCDS identifier for this transcript, where applicable';
+
+
+--
+-- TOC entry 4124 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.ensp; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.ensp IS 'The Ensembl protein identifier of the affected transcript';
+
+
+--
+-- TOC entry 4125 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.swissprot; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.swissprot IS 'UniProtKB/Swiss-Prot accession';
+
+
+--
+-- TOC entry 4126 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.trembl; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.trembl IS 'UniProtKB/TrEMBL identifier of protein product';
+
+
+--
+-- TOC entry 4127 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.uniparc; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.uniparc IS 'UniParc identifier of protein product';
+
+
+--
+-- TOC entry 4128 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.uniprot_isoform; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.uniprot_isoform IS 'Direct mappings to UniProtKB isoforms';
+
+
+--
+-- TOC entry 4129 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.refseq; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.refseq IS 'RefSeq identifier for this transcript';
+
+
+--
+-- TOC entry 4130 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.mane; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.mane IS 'MANE (Matched Annotation by NCBI and EMBL-EBI) Transcript';
+
+
+--
+-- TOC entry 4131 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.appris; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.appris IS 'Annotates alternatively spliced transcripts as primary or alternate based on a range of computational methods';
+
+
+--
+-- TOC entry 4132 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.flags; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.flags IS 'Transcript quality flags';
+
+
+--
+-- TOC entry 4133 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.sift; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.sift IS 'The SIFT prediction and/or score, with both given as prediction (score)';
+
+
+--
+-- TOC entry 4134 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.polyphen; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.polyphen IS 'The PolyPhen prediction and/or score';
+
+
+--
+-- TOC entry 4135 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.exon; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.exon IS 'The exon number (out of total number)';
+
+
+--
+-- TOC entry 4136 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.intron; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.intron IS 'The intron number (out of total number)';
+
+
+--
+-- TOC entry 4137 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.domains; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.domains IS 'The source and identifier of any overlapping protein domains';
+
+
+--
+-- TOC entry 4138 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.thousg_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.thousg_af IS 'Non-reference allele and frequency of existing variant in 1000 Genomes';
+
+
+--
+-- TOC entry 4139 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.thousg_afr_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.thousg_afr_af IS 'Non-reference allele and frequency of existing variant in 1000 Genomes combined African population';
+
+
+--
+-- TOC entry 4140 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.thousg_amr_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.thousg_amr_af IS 'Non-reference allele and frequency of existing variant in 1000 Genomes combined American population';
+
+
+--
+-- TOC entry 4141 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.thousg_eas_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.thousg_eas_af IS 'Non-reference allele and frequency of existing variant in 1000 Genomes combined East Asian population';
+
+
+--
+-- TOC entry 4142 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.thousg_eur_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.thousg_eur_af IS 'Non-reference allele and frequency of existing variant in 1000 Genomes combined European population';
+
+
+--
+-- TOC entry 4143 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.thousg_sas_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.thousg_sas_af IS 'Non-reference allele and frequency of existing variant in 1000 Genomes combined South Asian population';
+
+
+--
+-- TOC entry 4144 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.esp_aa_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.esp_aa_af IS 'Non-reference allele and frequency of existing variant in NHLBI-ESP African American population';
+
+
+--
+-- TOC entry 4145 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.esp_ea_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.esp_ea_af IS 'Non-reference allele and frequency of existing variant in NHLBI-ESP European American population';
+
+
+--
+-- TOC entry 4146 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.gnomad_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.gnomad_af IS 'Frequency of existing variant in gnomAD exomes combined population';
+
+
+--
+-- TOC entry 4147 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.gnomad_afr_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.gnomad_afr_af IS 'Frequency of existing variant in gnomAD exomes African/American population';
+
+
+--
+-- TOC entry 4148 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.gnomad_amr_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.gnomad_amr_af IS 'Frequency of existing variant in gnomAD exomes American population';
+
+
+--
+-- TOC entry 4149 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.gnomad_asj_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.gnomad_asj_af IS 'Frequency of existing variant in gnomAD exomes Ashkenazi Jewish population';
+
+
+--
+-- TOC entry 4150 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.gnomad_eas_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.gnomad_eas_af IS 'Frequency of existing variant in gnomAD exomes East Asian population';
+
+
+--
+-- TOC entry 4151 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.gnomad_fin_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.gnomad_fin_af IS 'Frequency of existing variant in gnomAD exomes Finnish population';
+
+
+--
+-- TOC entry 4152 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.gnomad_nfe_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.gnomad_nfe_af IS 'tFrequency of existing variant in gnomAD exomes Non-Finnish European population';
+
+
+--
+-- TOC entry 4153 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.gnomad_oth_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.gnomad_oth_af IS 'Frequency of existing variant in gnomAD exomes other combined population';
+
+
+--
+-- TOC entry 4154 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.gnomad_sas_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.gnomad_sas_af IS 'Frequency of existing variant in gnomAD exomes South Asian population';
+
+
+--
+-- TOC entry 4155 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.max_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.max_af IS 'Maximum observed allele frequency in 1000 Genomes, ESP and ExAC/gnomAD';
+
+
+--
+-- TOC entry 4156 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.max_af_pops; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.max_af_pops IS 'Populations in which maximum allele frequency was observed';
+
+
+--
+-- TOC entry 4157 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.gnomad_non_cancer_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.gnomad_non_cancer_af IS 'Frequency of exisiting variant in gnomAD genomes combined non-cancer population';
+
+
+--
+-- TOC entry 4158 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.gnomad_non_cancer_afr_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.gnomad_non_cancer_afr_af IS 'Frequency of exisiting variant in gnomAD genomes non-cancer African/American population';
+
+
+--
+-- TOC entry 4159 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.gnomad_non_cancer_ami_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.gnomad_non_cancer_ami_af IS 'Frequency of exisiting variant in gnomAD genomes non-cancer Amish population';
+
+
+--
+-- TOC entry 4160 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.gnomad_non_cancer_amr_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.gnomad_non_cancer_amr_af IS 'Frequency of exisiting variant in gnomAD genomes non-cancer Latino population';
+
+
+--
+-- TOC entry 4161 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.gnomad_non_cancer_asj_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.gnomad_non_cancer_asj_af IS 'Frequency of exisiting variant in gnomAD genomes non-cancer Ashkenazi Jewish population';
+
+
+--
+-- TOC entry 4162 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.gnomad_non_cancer_eas_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.gnomad_non_cancer_eas_af IS 'Frequency of exisiting variant in gnomAD genomes non-cancer East Asian population';
+
+
+--
+-- TOC entry 4163 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.gnomad_non_cancer_fin_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.gnomad_non_cancer_fin_af IS 'Frequency of exisiting variant in gnomAD genomes non-cancer Finnish population';
+
+
+--
+-- TOC entry 4164 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.gnomad_non_cancer_mid_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.gnomad_non_cancer_mid_af IS 'Frequency of exisiting variant in gnomAD genomes non-cancer Middle Eastern population';
+
+
+--
+-- TOC entry 4165 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.gnomad_non_cancer_nfe_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.gnomad_non_cancer_nfe_af IS 'Frequency of exisiting variant in gnomAD genomes non-cancer Non-Finnish European population';
+
+
+--
+-- TOC entry 4166 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.gnomad_non_cancer_oth_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.gnomad_non_cancer_oth_af IS 'Frequency of exisiting variant in gnomAD genomes non-cancer Other population';
+
+
+--
+-- TOC entry 4167 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.gnomad_non_cancer_sas_af; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.gnomad_non_cancer_sas_af IS 'Frequency of exisiting variant in gnomAD genomes non-cancer South Asian population';
+
+
+--
+-- TOC entry 4168 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.gnomad_non_cancer_max_af_adj; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.gnomad_non_cancer_max_af_adj IS 'Maximum observed allele frequency in non-cancer gnomAD genomes populations after removing subpopulations with less than 2 allele counts';
+
+
+--
+-- TOC entry 4169 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.gnomad_non_cancer_max_af_pops_adj; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.gnomad_non_cancer_max_af_pops_adj IS 'Non-cancer gnomAD genomes populations in which the maximum allele frequency was observed after removing those with less than 2 allele counts';
+
+
+--
+-- TOC entry 4170 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.clin_sig; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.clin_sig IS 'Clinical significance of variant from dbSNP';
+
+
+--
+-- TOC entry 4171 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.somatic; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.somatic IS 'Somatic status of each ID reported under Existing_variation (0, 1, or null)';
+
+
+--
+-- TOC entry 4172 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.pubmed; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.pubmed IS 'Pubmed ID(s) of publications that cite existing variant';
+
+
+--
+-- TOC entry 4173 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.transcription_factors; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.transcription_factors IS 'List of transcription factors which bind to the transcription factor binding profile';
+
+
+--
+-- TOC entry 4174 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.motif_name; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.motif_name IS 'The source and identifier of a transcription factor binding profile aligned at this position';
+
+
+--
+-- TOC entry 4175 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.motif_pos; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.motif_pos IS 'The relative position of the variation in the aligned TFBP';
+
+
+--
+-- TOC entry 4176 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.high_inf_pos; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.high_inf_pos IS 'A flag indicating if the variant falls in a high information position of a transcription factor binding profile (TFBP) (Y, N, or null)';
+
+
+--
+-- TOC entry 4177 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.motif_score_change; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.motif_score_change IS 'The difference in motif score of the reference and variant sequences for the TFBP';
+
+
+--
+-- TOC entry 4178 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.mirna; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.mirna IS 'SO terms of overlapped miRNA secondary structure feature(s)';
+
+
+--
+-- TOC entry 4179 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.impact; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.impact IS 'The impact modifier for the consequence type';
+
+
+--
+-- TOC entry 4180 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.pick; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.pick IS 'Indicates if this block of consequence data was picked by VEP''s   pick feature (1 or null)';
+
+
+--
+-- TOC entry 4181 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.variant_class; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.variant_class IS 'Sequence Ontology variant class';
+
+
+--
+-- TOC entry 4182 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.tsl; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.tsl IS 'Transcript support level, which is based on independent RNA analyses';
+
+
+--
+-- TOC entry 4183 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.hgvs_offset; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.hgvs_offset IS 'Indicates by how many bases the HGVS notations for this variant have been shifted';
+
+
+--
+-- TOC entry 4184 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.pheno; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.pheno IS 'Indicates if existing variant is associated with a phenotype, disease or trait (0, 1, or null)';
+
+
+--
+-- TOC entry 4185 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.gene_pheno; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.gene_pheno IS 'Indicates if gene that the variant maps to is associated with a phenotype, disease or trait (0, 1, or null)';
+
+
+--
+-- TOC entry 4186 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.context; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.context IS 'The reference allele per VCF specs, and its five flanking base pairs';
+
+
+--
+-- TOC entry 4187 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.tumor_submitter_uuid; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.tumor_submitter_uuid IS 'Unique GDC identifier for the tumor file submitter';
+
+
+--
+-- TOC entry 4188 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.normal_submitter_uuid; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.normal_submitter_uuid IS 'Unique GDC identifier for the normal file submitter';
+
+
+--
+-- TOC entry 4189 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.case_id; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.case_id IS 'Unique GDC identifier for the underlying case';
+
+
+--
+-- TOC entry 4190 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.gdc_filter; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.gdc_filter IS 'GDC filters applied universally across all MAFs';
+
+
+--
+-- TOC entry 4191 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.cosmic; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.cosmic IS 'Overlapping COSMIC variants';
+
+
+--
+-- TOC entry 4192 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.hotspot; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.hotspot IS 'A flag indicating if the variant is a known hotspot (Y, N, or null)';
+
+
+--
+-- TOC entry 4193 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.rna_support; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.rna_support IS 'Indicates if the variant is found and alleles (Match), simply (Overlap), or is not supported (No) by tumor RNA-Seq. If it has not been checked against RNA-Seq data, the value will be ''Unknown''.';
+
+
+--
+-- TOC entry 4194 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.rna_depth; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.rna_depth IS 'Read depth at this locus if the variant is supported by tumor RNA-seq data.';
+
+
+--
+-- TOC entry 4195 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.rna_ref_count; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.rna_ref_count IS 'Read depth supporting the reference allele at this locus if the variant is supported by tumor RNA-seq data.';
+
+
+--
+-- TOC entry 4196 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.rna_alt_count; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.rna_alt_count IS 'Read depth supporting the variant allele at this locus if the variant is supported by tumor RNA-seq data.';
+
+
+--
+-- TOC entry 4197 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.callers; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.callers IS '|-delimited list of mutation caller(s) that agreed on this particular call, always in alphabetical order: muse, mutect, somaticsniper, varscan';
+
+
+--
+-- TOC entry 4198 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.file_gdc_id; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.file_gdc_id IS '|-delimited list of unique GDC identifiers for underlying MAF file';
+
+
+--
+-- TOC entry 4199 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.muse; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.muse IS 'Muse caller identified the variant at this position';
+
+
+--
+-- TOC entry 4200 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.mutect2; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.mutect2 IS 'Mutect2 caller identified the variant at this position';
+
+
+--
+-- TOC entry 4201 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.pindel; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.pindel IS 'pindel caller identified the variant at this position';
+
+
+--
+-- TOC entry 4202 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.varscan2; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.varscan2 IS 'Varscan2 caller identified the variant at this position';
+
+
+--
+-- TOC entry 4203 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.sample_barcode_tumor; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.sample_barcode_tumor IS 'TCGA sample barcode for the tumor, eg TCGA-12-1089-01A. One sample may have multiple sets of CN segmentations corresponding to multiple aliquots; use GROUP BY appropriately in queries';
+
+
+--
+-- TOC entry 4204 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.sample_barcode_normal; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.sample_barcode_normal IS 'TCGA sample barcode for the normal control, eg TCGA-12-1089-01A. One sample may have multiple sets of CN segmentations corresponding to multiple aliquots; use GROUP BY appropriately in queries';
+
+
+--
+-- TOC entry 4205 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.aliquot_barcode_tumor; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.aliquot_barcode_tumor IS 'TCGA aliquot barcode for the tumor, eg TCGA-12-1089-01A-01D-0517-01';
+
+
+--
+-- TOC entry 4206 (class 0 OID 0)
+-- Dependencies: 218
+-- Name: COLUMN somatic_mutation.aliquot_barcode_normal; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.somatic_mutation.aliquot_barcode_normal IS 'TCGA aliquot barcode for the normal control, eg TCGA-12-1089-01A-01D-0517-01]';
+
+
+--
+-- TOC entry 219 (class 1259 OID 16557)
+-- Name: specimen; Type: TABLE; Schema: public; Owner: cloudsqlsuperuser
+--
+
+CREATE TABLE public.specimen (
+    id text NOT NULL,
+    associated_project text,
+    days_to_collection integer,
+    primary_disease_type text,
+    anatomical_site text,
+    source_material_type text,
+    specimen_type text,
+    derived_from_specimen text,
+    derived_from_subject text,
+    integer_id_alias bigint NOT NULL
+);
+
+
+ALTER TABLE public.specimen OWNER TO cloudsqlsuperuser;
+
+--
+-- TOC entry 4207 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: TABLE specimen; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON TABLE public.specimen IS 'Any material taken as a sample from a biological entity (living or dead), or from a physical object or the environment. Specimens are usually collected as an example of their kind, often for use in some investigation.';
+
+
+--
+-- TOC entry 4208 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: COLUMN specimen.id; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.specimen.id IS 'The ''logical'' identifier of the entity in the system of record, e.g. a UUID.  This ''id'' is unique within a given system. The identified entity may have a different ''id'' in a different system.';
+
+
+--
+-- TOC entry 4209 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: COLUMN specimen.associated_project; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.specimen.associated_project IS 'The Project associated with the specimen.';
+
+
+--
+-- TOC entry 4210 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: COLUMN specimen.days_to_collection; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.specimen.days_to_collection IS 'The number of days from the index date to either the date a sample was collected for a specific study or project, or the date a subject underwent a procedure (e.g. surgical resection) yielding a sample that was eventually used for research.';
+
+
+--
+-- TOC entry 4211 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: COLUMN specimen.primary_disease_type; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.specimen.primary_disease_type IS 'The text term used to describe the type of malignant disease, as categorized by the World Health Organization''s (WHO) International Classification of Diseases for Oncology (ICD-O).   This attribute represents the disease that qualified the subject for inclusion on the ResearchProject.';
+
+
+--
+-- TOC entry 4212 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: COLUMN specimen.anatomical_site; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.specimen.anatomical_site IS 'Per GDC Dictionary, the text term that represents the name of the primary disease site of the submitted tumor sample; recommend dropping tumor; biospecimen_anatomic_site.';
+
+
+--
+-- TOC entry 4213 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: COLUMN specimen.source_material_type; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.specimen.source_material_type IS 'The general kind of material from which the specimen was derived, indicating the physical nature of the source material.';
+
+
+--
+-- TOC entry 4214 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: COLUMN specimen.specimen_type; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.specimen.specimen_type IS 'The high-level type of the specimen, based on its how it has been derived from the original extracted sample.';
+
+
+--
+-- TOC entry 4215 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: COLUMN specimen.derived_from_specimen; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.specimen.derived_from_specimen IS 'A source/parent specimen from which this one was directly derived.';
+
+
+--
+-- TOC entry 4216 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: COLUMN specimen.derived_from_subject; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.specimen.derived_from_subject IS 'The Patient/ResearchSubject, or Biologically Derived Materal (e.g. a cell line, tissue culture, organoid) from which the specimen was directly or indirectly derived.';
+
+
+--
+-- TOC entry 230 (class 1259 OID 116466)
+-- Name: specimen_identifier; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.specimen_identifier (
+    specimen_alias bigint NOT NULL,
+    system text NOT NULL,
+    field_name text NOT NULL,
+    value text NOT NULL
+);
+
+
+ALTER TABLE public.specimen_identifier OWNER TO postgres;
+
+--
+-- TOC entry 220 (class 1259 OID 16567)
+-- Name: subject; Type: TABLE; Schema: public; Owner: cloudsqlsuperuser
+--
+
+CREATE TABLE public.subject (
+    id text NOT NULL,
+    species text,
+    sex text,
+    race text,
+    ethnicity text,
+    days_to_birth integer,
+    vital_status text,
+    days_to_death integer,
+    cause_of_death text,
+    integer_id_alias bigint NOT NULL
+);
+
+
+ALTER TABLE public.subject OWNER TO cloudsqlsuperuser;
+
+--
+-- TOC entry 4217 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: TABLE subject; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON TABLE public.subject IS 'The core collection of Subject records.';
+
+
+--
+-- TOC entry 4218 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: COLUMN subject.id; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.subject.id IS 'The ''logical'' identifier of the entity in the system of record, e.g. a UUID.  This ''id'' is unique within a given system. The identified entity may have a different ''id'' in a different system.';
+
+
+--
+-- TOC entry 4219 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: COLUMN subject.species; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.subject.species IS 'The taxonomic group (e.g. species) of the patient. For MVP, since taxonomy vocabulary is consistent between GDC and PDC, using text.  Ultimately, this will be a term returned by the vocabulary service.';
+
+
+--
+-- TOC entry 4220 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: COLUMN subject.sex; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.subject.sex IS 'The biologic character or quality that distinguishes male and female from one another as expressed by analysis of the person''s gonadal, morphologic (internal and external), chromosomal, and hormonal characteristics.';
+
+
+--
+-- TOC entry 4221 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: COLUMN subject.race; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.subject.race IS 'An arbitrary classification of a taxonomic group that is a division of a species. It usually arises as a consequence of geographical isolation within a species and is characterized by shared heredity, physical attributes and behavior, and in the case of humans, by common history, nationality, or geographic distribution. The provided values are based on the categories defined by the U.S. Office of Management and Business and used by the U.S. Census Bureau.';
+
+
+--
+-- TOC entry 4222 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: COLUMN subject.ethnicity; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.subject.ethnicity IS 'An individual''s self-described social and cultural grouping, specifically whether an individual describes themselves as Hispanic or Latino. The provided values are based on the categories defined by the U.S. Office of Management and Business and used by the U.S. Census Bureau.';
+
+
+--
+-- TOC entry 4223 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: COLUMN subject.days_to_birth; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.subject.days_to_birth IS 'Number of days between the date used for index and the date from a person''s date of birth represented as a calculated negative number of days.';
+
+
+--
+-- TOC entry 4224 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: COLUMN subject.vital_status; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.subject.vital_status IS 'Coded value indicating the state or condition of being living or deceased; also includes the case where the vital status is unknown.';
+
+
+--
+-- TOC entry 4225 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: COLUMN subject.days_to_death; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.subject.days_to_death IS 'Number of days between the date used for index and the date from a person''s date of death represented as a calculated number of days.';
+
+
+--
+-- TOC entry 4226 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: COLUMN subject.cause_of_death; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.subject.cause_of_death IS 'Coded value indicating the circumstance or condition that results in the death of the subject.';
+
+
+--
+-- TOC entry 221 (class 1259 OID 16572)
+-- Name: subject_associated_project; Type: TABLE; Schema: public; Owner: cloudsqlsuperuser
+--
+
+CREATE TABLE public.subject_associated_project (
+    subject_alias bigint NOT NULL,
+    associated_project text NOT NULL
+);
+
+
+ALTER TABLE public.subject_associated_project OWNER TO cloudsqlsuperuser;
+
+--
+-- TOC entry 222 (class 1259 OID 16577)
+-- Name: subject_identifier; Type: TABLE; Schema: public; Owner: cloudsqlsuperuser
+--
+
+CREATE TABLE public.subject_identifier (
+    subject_alias bigint NOT NULL,
+    system text NOT NULL,
+    field_name text NOT NULL,
+    value text NOT NULL
+);
+
+
+ALTER TABLE public.subject_identifier OWNER TO cloudsqlsuperuser;
+
+--
+-- TOC entry 4227 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: TABLE subject_identifier; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON TABLE public.subject_identifier IS 'A ''business'' identifier or accession number for a Subject, typically as provided by an external system or authority, that persists across implementing systems (i.e. a ''logical'' identifier).';
+
+
+--
+-- TOC entry 4228 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: COLUMN subject_identifier.system; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.subject_identifier.system IS 'The system or namespace that defines the identifier.';
+
+
+--
+-- TOC entry 4229 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: COLUMN subject_identifier.value; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.subject_identifier.value IS 'The value of the identifier, as defined by the system.';
+
+
+--
+-- TOC entry 231 (class 1259 OID 116471)
+-- Name: subject_researchsubject; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.subject_researchsubject (
+    subject_alias bigint NOT NULL,
+    researchsubject_alias bigint NOT NULL
+);
+
+
+ALTER TABLE public.subject_researchsubject OWNER TO postgres;
+
+--
+-- TOC entry 223 (class 1259 OID 16587)
+-- Name: treatment; Type: TABLE; Schema: public; Owner: cloudsqlsuperuser
+--
+
+CREATE TABLE public.treatment (
+    id text NOT NULL,
+    treatment_type text,
+    treatment_outcome text,
+    days_to_treatment_start integer,
+    days_to_treatment_end integer,
+    therapeutic_agent text,
+    treatment_anatomic_site text,
+    treatment_effect text,
+    treatment_end_reason text,
+    number_of_cycles integer,
+    integer_id_alias bigint NOT NULL
+);
+
+
+ALTER TABLE public.treatment OWNER TO cloudsqlsuperuser;
+
+--
+-- TOC entry 4230 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: TABLE treatment; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON TABLE public.treatment IS 'Represent medication administration or other treatment types.';
+
+
+--
+-- TOC entry 4231 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: COLUMN treatment.id; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.treatment.id IS 'The ''logical'' identifier of the entity in the repository, e.g. a UUID.  This ''id'' is unique within a given system. The identified entity may have a different ''id'' in a different system.';
+
+
+--
+-- TOC entry 4232 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: COLUMN treatment.treatment_type; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.treatment.treatment_type IS 'The treatment type including medication/therapeutics or other procedures.';
+
+
+--
+-- TOC entry 4233 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: COLUMN treatment.treatment_outcome; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.treatment.treatment_outcome IS 'The final outcome of the treatment.';
+
+
+--
+-- TOC entry 4234 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: COLUMN treatment.days_to_treatment_start; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.treatment.days_to_treatment_start IS 'The timepoint at which the treatment started.';
+
+
+--
+-- TOC entry 4235 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: COLUMN treatment.days_to_treatment_end; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.treatment.days_to_treatment_end IS 'The timepoint at which the treatment ended.';
+
+
+--
+-- TOC entry 4236 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: COLUMN treatment.therapeutic_agent; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.treatment.therapeutic_agent IS 'One or more therapeutic agents as part of this treatment.';
+
+
+--
+-- TOC entry 4237 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: COLUMN treatment.treatment_anatomic_site; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.treatment.treatment_anatomic_site IS 'The anatomical site that the treatment targets.';
+
+
+--
+-- TOC entry 4238 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: COLUMN treatment.treatment_effect; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.treatment.treatment_effect IS 'The effect of a treatment on the diagnosis or tumor.';
+
+
+--
+-- TOC entry 4239 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: COLUMN treatment.treatment_end_reason; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.treatment.treatment_end_reason IS 'The reason the treatment ended.';
+
+
+--
+-- TOC entry 4240 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: COLUMN treatment.number_of_cycles; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.treatment.number_of_cycles IS 'The number of treatment cycles the subject received.';
+
+
+--
+-- TOC entry 224 (class 1259 OID 16592)
+-- Name: treatment_identifier; Type: TABLE; Schema: public; Owner: cloudsqlsuperuser
+--
+
+CREATE TABLE public.treatment_identifier (
+    treatment_alias bigint NOT NULL,
+    system text NOT NULL,
+    field_name text NOT NULL,
+    value text NOT NULL
+);
+
+
+ALTER TABLE public.treatment_identifier OWNER TO cloudsqlsuperuser;
+
+--
+-- TOC entry 4241 (class 0 OID 0)
+-- Dependencies: 224
+-- Name: TABLE treatment_identifier; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON TABLE public.treatment_identifier IS 'A ''business'' identifier or accession number for a Treatment, typically as provided by an external system or authority, that persists across implementing systems (i.e. a ''logical'' identifier).';
+
+
+--
+-- TOC entry 4242 (class 0 OID 0)
+-- Dependencies: 224
+-- Name: COLUMN treatment_identifier.system; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.treatment_identifier.system IS 'The system or namespace that defines the identifier.';
+
+
+--
+-- TOC entry 4243 (class 0 OID 0)
+-- Dependencies: 224
+-- Name: COLUMN treatment_identifier.value; Type: COMMENT; Schema: public; Owner: cloudsqlsuperuser
+--
+
+COMMENT ON COLUMN public.treatment_identifier.value IS 'The value of the identifier, as defined by the system.';
+
+
+--
+-- TOC entry 4021 (class 0 OID 0)
+-- Dependencies: 5
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: cloudsqlsuperuser
+--
+
+REVOKE USAGE ON SCHEMA public FROM PUBLIC;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+-- Completed on 2024-02-19 15:18:50 EST
+
+--
+-- PostgreSQL database dump complete
+--
+
