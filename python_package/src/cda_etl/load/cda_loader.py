@@ -703,13 +703,15 @@ class CDA_loader:
             
             { writer.write( subject[subject_id] ) for subject_id in sorted( subject ) }
 
-    def create_integer_aliases_for_file_researchsubject_subject_specimen( self ):
+    def create_integer_aliases_for_entity_tables( self ):
         
-        for input_file_basename in [ 'file.tsv.gz', 'researchsubject.tsv.gz', 'specimen.tsv.gz', 'subject.tsv.gz' ]:
+        print( 'Creating integer ID aliases...', file=sys.stderr )
+
+        for input_file_basename in [ 'diagnosis.tsv.gz', 'file.tsv.gz', 'researchsubject.tsv.gz', 'specimen.tsv.gz', 'subject.tsv.gz', 'treatment.tsv.gz' ]:
             
             input_file = path.join( self.merged_tsv_dir, input_file_basename )
 
-            print( input_file_basename )
+            print( f"   {input_file_basename}...", file=sys.stderr )
 
             output_file = path.join( self.merged_tsv_dir, re.sub( r'^(.*).tsv.gz', r'\1' + '_integer_aliases.tsv.gz', input_file_basename ) )
 
@@ -726,6 +728,8 @@ class CDA_loader:
                     print( *[ values[0], current_alias ], sep='\t', file=OUT )
 
                     current_alias = current_alias + 1
+
+        print( '...done.', file=sys.stderr )
 
     def transform_files_to_SQL( self ):
         
@@ -814,13 +818,21 @@ class CDA_loader:
 
         tables_with_aliases = {
             
+            'diagnosis_identifier',
+            'diagnosis_treatment',
             'file_associated_project',
             'file_identifier',
             'file_specimen',
             'file_subject',
+            'researchsubject_diagnosis',
+            'researchsubject_identifier',
             'researchsubject_specimen',
+            'researchsubject_treatment',
             'specimen_identifier',
-            'subject_researchsubject'
+            'subject_associated_project',
+            'subject_identifier',
+            'subject_researchsubject',
+            'treatment_identifier'
         }
 
         for input_file_basename in sorted( listdir( self.merged_tsv_dir ) ):
@@ -1240,22 +1252,41 @@ class CDA_loader:
 
         full_link_table = {
             
+            'diagnosis_identifier': path.join( self.merged_tsv_dir, 'diagnosis_identifier.tsv.gz' ),
+            'diagnosis_treatment': path.join( self.merged_tsv_dir, 'diagnosis_treatment.tsv.gz' ),
+            'rs_diagnosis': path.join( self.merged_tsv_dir, 'researchsubject_diagnosis.tsv.gz' ),
+            'rs_identifier': path.join( self.merged_tsv_dir, 'researchsubject_identifier.tsv.gz' ),
+            'rs_specimen': path.join( self.merged_tsv_dir, 'researchsubject_specimen.tsv.gz' ),
+            'rs_treatment': path.join( self.merged_tsv_dir, 'researchsubject_treatment.tsv.gz' ),
             'specimen_identifier': path.join( self.merged_tsv_dir, 'specimen_identifier.tsv.gz' ),
             'subject_rs': path.join( self.merged_tsv_dir, 'subject_researchsubject.tsv.gz' ),
-            'rs_specimen': path.join( self.merged_tsv_dir, 'researchsubject_specimen.tsv.gz' )
+            'subject_associated_project': path.join( self.merged_tsv_dir, 'subject_associated_project.tsv.gz' ),
+            'subject_identifier': path.join( self.merged_tsv_dir, 'subject_identifier.tsv.gz' ),
+            'treatment_identifier': path.join( self.merged_tsv_dir, 'treatment_identifier.tsv.gz' )
         }
 
         output_link_table = {
             
+            'diagnosis_identifier': path.join( table_file_dir, 'diagnosis_identifier.sql.gz' ),
+            'diagnosis_treatment': path.join( table_file_dir, 'diagnosis_treatment.sql.gz' ),
+            'rs_diagnosis': path.join( table_file_dir, 'researchsubject_diagnosis.sql.gz' ),
+            'rs_identifier': path.join( table_file_dir, 'researchsubject_identifier.sql.gz' ),
+            'rs_specimen': path.join( table_file_dir, 'researchsubject_specimen.sql.gz' ),
+            'rs_treatment': path.join( table_file_dir, 'researchsubject_treatment.sql.gz' ),
             'specimen_identifier': path.join( table_file_dir, 'specimen_identifier.sql.gz' ),
             'subject_rs': path.join( table_file_dir, 'subject_researchsubject.sql.gz' ),
-            'rs_specimen': path.join( table_file_dir, 'researchsubject_specimen.sql.gz' )
+            'subject_associated_project': path.join( table_file_dir, 'subject_associated_project.sql.gz' ),
+            'subject_identifier': path.join( table_file_dir, 'subject_identifier.sql.gz' ),
+            'treatment_identifier': path.join( table_file_dir, 'treatment_identifier.sql.gz' )
         }
 
         id_alias_file = {
+            
+            'diagnosis': path.join( self.merged_tsv_dir, 'diagnosis_integer_aliases.tsv.gz' ),
             'researchsubject': path.join( self.merged_tsv_dir, 'researchsubject_integer_aliases.tsv.gz' ),
             'specimen': path.join( self.merged_tsv_dir, 'specimen_integer_aliases.tsv.gz' ),
-            'subject': path.join( self.merged_tsv_dir, 'subject_integer_aliases.tsv.gz' )
+            'subject': path.join( self.merged_tsv_dir, 'subject_integer_aliases.tsv.gz' ),
+            'treatment': path.join( self.merged_tsv_dir, 'treatment_integer_aliases.tsv.gz' )
         }
 
         for type_to_link in sorted( full_link_table ):
@@ -1264,47 +1295,79 @@ class CDA_loader:
 
             output_file = output_link_table[type_to_link]
 
-            specimen_aliases = dict()
-            subject_aliases = dict()
-            rs_aliases = dict()
+            aliases = {
+                'diagnosis': dict(),
+                'rs': dict(),
+                'specimen': dict(),
+                'subject': dict(),
+                'treatment': dict()
+            }
 
-            if type_to_link == 'specimen_identifier' or type_to_link == 'rs_specimen':
+            if type_to_link in [ 'diagnosis_identifier', 'diagnosis_treatment', 'rs_diagnosis' ]:
                 
-                with gzip.open( id_alias_file['specimen'], 'rt' ) as IN:
+                with gzip.open( id_alias_file['diagnosis'], 'rt' ) as IN:
                     
                     for next_line in IN:
                         
-                        [ specimen_id, specimen_alias ] = next_line.rstrip('\n').split('\t')
+                        [ diagnosis_id, diagnosis_alias ] = next_line.rstrip( '\n' ).split( '\t' )
 
-                        specimen_aliases[specimen_id] = specimen_alias
+                        aliases['diagnosis'][diagnosis_id] = diagnosis_alias
 
-            if type_to_link == 'subject_rs' or type_to_link == 'rs_specimen':
+            if type_to_link in [ 'rs_diagnosis', 'rs_identifier', 'rs_specimen', 'rs_treatment', 'subject_rs' ]:
                 
                 with gzip.open( id_alias_file['researchsubject'], 'rt' ) as IN:
                     
                     for next_line in IN:
                         
-                        [ rs_id, rs_alias ] = next_line.rstrip('\n').split('\t')
+                        [ rs_id, rs_alias ] = next_line.rstrip( '\n' ).split( '\t' )
 
-                        rs_aliases[rs_id] = rs_alias
+                        aliases['rs'][rs_id] = rs_alias
 
-            if type_to_link == 'subject_rs':
+            if type_to_link in [ 'rs_specimen', 'specimen_identifier' ]:
+                
+                with gzip.open( id_alias_file['specimen'], 'rt' ) as IN:
+                    
+                    for next_line in IN:
+                        
+                        [ specimen_id, specimen_alias ] = next_line.rstrip( '\n' ).split( '\t' )
+
+                        aliases['specimen'][specimen_id] = specimen_alias
+
+            if type_to_link in [ 'subject_rs', 'subject_associated_project', 'subject_identifier' ]:
                         
                 with gzip.open( id_alias_file['subject'], 'rt' ) as IN:
                     
                     for next_line in IN:
                         
-                        [ subject_id, subject_alias ] = next_line.rstrip('\n').split('\t')
+                        [ subject_id, subject_alias ] = next_line.rstrip( '\n' ).split( '\t' )
 
-                        subject_aliases[subject_id] = subject_alias
+                        aliases['subject'][subject_id] = subject_alias
+
+            if type_to_link in [ 'diagnosis_treatment', 'rs_treatment', 'treatment_identifier' ]:
+                        
+                with gzip.open( id_alias_file['treatment'], 'rt' ) as IN:
+                    
+                    for next_line in IN:
+                        
+                        [ treatment_id, treatment_alias ] = next_line.rstrip( '\n' ).split( '\t' )
+
+                        aliases['treatment'][treatment_id] = treatment_alias
 
             # Translate all matching records to aliased versions.
 
             with gzip.open( input_file, 'rt' ) as IN, gzip.open( output_file, 'wt' ) as OUT:
                 
-                if type_to_link == 'specimen_identifier':
+                if re.search( r'_identifier$', type_to_link ) is not None:
                     
-                    print( f"COPY {type_to_link} ( specimen_alias, system, field_name, value ) FROM stdin;", end='\n', file=OUT )
+                    entity_name = re.sub( r'_identifier$', r'', type_to_link )
+
+                    full_entity_name = entity_name
+
+                    if entity_name == 'rs':
+                        
+                        full_entity_name = 'researchsubject'
+                    
+                    print( f"COPY {type_to_link} ( {full_entity_name}_alias, system, field_name, value ) FROM stdin;", end='\n', file=OUT )
 
                     header = True
 
@@ -1312,21 +1375,21 @@ class CDA_loader:
                         
                         if not header:
                             
-                            [ specimen_id, system, field_name, value ] = next_line.rstrip('\n').split('\t')
+                            [ current_id, system, field_name, value ] = next_line.rstrip( '\n' ).split( '\t' )
 
-                            if specimen_id in specimen_aliases:
+                            if current_id in aliases[entity_name]:
                                 
-                                print( *[ specimen_aliases[specimen_id], system, field_name, value ], sep='\t', file=OUT )
+                                print( *[ aliases[entity_name][current_id], system, field_name, value ], sep='\t', file=OUT )
 
                             else:
                                 
-                                print( f"CRITICAL WARNING: specimen_id '{specimen_id}' not aliased: please investigate and fix!", file=sys.stderr )
+                                print( f"CRITICAL WARNING: {entity_name}_id '{current_id}' not aliased: please investigate and fix!", file=sys.stderr )
 
                         header = False
 
-                elif type_to_link == 'subject_rs':
+                elif type_to_link == 'diagnosis_treatment':
                     
-                    print( f"COPY subject_researchsubject ( subject_alias, researchsubject_alias ) FROM stdin;", end='\n', file=OUT )
+                    print( f"COPY diagnosis_treatment ( diagnosis_alias, treatment_alias ) FROM stdin;", end='\n', file=OUT )
 
                     header = True
 
@@ -1334,15 +1397,37 @@ class CDA_loader:
                         
                         if not header:
                             
-                            [ subject_id, rs_id ] = next_line.rstrip('\n').split('\t')
+                            [ diagnosis_id, treatment_id ] = next_line.rstrip( '\n' ).split( '\t' )
 
-                            if subject_id in subject_aliases and rs_id in rs_aliases:
+                            if diagnosis_id in aliases['diagnosis'] and treatment_id in aliases['treatment']:
                                 
-                                print( *[ subject_aliases[subject_id], rs_aliases[rs_id] ], sep='\t', file=OUT )
+                                print( *[ aliases['diagnosis'][diagnosis_id], aliases['treatment'][treatment_id] ], sep='\t', file=OUT )
 
                             else:
                                 
-                                print( f"CRITICAL WARNING: one or both of subject_id '{subject_id}' and researchsubject_id '{rs_id}' not aliased: please investigate and fix!", file=sys.stderr )
+                                print( f"CRITICAL WARNING: one or both of diagnosis_id '{diagnosis_id}' and treatment_id '{treatment_id}' not aliased: please investigate and fix!", file=sys.stderr )
+
+                        header = False
+
+                elif type_to_link == 'rs_diagnosis':
+                    
+                    print( f"COPY researchsubject_diagnosis ( researchsubject_alias, diagnosis_alias ) FROM stdin;", end='\n', file=OUT )
+
+                    header = True
+
+                    for next_line in IN:
+                        
+                        if not header:
+                            
+                            [ rs_id, diagnosis_id ] = next_line.rstrip( '\n' ).split( '\t' )
+
+                            if rs_id in aliases['rs'] and diagnosis_id in aliases['diagnosis']:
+                                
+                                print( *[ aliases['rs'][rs_id], aliases['diagnosis'][diagnosis_id] ], sep='\t', file=OUT )
+
+                            else:
+                                
+                                print( f"CRITICAL WARNING: one or both of rs_id '{rs_id}' and diagnosis_id '{diagnosis_id}' not aliased: please investigate and fix!", file=sys.stderr )
 
                         header = False
 
@@ -1356,15 +1441,81 @@ class CDA_loader:
                         
                         if not header:
                             
-                            [ rs_id, specimen_id ] = next_line.rstrip('\n').split('\t')
+                            [ rs_id, specimen_id ] = next_line.rstrip( '\n' ).split( '\t' )
 
-                            if rs_id in rs_aliases and specimen_id in specimen_aliases:
+                            if rs_id in aliases['rs'] and specimen_id in aliases['specimen']:
                                 
-                                print( *[ rs_aliases[rs_id], specimen_aliases[specimen_id] ], sep='\t', file=OUT )
+                                print( *[ aliases['rs'][rs_id], aliases['specimen'][specimen_id] ], sep='\t', file=OUT )
 
                             else:
                                 
                                 print( f"CRITICAL WARNING: one or both of researchsubject_id '{rs_id}' and specimen_id '{specimen_id}' not aliased: please investigate and fix!", file=sys.stderr )
+
+                        header = False
+
+                elif type_to_link == 'rs_treatment':
+                    
+                    print( f"COPY researchsubject_treatment ( researchsubject_alias, treatment_alias ) FROM stdin;", end='\n', file=OUT )
+
+                    header = True
+
+                    for next_line in IN:
+                        
+                        if not header:
+                            
+                            [ rs_id, treatment_id ] = next_line.rstrip( '\n' ).split( '\t' )
+
+                            if rs_id in aliases['rs'] and treatment_id in aliases['treatment']:
+                                
+                                print( *[ aliases['rs'][rs_id], aliases['treatment'][treatment_id] ], sep='\t', file=OUT )
+
+                            else:
+                                
+                                print( f"CRITICAL WARNING: one or both of rs_id '{rs_id}' and treatment_id '{treatment_id}' not aliased: please investigate and fix!", file=sys.stderr )
+
+                        header = False
+
+                elif type_to_link == 'subject_associated_project':
+                    
+                    print( f"COPY subject_associated_project ( subject_alias, associated_project ) FROM stdin;", end='\n', file=OUT )
+
+                    header = True
+
+                    for next_line in IN:
+                        
+                        if not header:
+                            
+                            [ subject_id, associated_project ] = next_line.rstrip( '\n' ).split( '\t' )
+
+                            if subject_id in aliases['subject']:
+                                
+                                print( *[ aliases['subject'][subject_id], associated_project ], sep='\t', file=OUT )
+
+                            else:
+                                
+                                print( f"CRITICAL WARNING: subject_id '{subject_id}' not aliased: please investigate and fix!", file=sys.stderr )
+
+                        header = False
+
+                elif type_to_link == 'subject_rs':
+                    
+                    print( f"COPY subject_researchsubject ( subject_alias, researchsubject_alias ) FROM stdin;", end='\n', file=OUT )
+
+                    header = True
+
+                    for next_line in IN:
+                        
+                        if not header:
+                            
+                            [ subject_id, rs_id ] = next_line.rstrip( '\n' ).split( '\t' )
+
+                            if subject_id in aliases['subject'] and rs_id in aliases['rs']:
+                                
+                                print( *[ aliases['subject'][subject_id], aliases['rs'][rs_id] ], sep='\t', file=OUT )
+
+                            else:
+                                
+                                print( f"CRITICAL WARNING: one or both of subject_id '{subject_id}' and researchsubject_id '{rs_id}' not aliased: please investigate and fix!", file=sys.stderr )
 
                         header = False
 
