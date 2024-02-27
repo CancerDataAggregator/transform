@@ -5,7 +5,7 @@
 -- Dumped from database version 14.9
 -- Dumped by pg_dump version 15.2
 
--- Started on 2024-02-27 16:23:05 EST
+-- Started on 2024-02-27 16:37:26 EST
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -153,11 +153,11 @@ COMMENT ON COLUMN public.diagnosis.method_of_diagnosis IS 'The method used to co
 
 CREATE TABLE public.diagnosis_data_source (
     diagnosis_alias bigint NOT NULL,
-    "diagnosis_from_GDC" boolean NOT NULL,
-    "diagnosis_from_PDC" boolean NOT NULL,
-    "diagnosis_from_IDC" boolean NOT NULL,
-    "diagnosis_from_CDS" boolean NOT NULL,
-    "diagnosis_from_ICDC" boolean NOT NULL
+    diagnosis_from_gdc boolean NOT NULL,
+    diagnosis_from_pdc boolean NOT NULL,
+    diagnosis_from_idc boolean NOT NULL,
+    diagnosis_from_cds boolean NOT NULL,
+    diagnosis_from_icdc boolean NOT NULL
 );
 
 
@@ -369,11 +369,11 @@ CREATE TABLE public.file_associated_project (
 
 CREATE TABLE public.file_data_source (
     file_alias bigint NOT NULL,
-    "file_from_GDC" boolean NOT NULL,
-    "file_from_PDC" boolean NOT NULL,
-    "file_from_IDC" boolean NOT NULL,
-    "file_from_CDS" boolean NOT NULL,
-    "file_from_ICDC" boolean NOT NULL
+    file_from_gdc boolean NOT NULL,
+    file_from_pdc boolean NOT NULL,
+    file_from_idc boolean NOT NULL,
+    file_from_cds boolean NOT NULL,
+    file_from_icdc boolean NOT NULL
 );
 
 
@@ -478,11 +478,11 @@ COMMENT ON COLUMN public.researchsubject.primary_diagnosis_site IS 'The text ter
 
 CREATE TABLE public.researchsubject_data_source (
     researchsubject_alias bigint NOT NULL,
-    "researchsubject_from_GDC" boolean NOT NULL,
-    "researchsubject_from_PDC" boolean NOT NULL,
-    "researchsubject_from_IDC" boolean NOT NULL,
-    "researchsubject_from_CDS" boolean NOT NULL,
-    "researchsubject_from_ICDC" boolean NOT NULL
+    researchsubject_from_gdc boolean NOT NULL,
+    researchsubject_from_pdc boolean NOT NULL,
+    researchsubject_from_idc boolean NOT NULL,
+    researchsubject_from_cds boolean NOT NULL,
+    researchsubject_from_icdc boolean NOT NULL
 );
 
 
@@ -2216,11 +2216,11 @@ COMMENT ON COLUMN public.specimen.derived_from_subject IS 'The Patient/ResearchS
 
 CREATE TABLE public.specimen_data_source (
     specimen_alias bigint NOT NULL,
-    "specimen_from_GDC" boolean NOT NULL,
-    "specimen_from_PDC" boolean NOT NULL,
-    "specimen_from_IDC" boolean NOT NULL,
-    "specimen_from_CDS" boolean NOT NULL,
-    "specimen_from_ICDC" boolean NOT NULL
+    specimen_from_gdc boolean NOT NULL,
+    specimen_from_pdc boolean NOT NULL,
+    specimen_from_idc boolean NOT NULL,
+    specimen_from_cds boolean NOT NULL,
+    specimen_from_icdc boolean NOT NULL
 );
 
 
@@ -2364,11 +2364,11 @@ CREATE TABLE public.subject_associated_project (
 
 CREATE TABLE public.subject_data_source (
     subject_alias bigint NOT NULL,
-    "subject_from_GDC" boolean NOT NULL,
-    "subject_from_PDC" boolean NOT NULL,
-    "subject_from_IDC" boolean NOT NULL,
-    "subject_from_CDS" boolean NOT NULL,
-    "subject_from_ICDC" boolean NOT NULL
+    subject_from_gdc boolean NOT NULL,
+    subject_from_pdc boolean NOT NULL,
+    subject_from_idc boolean NOT NULL,
+    subject_from_cds boolean NOT NULL,
+    subject_from_icdc boolean NOT NULL
 );
 
 
@@ -2549,11 +2549,11 @@ COMMENT ON COLUMN public.treatment.number_of_cycles IS 'The number of treatment 
 
 CREATE TABLE public.treatment_data_source (
     treatment_alias bigint NOT NULL,
-    "treatment_from_GDC" boolean NOT NULL,
-    "treatment_from_PDC" boolean NOT NULL,
-    "treatment_from_IDC" boolean NOT NULL,
-    "treatment_from_CDS" boolean NOT NULL,
-    "treatment_from_ICDC" boolean NOT NULL
+    treatment_from_gdc boolean NOT NULL,
+    treatment_from_pdc boolean NOT NULL,
+    treatment_from_idc boolean NOT NULL,
+    treatment_from_cds boolean NOT NULL,
+    treatment_from_icdc boolean NOT NULL
 );
 
 
@@ -3719,7 +3719,7 @@ ALTER TABLE ONLY public.treatment_identifier
     ADD CONSTRAINT treatment_identifier_treatment_alias_fkey FOREIGN KEY (treatment_alias) REFERENCES public.treatment(integer_id_alias);
 
 
--- Completed on 2024-02-27 16:23:09 EST
+-- Completed on 2024-02-27 16:37:30 EST
 
 --
 -- PostgreSQL database dump complete
