@@ -6,4 +6,6 @@ loader = CDA_loader()
 
 loader.create_integer_aliases_for_entity_tables()
 
+loader.create_entity_data_source_tables()
+
 
