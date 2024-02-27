@@ -4,6 +4,6 @@ from cda_etl.load.cda_loader import CDA_loader
 
 loader = CDA_loader()
 
-loader.create_integer_aliases_for_file_researchsubject_subject_specimen()
+loader.create_integer_aliases_for_entity_tables()
 
 
