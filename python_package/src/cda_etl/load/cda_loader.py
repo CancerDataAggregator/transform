@@ -11,6 +11,17 @@ class CDA_loader:
     
     def __init__( self ):
         
+        # Enumerated (and ordered: this will determine column order for all X_data_source tables) list of data sources for which we expect entity identifiers to exist. These are lowercase largely because postgresql is a pain about capital letters in column names.
+
+        self.expected_data_sources = [
+            
+            'gdc',
+            'pdc',
+            'idc',
+            'cds',
+            'icdc'
+        ]
+
         # Maximum number of file records to assemble in memory before dumping to JSONL.
 
         self.max_record_cache_size = 2000000
@@ -731,8 +742,230 @@ class CDA_loader:
 
         print( '...done.', file=sys.stderr )
 
+    def create_entity_data_source_tables( self ):
+        
+        print( 'Creating data_source tables...', file=sys.stderr )
+
+        table_file_dir = path.join( self.sql_output_dir, 'new_table_data' )
+
+        for output_dir in [ table_file_dir ]:
+            
+            if not path.exists( output_dir ):
+                
+                makedirs( output_dir )
+
+        # Process everything but `file_identifier.tsv.gz` (on which see below): load
+        # a list of all distinct data_sources for every record ID of each entity type,
+        # and cache results as a separate table (one table per entity type).
+        # 
+        # In this case, we're physically making two tables, encoding the same information:
+        # one TSV destined for the human-readable "CDA TSV" directory, and one SQL command file,
+        # for direct DB loading. This process happens (early) in the "load" phase, and not
+        # earlier, in the "transform" phase, because all record aggregation and value harmonization
+        # (i.e. all transformations) must be complete before this postprocessing run can happen.
+
+        for input_file_basename in [ 'diagnosis_identifier.tsv.gz', 'researchsubject_identifier.tsv.gz', 'specimen_identifier.tsv.gz', 'subject_identifier.tsv.gz', 'treatment_identifier.tsv.gz' ]:
+            
+            input_file = path.join( self.merged_tsv_dir, input_file_basename )
+
+            entity_type = re.sub( r'^(.*)_identifier.tsv.gz$', r'\1', input_file_basename )
+
+            print( f"   {entity_type}_data_source...", file=sys.stderr )
+
+            # Load alias information for `entity_type`.
+
+            alias_file = path.join( self.merged_tsv_dir, f"{entity_type}_integer_aliases.tsv.gz" )
+
+            entity_alias = dict()
+
+            with gzip.open( alias_file, 'rt' ) as IN:
+                
+                for next_line in IN:
+                    
+                    [ record_id, record_alias ] = next_line.rstrip( '\n' ).split( '\t' )
+
+                    entity_alias[record_id] = record_alias
+
+            # Compute names for output columns.
+
+            output_columns = [ f"{entity_type}_alias" ]
+
+            for data_source in self.expected_data_sources:
+                
+                # Example: `subject_from_GDC`
+
+                output_columns.append( f"{entity_type}_from_{data_source}" )
+
+            # Load data_source associations.
+
+            data_sources = dict()
+
+            with gzip.open( input_file, 'rt' ) as IN:
+                
+                input_header_fields = next( IN ).rstrip( '\n' ).split( '\t' )
+
+                for next_line in IN:
+                    
+                    line_values = next_line.rstrip( '\n' ).split( '\t' )
+
+                    line_dict = dict( zip( input_header_fields, line_values ) )
+
+                    record_id = line_dict[f"{entity_type}_id"]
+
+                    if record_id not in entity_alias:
+                        
+                        sys.exit( f"Loaded record ID '{record_id}' from {input_file_basename}, but could find no corresponding integer alias (alias table size: {len(entity_alias)}). Aborting.\n" )
+
+                    record_alias = entity_alias[record_id]
+
+                    if record_alias not in data_sources:
+                        
+                        data_sources[record_alias] = set()
+
+                    data_source = line_dict['system'].lower()
+
+                    if data_source not in self.expected_data_sources:
+                        
+                        sys.exit( f"Unexpected `system` (data source) value encountered in {input_file_basename}: '{data_source}'; cannot continue, aborting.\n" )
+
+                    data_sources[record_alias].add( data_source )
+
+            # Build output files, substituting alias information for IDs as we go.
+
+            output_tsv = path.join( self.merged_tsv_dir, re.sub( r'^(.*)_identifier.tsv.gz$', r'\1' + '_data_source.tsv.gz', input_file_basename ) )
+
+            output_sql = path.join( table_file_dir, re.sub( r'^(.*)_identifier.tsv.gz$', r'\1' + '_data_source.sql.gz', input_file_basename ) )
+
+            with gzip.open( output_tsv, 'wt' ) as TSV, gzip.open( output_sql, 'wt' ) as SQL:
+                
+                print( *output_columns, sep='\t', file=TSV )
+
+                sql_header = f"COPY {entity_type}_data_source (" + ', '.join( output_columns ) + ') FROM stdin;'
+
+                print( sql_header, end='\n', file=SQL )
+
+                for record_alias_int in sorted( [ int( record_alias ) for record_alias in data_sources ] ):
+                    
+                    record_alias = str( record_alias_int )
+
+                    output_line = [ record_alias ]
+
+                    for data_source in self.expected_data_sources:
+                        
+                        if data_source in data_sources[record_alias]:
+                            
+                            output_line.append( 'true' )
+
+                        else:
+                            
+                            output_line.append( 'false' )
+
+                    print( *output_line, sep='\t', file=TSV )
+                    print( *output_line, sep='\t', file=SQL )
+
+                print( r'\.', end='\n\n', file=SQL )
+
+        # Assumption for `file`: no file will ever be hosted by multiple DCs. If this
+        # assumption breaks in the future, it'll break our unique ID assumptions (and possibly
+        # some other critical things) -- so assuming, here, that this assumption will
+        # remain true isn't adding a whole lot of extra risk, but it will save us a bunch
+        # of compute time. Process `file_identifier.tsv` under the assumption that there
+        # will be exactly one record for each file: i.e., don't waste time scanning for
+        # multiple rows for each file (which, incidentally, would be nonadjacent, since
+        # file_identifier records are concatenated in blocks (by DC) -- the entire table is
+        # not sorted).
+        # 
+        # We also know (because we generated the files involved) that file_identifier.tsv
+        # lists files in the same order as in file.tsv (and file_integer_id_alias.tsv), so
+        # we can just magically know the alias for each file ID without having to look
+        # them all up and store them in memory.
+
+        for input_file_basename in [ 'file_identifier.tsv.gz' ]:
+            
+            input_file = path.join( self.merged_tsv_dir, input_file_basename )
+
+            entity_type = re.sub( r'^(.*)_identifier.tsv.gz$', r'\1', input_file_basename )
+
+            print( f"   {entity_type}_data_source...", file=sys.stderr )
+
+            # Compute names for output columns.
+
+            output_columns = [ f"{entity_type}_alias" ]
+
+            for data_source in self.expected_data_sources:
+                
+                # Example: `subject_from_GDC`
+
+                output_columns.append( f"{entity_type}_from_{data_source}" )
+
+            # Scan the file_identifiers table and write results to our output files
+            # (TSV and SQL, as above) as we go.
+
+            output_tsv = path.join( self.merged_tsv_dir, re.sub( r'^(.*)_identifier.tsv.gz$', r'\1' + '_data_source.tsv.gz', input_file_basename ) )
+
+            output_sql = path.join( table_file_dir, re.sub( r'^(.*)_identifier.tsv.gz$', r'\1' + '_data_source.sql.gz', input_file_basename ) )
+
+            with gzip.open( input_file, 'rt' ) as IN, gzip.open( output_tsv, 'wt' ) as TSV, gzip.open( output_sql, 'wt' ) as SQL:
+                
+                input_header_fields = next( IN ).rstrip( '\n' ).split( '\t' )
+
+                print( *output_columns, sep='\t', file=TSV )
+
+                sql_header = f"COPY {entity_type}_data_source (" + ', '.join( output_columns ) + ') FROM stdin;'
+
+                print( sql_header, end='\n', file=SQL )
+
+                record_alias = 0
+
+                for next_line in IN:
+                    
+                    line_values = next_line.rstrip( '\n' ).split( '\t' )
+
+                    line_dict = dict( zip( input_header_fields, line_values ) )
+
+                    output_line = [ str( record_alias ) ]
+
+                    line_data_source = line_dict['system'].lower()
+
+                    if line_data_source not in self.expected_data_sources:
+                        
+                        sys.exit( f"Unexpected `system` (data source) value encountered in {input_file_basename}: '{data_source}'; cannot continue, aborting.\n" )
+
+                    # Redundant sanity check.
+
+                    found = False
+
+                    for reference_data_source in self.expected_data_sources:
+                        
+                        if line_data_source == reference_data_source:
+                            
+                            output_line.append( 'true' )
+
+                            found = True
+
+                        else:
+                            
+                            output_line.append( 'false' )
+
+                    if not found:
+                        
+                        record_id = line_dict[f"{entity_type}_id"]
+
+                        sys.exit( f"No `system` recognized for {entity_type}_id '{record_id}' -- this shouldn't happen. Please contact the CDA devs and report this event. Aborting.\n" )
+
+                    print( *output_line, sep='\t', file=TSV )
+                    print( *output_line, sep='\t', file=SQL )
+
+                    record_alias = record_alias + 1
+
+                print( r'\.', end='\n\n', file=SQL )
+
+        print( '...done.', file=sys.stderr )
+
     def transform_files_to_SQL( self ):
         
+        print( 'Transforming CDA TSVs to SQL...', file=sys.stderr )
+
         preprocess_command_file = path.join( self.sql_output_dir, 'clear_table_data_indices_and_constraints.sql' )
 
         table_file_dir = path.join( self.sql_output_dir, 'new_table_data' )
@@ -814,34 +1047,44 @@ class CDA_loader:
 
         table_drop_commands = list()
 
-        # Data in these tables need to be refactored to use integer aliases (TSV versions in self.merged_tsv_dir contain full ID strings) before pushing to postgres.
+        # Data in most of these tables needs to be refactored to use integer aliases (TSV versions
+        # in self.merged_tsv_dir typically contain full ID strings and not aliases) before pushing
+        # to postgres. SQL command sets for all of these tables are built in other subroutines (see
+        # create_entity_data_source_tables(), create_integer_aliases_for_file_association_tables(),
+        # and create_integer_aliases_for_other_association_tables()).
 
         tables_with_aliases = {
             
+            'diagnosis_data_source',
             'diagnosis_identifier',
             'diagnosis_treatment',
             'file_associated_project',
+            'file_data_source',
             'file_identifier',
             'file_specimen',
             'file_subject',
+            'researchsubject_data_source',
             'researchsubject_diagnosis',
             'researchsubject_identifier',
             'researchsubject_specimen',
             'researchsubject_treatment',
+            'specimen_data_source',
             'specimen_identifier',
             'subject_associated_project',
+            'subject_data_source',
             'subject_identifier',
             'subject_researchsubject',
+            'treatment_data_source',
             'treatment_identifier'
         }
+
+        print( '   ...transcoding unaliased TSVs to SQL command sets...', file=sys.stderr )
 
         for input_file_basename in sorted( listdir( self.merged_tsv_dir ) ):
             
             if re.search( r'_integer_aliases\.tsv\.gz$', input_file_basename ) is None and re.search( r'\.tsv\.gz$', input_file_basename ) is not None:
                 
                 input_file = path.join( self.merged_tsv_dir, input_file_basename )
-
-                print( input_file_basename )
 
                 target_table = re.sub( r'\.tsv\.gz$', '', input_file_basename )
 
@@ -864,6 +1107,8 @@ class CDA_loader:
                         # No integer aliases have been created for this table. This table is either an unaliased main-entity table (like the "treatment"
                         # table, at the time this comment was written) or an association table that doesn't use integer aliases (like "diagnosis_identifier"
                         # at time of writing). Either way, transcode the TSV data directly into a COPY block.
+
+                        print( f"      ...{input_file_basename} -> {output_file_basename} (no integer aliases loaded)...", file=sys.stderr )
 
                         with gzip.open( input_file, 'rt' ) as IN, gzip.open( output_file, 'wt' ) as OUT:
                             
@@ -892,6 +1137,8 @@ class CDA_loader:
                         # Transcode the TSV data into a COPY block, patching in the integer ID alias assigned to each entity record (adding
                         # a new "integer_id_alias" column for that purpose).
 
+                        print( f"      ...{input_file_basename} -> {output_file_basename} (co-loading integer aliases)...", file=sys.stderr )
+
                         with gzip.open( input_file, 'rt' ) as IN, gzip.open( integer_alias_file, 'rt' ) as ALIAS, gzip.open( output_file, 'wt' ) as OUT:
                             
                             colnames = next(IN).rstrip('\n').split('\t')
@@ -913,6 +1160,10 @@ class CDA_loader:
                                 print( '\t'.join( [ r'\N' if len( record[colname] ) == 0 else record[colname] for colname in colnames ] ), end='\n', file=OUT )
     
                             print( r'\.', end='\n\n', file=OUT )
+
+        print( '   ...done transcoding unaliased TSVs to SQL command sets.', file=sys.stderr )
+
+        print( '   ...preparing pre-INSERT directives (index and constraint drops)...', end='', file=sys.stderr )
 
         # Remove foreign keys first, then (non-PK) uniqueness constraints, then primary keys (which also
         # drops their btree indexes), then the remaining (non-PK) indexes.
@@ -969,8 +1220,12 @@ class CDA_loader:
                 
                 print( line, file=PRE_CMD )
 
+        print( 'done.', file=sys.stderr )
+
         # Then delete all table rows and replace them with the new data
         # (via the .sql files in table_file_dir/ ).
+
+        print( '   ...preparing post-INSERT processing directives (index and constraint replacements)...', end='', file=sys.stderr )
 
         # Then rebuild indexes and key constraints grouped in the reverse
         # order of that in which they were dropped, i.e. first rebuild indexes,
@@ -1018,8 +1273,14 @@ class CDA_loader:
                 
                 print( line, file=POST_CMD )
 
+        print( 'done.', file=sys.stderr )
+
+        print( '...done transforming CDA TSVs to SQL.', file=sys.stderr )
+
     def create_integer_aliases_for_file_association_tables( self ):
         
+        print( 'Creating integer aliases for association tables linked to the file table...', file=sys.stderr )
+
         table_file_dir = path.join( self.sql_output_dir, 'new_table_data' )
 
         full_link_table = {
@@ -1052,9 +1313,11 @@ class CDA_loader:
 
             output_file = output_link_table[type_to_link]
 
+            print( f"   ...creating {output_file}...", file=sys.stderr )
+
             while not scan_complete:
                 
-                print( f"file<->{type_to_link}: skipping {lines_to_skip} lines, loading next <= {self.max_alias_cache_size}...", file=sys.stderr )
+                print( f"      ...skipping {lines_to_skip} lines; loading next <= {self.max_alias_cache_size}...", file=sys.stderr )
 
                 # Load the next block from `file_id_alias_file`.
 
@@ -1150,7 +1413,7 @@ class CDA_loader:
                 
                 print( r'\.', end='\n\n', file=OUT )
 
-            print( f"file<->{type_to_link}: done", file=sys.stderr )
+            print( f"   ...done writing {output_file}.", file=sys.stderr )
 
         for type_to_link in [ 'specimen', 'subject' ]:
             
@@ -1176,9 +1439,11 @@ class CDA_loader:
 
             output_file = output_link_table[type_to_link]
 
+            print( f"   ...creating {output_file}...", file=sys.stderr )
+
             while not scan_complete:
                 
-                print( f"file<->{type_to_link}: skipping {lines_to_skip} lines, loading next <= {self.max_alias_cache_size}...", file=sys.stderr )
+                print( f"      ...skipping {lines_to_skip} lines; loading next <= {self.max_alias_cache_size}...", file=sys.stderr )
 
                 # Load the next block from `file_id_alias_file`.
 
@@ -1244,10 +1509,14 @@ class CDA_loader:
                 
                 print( r'\.', end='\n\n', file=OUT )
 
-            print( f"file<->{type_to_link}: done", file=sys.stderr )
+            print( f"   ...done writing {output_file}.", file=sys.stderr )
+
+        print( '...(aliased) file association table construction complete.', file=sys.stderr )
 
     def create_integer_aliases_for_other_association_tables( self ):
         
+        print( 'Creating integer aliases for association tables not involving the file table...', file=sys.stderr )
+
         table_file_dir = path.join( self.sql_output_dir, 'new_table_data' )
 
         full_link_table = {
@@ -1295,6 +1564,8 @@ class CDA_loader:
 
             output_file = output_link_table[type_to_link]
 
+            print( f"   ...creating {output_file}...", file=sys.stderr )
+
             aliases = {
                 'diagnosis': dict(),
                 'rs': dict(),
@@ -1305,6 +1576,8 @@ class CDA_loader:
 
             if type_to_link in [ 'diagnosis_identifier', 'diagnosis_treatment', 'rs_diagnosis' ]:
                 
+                print( f"      ...pre-loading aliases from {id_alias_file['diagnosis']}...", end='', file=sys.stderr )
+
                 with gzip.open( id_alias_file['diagnosis'], 'rt' ) as IN:
                     
                     for next_line in IN:
@@ -1313,8 +1586,12 @@ class CDA_loader:
 
                         aliases['diagnosis'][diagnosis_id] = diagnosis_alias
 
+                print( 'done.', file=sys.stderr )
+
             if type_to_link in [ 'rs_diagnosis', 'rs_identifier', 'rs_specimen', 'rs_treatment', 'subject_rs' ]:
                 
+                print( f"      ...pre-loading aliases from {id_alias_file['researchsubject']}...", end='', file=sys.stderr )
+
                 with gzip.open( id_alias_file['researchsubject'], 'rt' ) as IN:
                     
                     for next_line in IN:
@@ -1323,8 +1600,12 @@ class CDA_loader:
 
                         aliases['rs'][rs_id] = rs_alias
 
+                print( 'done.', file=sys.stderr )
+
             if type_to_link in [ 'rs_specimen', 'specimen_identifier' ]:
                 
+                print( f"      ...pre-loading aliases from {id_alias_file['specimen']}...", end='', file=sys.stderr )
+
                 with gzip.open( id_alias_file['specimen'], 'rt' ) as IN:
                     
                     for next_line in IN:
@@ -1333,8 +1614,12 @@ class CDA_loader:
 
                         aliases['specimen'][specimen_id] = specimen_alias
 
+                print( 'done.', file=sys.stderr )
+
             if type_to_link in [ 'subject_rs', 'subject_associated_project', 'subject_identifier' ]:
                         
+                print( f"      ...pre-loading aliases from {id_alias_file['subject']}...", end='', file=sys.stderr )
+
                 with gzip.open( id_alias_file['subject'], 'rt' ) as IN:
                     
                     for next_line in IN:
@@ -1343,8 +1628,12 @@ class CDA_loader:
 
                         aliases['subject'][subject_id] = subject_alias
 
+                print( 'done.', file=sys.stderr )
+
             if type_to_link in [ 'diagnosis_treatment', 'rs_treatment', 'treatment_identifier' ]:
                         
+                print( f"      ...pre-loading aliases from {id_alias_file['treatment']}...", end='', file=sys.stderr )
+
                 with gzip.open( id_alias_file['treatment'], 'rt' ) as IN:
                     
                     for next_line in IN:
@@ -1353,10 +1642,14 @@ class CDA_loader:
 
                         aliases['treatment'][treatment_id] = treatment_alias
 
+                print( 'done.', file=sys.stderr )
+
             # Translate all matching records to aliased versions.
 
             with gzip.open( input_file, 'rt' ) as IN, gzip.open( output_file, 'wt' ) as OUT:
                 
+                print( f"      ...transcoding {input_file} to {output_file}...", end='', file=sys.stderr )
+
                 if re.search( r'_identifier$', type_to_link ) is not None:
                     
                     entity_name = re.sub( r'_identifier$', r'', type_to_link )
@@ -1523,6 +1816,10 @@ class CDA_loader:
                 
                 print( r'\.', end='\n\n', file=OUT )
 
-            print( f"{type_to_link}: done", file=sys.stderr )
+                print( 'done.', file=sys.stderr )
+
+            print( f"   ...done building {output_file}.", file=sys.stderr )
+
+        print( '...finished creating integer aliases for association tables not involving the file table.', file=sys.stderr )
 
 
