@@ -3,6 +3,7 @@
 import requests
 import json
 import sys
+import time
 
 from os import makedirs, path, rename
 
@@ -65,17 +66,28 @@ scalar_file_metadata_fields = (
     'study_run_metadata_submitter_id'
 )
 
+# Asking for fields that were always null used to not break the PDC API. Good old days.
+
+# scalar_aliquot_fields = (
+#     'aliquot_id',
+#     'aliquot_submitter_id',
+#     'status',
+#     'aliquot_is_ref',
+#     'pool',
+#     'aliquot_quantity',
+#     'aliquot_volume',
+#     'amount',
+#     'analyte_type',
+#     'concentration',
+#     'sample_id',
+#     'sample_submitter_id',
+#     'case_id',
+#     'case_submitter_id'
+# )
+
 scalar_aliquot_fields = (
     'aliquot_id',
     'aliquot_submitter_id',
-    'status',
-    'aliquot_is_ref',
-    'pool',
-    'aliquot_quantity',
-    'aliquot_volume',
-    'amount',
-    'analyte_type',
-    'concentration',
     'sample_id',
     'sample_submitter_id',
     'case_id',
@@ -84,7 +96,11 @@ scalar_aliquot_fields = (
 
 offset = 0
 
-offset_increment = 25000
+# Conservative paging, plus pre-tested sleep intervals between pages and between
+# batches of pages, is now (Feb 2024) necessary to avoid triggering server-side throttling
+# which ends up quadrupling retrieval time (for this script, from 25 minutes to nearly 2 hours).
+
+offset_increment = 500
 
 returned_nothing = False
 
@@ -245,6 +261,16 @@ while not returned_nothing:
         # Increment the paging offset in advance of the next query iteration.
 
         offset = offset + offset_increment
+
+        # Empirically figuring out how best to self-regulate request size over time to avoid getting bandwidth-throttled has proven somewhat cumbersome (Feb 2024), but this seems to work pretty reliably. Today.
+
+        if offset % 10000 == 0:
+            
+            time.sleep( 101 )
+
+        else:
+            
+            time.sleep( 3 )
 
 # Sort the rows in the TSV output files.
 
