@@ -497,7 +497,7 @@ class CDA_loader:
 
                 if rs_id not in researchsubject:
                     
-                    sys.exit(f"Unexpected failure? ResearchSubject with rs_id {rs_id} found in rs_identifier.tsv but not in researchsubject.tsv; aborting.\n")
+                    sys.exit(f"Unexpected failure? ResearchSubject with rs_id {rs_id} found in researchsubject_identifier.tsv but not in researchsubject.tsv; aborting.\n")
 
                 researchsubject[rs_id]['identifier'].append( { 'system': system, 'field_name' : field_name, 'value' : value } )
 
@@ -1659,8 +1659,14 @@ class CDA_loader:
                     if entity_name == 'rs':
                         
                         full_entity_name = 'researchsubject'
-                    
-                    print( f"COPY {type_to_link} ( {full_entity_name}_alias, system, field_name, value ) FROM stdin;", end='\n', file=OUT )
+
+                    table_name = type_to_link
+
+                    if type_to_link == 'rs_identifier':
+                        
+                        table_name = 'researchsubject_identifier'
+
+                    print( f"COPY {table_name} ( {full_entity_name}_alias, system, field_name, value ) FROM stdin;", end='\n', file=OUT )
 
                     header = True
 
