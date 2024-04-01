@@ -1,0 +1,12 @@
+cda_table	cda_column	concept_map_name
+subject	cause_of_death	cause
+subject	ethnicity	ethnicity
+file	file_format	file_format
+diagnosis	morphology	morphology
+diagnosis	primary_diagnosis	primary_diagnosis
+subject	race	race
+subject	species	species
+treatment	therapeutic_agent	therapeutic_agent
+specimen	source_material_type	tissue_type_cancer_normal
+treatment	treatment_type	treatment_type
+subject	vital_status	vital

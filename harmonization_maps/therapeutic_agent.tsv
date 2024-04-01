@@ -1,0 +1,163 @@
+5-fu	Fluorouracil
+Afatinib	Afatinib
+Anastrozole	Anastrozole
+Asparaginase	Asparaginase
+Bendamustine	Bendamustine
+Bevacizumab	Bevacizumab
+Binimetinib	Binimetinib
+Bleomycin	Bleomycin
+Bortezomib	Bortezomib
+CI, Fluorouracil	Cisplatin|Fluorouracil
+Cabozantinib	Cabozantinib
+Capecitabine	Capecitabine
+Capecitabine, Leucovorin Calcium, Fluorouracil, Oxaliplatin	Capecitabine|Leucovorin Calcium| Fluorouracil|Oxaliplatin
+Carboplatin	Carboplatin
+Carboplatin, pemetrexed	Carboplatin|Pemetrexed
+Carfilzomib	Carfilzomib
+Carmustine	Carmustine
+Cetuximab	Cetuximab
+Cisplatin	Cisplatin
+Cisplatin, Pemetrexed	Cisplatin|Pemetrexed
+Cyclophosphamide	Cyclophosphamide
+Cytarabine	Cytarabine
+Dabrafenib	Dabrafenib
+Dactinomycin	Dactinomycin
+Daratumumab	Daratumumab
+Daunorubicin	Daunorubicin
+Denosumab	Denosumab
+Dexamethasone	Dexamethasone
+Docetaxel	Docetaxel
+Doxorubicin	Doxorubicin
+Doxorubicin HCL	Doxorubicin Hydrochloride
+Doxorubicin Hydrochloride	Doxorubicin Hydrochloride
+Doxorubicin Liposomal	Liposomal Doxorubicin Regimen
+Elotuzumab	Elotuzumab
+Encorafenib	Encorafenib
+Enzalutamide	Enzalutamide
+Epirubicin	Epirubicin
+Epirubicin Hydrochloride	Epirubicin Hydrochloride
+Erlotinib	Erlotinib
+Etoposide	Etoposide
+Everolimus	Everolimus
+Exemestane	Exemestane
+Filgrastim	Filgrastim
+Fluorouracil	Fluorouracil
+Fluorouracil, Leucovorin	Fluorouracil|Leucovorin
+Fluorouracil, Leucovorin Calcium	Fluorouracil|Leucovorin Calcium
+Fluorouracil, Leucovorin Calcium, Capecitabine	Fluorouracil|Leucovorin Calcium|Capecitabine
+Fluorouracil, Leucovorin, Cepcitabine	Fluorouracil|Leucovorin|Cepcitabine
+Folfirinox	Folfirinox Regimen
+Folfox	FOLFOX Regimen
+Fulvestrant	Fulvestrant
+Gemcitabine	Gemcitabine
+Gemcitabine + Abraxane	Gemcitabine|Nab-paclitaxel
+Gemcitabine Hydrochloride	Gemcitabine Hydrochloride
+Hydroxychloroquine	Hydroxychloroquine
+Ifosfamide	Ifosfamide
+Imatinib	Imatinib
+Ipilimumab	Ipilimumab
+Irinotecan	Irinotecan
+Irinotecan Hydrochloride	Irinotecan Hydrochloride
+Ixazomib	Ixazomib
+Lanreotide Acetate	Lanreotide Acetate
+Lenalidomide	Lenalidomide
+Letrozole	Letrozole
+Leucovorin	Leucovorin
+Leucovorin Calcium	Leucovorin Calcium
+Leucovorin Calcium, Fluorouracil, Irinotecan Hydrochloride, Bevacizumab	Leucovorin Calcium|Fluorouracil|Irinotecan Hydrochloride|Bevacizumab
+Leucovorin Calcium, Fluorouracil, Irinotecan Hydrochloride, Bevacizumab, Trifluridine, Tipiracil	Leucovorin Calcium|Fluorouracil|Irinotecan Hydrochloride| Bevacizumab|Trifluridine|Tipiracil
+Leucovorin Calcium, Fluorouracil, Oxaliplatin	Leucovorin Calcium|Fluorouracil|Oxaliplatin
+Leucovorin Calcium, Fluorouracil, Oxaliplatin, Bevacizumab	Leucovorin Calcium|Fluorouracil|Oxaliplatin|Bevacizumab
+Leucovorin Calcium, Fluorouracil, Oxaliplatin, Fluorouracil, Leucovorin Calcium	Leucovorin Calcium|Fluorouracil|Oxaliplatin|Fluorouracil|Leucovorin Calcium
+Leucovorin Calcium, Fluorouracil, Oxaliplatin, Irinotecan Hydrochloride, Xeloda	Leucovorin Calcium|Fluorouracil|Oxaliplatin|Irinotecan Hydrochloride|Capecitabine
+Leucovorin Calcium, Fluorouracil, Oxaliplatin, Panitumumab	Leucovorin Calcium|Fluorouracil|Oxaliplatin|Panitumumab
+Liposomal Irinotecan	Pegylated Liposomal Irinotecan
+Lomustine	Lomustine
+Melphalan	Melphalan
+Mercaptopurine	Mercaptopurine
+Methotrexate	Methotrexate
+Monalizumab	Monalizumab
+Nab-paclitaxel	Nab-paclitaxel
+Nivolumab	Nivolumab
+None	None
+Not Otherwise Specified	Not Otherwise Specified
+Oxaliplatin	Oxaliplatin
+Paclitaxel	Paclitaxel
+Palbociclib	Palbociclib
+Panitumumab	Panitumumab
+Panobinostat	Panobinostat
+Pegfilgrastim	Pegfilgrastim
+Pembrolizumab	Pembrolizumab
+Pemetrexed	Pemetrexed
+Pertuzumab	Pertuzumab
+Pomalidomide	Pomalidomide
+Prednisone	Prednisone
+Radiation Therapy	Radiation Therapy
+Ramucirumab	Ramucirumab
+Regorafenib	Regorafenib
+Rituximab	Rituximab
+SC16LD6.5	Rovalpituzumab Tesirine
+Sorafenib	Sorafenib
+Streptozocin	Streptozocin
+Sunitinib Malate	Sunitinib Malate
+Temozolomide	Temozolomide
+Temsirolimus	Temsirolimus
+Thalidomide	Thalidomide
+Topotecan	Topotecan
+Trametinib	Trametinib
+Trastuzumab	Trastuzumab
+Vemurafenib	Vemurafenib
+Vinblastine Sulfate	Vinblastine Sulfate
+Vincristine	Vincristine
+Vinorelbine Tartrate	Vinorelbine Tartrate
+Zoledronic Acid	Zoledronic Acid
+ado-trastuzumab emtanisine	Trastuzumab Emtansine
+afatinib	Afatinib
+atezolizumab	Atezolizumab
+carboplatin+etoposide	Carboplatin|Etoposide
+carboplatin+etoposide (rechallenge)	Carboplatin|Etoposide
+carboplatin+etoposide+atezolizumab	Carboplatin|Etoposide|Atezolizumab
+carboplatin+etoposide+pembrolizumab	Carboplatin|Etoposide|Pembrolizumab
+carboplatin+paclitaxel	Carboplatin|Paclitaxel
+carboplatin+pemetrexed	Carboplatin|Pemetrexed
+carboplatin+premetrexed	Carboplatin|Pemetrexed
+carbplatin+etoposide	Carboplatin|Etoposide
+cetuximab	Cetuximab
+cis-carboplatin+etoposide	Cisplatin|Carboplatin|Etoposide
+cisplatin+docetaxel	Cisplatin|Docetaxel
+cisplatin+etoposide	Cisplatin|Etoposide
+cisplatin+etoposide+LDE225	Cisplatin|Etoposide|Sonidegib
+cisplatin+etoposide+atezolizumab	Cisplatin|Etoposide|Atezolizumab
+cisplatin+paclitaxel	Cisplatin|Paclitaxel
+cisplatin+pemetrexed	Cisplatin|Pemetrexed
+cisplatin+vinorelbine	Cisplatin|Vinorelbine
+cyclophosphamide+doxorubicin+vincristine	Cyclophosphamide|Doxorubicin|Vincristine
+cyclophosphamide+vincristine+doxorubicin	Cyclophosphamide|Vincristine|Doxorubicin
+docetaxcel+ramucirumab	Docetaxcel|Ramucirumab
+erlotinib	Erlotinib
+erlotinib+trametinib	Erlotinib|Trametinib
+gemcitabine	Gemcitabine
+gemcitabine+cisplatin	Gemcitabine|Cisplatin
+gemcitabine+trastuzumab	Gemcitabine|Trastuzumab
+ipilimumab+nivolumab	Ipilimumab|Nivolumab
+irinotecan	Irinotecan
+nivolumab	Nivolumab
+oral etoposide	Etoposide Oral Regimen
+oral topotecan	Oral Topotecan Hydrochloride
+osimertinib	Osimertinib
+paclitaxel	Paclitaxel
+paclitaxel+trastuzumab	Paclitaxel|Trastuzumab
+pembrolizumab	Pembrolizumab
+pemetrexed	Pemetrexed
+pemetrexed+bevacizumab	Pemetrexed|Bevacizumab
+premetrexed+bevacizumab	Pemetrexed|Bevacizumab
+radiation	Radiation Therapy
+rovalpituzumab	Rovalpituzumab
+surgery	Surgery
+temozolomide	Temozolomide
+temozolomide (rechallenge)	Temozolomide
+temozolomide alone	Temozolomide
+temozolomide+ABT888	Temozolomide|Veliparib
+topotecan	Topotecan
+tremelimumab+durvalumab	Tremelimumab|Durvalumab
+valemetostat+irinotecan	Valemetostat|Irinotecan
