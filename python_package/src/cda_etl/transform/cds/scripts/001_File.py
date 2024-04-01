@@ -16,7 +16,7 @@ study_input_tsv = path.join( input_root, 'study', 'study.tsv' )
 
 study_file_input_tsv = path.join( input_root, 'study', 'study.file_id.tsv' )
 
-output_root = 'cda_tsvs/cds'
+output_root = 'cda_tsvs/cds_raw_unharmonized'
 
 file_output_tsv = path.join( output_root, 'file.tsv' )
 

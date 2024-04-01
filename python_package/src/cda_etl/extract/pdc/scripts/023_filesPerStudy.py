@@ -6,49 +6,7 @@ import sys
 
 from os import makedirs, path, rename
 
-# SUBROUTINES
-
-def sort_file_with_header( file_path ):
-    
-    with open(file_path) as IN:
-        
-        header = next(IN).rstrip('\n')
-
-        lines = [ line.rstrip('\n') for line in sorted(IN) ]
-
-    if len(lines) > 0:
-        
-        with open( file_path + '.tmp', 'w' ) as OUT:
-            
-            print(header, sep='', end='\n', file=OUT)
-
-            print(*lines, sep='\n', end='\n', file=OUT)
-
-        rename(file_path + '.tmp', file_path)
-
-def get_unique_values( tsv_path, column_name ):
-    
-    if not path.exists( tsv_path ):
-        
-        sys.exit(f"FATAL: Can't find specified TSV \"{tsv_path}\"; aborting.\n")
-
-    with open(tsv_path) as IN:
-        
-        headers = IN.readline().rstrip('\n').split('\t')
-
-        if column_name not in headers:
-            
-            sys.exit(f"FATAL: TSV \"{tsv_path}\" has no column named \"{column_name}\"; aborting.\n")
-
-        scanned_values = set()
-
-        for line in [ nextLine.rstrip() for nextLine in IN.readlines() ]:
-            
-            current_record = dict( zip( headers, line.split('\t') ) )
-
-            scanned_values.add(current_record[column_name])
-
-        return sorted(scanned_values)
+from cda_etl.lib import get_unique_values_from_tsv_column, sort_file_with_header
 
 # PARAMETERS
 
@@ -80,7 +38,7 @@ scalar_file_per_study_fields = (
     'study_name'
 )
 
-pdc_study_ids = get_unique_values( f"{output_root}/Study/Study.tsv", 'pdc_study_id' )
+pdc_study_ids = get_unique_values_from_tsv_column( f"{output_root}/Study/Study.tsv", 'pdc_study_id' )
 
 # EXECUTION
 
@@ -116,7 +74,7 @@ output_tsv_filenames = [
 
 output_tsvs = dict( zip( output_tsv_keywords, [ open(file_name, 'w') for file_name in output_tsv_filenames ] ) )
 
-with open(filesPerStudy_json_output_file, 'w') as JSON:
+with open( filesPerStudy_json_output_file, 'w' ) as JSON:
     
     # Table header.
 

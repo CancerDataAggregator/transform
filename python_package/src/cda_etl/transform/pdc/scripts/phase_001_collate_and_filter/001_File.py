@@ -37,7 +37,6 @@ fields_to_ignore = {
 }
 
 values_to_ignore = {
-    'N/A'
 }
 
 processing_order = [
@@ -146,6 +145,8 @@ for input_file_label in processing_order:
 
                     srm_uuid = values[srm_uuid_field_index]
                     srm_submitter_id = values[srm_submitter_id_field_index]
+
+                    # This isn't value filtration/harmonization: it's referential-integrity checking -- leave as-is unless safe replacement is desired/identified.
 
                     if srm_uuid is not None and srm_uuid != '' and srm_uuid != 'N/A' and srm_submitter_id is not None and srm_submitter_id != '' and srm_submitter_id != 'N/A':
                         

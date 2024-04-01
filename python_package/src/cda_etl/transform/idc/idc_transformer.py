@@ -15,7 +15,7 @@ class IDC_transformer:
 
         self.extract_dir = path.join( 'extracted_data', 'idc', self.source_version )
 
-        self.output_dir = path.join( 'cda_tsvs', 'idc', self.source_version )
+        self.output_dir = path.join( 'cda_tsvs', 'idc_raw_unharmonized', self.source_version )
 
         self.aux_root = 'auxiliary_metadata'
         self.supp_dir = path.join( self.aux_root, '__IDC_supplemental_metadata' )
@@ -390,7 +390,7 @@ class IDC_transformer:
                     
                     subject_values['species'] = record['PatientSpeciesDescription']
 
-                if 'PatientSex' in record and record['PatientSex'] in [ 'F', 'M' ]:
+                if 'PatientSex' in record and record['PatientSex'] != '':
                     
                     subject_values['sex'] = record['PatientSex']
 

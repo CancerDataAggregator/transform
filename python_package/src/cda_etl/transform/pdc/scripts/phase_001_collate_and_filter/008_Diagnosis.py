@@ -33,17 +33,6 @@ fields_to_ignore = {
 }
 
 values_to_ignore = {
-    'N/A',
-    '--',
-    'Not Reported',
-    'Not reported',
-    'Unknown',
-    'unknown',
-    'Unknown tumor status',
-    'Unknown tumor Status',
-    'Unknown Tumor Status',
-    'Not Reported/Unknown',
-    'Not Reported/ Unknown'
 }
 
 processing_order = [

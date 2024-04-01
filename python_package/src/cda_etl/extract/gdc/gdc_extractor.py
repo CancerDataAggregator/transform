@@ -10,7 +10,7 @@ import time
 from collections import defaultdict
 from os import listdir, makedirs, path, rename
 
-from cda_etl.lib import add_to_map, associate_id_list_with_parent, get_safe_value, singularize, sort_file_with_header, update_field_lists, write_association_pairs
+from cda_etl.lib import add_to_map, associate_id_list_with_parent, get_safe_value, singularize, sort_file_with_header, write_association_pairs
 
 class GDC_extractor:
     
@@ -606,6 +606,28 @@ class GDC_extractor:
 
             sys.stderr.write("done.\n")
 
+    def __update_field_lists( self, field_name, field_lists ):
+        """
+            Take a (possibly mutiply nested) field name and recursively parse it to
+            find atomic substructures, then bind those to the right entity types.
+        """
+
+        if len( re.findall( r'\.', field_name ) ) == 1:
+            
+            ( entity, field ) = re.split( r'\.', field_name )
+
+            if entity not in field_lists:
+                
+                field_lists[entity] = set()
+
+            field_lists[entity].add( field )
+
+        else:
+            
+            field_name = re.sub( r'^[^\.]*\.', '', field_name )
+
+            self.__update_field_lists( field_name, field_lists )
+
     def get_substructure_field_lists( self ):
         
         json_result = requests.get(self.mapping_url)
@@ -634,7 +656,7 @@ class GDC_extractor:
                     
                     # We did not want this filtered.
 
-                    update_field_lists(field_name, self.substructure_field_lists)
+                    self.__update_field_lists( field_name, self.substructure_field_lists )
 
         for entity_name in self.substructure_field_lists:
             
@@ -662,8 +684,8 @@ class GDC_extractor:
         the appropriate TSV.
         """
 
-        # We're only looking for atomic (non-nestable) properties of dicts/objects.
-        # If we've been passed a list, open it up and recurse on traversable elements to
+        # We're only looking for atomic (non-nestable) properties of _dicts_ (general objects).
+        # If we've been passed a _list_, open it up and recurse on traversable elements to
         # explore it, but the list itself is not something we care about.
 
         if isinstance( record, list ):
@@ -677,7 +699,9 @@ class GDC_extractor:
                     
                     if entity_type in self.save_entity_list_as:
                         
-                        # Aliases to top-level entity records are handled elsewhere, in make_base_table().
+                        # Aliases to top-level entity records (that is: records of the entity type
+                        # this endpoint is named for) are handled elsewhere, in make_base_table().
+                        # Check to make sure we're not trying to redo those.
 
                         if self.save_entity_list_as[entity_type] != self.endpoint_singular:
                             
@@ -771,7 +795,24 @@ class GDC_extractor:
 
                     for key in entity_data:
                         
-                        if isinstance( entity_data[key], list ) or isinstance( entity_data[key], dict ):
+                        # Save distinct value sets for array fields in their own tables.
+                        # 
+                        # example:
+                        # entity_type == 'diagnoses'
+                        # key == 'sites_of_involvement' or 'weiss_assessment_findings'
+                        # 
+                        # Note: skip top-level (endpoint-entity-level) arrays -- those are handled in __traverse_substructure().
+
+                        if singularize(entity_type) != self.endpoint_singular and isinstance( entity_data[key], list ) and f"{singularize(entity_type)}.{key}" in self.array_entities:
+
+                            # This is a list of values, and we want to save them in their own table
+                            # as sub-entity IDs. Save in seen_ids.
+
+                            for array_entity_id in entity_data[key]:
+                                
+                                seen_ids[key].add( array_entity_id )
+
+                        elif isinstance( entity_data[key], list ) or isinstance( entity_data[key], dict ):
                             
                             # Send this sub-object back for further recursion. We're only looking for atomic fields here.
 
@@ -872,11 +913,17 @@ class GDC_extractor:
 
         for entity_type in self.array_entities:
             
-            array_entity_output_file = f"{self.TSV_DIR}/{singularize(entity_type)}.tsv"
+            entity_name = entity_type
+
+            if re.search( r'\.', entity_type ) is not None:
+                
+                entity_name = re.sub( r'^.*\.', r'', entity_type )
+
+            array_entity_output_file = f"{self.TSV_DIR}/{singularize(entity_name)}.tsv"
 
             if self.refresh or not path.exists( array_entity_output_file ):
                 
-                seen_ids[entity_type] = set()
+                seen_ids[entity_name] = set()
 
         # Refresh-aware condition: only parse the API JSON if we're aiming to build (or rebuild) any TSV files.
 
@@ -918,19 +965,31 @@ class GDC_extractor:
 
         for entity_type in self.array_entities:
             
-            output_file = f"{self.TSV_DIR}/{singularize(entity_type)}.tsv"
+            entity_name = entity_type
+
+            if re.search( r'\.', entity_type ) is not None:
+                
+                entity_name = re.sub( r'^.*\.', r'', entity_type )
+
+            output_file = f"{self.TSV_DIR}/{singularize(entity_name)}.tsv"
 
             if self.refresh or not path.exists( output_file ):
                 
+                sys.stderr.write( f"Making {output_file}..." )
+
+                sys.stderr.flush()
+
                 with open(output_file, 'w') as OUT:
                     
-                    id_field = f"{singularize(entity_type)}_id"
+                    id_field = f"{singularize(entity_name)}_id"
 
                     print(id_field, file=OUT)
 
-                    for entity_id in sorted(seen_ids[entity_type]):
+                    for entity_id in sorted(seen_ids[entity_name]):
                         
                         print(entity_id, file=OUT)
+
+                sys.stderr.write( 'done.\n' )
 
     def __explore_substructure_for_association_data( self, root_id, parent_id, record_type, record, target_record_types, seen_ids, association_maps ):
         
@@ -1030,6 +1089,22 @@ class GDC_extractor:
                     if 'diagnosis_has_annotation' in association_maps:
 
                         associate_id_list_with_parent( record, current_id, 'annotations', 'annotation_id', association_maps['diagnosis_has_annotation'] )
+
+                    if 'diagnosis_has_site_of_involvement' in association_maps:
+                        
+                        if 'sites_of_involvement' in record and record['sites_of_involvement'] is not None:
+                            
+                            for site_of_involvement in record['sites_of_involvement']:
+                                
+                                add_to_map( association_maps['diagnosis_has_site_of_involvement'], current_id, site_of_involvement )
+
+                    if 'diagnosis_has_weiss_assessment_finding' in association_maps:
+                        
+                        if 'weiss_assessment_findings' in record and record['weiss_assessment_findings'] is not None:
+                            
+                            for weiss_assessment_finding in record['weiss_assessment_findings']:
+                                
+                                add_to_map( association_maps['diagnosis_has_weiss_assessment_finding'], current_id, weiss_assessment_finding )
 
                 elif record_type == 'samples':
                     
@@ -1499,6 +1574,14 @@ class GDC_extractor:
 
             if 'diagnosis_has_annotation' in association_maps:
                 write_association_pairs( association_maps['diagnosis_has_annotation'], f"{self.TSV_DIR}/diagnosis_has_annotation.tsv", 'diagnosis_id', 'annotation_id' )
+
+
+            if 'diagnosis_has_site_of_involvement' in association_maps:
+                write_association_pairs( association_maps['diagnosis_has_site_of_involvement'], f"{self.TSV_DIR}/diagnosis_has_site_of_involvement.tsv", 'diagnosis_id', 'site_of_involvement_id' )
+
+
+            if 'diagnosis_has_weiss_assessment_finding' in association_maps:
+                write_association_pairs( association_maps['diagnosis_has_weiss_assessment_finding'], f"{self.TSV_DIR}/diagnosis_has_weiss_assessment_finding.tsv", 'diagnosis_id', 'weiss_assessment_finding_id' )
 
 
             if 'sample_has_annotation' in association_maps:

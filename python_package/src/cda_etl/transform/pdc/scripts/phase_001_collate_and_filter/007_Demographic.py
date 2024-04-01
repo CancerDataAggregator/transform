@@ -30,10 +30,6 @@ fields_to_ignore = {
 }
 
 values_to_ignore = {
-    'N/A',
-    'Not Reported',
-    'Not reported',
-    'Unknown'
 }
 
 processing_order = [

@@ -4,83 +4,7 @@ import sys
 
 from os import path, makedirs
 
-# SUBROUTINES
-
-def map_columns_one_to_one( input_file, from_field, to_field ):
-    
-    return_map = dict()
-
-    with open( input_file ) as IN:
-        
-        header = next(IN).rstrip('\n')
-
-        column_names = header.split('\t')
-
-        if from_field not in column_names or to_field not in column_names:
-            
-            sys.exit( f"FATAL: One or both requested map fields ('{from_field}', '{to_field}') not found in specified input file '{input_file}'; aborting.\n" )
-
-        for line in [ next_line.rstrip('\n') for next_line in IN ]:
-            
-            values = line.split('\t')
-
-            current_from = ''
-
-            current_to = ''
-
-            for i in range( 0, len( column_names ) ):
-                
-                if column_names[i] == from_field:
-                    
-                    current_from = values[i]
-
-                if column_names[i] == to_field:
-                    
-                    current_to = values[i]
-
-            return_map[current_from] = current_to
-
-    return return_map
-
-def map_columns_one_to_many( input_file, from_field, to_field ):
-    
-    return_map = dict()
-
-    with open( input_file ) as IN:
-        
-        header = next(IN).rstrip('\n')
-
-        column_names = header.split('\t')
-
-        if from_field not in column_names or to_field not in column_names:
-            
-            sys.exit( f"FATAL: One or both requested map fields ('{from_field}', '{to_field}') not found in specified input file '{input_file}'; aborting.\n" )
-
-        for line in [ next_line.rstrip('\n') for next_line in IN ]:
-            
-            values = line.split('\t')
-
-            current_from = ''
-
-            current_to = ''
-
-            for i in range( 0, len( column_names ) ):
-                
-                if column_names[i] == from_field:
-                    
-                    current_from = values[i]
-
-                if column_names[i] == to_field:
-                    
-                    current_to = values[i]
-
-            if current_from not in return_map:
-                
-                return_map[current_from] = set()
-
-            return_map[current_from].add(current_to)
-
-    return return_map
+from cda_etl.lib import map_columns_one_to_one, map_columns_one_to_many
 
 # PARAMETERS
 
@@ -143,9 +67,6 @@ fields_to_ignore = {
 }
 
 values_to_ignore = {
-    'N/A',
-    'Not Reported',
-    'Other'
 }
 
 processing_order = [

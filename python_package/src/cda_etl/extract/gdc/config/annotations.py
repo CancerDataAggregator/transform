@@ -71,6 +71,9 @@ statistical_summary_substructures = set()
 # name the sub-entity table for each (key, value) pair in this dict using the key,
 # and the value will indicate the association map in which we'll store links
 # back to the top-level entity.
+# 
+# Handle arrays buried deeper than the top-level entity by prepending their parent
+# entity names (e.g. 'diagnosis.sites_of_involvement').
 
 array_entities = dict()
 

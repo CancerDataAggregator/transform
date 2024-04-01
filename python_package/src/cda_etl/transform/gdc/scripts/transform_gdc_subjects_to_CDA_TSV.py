@@ -142,7 +142,7 @@ specimen_tsvs = {
     'slide': path.join( input_dir, 'slide.tsv' )
 }
 
-output_dir = path.join( 'cda_tsvs', 'gdc' )
+output_dir = path.join( 'cda_tsvs', 'gdc_raw_unharmonized' )
 
 diagnosis_output_tsv = path.join( output_dir, 'diagnosis.tsv' )
 diagnosis_identifier_output_tsv = path.join( output_dir, 'diagnosis_identifier.tsv' )

@@ -7,25 +7,7 @@ import time
 
 from os import makedirs, path, rename
 
-# SUBROUTINES
-
-def sort_file_with_header( file_path ):
-    
-    with open(file_path) as IN:
-        
-        header = next(IN).rstrip('\n')
-
-        lines = [ line.rstrip('\n') for line in sorted(IN) ]
-
-    if len(lines) > 0:
-        
-        with open( file_path + '.tmp', 'w' ) as OUT:
-            
-            print(header, sep='', end='\n', file=OUT)
-
-            print(*lines, sep='\n', end='\n', file=OUT)
-
-        rename(file_path + '.tmp', file_path)
+from cda_etl.lib import sort_file_with_header
 
 # PARAMETERS
 
@@ -68,9 +50,9 @@ scalar_file_metadata_fields = (
 
 # Asking for fields that were always null used to not break the PDC API. Good old days.
 
-# scalar_aliquot_fields = (
-#     'aliquot_id',
-#     'aliquot_submitter_id',
+scalar_aliquot_fields = (
+    'aliquot_id',
+    'aliquot_submitter_id',
 #     'status',
 #     'aliquot_is_ref',
 #     'pool',
@@ -79,15 +61,6 @@ scalar_file_metadata_fields = (
 #     'amount',
 #     'analyte_type',
 #     'concentration',
-#     'sample_id',
-#     'sample_submitter_id',
-#     'case_id',
-#     'case_submitter_id'
-# )
-
-scalar_aliquot_fields = (
-    'aliquot_id',
-    'aliquot_submitter_id',
     'sample_id',
     'sample_submitter_id',
     'case_id',

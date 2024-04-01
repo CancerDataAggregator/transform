@@ -2,6 +2,9 @@
 
 chmod 755 ./package_root/auxiliary_scripts/*py
 
+echo ./package_root/auxiliary_scripts/999_harmonize_cda_tsvs.py ./cda_tsvs/gdc_raw_unharmonized ./cda_tsvs/gdc ./auxiliary_metadata/__substitution_logs/gdc
+./package_root/auxiliary_scripts/999_harmonize_cda_tsvs.py ./cda_tsvs/gdc_raw_unharmonized ./cda_tsvs/gdc ./auxiliary_metadata/__substitution_logs/gdc
+
 echo ./package_root/auxiliary_scripts/101_count_distinct_values_by_table_and_column.all_extracted_GDC_data.py
 ./package_root/auxiliary_scripts/101_count_distinct_values_by_table_and_column.all_extracted_GDC_data.py
 

@@ -127,8 +127,15 @@ statistical_summary_substructures = set()
 # name the sub-entity table for each (key, value) pair in this dict using the key,
 # and the value will indicate the association map in which we'll store links
 # back to the top-level entity.
+# 
+# Handle arrays buried deeper than the top-level entity by prepending their parent
+# entity names (e.g. 'diagnosis.sites_of_involvement').
 
-array_entities = dict()
+array_entities = {
+    
+    'diagnosis.sites_of_involvement' : 'diagnosis_has_site_of_involvement',
+    'diagnosis.weiss_assessment_findings' : 'diagnosis_has_weiss_assessment_finding'
+}
 
 # Once in a while we need to save a thing with one name as a thing with
 # a different name. The elements of the file.downstream_analyses list,
@@ -142,6 +149,8 @@ association_maps = {
     
     'case_has_annotation' : dict(),
     'diagnosis_has_annotation' : dict(),
+    'diagnosis_has_site_of_involvement' : dict(),
+    'diagnosis_has_weiss_assessment_finding' : dict(),
     'sample_has_annotation' : dict(),
     'portion_has_annotation' : dict(),
     'analyte_has_annotation' : dict(),

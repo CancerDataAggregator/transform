@@ -2,7 +2,7 @@ import gzip
 import re
 import sys
 
-from os import rename
+from os import path, rename
 
 def add_to_map( association_map, id_one, id_two ):
     
@@ -41,6 +41,30 @@ def get_safe_value( record, field_name ):
     else:
         
         sys.exit(f"FATAL: The given record does not have the expected {field_name} field; aborting.")
+
+def get_unique_values_from_tsv_column( tsv_path, column_name ):
+    
+    if not path.exists( tsv_path ):
+        
+        sys.exit(f"FATAL: Can't find specified TSV \"{tsv_path}\"; aborting.\n")
+
+    with open( tsv_path ) as IN:
+        
+        headers = next( IN ).rstrip( '\n' ).split( '\t' )
+
+        if column_name not in headers:
+            
+            sys.exit( f"FATAL: TSV '{tsv_path}' has no column named '{column_name}'; aborting.\n" )
+
+        values_seen = set()
+
+        for line in [ next_line.rstrip( '\n' ) for next_line in IN ]:
+            
+            row_dict = dict( zip( headers, line.split( '\t' ) ) )
+
+            values_seen.add( row_dict[column_name] )
+
+        return sorted( values_seen )
 
 def load_qualified_id_association( input_file, qualifier_field_name, id_one_field_name, id_two_field_name ):
     
@@ -262,6 +286,14 @@ def singularize( name ):
         
         return re.sub(r'ies$', r'y', name)
 
+    elif name == 'sites_of_involvement':
+        
+        return 'site_of_involvement'
+
+    elif name == 'weiss_assessment_findings':
+        
+        return 'weiss_assessment_finding'
+
     else:
         
         return name
@@ -303,28 +335,6 @@ def sort_file_with_header( file_path, gzipped=False ):
                 print( *lines, sep='\n', end='\n', file=OUT )
 
             rename( file_path + '.tmp', file_path )
-
-def update_field_lists( field_name, field_lists ):
-    """
-        Take a (possibly mutiply nested) field name and recursively parse it to
-        find atomic substructures, then bind those to the right entity types.
-    """
-
-    if len(re.findall(r'\.', field_name)) == 1:
-        
-        ( entity, field ) = re.split(r'\.', field_name)
-
-        if entity not in field_lists:
-            
-            field_lists[entity] = set()
-
-        field_lists[entity].add(field)
-
-    else:
-        
-        field_name = re.sub(r'^[^\.]*\.', '', field_name)
-
-        update_field_lists(field_name, field_lists)
 
 def write_association_pairs( association_map, tsv_filename, field_one_name, field_two_name ):
     

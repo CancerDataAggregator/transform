@@ -62,7 +62,7 @@ study_program = map_columns_one_to_one( program_study_name_input_tsv, 'study_nam
 
 # Output files
 
-output_root = path.join( 'cda_tsvs', 'cds' )
+output_root = path.join( 'cda_tsvs', 'cds_raw_unharmonized' )
 
 researchsubject_output_tsv = path.join( output_root, 'researchsubject.tsv' )
 
@@ -266,9 +266,12 @@ with open( participant_input_tsv ) as PARTICIPANT_IN, open( researchsubject_outp
 
                         if subject_records[subject_id]['days_to_birth'] != '' and subject_records[subject_id]['days_to_birth'] != days_to_birth:
                             
-                            sys.exit( f"FATAL FOR NOW: Subject {subject_id} participant_id ({study_name}) {participant_id} derived days_to_birth value '{days_to_birth}' differs from previously-recorded value '{subject_records[subject_id]['days_to_birth']}'; aborting." )
+                            #sys.exit( f"FATAL FOR NOW: Subject {subject_id} participant_id ({study_name}) {participant_id} derived days_to_birth value '{days_to_birth}' differs from previously-recorded value '{subject_records[subject_id]['days_to_birth']}'; aborting." )
+                            print( f"WARNING: Subject {subject_id} participant_id ({study_name}) {participant_id} derived days_to_birth value '{days_to_birth}' differs from previously-recorded value '{subject_records[subject_id]['days_to_birth']}'; ignoring new value.", file=WARN )
 
-                        subject_records[subject_id]['days_to_birth'] = days_to_birth
+                        else:
+                            
+                            subject_records[subject_id]['days_to_birth'] = days_to_birth
 
                     if diagnosis_id in diagnosis[study_name] and diagnosis[study_name][diagnosis_id]['vital_status'] is not None and diagnosis[study_name][diagnosis_id]['vital_status'] != '':
                         
@@ -276,9 +279,12 @@ with open( participant_input_tsv ) as PARTICIPANT_IN, open( researchsubject_outp
 
                         if subject_records[subject_id]['vital_status'] != '' and subject_records[subject_id]['vital_status'] != vital_status:
                             
-                            sys.exit( f"FATAL FOR NOW: Subject {subject_id} participant_id ({study_name}) {participant_id} derived vital_status value '{vital_status}' differs from previously-recorded value '{subject_records[subject_id]['vital_status']}'; aborting." )
+                            #sys.exit( f"FATAL FOR NOW: Subject {subject_id} participant_id ({study_name}) {participant_id} derived vital_status value '{vital_status}' differs from previously-recorded value '{subject_records[subject_id]['vital_status']}'; aborting." )
+                            print( f"WARNING: Subject {subject_id} participant_id ({study_name}) {participant_id} derived vital_status value '{vital_status}' differs from previously-recorded value '{subject_records[subject_id]['vital_status']}'; ignoring new value.", file=WARN )
 
-                        subject_records[subject_id]['vital_status'] = vital_status
+                        else:
+                            
+                            subject_records[subject_id]['vital_status'] = vital_status
 
             subject_associated_project[subject_id].add( study[study_name]['phs_accession'] )
 
@@ -400,13 +406,20 @@ with open( participant_input_tsv ) as PARTICIPANT_IN, open( researchsubject_outp
                     
                     if diagnosis_id in diagnosis[study_name] and diagnosis[study_name][diagnosis_id]['disease_type'] is not None and diagnosis[study_name][diagnosis_id]['disease_type'] != '':
                         
+                        # if participant_id == 'C3L-00004':
+                        #     
+                        #     print( *[ f"'{study_name}'", f"'{diagnosis_id}'", f"'{diagnosis[study_name][diagnosis_id]['disease_type']}'" ], sep=' | ', file=sys.stderr )
+
                         primary_diagnosis_condition = diagnosis[study_name][diagnosis_id]['disease_type']
 
                         if output_record['primary_diagnosis_condition'] != '' and output_record['primary_diagnosis_condition'] != primary_diagnosis_condition:
                             
-                            sys.exit( f"FATAL FOR NOW: RS {rs_id} participant_id ({study_name}) {participant_id} diagnosis.disease_type value '{primary_diagnosis_condition}' differs from previously-recorded value '{output_record['primary_diagnosis_condition']}'; aborting." )
+                            #sys.exit( f"FATAL FOR NOW: RS {rs_id} participant_id ({study_name}) {participant_id} diagnosis.disease_type value '{primary_diagnosis_condition}' differs from previously-recorded value '{output_record['primary_diagnosis_condition']}'; aborting." )
+                            print( f"WARNING: RS {rs_id} participant_id ({study_name}) {participant_id} diagnosis.disease_type value '{primary_diagnosis_condition}' differs from previously-recorded value '{output_record['primary_diagnosis_condition']}'; ignoring new value.", file=WARN )
 
-                        output_record['primary_diagnosis_condition'] = primary_diagnosis_condition
+                        else:
+                            
+                            output_record['primary_diagnosis_condition'] = primary_diagnosis_condition
 
                     if diagnosis_id in diagnosis[study_name] and diagnosis[study_name][diagnosis_id]['primary_site'] is not None and diagnosis[study_name][diagnosis_id]['primary_site'] != '':
                         

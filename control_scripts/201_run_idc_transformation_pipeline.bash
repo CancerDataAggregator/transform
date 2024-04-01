@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-chmod 755 ./199_idc_controllers/*py
+chmod 755 ./199_idc_controllers/*py ./package_root/auxiliary_scripts/*py
 
 echo ./199_idc_controllers/010_extract_submitter_IDs_from_auxiliary_metadata_to_tsv.py
 ./199_idc_controllers/010_extract_submitter_IDs_from_auxiliary_metadata_to_tsv.py
@@ -19,5 +19,8 @@ echo ./199_idc_controllers/015_populate_tcga_clinical_subject_metadata.py
 
 echo ./199_idc_controllers/016_populate_tcga_biospecimen_metadata.py
 ./199_idc_controllers/016_populate_tcga_biospecimen_metadata.py
+
+echo ./package_root/auxiliary_scripts/999_harmonize_cda_tsvs.py ./cda_tsvs/idc_raw_unharmonized/v17 ./cda_tsvs/idc/v17 ./auxiliary_metadata/__substitution_logs/idc
+./package_root/auxiliary_scripts/999_harmonize_cda_tsvs.py ./cda_tsvs/idc_raw_unharmonized/v17 ./cda_tsvs/idc/v17 ./auxiliary_metadata/__substitution_logs/idc
 
 

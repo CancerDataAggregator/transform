@@ -17,6 +17,4 @@ echo ./package_root/auxiliary_scripts/210_naively_equate_PDC_project_and_study_s
 
 >&2 echo
 
->&2 echo
-
 

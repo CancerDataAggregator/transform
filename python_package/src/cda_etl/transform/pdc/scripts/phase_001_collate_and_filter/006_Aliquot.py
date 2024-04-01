@@ -2,9 +2,9 @@
 
 import sys
 
-from cda_etl.lib import map_columns_one_to_one, map_columns_one_to_many
-
 from os import path, makedirs, rename
+
+from cda_etl.lib import map_columns_one_to_one, map_columns_one_to_many
 
 # PARAMETERS
 
@@ -77,8 +77,6 @@ fields_to_ignore = {
 }
 
 values_to_ignore = {
-    'N/A',
-    'Not Reported'
 }
 
 processing_order = [

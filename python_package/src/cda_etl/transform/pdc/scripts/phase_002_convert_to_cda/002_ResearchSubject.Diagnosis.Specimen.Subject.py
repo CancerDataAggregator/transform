@@ -4,103 +4,7 @@ import sys
 
 from os import makedirs, path
 
-# SUBROUTINES
-
-def map_columns_one_to_one( input_file, from_field, to_field ):
-    
-    return_map = dict()
-
-    with open( input_file ) as IN:
-        
-        header = next(IN).rstrip('\n')
-
-        column_names = header.split('\t')
-
-        if from_field not in column_names or to_field not in column_names:
-            
-            sys.exit( f"FATAL: One or both requested map fields ('{from_field}', '{to_field}') not found in specified input file '{input_file}'; aborting.\n" )
-
-        for line in [ next_line.rstrip('\n') for next_line in IN ]:
-            
-            values = line.split('\t')
-
-            current_from = ''
-
-            current_to = ''
-
-            for i in range( 0, len( column_names ) ):
-                
-                if column_names[i] == from_field:
-                    
-                    current_from = values[i]
-
-                if column_names[i] == to_field:
-                    
-                    current_to = values[i]
-
-            return_map[current_from] = current_to
-
-    return return_map
-
-def map_columns_one_to_many( input_file, from_field, to_field ):
-    
-    return_map = dict()
-
-    with open( input_file ) as IN:
-        
-        header = next(IN).rstrip('\n')
-
-        column_names = header.split('\t')
-
-        if from_field not in column_names or to_field not in column_names:
-            
-            sys.exit( f"FATAL: One or both requested map fields ('{from_field}', '{to_field}') not found in specified input file '{input_file}'; aborting.\n" )
-
-        for line in [ next_line.rstrip('\n') for next_line in IN ]:
-            
-            values = line.split('\t')
-
-            current_from = ''
-
-            current_to = ''
-
-            for i in range( 0, len( column_names ) ):
-                
-                if column_names[i] == from_field:
-                    
-                    current_from = values[i]
-
-                if column_names[i] == to_field:
-                    
-                    current_to = values[i]
-
-            if current_from not in return_map:
-                
-                return_map[current_from] = set()
-
-            return_map[current_from].add(current_to)
-
-    return return_map
-
-def load_tsv_as_dict( input_file ):
-    
-    result = dict()
-
-    with open( input_file ) as IN:
-        
-        colnames = next(IN).rstrip('\n').split('\t')
-
-        for line in [ next_line.rstrip('\n') for next_line in IN ]:
-            
-            values = line.split('\t')
-
-            # Assumes first column is a unique ID column; if this
-            # doesn't end up being true, only the last record will
-            # be stored for any repeated ID.
-
-            result[values[0]] = dict( zip( colnames, values ) )
-
-    return result
+from cda_etl.lib import load_tsv_as_dict, map_columns_one_to_one, map_columns_one_to_many
 
 # PARAMETERS
 
@@ -178,7 +82,7 @@ sample_submitter_id = map_columns_one_to_one( sample_input_tsv, 'sample_id', 'sa
 
 pdc_study_id = map_columns_one_to_one( study_input_tsv, 'study_id', 'pdc_study_id' )
 
-output_root = 'cda_tsvs/pdc'
+output_root = 'cda_tsvs/pdc_raw_unharmonized'
 
 researchsubject_output_tsv = path.join( output_root, 'researchsubject.tsv' )
 

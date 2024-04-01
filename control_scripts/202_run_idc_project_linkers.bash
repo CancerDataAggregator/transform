@@ -28,5 +28,3 @@ $worker_script $idc_file $gdc_file $output_file
 
 >&2 echo
 
->&2 echo
-

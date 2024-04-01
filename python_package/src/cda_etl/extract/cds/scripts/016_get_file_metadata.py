@@ -11,7 +11,7 @@ from os import makedirs, path, rename
 
 # PARAMETERS
 
-page_size = 1000
+page_size = 2500
 
 api_url = 'https://dataservice.datacommons.cancer.gov/v1/graphql/'
 

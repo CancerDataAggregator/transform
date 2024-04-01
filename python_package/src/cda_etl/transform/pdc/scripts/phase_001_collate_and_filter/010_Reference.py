@@ -4,25 +4,7 @@ import sys
 
 from os import path, makedirs, rename
 
-# SUBROUTINES
-
-def sort_file_with_header( file_path ):
-    
-    with open(file_path) as IN:
-        
-        header = next(IN).rstrip('\n')
-
-        lines = [ line.rstrip('\n') for line in sorted(IN) ]
-
-    if len(lines) > 0:
-        
-        with open( file_path + '.tmp', 'w' ) as OUT:
-            
-            print(header, sep='', end='\n', file=OUT)
-
-            print(*lines, sep='\n', end='\n', file=OUT)
-
-        rename(file_path + '.tmp', file_path)
+from cda_etl.lib import sort_file_with_header
 
 # PARAMETERS
 
