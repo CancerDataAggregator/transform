@@ -433,41 +433,41 @@ with open( participant_input_tsv ) as PARTICIPANT_IN, open( researchsubject_outp
 
             print( *[ output_record[column_name] for column_name in rs_output_column_names ], sep='\t', file=RS_OUT )
 
-        if study_name in sample_records:
+            if study_name in sample_records:
 
-            # Write the Specimen records collected for this ResearchSubject.
+                # Write the Specimen records collected for this ResearchSubject.
 
-            seen_specimen_cda_ids = set()
+                seen_specimen_cda_ids = set()
 
-            for sample_id in sorted( sample_records[study_name] ):
-                
-                for sample_cda_id in sorted( sample_records[study_name][sample_id]['cda_ids'] ):
+                for sample_id in sorted( sample_records[study_name] ):
                     
-                    if sample_cda_id in seen_specimen_cda_ids:
+                    for sample_cda_id in sorted( sample_records[study_name][sample_id]['cda_ids'] ):
                         
-                        sys.exit(f"FATAL FOR NOW: Saw {sample_cda_id} more than once, aborting.\n")
-
-                    seen_specimen_cda_ids.add( sample_cda_id )
-
-                    current_row = sample_records[study_name][sample_id]
-
-                    print( *[ sample_cda_id, ';'.join( sorted( current_row['associated_project'] ) ), current_row['days_to_collection'], current_row['primary_disease_type'], current_row['anatomical_site'], current_row['source_material_type'], current_row['specimen_type'], current_row['derived_from_specimen'], current_row['derived_from_subject'] ], sep='\t', file=SPECIMEN )
-
-                    print( *[ sample_cda_id, 'CDS', 'sample.sample_id', sample_id ], sep='\t', file=SPECIMEN_IDENTIFIER )
-
-                    if sample_id in sample_file[study_name]:
-                        
-                        for file_id in sample_file[study_name][sample_id]:
+                        if sample_cda_id in seen_specimen_cda_ids:
                             
-                            if file_id not in file_specimen:
-                                
-                                file_specimen[file_id] = set()
+                            sys.exit(f"FATAL FOR NOW: Saw {sample_cda_id} more than once, aborting.\n")
 
-                            file_specimen[file_id].add( sample_cda_id )
+                        seen_specimen_cda_ids.add( sample_cda_id )
 
-                            if current_row['derived_from_specimen'] != 'initial specimen':
+                        current_row = sample_records[study_name][sample_id]
+
+                        print( *[ sample_cda_id, ';'.join( sorted( current_row['associated_project'] ) ), current_row['days_to_collection'], current_row['primary_disease_type'], current_row['anatomical_site'], current_row['source_material_type'], current_row['specimen_type'], current_row['derived_from_specimen'], current_row['derived_from_subject'] ], sep='\t', file=SPECIMEN )
+
+                        print( *[ sample_cda_id, 'CDS', 'sample.sample_id', sample_id ], sep='\t', file=SPECIMEN_IDENTIFIER )
+
+                        if sample_id in sample_file[study_name]:
+                            
+                            for file_id in sample_file[study_name][sample_id]:
                                 
-                                file_specimen[file_id].add( current_row['derived_from_specimen'] )
+                                if file_id not in file_specimen:
+                                    
+                                    file_specimen[file_id] = set()
+
+                                file_specimen[file_id].add( sample_cda_id )
+
+                                if current_row['derived_from_specimen'] != 'initial specimen':
+                                    
+                                    file_specimen[file_id].add( current_row['derived_from_specimen'] )
 
 # Print list of select entities by type with study/program affiliations for inter-DC cross-mapping.
 
