@@ -213,261 +213,259 @@ with open( participant_input_tsv ) as PARTICIPANT_IN, open( researchsubject_outp
 
         entity_studies_by_type['participant'][participant_id].add( study_name )
 
-        # Build one record per sample; don't duplicate as we iterate across Studies this Case is in.
+        # Build one record per sample.
 
         sample_records = dict()
 
-        for study_name in sorted( participant_study[participant_id] ):
+        # CDA ResearchSubject ID: Combination of CDS study dbGaP PHS accession and participant_id (the latter of which is a submitter ID).
+
+        rs_id = f"{study[study_name]['phs_accession']}.{participant_id}"
+
+        # CDA Subject ID: Combination of CDS program acronym and participant_id.
+
+        subject_id = f"{program[study_program[study_name]]['program_acronym']}.{participant_id}"
+
+        if subject_id not in subject_records:
             
-            # CDA ResearchSubject ID: Combination of CDS study dbGaP PHS accession and participant_id (the latter of which is a submitter ID).
+            subject_records[subject_id] = dict()
+            subject_records[subject_id]['species'] = '' if study[study_name]['organism_species'] is None else study[study_name]['organism_species']
+            subject_records[subject_id]['sex'] = '' if input_participant_record['gender'] is None else input_participant_record['gender']
+            subject_records[subject_id]['race'] = '' if input_participant_record['race'] is None else input_participant_record['race']
+            subject_records[subject_id]['ethnicity'] = '' if input_participant_record['ethnicity'] is None else input_participant_record['ethnicity']
+            subject_records[subject_id]['days_to_birth'] = ''
+            subject_records[subject_id]['vital_status'] = ''
+            subject_records[subject_id]['days_to_death'] = ''
+            subject_records[subject_id]['cause_of_death'] = ''
 
-            rs_id = f"{study[study_name]['phs_accession']}.{participant_id}"
+            subject_associated_project[subject_id] = set()
+            subject_researchsubject[subject_id] = set()
 
-            # CDA Subject ID: Combination of CDS program acronym and participant_id.
+            subject_participant_ids[subject_id] = set()
 
-            subject_id = f"{program[study_program[study_name]]['program_acronym']}.{participant_id}"
-
-            if subject_id not in subject_records:
+        if participant_id in participant_diagnosis[study_name]:
+            
+            for diagnosis_id in sorted( participant_diagnosis[study_name][participant_id] ):
                 
-                subject_records[subject_id] = dict()
-                subject_records[subject_id]['species'] = '' if study[study_name]['organism_species'] is None else study[study_name]['organism_species']
-                subject_records[subject_id]['sex'] = '' if input_participant_record['gender'] is None else input_participant_record['gender']
-                subject_records[subject_id]['race'] = '' if input_participant_record['race'] is None else input_participant_record['race']
-                subject_records[subject_id]['ethnicity'] = '' if input_participant_record['ethnicity'] is None else input_participant_record['ethnicity']
-                subject_records[subject_id]['days_to_birth'] = ''
-                subject_records[subject_id]['vital_status'] = ''
-                subject_records[subject_id]['days_to_death'] = ''
-                subject_records[subject_id]['cause_of_death'] = ''
-
-                subject_associated_project[subject_id] = set()
-                subject_researchsubject[subject_id] = set()
-
-                subject_participant_ids[subject_id] = set()
-
-            if participant_id in participant_diagnosis[study_name]:
-                
-                for diagnosis_id in sorted( participant_diagnosis[study_name][participant_id] ):
+                if 'diagnosis' not in entity_studies_by_type:
                     
-                    if 'diagnosis' not in entity_studies_by_type:
-                        
-                        entity_studies_by_type['diagnosis'] = dict()
+                    entity_studies_by_type['diagnosis'] = dict()
 
-                    if diagnosis_id not in entity_studies_by_type['diagnosis']:
-                        
-                        entity_studies_by_type['diagnosis'][diagnosis_id] = set()
-
-                    entity_studies_by_type['diagnosis'][diagnosis_id].add( study_name )
-
-                    if diagnosis_id in diagnosis[study_name] and diagnosis[study_name][diagnosis_id]['age_at_diagnosis'] is not None and diagnosis[study_name][diagnosis_id]['age_at_diagnosis'] != '':
-                        
-                        # All CDS values are currently in years.
-
-                        days_to_birth = int( float( diagnosis[study_name][diagnosis_id]['age_at_diagnosis'] ) * 365.25 )
-
-                        if subject_records[subject_id]['days_to_birth'] != '' and subject_records[subject_id]['days_to_birth'] != days_to_birth:
-                            
-                            #sys.exit( f"FATAL FOR NOW: Subject {subject_id} participant_id ({study_name}) {participant_id} derived days_to_birth value '{days_to_birth}' differs from previously-recorded value '{subject_records[subject_id]['days_to_birth']}'; aborting." )
-                            print( f"WARNING: Subject {subject_id} participant_id ({study_name}) {participant_id} derived days_to_birth value '{days_to_birth}' differs from previously-recorded value '{subject_records[subject_id]['days_to_birth']}'; ignoring new value.", file=WARN )
-
-                        else:
-                            
-                            subject_records[subject_id]['days_to_birth'] = days_to_birth
-
-                    if diagnosis_id in diagnosis[study_name] and diagnosis[study_name][diagnosis_id]['vital_status'] is not None and diagnosis[study_name][diagnosis_id]['vital_status'] != '':
-                        
-                        vital_status = diagnosis[study_name][diagnosis_id]['vital_status']
-
-                        if subject_records[subject_id]['vital_status'] != '' and subject_records[subject_id]['vital_status'] != vital_status:
-                            
-                            #sys.exit( f"FATAL FOR NOW: Subject {subject_id} participant_id ({study_name}) {participant_id} derived vital_status value '{vital_status}' differs from previously-recorded value '{subject_records[subject_id]['vital_status']}'; aborting." )
-                            print( f"WARNING: Subject {subject_id} participant_id ({study_name}) {participant_id} derived vital_status value '{vital_status}' differs from previously-recorded value '{subject_records[subject_id]['vital_status']}'; ignoring new value.", file=WARN )
-
-                        else:
-                            
-                            subject_records[subject_id]['vital_status'] = vital_status
-
-            subject_associated_project[subject_id].add( study[study_name]['phs_accession'] )
-
-            subject_researchsubject[subject_id].add( rs_id )
-
-            subject_participant_ids[subject_id].add( participant_id )
-
-            if study_name in participant_file:
-                
-                if participant_id in participant_file[study_name]:
+                if diagnosis_id not in entity_studies_by_type['diagnosis']:
                     
-                    for file_id in participant_file[study_name][participant_id]:
-                        
-                        if file_id not in file_subject:
-                            
-                            file_subject[file_id] = set()
+                    entity_studies_by_type['diagnosis'][diagnosis_id] = set()
 
-                        file_subject[file_id].add( subject_id )
+                entity_studies_by_type['diagnosis'][diagnosis_id].add( study_name )
 
-            # Cached CDS identifier: the local participant ID (such as it is).
-
-            print( *[ rs_id, 'CDS', 'participant.participant_id', participant_id ], sep='\t', file=RS_IDENTIFIER )
-
-            # If there's a diagnosis record attached to this participant, connect it to this ResearchSubject record
-            # and save its contents to their CDA analogues.
-
-            if participant_id in participant_diagnosis[study_name]:
-                
-                for diagnosis_id in sorted( participant_diagnosis[study_name][participant_id] ):
+                if diagnosis_id in diagnosis[study_name] and diagnosis[study_name][diagnosis_id]['age_at_diagnosis'] is not None and diagnosis[study_name][diagnosis_id]['age_at_diagnosis'] != '':
                     
-                    diagnosis_cda_id = f"{rs_id}.{diagnosis_id}"
+                    # All CDS values are currently in years.
 
-                    print( *[ rs_id, diagnosis_cda_id ], sep='\t', file=RS_DIAGNOSIS )
+                    days_to_birth = int( float( diagnosis[study_name][diagnosis_id]['age_at_diagnosis'] ) * 365.25 )
 
-                    if diagnosis_cda_id not in printed_diagnosis:
+                    if subject_records[subject_id]['days_to_birth'] != '' and subject_records[subject_id]['days_to_birth'] != days_to_birth:
                         
-                        print( *[ diagnosis_cda_id, 'CDS', 'diagnosis.diagnosis_id', diagnosis_id ], sep='\t', file=DIAGNOSIS_IDENTIFIER )
-
-                        diagnosis_record = dict( zip( diagnosis_output_column_names, [ '' ] * len( diagnosis_output_column_names ) ) )
-
-                        diagnosis_record['id'] = diagnosis_cda_id
-
-                        if diagnosis[study_name][diagnosis_id]['primary_diagnosis'] is not None:
-                            
-                            diagnosis_record['primary_diagnosis'] = diagnosis[study_name][diagnosis_id]['primary_diagnosis']
-
-                        if diagnosis[study_name][diagnosis_id]['age_at_diagnosis'] is not None and diagnosis[study_name][diagnosis_id]['age_at_diagnosis'] != '':
-                            
-                            diagnosis_record['age_at_diagnosis'] = int( diagnosis[study_name][diagnosis_id]['age_at_diagnosis'] )
-
-                        if diagnosis[study_name][diagnosis_id]['morphology'] is not None:
-                            
-                            diagnosis_record['morphology'] = diagnosis[study_name][diagnosis_id]['morphology']
-
-                        if diagnosis[study_name][diagnosis_id]['tumor_grade'] is not None:
-                            
-                            diagnosis_record['grade'] = diagnosis[study_name][diagnosis_id]['tumor_grade']
-
-                        print( *[ diagnosis_record[column_name] for column_name in diagnosis_output_column_names ], sep='\t', file=DIAGNOSIS )
-
-                        printed_diagnosis.add( diagnosis_cda_id )
-
-            # If samples are attached to this participant, connect them to this ResearchSubject record.
-
-            if participant_id in participant_sample[study_name]:
-                
-                for sample_id in sorted( participant_sample[study_name][participant_id] ):
-                    
-                    if 'sample' not in entity_studies_by_type:
-                        
-                        entity_studies_by_type['sample'] = dict()
-
-                    if sample_id not in entity_studies_by_type['sample']:
-                        
-                        entity_studies_by_type['sample'][sample_id] = set()
-
-                    entity_studies_by_type['sample'][sample_id].add( study_name )
-
-                    sample_cda_id = f"{rs_id}.{sample_id}"
-
-                    print( *[ rs_id, sample_cda_id ], sep='\t', file=RS_SPECIMEN )
-
-                    if study_name not in sample_records:
-                        
-                        sample_records[study_name] = dict()
-
-                    if sample_id not in sample_records[study_name]:
-                        
-                        sample_records[study_name][sample_id] = dict()
-
-                        sample_records[study_name][sample_id]['cda_ids'] = { sample_cda_id }
-                        sample_records[study_name][sample_id]['associated_project'] = { study[study_name]['phs_accession'] }
-                        sample_records[study_name][sample_id]['days_to_collection'] = ''
-                        sample_records[study_name][sample_id]['primary_disease_type'] = ''
-                        sample_records[study_name][sample_id]['anatomical_site'] = sample[study_name][sample_id]['sample_anatomic_site']
-                        sample_records[study_name][sample_id]['source_material_type'] = sample[study_name][sample_id]['sample_tumor_status']
-                        sample_records[study_name][sample_id]['specimen_type'] = 'sample'
-                        sample_records[study_name][sample_id]['derived_from_specimen'] = 'initial specimen'
-                        sample_records[study_name][sample_id]['derived_from_subject'] = subject_id
+                        #sys.exit( f"FATAL FOR NOW: Subject {subject_id} participant_id ({study_name}) {participant_id} derived days_to_birth value '{days_to_birth}' differs from previously-recorded value '{subject_records[subject_id]['days_to_birth']}'; aborting." )
+                        print( f"WARNING: Subject {subject_id} participant_id ({study_name}) {participant_id} derived days_to_birth value '{days_to_birth}' differs from previously-recorded value '{subject_records[subject_id]['days_to_birth']}'; ignoring new value.", file=WARN )
 
                     else:
                         
-                        sample_records[study_name][sample_id]['cda_ids'].add( sample_cda_id )
-                        sample_records[study_name][sample_id]['associated_project'].add( study[study_name]['phs_accession'] )
+                        subject_records[subject_id]['days_to_birth'] = days_to_birth
 
-            # Write the main ResearchSubject record.
+                if diagnosis_id in diagnosis[study_name] and diagnosis[study_name][diagnosis_id]['vital_status'] is not None and diagnosis[study_name][diagnosis_id]['vital_status'] != '':
+                    
+                    vital_status = diagnosis[study_name][diagnosis_id]['vital_status']
 
-            output_record = dict()
+                    if subject_records[subject_id]['vital_status'] != '' and subject_records[subject_id]['vital_status'] != vital_status:
+                        
+                        #sys.exit( f"FATAL FOR NOW: Subject {subject_id} participant_id ({study_name}) {participant_id} derived vital_status value '{vital_status}' differs from previously-recorded value '{subject_records[subject_id]['vital_status']}'; aborting." )
+                        print( f"WARNING: Subject {subject_id} participant_id ({study_name}) {participant_id} derived vital_status value '{vital_status}' differs from previously-recorded value '{subject_records[subject_id]['vital_status']}'; ignoring new value.", file=WARN )
 
-            output_record['id'] = rs_id
-            output_record['member_of_research_project'] = study[study_name]['phs_accession']
+                    else:
+                        
+                        subject_records[subject_id]['vital_status'] = vital_status
 
-            output_record['primary_diagnosis_condition'] = ''
-            output_record['primary_diagnosis_site'] = ''
+        subject_associated_project[subject_id].add( study[study_name]['phs_accession'] )
 
-            if participant_id in participant_diagnosis[study_name]:
+        subject_researchsubject[subject_id].add( rs_id )
+
+        subject_participant_ids[subject_id].add( participant_id )
+
+        if study_name in participant_file:
+            
+            if participant_id in participant_file[study_name]:
                 
-                for diagnosis_id in sorted( participant_diagnosis[study_name][participant_id] ):
+                for file_id in participant_file[study_name][participant_id]:
                     
-                    if diagnosis_id in diagnosis[study_name] and diagnosis[study_name][diagnosis_id]['disease_type'] is not None and diagnosis[study_name][diagnosis_id]['disease_type'] != '':
+                    if file_id not in file_subject:
                         
-                        # if participant_id == 'C3L-00004':
-                        #     
-                        #     print( *[ f"'{study_name}'", f"'{diagnosis_id}'", f"'{diagnosis[study_name][diagnosis_id]['disease_type']}'" ], sep=' | ', file=sys.stderr )
+                        file_subject[file_id] = set()
 
-                        primary_diagnosis_condition = diagnosis[study_name][diagnosis_id]['disease_type']
+                    file_subject[file_id].add( subject_id )
 
-                        if output_record['primary_diagnosis_condition'] != '' and output_record['primary_diagnosis_condition'] != primary_diagnosis_condition:
-                            
-                            #sys.exit( f"FATAL FOR NOW: RS {rs_id} participant_id ({study_name}) {participant_id} diagnosis.disease_type value '{primary_diagnosis_condition}' differs from previously-recorded value '{output_record['primary_diagnosis_condition']}'; aborting." )
-                            print( f"WARNING: RS {rs_id} participant_id ({study_name}) {participant_id} diagnosis.disease_type value '{primary_diagnosis_condition}' differs from previously-recorded value '{output_record['primary_diagnosis_condition']}'; ignoring new value.", file=WARN )
+        # Cached CDS identifier: the local participant ID (such as it is).
 
-                        else:
-                            
-                            output_record['primary_diagnosis_condition'] = primary_diagnosis_condition
+        print( *[ rs_id, 'CDS', 'participant.participant_id', participant_id ], sep='\t', file=RS_IDENTIFIER )
 
-                    if diagnosis_id in diagnosis[study_name] and diagnosis[study_name][diagnosis_id]['primary_site'] is not None and diagnosis[study_name][diagnosis_id]['primary_site'] != '':
-                        
-                        primary_diagnosis_site = diagnosis[study_name][diagnosis_id]['primary_site']
+        # If there's a diagnosis record attached to this participant, connect it to this ResearchSubject record
+        # and save its contents to their CDA analogues.
 
-                        if output_record['primary_diagnosis_site'] != '' and output_record['primary_diagnosis_site'] != primary_diagnosis_site:
-                            
-                            print( f"WARNING: RS {rs_id} participant_id ({study_name}) {participant_id} diagnosis.primary_site value '{primary_diagnosis_site}' differs from previously-recorded value '{output_record['primary_diagnosis_site']}'; overwriting with new value.", file=WARN )
+        if participant_id in participant_diagnosis[study_name]:
+            
+            for diagnosis_id in sorted( participant_diagnosis[study_name][participant_id] ):
+                
+                diagnosis_cda_id = f"{rs_id}.{diagnosis_id}"
 
-                        output_record['primary_diagnosis_site'] = primary_diagnosis_site
+                print( *[ rs_id, diagnosis_cda_id ], sep='\t', file=RS_DIAGNOSIS )
 
-            print( *[ output_record[column_name] for column_name in rs_output_column_names ], sep='\t', file=RS_OUT )
-
-            if study_name in sample_records:
-
-                # Write the Specimen records collected for this ResearchSubject.
-
-                seen_specimen_cda_ids = set()
-
-                for sample_id in sorted( sample_records[study_name] ):
+                if diagnosis_cda_id not in printed_diagnosis:
                     
-                    for sample_cda_id in sorted( sample_records[study_name][sample_id]['cda_ids'] ):
+                    print( *[ diagnosis_cda_id, 'CDS', 'diagnosis.diagnosis_id', diagnosis_id ], sep='\t', file=DIAGNOSIS_IDENTIFIER )
+
+                    diagnosis_record = dict( zip( diagnosis_output_column_names, [ '' ] * len( diagnosis_output_column_names ) ) )
+
+                    diagnosis_record['id'] = diagnosis_cda_id
+
+                    if diagnosis[study_name][diagnosis_id]['primary_diagnosis'] is not None:
                         
-                        if sample_cda_id in seen_specimen_cda_ids:
+                        diagnosis_record['primary_diagnosis'] = diagnosis[study_name][diagnosis_id]['primary_diagnosis']
+
+                    if diagnosis[study_name][diagnosis_id]['age_at_diagnosis'] is not None and diagnosis[study_name][diagnosis_id]['age_at_diagnosis'] != '':
+                        
+                        diagnosis_record['age_at_diagnosis'] = int( diagnosis[study_name][diagnosis_id]['age_at_diagnosis'] )
+
+                    if diagnosis[study_name][diagnosis_id]['morphology'] is not None:
+                        
+                        diagnosis_record['morphology'] = diagnosis[study_name][diagnosis_id]['morphology']
+
+                    if diagnosis[study_name][diagnosis_id]['tumor_grade'] is not None:
+                        
+                        diagnosis_record['grade'] = diagnosis[study_name][diagnosis_id]['tumor_grade']
+
+                    print( *[ diagnosis_record[column_name] for column_name in diagnosis_output_column_names ], sep='\t', file=DIAGNOSIS )
+
+                    printed_diagnosis.add( diagnosis_cda_id )
+
+        # If samples are attached to this participant, connect them to this ResearchSubject record.
+
+        if participant_id in participant_sample[study_name]:
+            
+            for sample_id in sorted( participant_sample[study_name][participant_id] ):
+                
+                if 'sample' not in entity_studies_by_type:
+                    
+                    entity_studies_by_type['sample'] = dict()
+
+                if sample_id not in entity_studies_by_type['sample']:
+                    
+                    entity_studies_by_type['sample'][sample_id] = set()
+
+                entity_studies_by_type['sample'][sample_id].add( study_name )
+
+                sample_cda_id = f"{rs_id}.{sample_id}"
+
+                print( *[ rs_id, sample_cda_id ], sep='\t', file=RS_SPECIMEN )
+
+                if study_name not in sample_records:
+                    
+                    sample_records[study_name] = dict()
+
+                if sample_id not in sample_records[study_name]:
+                    
+                    sample_records[study_name][sample_id] = dict()
+
+                    sample_records[study_name][sample_id]['cda_ids'] = { sample_cda_id }
+                    sample_records[study_name][sample_id]['associated_project'] = { study[study_name]['phs_accession'] }
+                    sample_records[study_name][sample_id]['days_to_collection'] = ''
+                    sample_records[study_name][sample_id]['primary_disease_type'] = ''
+                    sample_records[study_name][sample_id]['anatomical_site'] = sample[study_name][sample_id]['sample_anatomic_site']
+                    sample_records[study_name][sample_id]['source_material_type'] = sample[study_name][sample_id]['sample_tumor_status']
+                    sample_records[study_name][sample_id]['specimen_type'] = 'sample'
+                    sample_records[study_name][sample_id]['derived_from_specimen'] = 'initial specimen'
+                    sample_records[study_name][sample_id]['derived_from_subject'] = subject_id
+
+                else:
+                    
+                    sample_records[study_name][sample_id]['cda_ids'].add( sample_cda_id )
+                    sample_records[study_name][sample_id]['associated_project'].add( study[study_name]['phs_accession'] )
+
+        # Write the main ResearchSubject record.
+
+        output_record = dict()
+
+        output_record['id'] = rs_id
+        output_record['member_of_research_project'] = study[study_name]['phs_accession']
+
+        output_record['primary_diagnosis_condition'] = ''
+        output_record['primary_diagnosis_site'] = ''
+
+        if participant_id in participant_diagnosis[study_name]:
+            
+            for diagnosis_id in sorted( participant_diagnosis[study_name][participant_id] ):
+                
+                if diagnosis_id in diagnosis[study_name] and diagnosis[study_name][diagnosis_id]['disease_type'] is not None and diagnosis[study_name][diagnosis_id]['disease_type'] != '':
+                    
+                    # if participant_id == 'C3L-00004':
+                    #     
+                    #     print( *[ f"'{study_name}'", f"'{diagnosis_id}'", f"'{diagnosis[study_name][diagnosis_id]['disease_type']}'" ], sep=' | ', file=sys.stderr )
+
+                    primary_diagnosis_condition = diagnosis[study_name][diagnosis_id]['disease_type']
+
+                    if output_record['primary_diagnosis_condition'] != '' and output_record['primary_diagnosis_condition'] != primary_diagnosis_condition:
+                        
+                        #sys.exit( f"FATAL FOR NOW: RS {rs_id} participant_id ({study_name}) {participant_id} diagnosis.disease_type value '{primary_diagnosis_condition}' differs from previously-recorded value '{output_record['primary_diagnosis_condition']}'; aborting." )
+                        print( f"WARNING: RS {rs_id} participant_id ({study_name}) {participant_id} diagnosis.disease_type value '{primary_diagnosis_condition}' differs from previously-recorded value '{output_record['primary_diagnosis_condition']}'; ignoring new value.", file=WARN )
+
+                    else:
+                        
+                        output_record['primary_diagnosis_condition'] = primary_diagnosis_condition
+
+                if diagnosis_id in diagnosis[study_name] and diagnosis[study_name][diagnosis_id]['primary_site'] is not None and diagnosis[study_name][diagnosis_id]['primary_site'] != '':
+                    
+                    primary_diagnosis_site = diagnosis[study_name][diagnosis_id]['primary_site']
+
+                    if output_record['primary_diagnosis_site'] != '' and output_record['primary_diagnosis_site'] != primary_diagnosis_site:
+                        
+                        print( f"WARNING: RS {rs_id} participant_id ({study_name}) {participant_id} diagnosis.primary_site value '{primary_diagnosis_site}' differs from previously-recorded value '{output_record['primary_diagnosis_site']}'; overwriting with new value.", file=WARN )
+
+                    output_record['primary_diagnosis_site'] = primary_diagnosis_site
+
+        print( *[ output_record[column_name] for column_name in rs_output_column_names ], sep='\t', file=RS_OUT )
+
+        if study_name in sample_records:
+
+            # Write the Specimen records collected for this ResearchSubject.
+
+            seen_specimen_cda_ids = set()
+
+            for sample_id in sorted( sample_records[study_name] ):
+                
+                for sample_cda_id in sorted( sample_records[study_name][sample_id]['cda_ids'] ):
+                    
+                    if sample_cda_id in seen_specimen_cda_ids:
+                        
+                        sys.exit(f"FATAL FOR NOW: Saw {sample_cda_id} more than once, aborting.\n")
+
+                    seen_specimen_cda_ids.add( sample_cda_id )
+
+                    current_row = sample_records[study_name][sample_id]
+
+                    print( *[ sample_cda_id, ';'.join( sorted( current_row['associated_project'] ) ), current_row['days_to_collection'], current_row['primary_disease_type'], current_row['anatomical_site'], current_row['source_material_type'], current_row['specimen_type'], current_row['derived_from_specimen'], current_row['derived_from_subject'] ], sep='\t', file=SPECIMEN )
+
+                    print( *[ sample_cda_id, 'CDS', 'sample.sample_id', sample_id ], sep='\t', file=SPECIMEN_IDENTIFIER )
+
+                    if sample_id in sample_file[study_name]:
+                        
+                        for file_id in sample_file[study_name][sample_id]:
                             
-                            sys.exit(f"FATAL FOR NOW: Saw {sample_cda_id} more than once, aborting.\n")
-
-                        seen_specimen_cda_ids.add( sample_cda_id )
-
-                        current_row = sample_records[study_name][sample_id]
-
-                        print( *[ sample_cda_id, ';'.join( sorted( current_row['associated_project'] ) ), current_row['days_to_collection'], current_row['primary_disease_type'], current_row['anatomical_site'], current_row['source_material_type'], current_row['specimen_type'], current_row['derived_from_specimen'], current_row['derived_from_subject'] ], sep='\t', file=SPECIMEN )
-
-                        print( *[ sample_cda_id, 'CDS', 'sample.sample_id', sample_id ], sep='\t', file=SPECIMEN_IDENTIFIER )
-
-                        if sample_id in sample_file[study_name]:
-                            
-                            for file_id in sample_file[study_name][sample_id]:
+                            if file_id not in file_specimen:
                                 
-                                if file_id not in file_specimen:
-                                    
-                                    file_specimen[file_id] = set()
+                                file_specimen[file_id] = set()
 
-                                file_specimen[file_id].add( sample_cda_id )
+                            file_specimen[file_id].add( sample_cda_id )
 
-                                if current_row['derived_from_specimen'] != 'initial specimen':
-                                    
-                                    file_specimen[file_id].add( current_row['derived_from_specimen'] )
+                            if current_row['derived_from_specimen'] != 'initial specimen':
+                                
+                                file_specimen[file_id].add( current_row['derived_from_specimen'] )
 
 # Print list of select entities by type with study/program affiliations for inter-DC cross-mapping.
 

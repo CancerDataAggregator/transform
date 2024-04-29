@@ -26,7 +26,7 @@ harmonization_field_map_file = path.join( harmonization_map_dir, '000_cda_column
 
 debug=False
 
-# Enumerate (case-insensitivei, space-collapsed) values (as regular expressions) that should be deleted wherever they are found.
+# Enumerate (case-insensitive, space-collapsed) values (as regular expressions) that should be deleted wherever they are found.
 
 delete_everywhere = {
     r'n/a',

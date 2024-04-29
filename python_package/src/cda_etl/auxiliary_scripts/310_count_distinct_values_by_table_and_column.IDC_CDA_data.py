@@ -8,7 +8,9 @@ from os import listdir, makedirs, path
 
 # PARAMETERS
 
-input_root = path.join( 'cda_tsvs', 'idc', 'v17' )
+version_string = sys.argv[1]
+
+input_root = path.join( 'cda_tsvs', 'idc', version_string )
 
 aux_root = 'auxiliary_metadata'
 
@@ -120,7 +122,7 @@ with open( stats_file, 'w' ) as STATS_FILE:
                                 
                                 column_distinct_values[column_names[i]].add(values[i])
 
-                                if re.search( r'^-?\d+(\.\d+)?$', values[i] ) is None:
+                                if re.search( r'^-?\d+(\.\d+)?([eE]-?\d+)?$', values[i] ) is None:
                                     
                                     column_all_numbers[column_names[i]] = False
 

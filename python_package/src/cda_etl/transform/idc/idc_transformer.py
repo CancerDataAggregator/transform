@@ -57,7 +57,6 @@ class IDC_transformer:
             'collection_id_to_entity_id' : path.join( self.supp_dir, 'IDC_entity_submitter_id_to_collection_id.tsv' ),
             'file_researchsubject' : path.join( self.supp_dir, 'file_researchsubject.tsv.gz' ),
             'idc_case_id_to_submitter_case_id' : path.join( self.supp_dir, 'idc_case_id_to_submitter_case_id.tsv' ),
-            'subject_idc_webapp_collection_id' : path.join( self.supp_dir, 'subject_idc_webapp_collection_id.tsv' ),
             'tcga_biospecimen_sample_barcode_to_gdc_id' : path.join( self.supp_dir, 'tcga_biospecimen_rel9.submitter_sample_id_to_gdc_id.tsv' ),
             'tcga_biospecimen_submitter_case_id_to_gdc_id' : path.join( self.supp_dir, 'tcga_biospecimen_rel9.submitter_case_id_to_gdc_id.tsv' )
         }
@@ -189,7 +188,6 @@ class IDC_transformer:
         rs_identifiers = dict()
 
         subject_collection_ids = dict()
-        subject_idc_webapp_collection_ids = dict()
 
         subject_researchsubjects = dict()
 
@@ -278,12 +276,6 @@ class IDC_transformer:
                     subject_collection_ids[subject_id] = set()
 
                 subject_collection_ids[subject_id].add( record['collection_id'] )
-
-                if subject_id not in subject_idc_webapp_collection_ids:
-                    
-                    subject_idc_webapp_collection_ids[subject_id] = set()
-
-                subject_idc_webapp_collection_ids[subject_id].add( record['idc_webapp_collection_id'] )
 
                 # Manage CDA researchsubject IDs and association metadata.
 
@@ -676,16 +668,6 @@ class IDC_transformer:
                     
                     print( *[ subject_id, rs_id ], sep='\t', end='\n', file=SUBJECT_RS )
 
-        with gzip.open( self.aux_files['subject_idc_webapp_collection_id'], 'wt' ) as SUBJECT_IDC_WEBAPP_COLLS:
-            
-            print( *[ 'subject_id', 'idc_webapp_collection_id' ], sep='\t', end='\n', file=SUBJECT_IDC_WEBAPP_COLLS )
-
-            for subject_id in sorted( subject_idc_webapp_collection_ids ):
-                
-                for idc_webapp_collection_id in sorted( subject_idc_webapp_collection_ids[subject_id] ):
-                    
-                    print( *[ subject_id, idc_webapp_collection_id ], sep='\t', end='\n', file=SUBJECT_IDC_WEBAPP_COLLS )
-
         print( 'done.', file=sys.stderr )
 
     def map_case_ids_to_collection_ids( self ):
@@ -750,11 +732,11 @@ class IDC_transformer:
 
             for record in reader:
                 
-                if 'idc_webapp_collection_id' in record and 'CancerType' in record:
+                if 'collection_id' in record and 'CancerTypes' in record:
                     
-                    collection_id = record['idc_webapp_collection_id']
+                    collection_id = record['collection_id']
 
-                    cancer_type = record['CancerType']
+                    cancer_type = record['CancerTypes']
 
                     if collection_id in collection_id_to_cancer_type and collection_id_to_cancer_type[collection_id] != cancer_type:
                         

@@ -1,0 +1,700 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 14.10
+-- Dumped by pg_dump version 15.2
+
+-- Started on 2024-04-23 15:06:08 EDT
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 5 (class 2615 OID 2200)
+-- Name: public; Type: SCHEMA; Schema: -; Owner: -
+--
+
+CREATE SCHEMA public;
+
+
+--
+-- TOC entry 4053 (class 0 OID 0)
+-- Dependencies: 5
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON SCHEMA public IS 'standard public schema';
+
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 211 (class 1259 OID 16527)
+-- Name: file; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.file (
+    id text NOT NULL,
+    integer_id_alias bigint NOT NULL,
+    crdc_id text,
+    name text NOT NULL,
+    description text,
+    drs_uri text NOT NULL,
+    category text,
+    type text,
+    format text,
+    size bigint,
+    checksum_type text NOT NULL,
+    checksum_value text NOT NULL,
+    data_at_cds boolean NOT NULL,
+    data_at_gdc boolean NOT NULL,
+    data_at_icdc boolean NOT NULL,
+    data_at_idc boolean NOT NULL,
+    data_at_pdc boolean NOT NULL,
+    data_source_count integer NOT NULL
+);
+
+
+--
+-- TOC entry 218 (class 1259 OID 16574)
+-- Name: file_describes_specimen; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.file_describes_specimen (
+    file_alias bigint NOT NULL,
+    specimen_alias bigint NOT NULL
+);
+
+
+--
+-- TOC entry 219 (class 1259 OID 16587)
+-- Name: file_describes_subject; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.file_describes_subject (
+    file_alias bigint NOT NULL,
+    subject_alias bigint NOT NULL
+);
+
+
+--
+-- TOC entry 225 (class 1259 OID 16660)
+-- Name: file_in_project; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.file_in_project (
+    file_alias bigint NOT NULL,
+    project_alias bigint NOT NULL
+);
+
+
+--
+-- TOC entry 214 (class 1259 OID 16548)
+-- Name: observation; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.observation (
+    id text NOT NULL,
+    integer_id_alias bigint NOT NULL,
+    vital_status text,
+    sex text,
+    year_of_diagnosis integer,
+    diagnosis text,
+    morphology text,
+    grade text,
+    stage text,
+    tissue_or_organ_of_origin text,
+    data_at_cds boolean NOT NULL,
+    data_at_gdc boolean NOT NULL,
+    data_at_icdc boolean NOT NULL,
+    data_at_idc boolean NOT NULL,
+    data_at_pdc boolean NOT NULL,
+    data_source_count integer NOT NULL
+);
+
+
+--
+-- TOC entry 226 (class 1259 OID 16673)
+-- Name: observation_in_project; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.observation_in_project (
+    observation_alias bigint NOT NULL,
+    project_alias bigint NOT NULL
+);
+
+
+--
+-- TOC entry 220 (class 1259 OID 16600)
+-- Name: observation_of_subject; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.observation_of_subject (
+    observation_alias bigint NOT NULL,
+    subject_alias bigint NOT NULL
+);
+
+
+--
+-- TOC entry 210 (class 1259 OID 16518)
+-- Name: project; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.project (
+    id text NOT NULL,
+    integer_id_alias bigint NOT NULL,
+    crdc_id text,
+    type text NOT NULL,
+    name text NOT NULL,
+    short_name text,
+    dbgap_accession text,
+    data_at_cds boolean NOT NULL,
+    data_at_gdc boolean NOT NULL,
+    data_at_icdc boolean NOT NULL,
+    data_at_idc boolean NOT NULL,
+    data_at_pdc boolean NOT NULL,
+    data_source_count integer NOT NULL
+);
+
+
+--
+-- TOC entry 227 (class 1259 OID 16687)
+-- Name: project_in_project; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.project_in_project (
+    parent_project_alias bigint NOT NULL,
+    child_project_alias bigint NOT NULL
+);
+
+
+--
+-- TOC entry 209 (class 1259 OID 16511)
+-- Name: release_metadata; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.release_metadata (
+    cda_table text NOT NULL,
+    cda_column text NOT NULL,
+    data_source text NOT NULL,
+    data_source_version text NOT NULL,
+    data_source_row_count integer NOT NULL,
+    data_source_unique_value_count integer NOT NULL,
+    data_source_null_count integer NOT NULL
+);
+
+
+--
+-- TOC entry 216 (class 1259 OID 16562)
+-- Name: somatic_mutation; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.somatic_mutation (
+    id text NOT NULL,
+    integer_id_alias bigint NOT NULL,
+    hugo_symbol text,
+    data_at_cds boolean NOT NULL,
+    data_at_gdc boolean NOT NULL,
+    data_at_icdc boolean NOT NULL,
+    data_at_idc boolean NOT NULL,
+    data_at_pdc boolean NOT NULL,
+    data_source_count integer NOT NULL
+);
+
+
+--
+-- TOC entry 228 (class 1259 OID 16700)
+-- Name: somatic_mutation_in_project; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.somatic_mutation_in_project (
+    somatic_mutation_alias bigint NOT NULL,
+    project_alias bigint NOT NULL
+);
+
+
+--
+-- TOC entry 213 (class 1259 OID 16541)
+-- Name: specimen; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.specimen (
+    id text NOT NULL,
+    integer_id_alias bigint NOT NULL,
+    crdc_id text,
+    anatomic_site text,
+    tumor_vs_normal text,
+    data_at_cds boolean NOT NULL,
+    data_at_gdc boolean NOT NULL,
+    data_at_icdc boolean NOT NULL,
+    data_at_idc boolean NOT NULL,
+    data_at_pdc boolean NOT NULL,
+    data_source_count integer NOT NULL
+);
+
+
+--
+-- TOC entry 221 (class 1259 OID 16613)
+-- Name: specimen_from_specimen; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.specimen_from_specimen (
+    source_specimen_alias bigint NOT NULL,
+    derived_specimen_alias bigint NOT NULL
+);
+
+
+--
+-- TOC entry 222 (class 1259 OID 16626)
+-- Name: specimen_from_subject; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.specimen_from_subject (
+    specimen_alias bigint NOT NULL,
+    subject_alias bigint NOT NULL
+);
+
+
+--
+-- TOC entry 229 (class 1259 OID 16713)
+-- Name: specimen_in_project; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.specimen_in_project (
+    specimen_alias bigint NOT NULL,
+    project_alias bigint NOT NULL
+);
+
+
+--
+-- TOC entry 212 (class 1259 OID 16534)
+-- Name: subject; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.subject (
+    id text NOT NULL,
+    integer_id_alias bigint NOT NULL,
+    crdc_id text,
+    species text,
+    year_of_birth integer,
+    year_of_death integer,
+    cause_of_death text,
+    race text,
+    ethnicity text,
+    data_at_cds boolean NOT NULL,
+    data_at_gdc boolean NOT NULL,
+    data_at_icdc boolean NOT NULL,
+    data_at_idc boolean NOT NULL,
+    data_at_pdc boolean NOT NULL,
+    data_source_count integer NOT NULL
+);
+
+
+--
+-- TOC entry 223 (class 1259 OID 16634)
+-- Name: subject_has_somatic_mutation; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.subject_has_somatic_mutation (
+    subject_alias bigint NOT NULL,
+    somatic_mutation_alias bigint NOT NULL
+);
+
+
+--
+-- TOC entry 230 (class 1259 OID 16726)
+-- Name: subject_in_project; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.subject_in_project (
+    subject_alias bigint NOT NULL,
+    project_alias bigint NOT NULL
+);
+
+
+--
+-- TOC entry 215 (class 1259 OID 16555)
+-- Name: treatment; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.treatment (
+    id text NOT NULL,
+    integer_id_alias bigint NOT NULL,
+    anatomic_site text,
+    type text,
+    therapeutic_agent text,
+    data_at_cds boolean NOT NULL,
+    data_at_gdc boolean NOT NULL,
+    data_at_icdc boolean NOT NULL,
+    data_at_idc boolean NOT NULL,
+    data_at_pdc boolean NOT NULL,
+    data_source_count integer NOT NULL
+);
+
+
+--
+-- TOC entry 231 (class 1259 OID 16739)
+-- Name: treatment_in_project; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.treatment_in_project (
+    treatment_alias bigint NOT NULL,
+    project_alias bigint NOT NULL
+);
+
+
+--
+-- TOC entry 224 (class 1259 OID 16647)
+-- Name: treatment_of_subject; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.treatment_of_subject (
+    treatment_alias bigint NOT NULL,
+    subject_alias bigint NOT NULL
+);
+
+
+--
+-- TOC entry 217 (class 1259 OID 16569)
+-- Name: upstream_identifiers; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.upstream_identifiers (
+    cda_table text NOT NULL,
+    integer_id_alias bigint NOT NULL,
+    data_source text NOT NULL,
+    data_source_id_field_name text NOT NULL,
+    data_source_id_value text NOT NULL
+);
+
+
+--
+-- TOC entry 3871 (class 2606 OID 16533)
+-- Name: file file_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file
+    ADD CONSTRAINT file_pkey PRIMARY KEY (integer_id_alias);
+
+
+--
+-- TOC entry 3877 (class 2606 OID 16554)
+-- Name: observation observation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.observation
+    ADD CONSTRAINT observation_pkey PRIMARY KEY (integer_id_alias);
+
+
+--
+-- TOC entry 3869 (class 2606 OID 16524)
+-- Name: project project_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.project
+    ADD CONSTRAINT project_pkey PRIMARY KEY (integer_id_alias);
+
+
+--
+-- TOC entry 3867 (class 2606 OID 16517)
+-- Name: release_metadata release_metadata_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.release_metadata
+    ADD CONSTRAINT release_metadata_pkey PRIMARY KEY (cda_table, cda_column, data_source, data_source_version);
+
+
+--
+-- TOC entry 3881 (class 2606 OID 16568)
+-- Name: somatic_mutation somatic_mutation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.somatic_mutation
+    ADD CONSTRAINT somatic_mutation_pkey PRIMARY KEY (integer_id_alias);
+
+
+--
+-- TOC entry 3875 (class 2606 OID 16547)
+-- Name: specimen specimen_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.specimen
+    ADD CONSTRAINT specimen_pkey PRIMARY KEY (integer_id_alias);
+
+
+--
+-- TOC entry 3873 (class 2606 OID 16540)
+-- Name: subject subject_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subject
+    ADD CONSTRAINT subject_pkey PRIMARY KEY (integer_id_alias);
+
+
+--
+-- TOC entry 3879 (class 2606 OID 16561)
+-- Name: treatment treatment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.treatment
+    ADD CONSTRAINT treatment_pkey PRIMARY KEY (integer_id_alias);
+
+
+--
+-- TOC entry 3882 (class 2606 OID 16577)
+-- Name: file_describes_specimen file_describes_specimen_file_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file_describes_specimen
+    ADD CONSTRAINT file_describes_specimen_file_alias_fkey FOREIGN KEY (file_alias) REFERENCES public.file(integer_id_alias);
+
+
+--
+-- TOC entry 3883 (class 2606 OID 16582)
+-- Name: file_describes_specimen file_describes_specimen_specimen_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file_describes_specimen
+    ADD CONSTRAINT file_describes_specimen_specimen_alias_fkey FOREIGN KEY (specimen_alias) REFERENCES public.specimen(integer_id_alias);
+
+
+--
+-- TOC entry 3884 (class 2606 OID 16590)
+-- Name: file_describes_subject file_describes_subject_file_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file_describes_subject
+    ADD CONSTRAINT file_describes_subject_file_alias_fkey FOREIGN KEY (file_alias) REFERENCES public.file(integer_id_alias);
+
+
+--
+-- TOC entry 3885 (class 2606 OID 16595)
+-- Name: file_describes_subject file_describes_subject_subject_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file_describes_subject
+    ADD CONSTRAINT file_describes_subject_subject_alias_fkey FOREIGN KEY (subject_alias) REFERENCES public.subject(integer_id_alias);
+
+
+--
+-- TOC entry 3895 (class 2606 OID 16663)
+-- Name: file_in_project file_in_project_file_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file_in_project
+    ADD CONSTRAINT file_in_project_file_alias_fkey FOREIGN KEY (file_alias) REFERENCES public.file(integer_id_alias);
+
+
+--
+-- TOC entry 3896 (class 2606 OID 16668)
+-- Name: file_in_project file_in_project_project_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file_in_project
+    ADD CONSTRAINT file_in_project_project_alias_fkey FOREIGN KEY (project_alias) REFERENCES public.project(integer_id_alias);
+
+
+--
+-- TOC entry 3897 (class 2606 OID 16676)
+-- Name: observation_in_project observation_in_project_observation_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.observation_in_project
+    ADD CONSTRAINT observation_in_project_observation_alias_fkey FOREIGN KEY (observation_alias) REFERENCES public.observation(integer_id_alias);
+
+
+--
+-- TOC entry 3898 (class 2606 OID 16681)
+-- Name: observation_in_project observation_in_project_project_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.observation_in_project
+    ADD CONSTRAINT observation_in_project_project_alias_fkey FOREIGN KEY (project_alias) REFERENCES public.project(integer_id_alias);
+
+
+--
+-- TOC entry 3886 (class 2606 OID 16603)
+-- Name: observation_of_subject observation_of_subject_observation_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.observation_of_subject
+    ADD CONSTRAINT observation_of_subject_observation_alias_fkey FOREIGN KEY (observation_alias) REFERENCES public.observation(integer_id_alias);
+
+
+--
+-- TOC entry 3887 (class 2606 OID 16608)
+-- Name: observation_of_subject observation_of_subject_subject_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.observation_of_subject
+    ADD CONSTRAINT observation_of_subject_subject_alias_fkey FOREIGN KEY (subject_alias) REFERENCES public.subject(integer_id_alias);
+
+
+--
+-- TOC entry 3899 (class 2606 OID 16695)
+-- Name: project_in_project project_in_project_child_project_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.project_in_project
+    ADD CONSTRAINT project_in_project_child_project_alias_fkey FOREIGN KEY (child_project_alias) REFERENCES public.project(integer_id_alias);
+
+
+--
+-- TOC entry 3900 (class 2606 OID 16690)
+-- Name: project_in_project project_in_project_parent_project_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.project_in_project
+    ADD CONSTRAINT project_in_project_parent_project_alias_fkey FOREIGN KEY (parent_project_alias) REFERENCES public.project(integer_id_alias);
+
+
+--
+-- TOC entry 3901 (class 2606 OID 16708)
+-- Name: somatic_mutation_in_project somatic_mutation_in_project_project_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.somatic_mutation_in_project
+    ADD CONSTRAINT somatic_mutation_in_project_project_alias_fkey FOREIGN KEY (project_alias) REFERENCES public.project(integer_id_alias);
+
+
+--
+-- TOC entry 3902 (class 2606 OID 16703)
+-- Name: somatic_mutation_in_project somatic_mutation_in_project_somatic_mutation_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.somatic_mutation_in_project
+    ADD CONSTRAINT somatic_mutation_in_project_somatic_mutation_alias_fkey FOREIGN KEY (somatic_mutation_alias) REFERENCES public.somatic_mutation(integer_id_alias);
+
+
+--
+-- TOC entry 3888 (class 2606 OID 16621)
+-- Name: specimen_from_specimen specimen_from_specimen_derived_specimen_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.specimen_from_specimen
+    ADD CONSTRAINT specimen_from_specimen_derived_specimen_alias_fkey FOREIGN KEY (derived_specimen_alias) REFERENCES public.specimen(integer_id_alias);
+
+
+--
+-- TOC entry 3889 (class 2606 OID 16616)
+-- Name: specimen_from_specimen specimen_from_specimen_source_specimen_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.specimen_from_specimen
+    ADD CONSTRAINT specimen_from_specimen_source_specimen_alias_fkey FOREIGN KEY (source_specimen_alias) REFERENCES public.specimen(integer_id_alias);
+
+
+--
+-- TOC entry 3890 (class 2606 OID 16629)
+-- Name: specimen_from_subject specimen_from_subject_specimen_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.specimen_from_subject
+    ADD CONSTRAINT specimen_from_subject_specimen_alias_fkey FOREIGN KEY (specimen_alias) REFERENCES public.specimen(integer_id_alias);
+
+
+--
+-- TOC entry 3903 (class 2606 OID 16721)
+-- Name: specimen_in_project specimen_in_project_project_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.specimen_in_project
+    ADD CONSTRAINT specimen_in_project_project_alias_fkey FOREIGN KEY (project_alias) REFERENCES public.project(integer_id_alias);
+
+
+--
+-- TOC entry 3904 (class 2606 OID 16716)
+-- Name: specimen_in_project specimen_in_project_specimen_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.specimen_in_project
+    ADD CONSTRAINT specimen_in_project_specimen_alias_fkey FOREIGN KEY (specimen_alias) REFERENCES public.specimen(integer_id_alias);
+
+
+--
+-- TOC entry 3891 (class 2606 OID 16642)
+-- Name: subject_has_somatic_mutation subject_has_somatic_mutation_somatic_mutation_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subject_has_somatic_mutation
+    ADD CONSTRAINT subject_has_somatic_mutation_somatic_mutation_alias_fkey FOREIGN KEY (somatic_mutation_alias) REFERENCES public.somatic_mutation(integer_id_alias);
+
+
+--
+-- TOC entry 3892 (class 2606 OID 16637)
+-- Name: subject_has_somatic_mutation subject_has_somatic_mutation_subject_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subject_has_somatic_mutation
+    ADD CONSTRAINT subject_has_somatic_mutation_subject_alias_fkey FOREIGN KEY (subject_alias) REFERENCES public.subject(integer_id_alias);
+
+
+--
+-- TOC entry 3905 (class 2606 OID 16734)
+-- Name: subject_in_project subject_in_project_project_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subject_in_project
+    ADD CONSTRAINT subject_in_project_project_alias_fkey FOREIGN KEY (project_alias) REFERENCES public.project(integer_id_alias);
+
+
+--
+-- TOC entry 3906 (class 2606 OID 16729)
+-- Name: subject_in_project subject_in_project_subject_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subject_in_project
+    ADD CONSTRAINT subject_in_project_subject_alias_fkey FOREIGN KEY (subject_alias) REFERENCES public.subject(integer_id_alias);
+
+
+--
+-- TOC entry 3907 (class 2606 OID 16747)
+-- Name: treatment_in_project treatment_in_project_project_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.treatment_in_project
+    ADD CONSTRAINT treatment_in_project_project_alias_fkey FOREIGN KEY (project_alias) REFERENCES public.project(integer_id_alias);
+
+
+--
+-- TOC entry 3908 (class 2606 OID 16742)
+-- Name: treatment_in_project treatment_in_project_treatment_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.treatment_in_project
+    ADD CONSTRAINT treatment_in_project_treatment_alias_fkey FOREIGN KEY (treatment_alias) REFERENCES public.treatment(integer_id_alias);
+
+
+--
+-- TOC entry 3893 (class 2606 OID 16655)
+-- Name: treatment_of_subject treatment_of_subject_subject_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.treatment_of_subject
+    ADD CONSTRAINT treatment_of_subject_subject_alias_fkey FOREIGN KEY (subject_alias) REFERENCES public.subject(integer_id_alias);
+
+
+--
+-- TOC entry 3894 (class 2606 OID 16650)
+-- Name: treatment_of_subject treatment_of_subject_treatment_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.treatment_of_subject
+    ADD CONSTRAINT treatment_of_subject_treatment_alias_fkey FOREIGN KEY (treatment_alias) REFERENCES public.treatment(integer_id_alias);
+
+
+-- Completed on 2024-04-23 15:06:10 EDT
+
+--
+-- PostgreSQL database dump complete
+--
+

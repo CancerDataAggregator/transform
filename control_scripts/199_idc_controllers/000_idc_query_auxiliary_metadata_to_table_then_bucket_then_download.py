@@ -1,14 +1,18 @@
 #!/usr/bin/env python3 -u
 
+import sys
+
 from cda_etl.extract.idc.idc_extractor import IDC_extractor
 
 from os import path, makedirs, system
 
-bq_project_name = 'YOUR_PROJECT_NAME'
+version_string = sys.argv[1]
 
-intermediate_bucket = 'YOUR_BUCKET_NAME'
+bq_project_name = 'broad-cda-dev'
 
-target_table_path = 'YOUR_TABLE_PATH'
+intermediate_bucket = 'gdc-bq-sample-bucket'
+
+target_table_path = 'github_testing.idc_patient_testing'
 
 if not path.isfile( 'GCS-service-account-key.etl-github-testing.json' ):
     
@@ -17,7 +21,7 @@ if not path.isfile( 'GCS-service-account-key.etl-github-testing.json' ):
 idc = IDC_extractor(
     
     gsa_key = 'GCS-service-account-key.etl-github-testing.json',
-    source_version = 'v17',
+    source_version = version_string,
     source_table = 'auxiliary_metadata',
     dest_table = f'{bq_project_name}.{target_table_path}',
     dest_bucket = intermediate_bucket,

@@ -24,4 +24,12 @@ echo ./package_root/auxiliary_scripts/104_enumerate_gdc_program_project_hierarch
 echo ./package_root/auxiliary_scripts/105_rewire_and_fix_GDC_subsample_provenance.py
 ./package_root/auxiliary_scripts/105_rewire_and_fix_GDC_subsample_provenance.py
 
+# Scrape and document a complete set of unique values and counts for all enumerable
+# extracted GDC columns. ("Enumerable" generally includes everything except ID fields
+# and numeric fields; exceptions include year values, some discrete clinical
+# numeric values with small value sets like "alcohol_days_per_week", and GDC
+# files' "ACL IDs", which are dbGaP accessions.)
+
+echo ./package_root/auxiliary_scripts/106_tabulate_enumerable_values_by_table_and_column.all_extracted_GDC_data.py
+./package_root/auxiliary_scripts/106_tabulate_enumerable_values_by_table_and_column.all_extracted_GDC_data.py
 

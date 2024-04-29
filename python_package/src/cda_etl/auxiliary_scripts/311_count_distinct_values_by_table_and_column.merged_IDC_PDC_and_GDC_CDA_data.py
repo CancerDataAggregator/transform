@@ -120,7 +120,7 @@ with open( stats_file, 'w' ) as STATS_FILE:
                                 
                                 column_distinct_values[column_names[i]].add(values[i])
 
-                                if re.search( r'^-?\d+(\.\d+)?$', values[i] ) is None:
+                                if re.search( r'^-?\d+(\.\d+)?([eE]-?\d+)?$', values[i] ) is None:
                                     
                                     column_all_numbers[column_names[i]] = False
 
