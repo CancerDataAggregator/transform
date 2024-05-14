@@ -31,6 +31,7 @@ scalar_study_experimental_design_fields = (
     'experiment_type',
     'plex_dataset_name',
     'acquisition_type',
+    'polarity',
     'number_of_fractions',
     'analyte',
     'label_free_asi',
@@ -197,7 +198,9 @@ for study_experimental_design in result['data']['studyExperimentalDesign']:
         
         if study_experimental_design[field_name] is not None:
             
-            study_experimental_design_row.append(study_experimental_design[field_name])
+            # There are newlines, carriage returns, quotes and nonprintables in some PDC text fields, hence the json.dumps() wrap here.
+
+            study_experimental_design_row.append(json.dumps(study_experimental_design[field_name]).strip('"'))
 
         else:
             

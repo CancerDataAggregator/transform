@@ -30,7 +30,12 @@ scalar_clinical_metadata_fields = (
     'primary_diagnosis',
     'tumor_grade',
     'tumor_stage',
-    'tumor_largest_dimension_diameter'
+    'tumor_largest_dimension_diameter',
+    'age_at_diagnosis',
+    'classification_of_tumor',
+    'site_of_resection_or_biopsy',
+    'tissue_or_organ_of_origin',
+    'days_to_recurrence'
 )
 
 pdc_study_ids = get_unique_values_from_tsv_column( f"{output_root}/Study/Study.tsv", 'pdc_study_id' )

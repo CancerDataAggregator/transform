@@ -28,6 +28,7 @@ scalar_file_fields = (
     'file_id',
     'file_name',
     'file_type',
+    'file_format',
     'data_category',
     'file_size',
     'md5sum',

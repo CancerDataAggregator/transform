@@ -20,7 +20,7 @@ biospecimen_out_dir = f"{output_root}/Biospecimen"
 
 biospecimen_tsv = f"{biospecimen_out_dir}/Biospecimen.tsv"
 biospecimen_study_tsv = f"{biospecimen_out_dir}/Biospecimen.Study.tsv"
-biospecimen_externalReferences_tsv = f"{biospecimen_out_dir}/Biospecimen.externalReferences.tsv"
+biospecimen_external_references_tsv = f"{biospecimen_out_dir}/Biospecimen.external_references.tsv"
 
 # We pull these from multiple sources and don't want to clobber a single
 # master list over multiple pulls, so we store these in the Biospecimen directory
@@ -102,7 +102,7 @@ output_tsv_keywords = [
 output_tsv_filenames = [
     biospecimen_tsv,
     biospecimen_study_tsv,
-    biospecimen_externalReferences_tsv,
+    biospecimen_external_references_tsv,
     entity_reference_tsv
 ]
 

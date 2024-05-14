@@ -31,6 +31,7 @@ class CDS_aggregator:
 
             'pdc_project_affiliations' : path.join( self.project_crossref_dir, 'PDC_entity_submitter_id_to_program_project_and_study.tsv' ),
             'cds_to_pdc_project_map' : path.join( self.project_crossref_dir, 'naive_CDS-PDC_project_id_map.hand_edited_to_remove_false_positives.tsv' ),
+            'pdc_merged_subject_ids' : path.join( self.merge_log_dir, 'PDC_initial_default_subject_IDs_aggregated_across_projects.tsv' ),
 
             'subject_identifier' : path.join( self.cds_cda_dir, 'subject_identifier.tsv' ),
             'subject_associated_project' : path.join( self.cds_cda_dir, 'subject_associated_project.tsv' )
@@ -164,6 +165,20 @@ class CDS_aggregator:
 
     def __match_cds_subject_ids_with_pdc_subject_ids ( self ):
         
+        # Track which PDC subject IDs got updated due to internal PDC merges.
+
+        merged_pdc_subject_id = dict()
+
+        with open( self.input_files['pdc_merged_subject_ids'] ) as IN:
+            
+            column_names = next( IN ).rstrip( '\n' ).split( '\t' )
+
+            for line in [ next_line.rstrip( '\n' ) for next_line in IN ]:
+                
+                record = dict( zip( column_names, line.split( '\t' ) ) )
+
+                merged_pdc_subject_id[record['default_id']] = record['merged_id']
+
         cds_subject_id_to_study_id = dict()
 
         with open( self.input_files['subject_associated_project'] ) as IN:
@@ -250,7 +265,15 @@ class CDS_aggregator:
                                     
                                     # PDC CDA subject ID: project_submitter_id.case_submitter_id
 
-                                    cds_subject_id_to_pdc_subject_id[subject_id] = record['project_submitter_id'] + '.' + submitter_id
+                                    pdc_subject_id = record['project_submitter_id'] + '.' + submitter_id
+
+                                    # If we overrode the default by an internal merge within PDC, swap in the merged ID instead of the default.
+
+                                    if pdc_subject_id in merged_pdc_subject_id:
+                                        
+                                        pdc_subject_id = merged_pdc_subject_id[pdc_subject_id]
+
+                                    cds_subject_id_to_pdc_subject_id[subject_id] = pdc_subject_id
 
         with open( self.aux_files['cds_subject_id_to_pdc_subject_id'], 'w' ) as OUT:
             

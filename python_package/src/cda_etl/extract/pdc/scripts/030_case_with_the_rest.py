@@ -24,7 +24,7 @@ case_tsv = f"{case_out_dir}/Case.tsv"
 case_demographics_tsv = f"{case_out_dir}/Case.demographics.tsv"
 case_diagnoses_tsv = f"{case_out_dir}/Case.diagnoses.tsv"
 case_exposures_tsv = f"{case_out_dir}/Case.exposures.tsv"
-case_externalReferences_tsv = f"{case_out_dir}/Case.externalReferences.tsv"
+case_external_references_tsv = f"{case_out_dir}/Case.external_references.tsv"
 case_family_histories_tsv = f"{case_out_dir}/Case.family_histories.tsv"
 case_follow_ups_tsv = f"{case_out_dir}/Case.follow_ups.tsv"
 case_samples_tsv = f"{case_out_dir}/Case.samples.tsv"
@@ -637,7 +637,7 @@ output_tsv_filenames = [
 #    case_demographics_tsv,
 #    case_diagnoses_tsv,
     case_exposures_tsv,
-    case_externalReferences_tsv,
+    case_external_references_tsv,
     case_family_histories_tsv,
     case_follow_ups_tsv,
 #    case_samples_tsv,

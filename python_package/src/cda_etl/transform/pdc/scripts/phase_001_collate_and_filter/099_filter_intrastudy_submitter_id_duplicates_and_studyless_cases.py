@@ -34,8 +34,12 @@ class PDC_data_cleaner:
             'Case': 'case_id',
             'Demographic': 'demographic_id',
             'Diagnosis': 'diagnosis_id',
+            'Exposure': 'exposure_id',
+            'FamilyHistory': 'family_history_id',
             'File': 'file_id',
-            'Sample': 'sample_id'
+            'FollowUp': 'follow_up_id',
+            'Sample': 'sample_id',
+            'Treatment': 'treatment_id'
         }
 
         # Name of submitter_id field for each top-level entity type.
@@ -46,7 +50,11 @@ class PDC_data_cleaner:
             'Case': 'case_submitter_id',
             'Demographic': 'demographic_submitter_id',
             'Diagnosis': 'diagnosis_submitter_id',
-            'Sample': 'sample_submitter_id'
+            'Exposure': 'exposure_submitter_id',
+            'FamilyHistory': 'family_history_submitter_id',
+            'FollowUp': 'follow_up_submitter_id',
+            'Sample': 'sample_submitter_id',
+            'Treatment': 'treatment_submitter_id'
         }
 
         # Association map between each entity type and the entity type capable of orphaning it.
@@ -57,8 +65,12 @@ class PDC_data_cleaner:
             'Case': path.join( self.processing_root, 'Case', 'Case.demographic_id.tsv' ),
             'Demographic': path.join( self.processing_root, 'Case', 'Case.demographic_id.tsv' ),
             'Diagnosis': path.join( self.processing_root, 'Case', 'Case.diagnosis_id.tsv' ),
+            'Exposure': path.join( self.processing_root, 'Case', 'Case.exposure_id.tsv' ),
+            'FamilyHistory': path.join( self.processing_root, 'Case', 'Case.family_history_id.tsv' ),
             'File': path.join( self.processing_root, 'File', 'File.case_id.tsv' ),
-            'Sample': path.join( self.processing_root, 'Sample', 'Sample.case_id.tsv' )
+            'FollowUp': path.join( self.processing_root, 'Case', 'Case.follow_up_id.tsv' ),
+            'Sample': path.join( self.processing_root, 'Sample', 'Sample.case_id.tsv' ),
+            'Treatment': path.join( self.processing_root, 'Case', 'Case.treatment_id.tsv' )
         }
 
         # Relationships between each entity type and other dependent entity types (types the main type can orphan if removed).
@@ -66,11 +78,15 @@ class PDC_data_cleaner:
         self.dependent_types = {
             
             'Aliquot': [],
-            'Case': [ 'Demographic', 'Diagnosis', 'File', 'Sample' ],
+            'Case': [ 'Demographic', 'Diagnosis', 'Exposure', 'FamilyHistory', 'File', 'FollowUp', 'Sample', 'Treatment' ],
             'Demographic': [ 'Case' ],
             'Diagnosis': [],
+            'Exposure': [],
+            'FamilyHistory': [],
             'File': [],
-            'Sample': [ 'Aliquot' ]
+            'FollowUp': [],
+            'Sample': [ 'Aliquot' ],
+            'Treatment': []
         }
 
         # Lists of dependent entities to recursively remove following the top-level
@@ -82,7 +98,11 @@ class PDC_data_cleaner:
             'Case': dict(),
             'Demographic': dict(),
             'Diagnosis': dict(),
-            'Sample': dict()
+            'Exposure': dict(),
+            'FamilyHistory': dict(),
+            'FollowUp': dict(),
+            'Sample': dict(),
+            'Treatment': dict()
         }
 
         # Association maps between each entity type and all other non-dependent entity types (types the main type cannot orphan if removed).
@@ -122,11 +142,29 @@ class PDC_data_cleaner:
                 path.join( self.processing_root, 'Diagnosis', 'Diagnosis.study_id.tsv' ),
                 path.join( self.processing_root, 'Sample', 'Sample.diagnosis_id.tsv' )
             ],
+            'Exposure': [
+                
+                path.join( self.processing_root, 'Case', 'Case.exposure_id.tsv' ),
+                path.join( self.processing_root, 'Exposure', 'Exposure.project_id.tsv' ),
+                path.join( self.processing_root, 'Exposure', 'Exposure.study_id.tsv' )
+            ],
+            'FamilyHistory': [
+                
+                path.join( self.processing_root, 'Case', 'Case.family_history_id.tsv' ),
+                path.join( self.processing_root, 'FamilyHistory', 'FamilyHistory.project_id.tsv' ),
+                path.join( self.processing_root, 'FamilyHistory', 'FamilyHistory.study_id.tsv' )
+            ],
             'File': [
                 
                 path.join( self.processing_root, 'File', 'File.aliquot_id.tsv' ),
                 path.join( self.processing_root, 'File', 'File.instrument.tsv' ),
                 path.join( self.processing_root, 'File', 'File.study_id.tsv' )
+            ],
+            'FollowUp': [
+                
+                path.join( self.processing_root, 'Case', 'Case.follow_up_id.tsv' ),
+                path.join( self.processing_root, 'FollowUp', 'FollowUp.project_id.tsv' ),
+                path.join( self.processing_root, 'FollowUp', 'FollowUp.study_id.tsv' )
             ],
             'Sample': [
                 
@@ -135,6 +173,12 @@ class PDC_data_cleaner:
                 path.join( self.processing_root, 'Sample', 'Sample.diagnosis_id.tsv' ),
                 path.join( self.processing_root, 'Sample', 'Sample.project_id.tsv' ),
                 path.join( self.processing_root, 'Sample', 'Sample.study_id.tsv' )
+            ],
+            'Treatment': [
+                
+                path.join( self.processing_root, 'Case', 'Case.treatment_id.tsv' ),
+                path.join( self.processing_root, 'Treatment', 'Treatment.project_id.tsv' ),
+                path.join( self.processing_root, 'Treatment', 'Treatment.study_id.tsv' )
             ]
         }
 
@@ -680,12 +724,12 @@ def main():
     # This is okay for diagnosis records, but if the same problem crops up for Cases
     # or (eventually) Samples, we're going to have a new integration problem to solve.
 
-    # for entity_type in [ 'Diagnosis', 'Aliquot', 'Sample', 'Demographic', 'Case' ]:
-    for   entity_type in [              'Aliquot', 'Sample', 'Demographic', 'Case' ]:
+    # for entity_type in [ 'FamilyHistory', 'FollowUp', 'Treatment', 'Exposure', 'Diagnosis', 'Aliquot', 'Sample', 'Demographic', 'Case' ]:
+    for   entity_type in [ 'FamilyHistory', 'FollowUp', 'Treatment', 'Exposure',              'Aliquot', 'Sample', 'Demographic', 'Case' ]:
         
         cleaner.remove_study_and_submitter_id_pair_duplicates( entity_type )
 
-    for entity_type in [ 'Diagnosis', 'Aliquot', 'Sample', 'Demographic', 'Case' ]:
+    for entity_type in [ 'FamilyHistory', 'FollowUp', 'Treatment', 'Exposure', 'Diagnosis', 'Aliquot', 'Sample', 'Demographic', 'Case' ]:
         
         cleaner.remove_orphans( entity_type )
 

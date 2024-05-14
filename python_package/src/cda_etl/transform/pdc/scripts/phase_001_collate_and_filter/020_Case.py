@@ -19,6 +19,14 @@ case_id_to_demographic_id_input_tsv = path.join( input_dir, 'Case.demographics.t
 
 case_id_to_diagnosis_id_input_tsv = path.join( input_dir, 'Case.diagnoses.tsv' )
 
+case_id_to_exposure_id_input_tsv = path.join( input_dir, 'Case.exposures.tsv' )
+
+case_id_to_family_history_id_input_tsv = path.join( input_dir, 'Case.family_histories.tsv' )
+
+case_id_to_follow_up_id_input_tsv = path.join( input_dir, 'Case.follow_ups.tsv' )
+
+case_id_to_treatment_id_input_tsv = path.join( input_dir, 'Case.treatments.tsv' )
+
 case_id_to_sample_id_input_tsv = path.join( input_dir, 'Case.samples.tsv' )
 
 biospecimen_input_tsv = path.join( input_root, 'Biospecimen', 'Biospecimen.tsv' )
@@ -39,6 +47,14 @@ case_id_to_demographic_id_output_tsv = path.join( output_dir, 'Case.demographic_
 
 case_id_to_diagnosis_id_output_tsv = path.join( output_dir, 'Case.diagnosis_id.tsv' )
 
+case_id_to_exposure_id_output_tsv = path.join( output_dir, 'Case.exposure_id.tsv' )
+
+case_id_to_family_history_id_output_tsv = path.join( output_dir, 'Case.family_history_id.tsv' )
+
+case_id_to_follow_up_id_output_tsv = path.join( output_dir, 'Case.follow_up_id.tsv' )
+
+case_id_to_treatment_id_output_tsv = path.join( output_dir, 'Case.treatment_id.tsv' )
+
 case_id_to_project_id_output_tsv = path.join( output_dir, 'Case.project_id.tsv' )
 
 case_id_to_sample_id_output_tsv = path.join( output_dir, 'Case.sample_id.tsv' )
@@ -49,9 +65,21 @@ demographic_id_to_project_id_output_tsv = path.join( output_root, 'Demographic',
 
 diagnosis_id_to_project_id_output_tsv = path.join( output_root, 'Diagnosis', 'Diagnosis.project_id.tsv' )
 
+exposure_id_to_project_id_output_tsv = path.join( output_root, 'Exposure', 'Exposure.project_id.tsv' )
+
+family_history_id_to_project_id_output_tsv = path.join( output_root, 'FamilyHistory', 'FamilyHistory.project_id.tsv' )
+
+follow_up_id_to_project_id_output_tsv = path.join( output_root, 'FollowUp', 'FollowUp.project_id.tsv' )
+
+treatment_id_to_project_id_output_tsv = path.join( output_root, 'Treatment', 'Treatment.project_id.tsv' )
+
 input_files_to_output_files = {
     case_id_to_demographic_id_input_tsv: case_id_to_demographic_id_output_tsv,
     case_id_to_diagnosis_id_input_tsv: case_id_to_diagnosis_id_output_tsv,
+    case_id_to_exposure_id_input_tsv: case_id_to_exposure_id_output_tsv,
+    case_id_to_family_history_id_input_tsv: case_id_to_family_history_id_output_tsv,
+    case_id_to_follow_up_id_input_tsv: case_id_to_follow_up_id_output_tsv,
+    case_id_to_treatment_id_input_tsv: case_id_to_treatment_id_output_tsv,
     case_id_to_sample_id_input_tsv: case_id_to_sample_id_output_tsv
 }
 
@@ -286,5 +314,70 @@ with open( diagnosis_id_to_project_id_output_tsv, 'w' ) as OUT:
         project_id = case_id_to_project_id[case_id]
 
         print( *[ diagnosis_id, project_id ], sep='\t', end='\n', file=OUT )
+
+# Write the map between exposure_id and project_id.
+
+exposure_id_to_case_id = map_columns_one_to_one( case_id_to_exposure_id_output_tsv, 'exposure_id', 'case_id' )
+
+with open( exposure_id_to_project_id_output_tsv, 'w' ) as OUT:
+    
+    print( *[ 'exposure_id', 'project_id' ], sep='\t', end='\n', file=OUT )
+
+    for exposure_id in sorted( exposure_id_to_case_id ):
+        
+        case_id = exposure_id_to_case_id[exposure_id]
+
+        project_id = case_id_to_project_id[case_id]
+
+        print( *[ exposure_id, project_id ], sep='\t', end='\n', file=OUT )
+
+# Write the map between family_history_id and project_id.
+
+family_history_id_to_case_id = map_columns_one_to_one( case_id_to_family_history_id_output_tsv, 'family_history_id', 'case_id' )
+
+with open( family_history_id_to_project_id_output_tsv, 'w' ) as OUT:
+    
+    print( *[ 'family_history_id', 'project_id' ], sep='\t', end='\n', file=OUT )
+
+    for family_history_id in sorted( family_history_id_to_case_id ):
+        
+        case_id = family_history_id_to_case_id[family_history_id]
+
+        project_id = case_id_to_project_id[case_id]
+
+        print( *[ family_history_id, project_id ], sep='\t', end='\n', file=OUT )
+
+# Write the map between follow_up_id and project_id.
+
+follow_up_id_to_case_id = map_columns_one_to_one( case_id_to_follow_up_id_output_tsv, 'follow_up_id', 'case_id' )
+
+with open( follow_up_id_to_project_id_output_tsv, 'w' ) as OUT:
+    
+    print( *[ 'follow_up_id', 'project_id' ], sep='\t', end='\n', file=OUT )
+
+    for follow_up_id in sorted( follow_up_id_to_case_id ):
+        
+        case_id = follow_up_id_to_case_id[follow_up_id]
+
+        project_id = case_id_to_project_id[case_id]
+
+        print( *[ follow_up_id, project_id ], sep='\t', end='\n', file=OUT )
+
+# Write the map between treatment_id and project_id.
+
+treatment_id_to_case_id = map_columns_one_to_one( case_id_to_treatment_id_output_tsv, 'treatment_id', 'case_id' )
+
+with open( treatment_id_to_project_id_output_tsv, 'w' ) as OUT:
+    
+    print( *[ 'treatment_id', 'project_id' ], sep='\t', end='\n', file=OUT )
+
+    for treatment_id in sorted( treatment_id_to_case_id ):
+        
+        case_id = treatment_id_to_case_id[treatment_id]
+
+        project_id = case_id_to_project_id[case_id]
+
+        print( *[ treatment_id, project_id ], sep='\t', end='\n', file=OUT )
+
 
 

@@ -138,7 +138,9 @@ while not returned_nothing:
                 
                 if uifile[field_name] is not None:
                     
-                    uifile_row.append(uifile[field_name])
+                    # There are newlines, carriage returns, quotes and nonprintables in some PDC text fields, hence the json.dumps() wrap here.
+
+                    uifile_row.append(json.dumps(uifile[field_name]).strip('"'))
 
                 else:
                     

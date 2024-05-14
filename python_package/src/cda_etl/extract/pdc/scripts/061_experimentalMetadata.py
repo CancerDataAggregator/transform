@@ -109,7 +109,9 @@ scalar_file_fields = (
     'pdc_study_id'
 )
 
-pdc_study_ids = get_unique_values_from_tsv_column( f"{output_root}/Study/Study.tsv", 'pdc_study_id' )
+# May 2024: This is the only way to query experimentalMetadata() that doesn't lead to immediately pathological errors. The other two advertised filters (pdc_study_id and study_id) do not work.
+
+study_submitter_ids = get_unique_values_from_tsv_column( f"{output_root}/Study/Study.tsv", 'study_submitter_id' )
 
 # EXECUTION
 
@@ -182,11 +184,18 @@ with open(experimentalMetadata_json_output_file, 'w') as JSON:
     print( *('aliquot_run_metadata_id', 'protocol_id'), sep='\t', end='\n', file=output_tsvs['ARM_PROTOCOL'] )
     print( *('aliquot_run_metadata_id', 'study_id'), sep='\t', end='\n', file=output_tsvs['ARM_STUDY'] )
 
-    for pdc_study_id in pdc_study_ids:
+    # Multiple references to the same AliquotRunMetadata object can appear
+    # across multiple Studies. Document the main metadata for each only once.
+
+    seen_ARM_IDs = set()
+
+    # May 2024: This is the only way to query experimentalMetadata() that doesn't lead to immediately pathological errors. The other two advertised filters (pdc_study_id and study_id) do not work.
+
+    for study_submitter_id in study_submitter_ids:
         
         api_query_json = {
             'query': '''            {
-                experimentalMetadata( ''' + f'pdc_study_id: "{pdc_study_id}", acceptDUA: true' + ''' ) {
+                experimentalMetadata( ''' + f'study_submitter_id: "{study_submitter_id}", acceptDUA: true' + ''' ) {
                     ''' + '\n                    '.join(scalar_experimental_metadata_fields) + '''
                     study_run_metadata {
                         ''' + '\n                        '.join(scalar_study_run_metadata_fields) + '''
@@ -240,7 +249,7 @@ with open(experimentalMetadata_json_output_file, 'w') as JSON:
 
         # Save a version of the returned data as JSON (caching the PDC Study ID ahead of each block).
 
-        print( pdc_study_id, file=JSON ) 
+        print( study_submitter_id, file=JSON ) 
 
         print( json.dumps(result, indent=4, sort_keys=False), file=JSON )
 
@@ -254,7 +263,9 @@ with open(experimentalMetadata_json_output_file, 'w') as JSON:
                 
                 if experimental_metadata[field_name] is not None:
                     
-                    experimental_metadata_row.append(experimental_metadata[field_name])
+                    # There are newlines, carriage returns, quotes and nonprintables in some PDC text fields, hence the json.dumps() wrap here.
+
+                    experimental_metadata_row.append(json.dumps(experimental_metadata[field_name]).strip('"'))
 
                 else:
                     
@@ -282,7 +293,9 @@ with open(experimentalMetadata_json_output_file, 'w') as JSON:
                             
                             if study_run_metadata[field_name] is not None:
                                 
-                                study_run_metadata_row.append(study_run_metadata[field_name])
+                                # There are newlines, carriage returns, quotes and nonprintables in some PDC text fields, hence the json.dumps() wrap here.
+
+                                study_run_metadata_row.append(json.dumps(study_run_metadata[field_name]).strip('"'))
 
                             else:
                                 
@@ -302,19 +315,27 @@ with open(experimentalMetadata_json_output_file, 'w') as JSON:
                             
                             for aliquot_run_metadata in study_run_metadata['aliquot_run_metadata']:
                                 
-                                aliquot_run_metadata_row = list()
+                                # Don't print duplicate rows.
 
-                                for field_name in scalar_aliquot_run_metadata_fields:
+                                if aliquot_run_metadata['aliquot_run_metadata_id'] not in seen_ARM_IDs:
                                     
-                                    if aliquot_run_metadata[field_name] is not None:
-                                        
-                                        aliquot_run_metadata_row.append(aliquot_run_metadata[field_name])
+                                    aliquot_run_metadata_row = list()
 
-                                    else:
+                                    for field_name in scalar_aliquot_run_metadata_fields:
                                         
-                                        aliquot_run_metadata_row.append('')
+                                        if aliquot_run_metadata[field_name] is not None:
+                                            
+                                            # There are newlines, carriage returns, quotes and nonprintables in some PDC text fields, hence the json.dumps() wrap here.
 
-                                print( *aliquot_run_metadata_row, sep='\t', end='\n', file=output_tsvs['ARM'] )
+                                            aliquot_run_metadata_row.append(json.dumps(aliquot_run_metadata[field_name]).strip('"'))
+
+                                        else:
+                                            
+                                            aliquot_run_metadata_row.append('')
+
+                                    print( *aliquot_run_metadata_row, sep='\t', end='\n', file=output_tsvs['ARM'] )
+
+                                    seen_ARM_IDs.add( aliquot_run_metadata['aliquot_run_metadata_id'] )
 
                                 print( *[study_run_metadata['study_run_metadata_id'], aliquot_run_metadata['aliquot_run_metadata_id']], sep='\t', end='\n', file=output_tsvs['SRM_ARM'] )
 
@@ -340,7 +361,9 @@ with open(experimentalMetadata_json_output_file, 'w') as JSON:
                                     
                                     if file[field_name] is not None:
                                         
-                                        file_row.append(file[field_name])
+                                        # There are newlines, carriage returns, quotes and nonprintables in some PDC text fields, hence the json.dumps() wrap here.
+
+                                        file_row.append(json.dumps(file[field_name]).strip('"'))
 
                                     else:
                                         

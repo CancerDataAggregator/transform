@@ -30,6 +30,7 @@ class IDC_aggregator:
             'pdc_project_affiliations' : path.join( self.project_crossref_dir, 'PDC_entity_submitter_id_to_program_project_and_study.tsv' ),
             'idc_to_pdc_project_map' : path.join( self.project_crossref_dir, 'naive_IDC-PDC_project_id_map.hand_edited_to_remove_false_positives.tsv' ),
             'gdc_pdc_merged_subject_ids' : path.join( self.merge_log_dir, 'PDC_subject_IDs_absorbed_into_corresponding_GDC_subject_IDs.tsv' ),
+            'pdc_merged_subject_ids' : path.join( self.merge_log_dir, 'PDC_initial_default_subject_IDs_aggregated_across_projects.tsv' ),
             'subject_identifier' : path.join( self.idc_cda_dir, 'subject_identifier.tsv.gz' ),
             'subject_associated_project' : path.join( self.idc_cda_dir, 'subject_associated_project.tsv.gz' )
         }
@@ -162,6 +163,20 @@ class IDC_aggregator:
 
     def __match_idc_subject_ids_with_pdc_subject_ids ( self ):
         
+        # Track which PDC subject IDs got updated due to internal PDC merges.
+
+        merged_pdc_subject_id = dict()
+
+        with open( self.input_files['pdc_merged_subject_ids'] ) as IN:
+            
+            column_names = next( IN ).rstrip( '\n' ).split( '\t' )
+
+            for line in [ next_line.rstrip( '\n' ) for next_line in IN ]:
+                
+                record = dict( zip( column_names, line.split( '\t' ) ) )
+
+                merged_pdc_subject_id[record['default_id']] = record['merged_id']
+
         output_file = self.aux_files['idc_subject_id_to_pdc_subject_id']
 
         idc_subject_id_to_collection_id = dict()
@@ -250,7 +265,15 @@ class IDC_aggregator:
                                     
                                     # PDC CDA subject ID: project_submitter_id.case_submitter_id
 
-                                    idc_subject_id_to_pdc_subject_id[subject_id] = record['project_submitter_id'] + '.' + submitter_id
+                                    pdc_subject_id = record['project_submitter_id'] + '.' + submitter_id
+
+                                    # If we overrode the default by an internal merge within PDC, swap in the merged ID instead of the default.
+
+                                    if pdc_subject_id in merged_pdc_subject_id:
+                                        
+                                        pdc_subject_id = merged_pdc_subject_id[pdc_subject_id]
+
+                                    idc_subject_id_to_pdc_subject_id[subject_id] = pdc_subject_id
 
         with open( output_file, 'w' ) as OUT:
             

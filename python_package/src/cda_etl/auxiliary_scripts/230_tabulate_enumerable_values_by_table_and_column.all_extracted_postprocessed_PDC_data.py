@@ -1,14 +1,14 @@
 #!/usr/bin/env python3 -u
 
-import sys
+import re, sys
 
 from os import makedirs, path
 
 from cda_etl.lib import columns_to_count
 
-dir_to_scan = path.join( 'extracted_data', 'gdc', 'all_TSV_output' )
+dir_to_scan = path.join( 'extracted_data', 'pdc_postprocessed' )
 
-output_dir = path.join( 'auxiliary_metadata', '__column_stats', '__full_count_data', 'GDC' )
+output_dir = path.join( 'auxiliary_metadata', '__column_stats', '__full_count_data', 'PDC' )
 
 skip_file = path.join( output_dir, 'zzz_SKIPPED_COLUMNS.tsv' )
 
@@ -16,7 +16,7 @@ if not path.exists( output_dir ):
     
     makedirs( output_dir )
 
-target_columns = columns_to_count( 'gdc' )
+target_columns = columns_to_count( 'pdc' )
 
 with open( skip_file, 'w' ) as SKIP:
     
@@ -28,6 +28,8 @@ with open( skip_file, 'w' ) as SKIP:
 
         target_counts = dict()
 
+        print_table = re.sub( r'^[^\/]+\/', r'', table )
+
         with open( input_file, 'r' ) as IN:
             
             column_names = next( IN ).rstrip( '\n' ).split( '\t' )
@@ -36,7 +38,7 @@ with open( skip_file, 'w' ) as SKIP:
                 
                 if column_name not in target_columns[table]:
                     
-                    print( *[ table, column_name ], sep='\t', file=SKIP )
+                    print( *[ print_table, column_name ], sep='\t', file=SKIP )
 
             for column_name in target_columns[table]:
                 
@@ -64,9 +66,9 @@ with open( skip_file, 'w' ) as SKIP:
 
         for column_name in sorted( target_counts ):
             
-            print( f"{table}.{column_name}", file=sys.stderr )
+            print( f"{print_table}.{column_name}", file=sys.stderr )
 
-            output_file = path.join( output_dir, f"{table}.{column_name}.tsv" )
+            output_file = path.join( output_dir, f"{print_table}.{column_name}.tsv" )
 
             with open( output_file, 'w' ) as OUT:
                 

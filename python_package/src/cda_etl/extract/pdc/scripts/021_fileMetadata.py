@@ -48,19 +48,17 @@ scalar_file_metadata_fields = (
     'study_run_metadata_submitter_id'
 )
 
-# Asking for fields that were always null used to not break the PDC API. Good old days.
-
 scalar_aliquot_fields = (
     'aliquot_id',
     'aliquot_submitter_id',
-#     'status',
-#     'aliquot_is_ref',
-#     'pool',
-#     'aliquot_quantity',
-#     'aliquot_volume',
-#     'amount',
-#     'analyte_type',
-#     'concentration',
+    'status',
+    'aliquot_is_ref',
+    'pool',
+    'aliquot_quantity',
+    'aliquot_volume',
+    'amount',
+    'analyte_type',
+    'concentration',
     'sample_id',
     'sample_submitter_id',
     'case_id',
@@ -73,7 +71,9 @@ offset = 0
 # batches of pages, is now (Feb 2024) necessary to avoid triggering server-side throttling
 # which ends up quadrupling retrieval time (for this script, from 25 minutes to nearly 2 hours).
 
-offset_increment = 500
+# Pre-fix for above: offset_increment = 500
+
+offset_increment = 20000
 
 returned_nothing = False
 
@@ -142,6 +142,10 @@ while not returned_nothing:
             }
         }'''
     }
+
+    # Help a bored user out.
+
+    print( f"Running `fileMetadata( offset: {offset}, limit: {offset_increment}, acceptDUA: true )`...", file=sys.stderr )
 
     # Send the fileMetadata() query to the API server.
 
@@ -236,6 +240,8 @@ while not returned_nothing:
         offset = offset + offset_increment
 
         # Empirically figuring out how best to self-regulate request size over time to avoid getting bandwidth-throttled has proven somewhat cumbersome (Feb 2024), but this seems to work pretty reliably. Today.
+
+        # Update 2024-05: this bit was crafted for when we had to page in batches of 500; leave as is (1m41s delay between pulls) unless a reason appears.
 
         if offset % 10000 == 0:
             

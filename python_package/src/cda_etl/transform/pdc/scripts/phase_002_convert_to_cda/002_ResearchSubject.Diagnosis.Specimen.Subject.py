@@ -1,6 +1,6 @@
 #!/usr/bin/env python -u
 
-import sys
+import re, sys
 
 from os import makedirs, path
 
@@ -36,6 +36,10 @@ project_input_tsv = path.join( input_root, 'Project', 'Project.tsv' )
 
 project_study_input_tsv = path.join( input_root, 'Project', 'Project.study_id.tsv' )
 
+program_input_tsv = path.join( input_root, 'Program', 'Program.tsv' )
+
+program_project_input_tsv = path.join( input_root, 'Program', 'Program.project_id.tsv' )
+
 sample_input_tsv = path.join( input_root, 'Sample', 'Sample.tsv' )
 
 sample_aliquot_input_tsv = path.join( input_root, 'Sample', 'Sample.aliquot_id.tsv' )
@@ -68,6 +72,8 @@ aliquot_file = map_columns_one_to_many( file_aliquot_input_tsv, 'aliquot_id', 'f
 
 study_project = map_columns_one_to_one( project_study_input_tsv, 'study_id', 'project_id' )
 
+project_program = map_columns_one_to_one( program_project_input_tsv, 'project_id', 'program_id' )
+
 sample_aliquot = map_columns_one_to_many( sample_aliquot_input_tsv, 'sample_id', 'aliquot_id' )
 
 aliquot_sample = map_columns_one_to_one( sample_aliquot_input_tsv, 'aliquot_id', 'sample_id' )
@@ -77,6 +83,8 @@ aliquot_submitter_id = map_columns_one_to_one( aliquot_input_tsv, 'aliquot_id', 
 diagnosis_submitter_id = map_columns_one_to_one( diagnosis_input_tsv, 'diagnosis_id', 'diagnosis_submitter_id' )
 
 project_submitter_id = map_columns_one_to_one( project_input_tsv, 'project_id', 'project_submitter_id' )
+
+program_submitter_id = map_columns_one_to_one( program_input_tsv, 'program_id', 'program_submitter_id' )
 
 sample_submitter_id = map_columns_one_to_one( sample_input_tsv, 'sample_id', 'sample_submitter_id' )
 
@@ -114,6 +122,10 @@ subject_researchsubject_output_tsv = path.join( output_root, 'subject_researchsu
 
 subject_gdc_candidate_output_tsv = path.join( output_root, 'subject_to_GDC_subject_if_latter_exists.tsv' )
 
+merge_log_dir = path.join( aux_root, '__merge_logs' )
+
+merge_log = path.join( merge_log_dir, 'PDC_initial_default_subject_IDs_aggregated_across_projects.tsv' )
+
 output_column_names = [
     'id',
     'member_of_research_project',
@@ -123,11 +135,90 @@ output_column_names = [
 
 # EXECUTION
 
-for output_dir in [ output_root ]:
+for output_dir in [ output_root, merge_log_dir ]:
     
     if not path.exists( output_dir ):
         
         makedirs( output_dir )
+
+# Identify in advance all mergeable Cases whose submitter_id exists in multiple projects.
+
+mergeable_case_submitter_id_to_program_and_project = dict()
+
+# Put these somewhere less... here.
+
+banned_submitter_id_patterns = [
+    
+    r'^ref$',
+    r'^P?[0-9]+$',
+    r'[Pp]ooled [Ss]ample'
+]
+
+with open( case_input_tsv ) as CASE_IN:
+    
+    input_column_names = next( CASE_IN ).rstrip( '\n' ).split( '\t' )
+
+    for line in [ next_line.rstrip( '\n' ) for next_line in CASE_IN ]:
+        
+        input_case_record = dict( zip( input_column_names, line.split( '\t' ) ) )
+
+        case_id = input_case_record['case_id']
+
+        case_submitter_id = input_case_record['case_submitter_id']
+
+        for study_id in sorted( case_study[case_id] ):
+            
+            # Record enough information to identify mergeable Cases found in multiple projects.
+
+            passed = True
+
+            for submitter_id_pattern in banned_submitter_id_patterns:
+                
+                if re.search( submitter_id_pattern, case_submitter_id ) is not None:
+                    
+                    passed = False
+
+            if passed:
+                
+                project_id = study_project[study_id]
+
+                program_id = project_program[project_id]
+
+                if case_submitter_id not in mergeable_case_submitter_id_to_program_and_project:
+                    
+                    mergeable_case_submitter_id_to_program_and_project[case_submitter_id] = dict()
+
+                if program_id not in mergeable_case_submitter_id_to_program_and_project[case_submitter_id]:
+                    
+                    mergeable_case_submitter_id_to_program_and_project[case_submitter_id][program_id] = set()
+
+                mergeable_case_submitter_id_to_program_and_project[case_submitter_id][program_id].add( project_id )
+
+merged_cda_subject_id = dict()
+
+# Save a map from initial (default) CDA subject IDs to updated (merged) CDA subject IDs.
+
+with open( merge_log, 'w' ) as LOG:
+    
+    print( *[ 'default_id', 'merged_id' ], sep='\t', file=LOG )
+
+    for case_submitter_id in mergeable_case_submitter_id_to_program_and_project:
+        
+        for program_id in mergeable_case_submitter_id_to_program_and_project[case_submitter_id]:
+            
+            # If a mergeable submitter ID is found in multiple projects within the same program, flag sets of cross-project siblings for merging.
+
+            if len( mergeable_case_submitter_id_to_program_and_project[case_submitter_id][program_id] ) > 1:
+                
+                new_merged_id = f"{program_submitter_id[program_id]}.{case_submitter_id}"
+
+                for project_id in mergeable_case_submitter_id_to_program_and_project[case_submitter_id][program_id]:
+                    
+                    default_subject_id = f"{project_submitter_id[project_id]}.{case_submitter_id}"
+
+                    print( *[ default_subject_id, new_merged_id ], sep='\t', file=LOG )
+
+                    merged_cda_subject_id[default_subject_id] = new_merged_id
 
 # Track one record per Subject.
 
@@ -190,6 +281,14 @@ with open( case_input_tsv ) as CASE_IN, open( researchsubject_output_tsv, 'w' ) 
             # CDA Subject ID: Combination of PDC Project ID and case_submitter_id.
 
             subject_id = f"{project_submitter_id[study_project[study_id]]}.{case_submitter_id}"
+
+            # Did we override this via merge across multiple projects in the same program?
+
+            if subject_id in merged_cda_subject_id:
+                
+                # Modify to {program_submitter_id}.{case_submitter_id} for any mergeable Case found in multiple projects.
+
+                subject_id = merged_cda_subject_id[subject_id]
 
             if pdc_study_id[study_id] in pdc_study_to_gdc_program:
                 
