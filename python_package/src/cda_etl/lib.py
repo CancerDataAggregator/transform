@@ -880,9 +880,149 @@ def columns_to_count( data_source ):
                 'cptac_dcc_tools',
                 'cptac_study_id'
             ]
-        }
+        },
 
         # end enumerable_columns['pdc']
+
+        'cds': {
+            
+            'diagnosis/diagnosis': [
+                
+                'disease_type',
+                'vital_status',
+                'primary_diagnosis',
+                'primary_site',
+                'tumor_grade',
+                'tumor_stage_clinical_m',
+                'tumor_stage_clinical_n',
+                'tumor_stage_clinical_t',
+                'morphology',
+                'incidence_type',
+                'progression_or_recurrence',
+                'last_known_disease_status'
+            ],
+            'file/file': [
+                
+                'file_type',
+                'file_description',
+                'experimental_strategy_and_data_subtypes'
+            ],
+            'genomic_info/genomic_info': [
+                
+                'reference_genome_assembly',
+                'library_strategy',
+                'library_layout',
+                'library_source',
+                'library_selection',
+                'platform',
+                'instrument_model',
+                'sequence_alignment_software'
+            ],
+            'participant/participant': [
+                
+                'race',
+                'gender',
+                'ethnicity'
+            ],
+            'program/program': [
+                
+                'program_name',
+                'program_acronym',
+                'program_short_description',
+                'program_full_description',
+                'program_external_url',
+                'program_sort_order'
+            ],
+            'sample/sample': [
+                
+                'sample_type',
+                'sample_tumor_status',
+                'sample_anatomic_site'
+            ],
+            'study/study': [
+                
+                'study_name',
+                'study_acronym',
+                'study_description',
+                'short_description',
+                'study_external_url',
+                'phs_accession',
+                'bioproject_accession',
+                'index_date',
+                'cds_requestor',
+                'funding_agency',
+                'funding_source_program_name',
+                'grant_id',
+                'clinical_trial_system',
+                'clinical_trial_identifier',
+                'clinical_trial_arm',
+                'organism_species',
+                'adult_or_childhood_study',
+                'data_types',
+                'file_types',
+                'data_access_level',
+                'cds_primary_bucket',
+                'cds_secondary_bucket',
+                'cds_tertiary_bucket',
+                'study_data_types',
+                'file_types_and_format',
+                'size_of_data_being_uploaded_unit',
+                'size_of_data_being_uploaded_original_unit',
+                'study_access'
+            ],
+            'treatment/treatment': [
+                
+                'treatment_type',
+                'treatment_outcome',
+                'therapeutic_agents'
+            ]
+        },
+
+        # end enumerable_columns['cds']
+
+        'idc': {
+            
+            'dicom_all': [
+                
+                'SOPClassUID',
+                'Modality',
+                'tcia_tumorLocation',
+                'PatientSpeciesDescription',
+                'PatientSex',
+                'EthnicGroup',
+                'collection_id',
+                # The following are not (yet) used, but we're pulling them so we can profile what's available along with the values we do use.
+                'collection_tumorLocation'
+            ],
+            'original_collections_metadata': [
+                'collection_id',
+                'CancerTypes'
+            ],
+            'tcga_biospecimen_rel9': [
+                'sample_type_name'
+            ],
+            'tcga_clinical_rel9': [
+                'race',
+                'vital_status',
+                # The following are not (yet) used, but we're pulling them so we can profile what's available along with the values we do use.
+                'anatomic_neoplasm_subdivision',
+                'clinical_stage',
+                'disease_code',
+                'ethnicity',
+                'gender',
+                'histological_type',
+                'icd_10',
+                'icd_o_3_histology',
+                'icd_o_3_site',
+                'neoplasm_histologic_grade',
+                'pathologic_stage',
+                'person_neoplasm_cancer_status',
+                'tumor_tissue_site',
+                'tumor_type'
+            ]
+        }
+
+        # end enumerable_columns['idc']
     }
 
     if data_source in enumerable_columns:

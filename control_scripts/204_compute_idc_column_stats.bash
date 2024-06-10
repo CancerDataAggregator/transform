@@ -23,4 +23,7 @@ echo ./package_root/auxiliary_scripts/310_count_distinct_values_by_table_and_col
 echo ./package_root/auxiliary_scripts/311_count_distinct_values_by_table_and_column.merged_IDC_PDC_and_GDC_CDA_data.py
 ./package_root/auxiliary_scripts/311_count_distinct_values_by_table_and_column.merged_IDC_PDC_and_GDC_CDA_data.py
 
+echo ./package_root/auxiliary_scripts/320_tabulate_enumerable_values_by_table_and_column.all_extracted_IDC_data.py $version_string
+./package_root/auxiliary_scripts/320_tabulate_enumerable_values_by_table_and_column.all_extracted_IDC_data.py $version_string
+
 

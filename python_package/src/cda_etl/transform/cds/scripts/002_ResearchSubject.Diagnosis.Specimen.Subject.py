@@ -98,7 +98,7 @@ cds_aux_dir = path.join( 'auxiliary_metadata', '__CDS_supplemental_metadata' )
 
 entity_ids_projects_and_types = path.join( cds_aux_dir, 'CDS_entity_submitter_id_to_program_and_study.tsv' )
 
-warning_log = path.join( cds_aux_dir, 'warning_log.txt' )
+warning_log = path.join( cds_aux_dir, 'cds_warning_log.txt' )
 
 rs_output_column_names = [
     'id',

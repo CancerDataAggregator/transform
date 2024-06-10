@@ -11,7 +11,6 @@ class CDS_aggregator:
     
     def __init__( self ):
         
-        self.extract_dir = path.join( 'extracted_data', 'cds' )
         self.cds_cda_dir = path.join( 'cda_tsvs', 'cds' )
 
         self.merged_input_dir = path.join( 'cda_tsvs', 'merged_idc_gdc_and_pdc_tables' )

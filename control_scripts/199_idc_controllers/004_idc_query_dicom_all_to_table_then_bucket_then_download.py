@@ -8,6 +8,15 @@ from os import path, makedirs, system
 
 version_string = sys.argv[1]
 
+# Note: BigQuery returns rows in random order. Even if the underlying data hasn't
+# changed, successive pulls will not generally produce precisely the same files.
+# 
+# Files from multiple pulls of the same data should be identical to one another
+# after their rows have been sorted, though, and byte counts should match (once
+# expanded -- zipped byte counts will still differ because each file's exact
+# compression ratio depends on the order in which data is scanned during
+# zip-style compression, and row order differs).
+
 bq_project_name = 'broad-cda-dev'
 
 intermediate_bucket = 'gdc-bq-sample-bucket'
@@ -45,7 +54,9 @@ fields_to_pull = [
     'crdc_series_uuid',
     'collection_id',
     'PatientID',
-    'idc_case_id'
+    'idc_case_id',
+    # The following are not (yet) used, but we're pulling them so we can profile what's available along with the values we do use.
+    'collection_tumorLocation'
 ]
 
 idc.query_idc_to_table( fields_to_pull )

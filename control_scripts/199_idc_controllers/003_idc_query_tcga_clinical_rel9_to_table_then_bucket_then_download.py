@@ -8,6 +8,15 @@ from os import path, makedirs, system
 
 version_string = sys.argv[1]
 
+# Note: BigQuery returns rows in random order. Even if the underlying data hasn't
+# changed, successive pulls will not generally produce precisely the same files.
+# 
+# Files from multiple pulls of the same data should be identical to one another
+# after their rows have been sorted, though, and byte counts should match (once
+# expanded -- zipped byte counts will still differ because each file's exact
+# compression ratio depends on the order in which data is scanned during
+# zip-style compression, and row order differs).
+
 bq_project_name = 'broad-cda-dev'
 
 intermediate_bucket = 'gdc-bq-sample-bucket'
@@ -36,7 +45,22 @@ fields_to_pull = [
     'days_to_birth',
     'vital_status',
     'days_to_death',
-    'case_gdc_id'
+    'case_gdc_id',
+    # The following are not (yet) used, but we're pulling them so we can profile what's available along with the values we do use.
+    'anatomic_neoplasm_subdivision',
+    'clinical_stage',
+    'disease_code',
+    'ethnicity',
+    'gender',
+    'histological_type',
+    'icd_10',
+    'icd_o_3_histology',
+    'icd_o_3_site',
+    'neoplasm_histologic_grade',
+    'pathologic_stage',
+    'person_neoplasm_cancer_status',
+    'tumor_tissue_site',
+    'tumor_type'
 ]
 
 idc.query_idc_to_table( fields_to_pull )

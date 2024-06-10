@@ -8,6 +8,15 @@ from os import path, makedirs, system
 
 version_string = sys.argv[1]
 
+# Note: BigQuery returns rows in random order. Even if the underlying data hasn't
+# changed, successive pulls will not generally produce precisely the same files.
+# 
+# Files from multiple pulls of the same data should be identical to one another
+# after their rows have been sorted, though, and byte counts should match (once
+# expanded -- zipped byte counts will still differ because each file's exact
+# compression ratio depends on the order in which data is scanned during
+# zip-style compression, and row order differs).
+
 bq_project_name = 'broad-cda-dev'
 
 intermediate_bucket = 'gdc-bq-sample-bucket'
