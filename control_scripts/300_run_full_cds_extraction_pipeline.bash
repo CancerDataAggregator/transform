@@ -1,32 +1,29 @@
 #!/usr/bin/env bash
 
+# A gzipped CDS Neo4j JSONL dump file is required by the processor scripts.
+# 
+# If the length of the argument list to this script is zero, fail.
+
+if [[ $# -eq 0 ]]
+then
+    script_name=$(basename "$0")
+    echo
+    echo "   ERROR: Usage: $script_name <a gzipped Neo4j JSONL dump file>"
+    echo
+    exit 0
+fi
+
+dump_file=$1
+
 chmod 755 ./package_root/extract/cds/scripts/*py
 
-echo ./package_root/extract/cds/scripts/000_get_schema_via_introspection.py
-./package_root/extract/cds/scripts/000_get_schema_via_introspection.py
+echo ./package_root/extract/cds/scripts/000_get_field_lists.py $dump_file
+./package_root/extract/cds/scripts/000_get_field_lists.py $dump_file
 
-echo ./package_root/extract/cds/scripts/010_get_cds_release_summary_metadata.py
-./package_root/extract/cds/scripts/010_get_cds_release_summary_metadata.py
+echo ./package_root/extract/cds/scripts/001_extract_node_data.py $dump_file
+./package_root/extract/cds/scripts/001_extract_node_data.py $dump_file
 
-echo ./package_root/extract/cds/scripts/011_get_program_and_study_metadata.py
-./package_root/extract/cds/scripts/011_get_program_and_study_metadata.py
-
-echo ./package_root/extract/cds/scripts/012_get_participant_metadata.py
-./package_root/extract/cds/scripts/012_get_participant_metadata.py
-
-echo ./package_root/extract/cds/scripts/013_get_sample_and_specimen_metadata.py
-./package_root/extract/cds/scripts/013_get_sample_and_specimen_metadata.py
-
-echo ./package_root/extract/cds/scripts/014_get_diagnosis_metadata.py
-./package_root/extract/cds/scripts/014_get_diagnosis_metadata.py
-
-echo ./package_root/extract/cds/scripts/015_get_treatment_metadata.py
-./package_root/extract/cds/scripts/015_get_treatment_metadata.py
-
-echo ./package_root/extract/cds/scripts/016_get_file_metadata.py
-./package_root/extract/cds/scripts/016_get_file_metadata.py
-
-echo ./package_root/extract/cds/scripts/017_get_genomic_info_metadata.RECORDS_NOT_UNIQUE.py
-./package_root/extract/cds/scripts/017_get_genomic_info_metadata.RECORDS_NOT_UNIQUE.py
+echo ./package_root/extract/cds/scripts/002_extract_relationship_data.py $dump_file
+./package_root/extract/cds/scripts/002_extract_relationship_data.py $dump_file
 
 
