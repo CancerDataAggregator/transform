@@ -115,9 +115,15 @@ with open( filesPerStudy_json_output_file, 'w' ) as JSON:
 
         # Parse the returned data and save to TSV.
 
+        result_count = 0
+
         for file_per_study in result['data']['filesPerStudy']:
             
+            result_count = result_count + 1
+
             file_per_study_row = list()
+
+            null_file_id = True
 
             for field_name in scalar_file_per_study_fields:
                 
@@ -125,11 +131,21 @@ with open( filesPerStudy_json_output_file, 'w' ) as JSON:
                     
                     file_per_study_row.append(file_per_study[field_name])
 
+                    if field_name == 'file_id':
+                        
+                        null_file_id = False
+
                 else:
                     
                     file_per_study_row.append('')
 
-            print( *file_per_study_row, sep='\t', end='\n', file=output_tsvs['FILE_PER_STUDY'] )
+            if null_file_id:
+                
+                print( f"WARNING: FilePerStudy record #{result_count} from {pdc_study_id} has a null file_id; skipping. Please report to PDC.", file=sys.stderr )
+
+            else:
+                
+                print( *file_per_study_row, sep='\t', end='\n', file=output_tsvs['FILE_PER_STUDY'] )
 
 # Sort the rows in the TSV output files.
 

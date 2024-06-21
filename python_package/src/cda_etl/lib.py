@@ -886,7 +886,7 @@ def columns_to_count( data_source ):
 
         'cds': {
             
-            'diagnosis/diagnosis': [
+            'diagnosis': [
                 
                 'disease_type',
                 'vital_status',
@@ -901,13 +901,13 @@ def columns_to_count( data_source ):
                 'progression_or_recurrence',
                 'last_known_disease_status'
             ],
-            'file/file': [
+            'file': [
                 
                 'file_type',
                 'file_description',
                 'experimental_strategy_and_data_subtypes'
             ],
-            'genomic_info/genomic_info': [
+            'genomic_info': [
                 
                 'reference_genome_assembly',
                 'library_strategy',
@@ -918,13 +918,13 @@ def columns_to_count( data_source ):
                 'instrument_model',
                 'sequence_alignment_software'
             ],
-            'participant/participant': [
+            'participant': [
                 
                 'race',
                 'gender',
                 'ethnicity'
             ],
-            'program/program': [
+            'program': [
                 
                 'program_name',
                 'program_acronym',
@@ -933,13 +933,13 @@ def columns_to_count( data_source ):
                 'program_external_url',
                 'program_sort_order'
             ],
-            'sample/sample': [
+            'sample': [
                 
                 'sample_type',
                 'sample_tumor_status',
                 'sample_anatomic_site'
             ],
-            'study/study': [
+            'study': [
                 
                 'study_name',
                 'study_acronym',
@@ -970,7 +970,7 @@ def columns_to_count( data_source ):
                 'size_of_data_being_uploaded_original_unit',
                 'study_access'
             ],
-            'treatment/treatment': [
+            'treatment': [
                 
                 'treatment_type',
                 'treatment_outcome',

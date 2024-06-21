@@ -30,39 +30,41 @@ with open( skip_file, 'w' ) as SKIP:
 
         print_table = re.sub( r'^[^\/]+\/', r'', table )
 
-        with open( input_file, 'r' ) as IN:
+        for column_name in target_columns[table]:
             
-            column_names = next( IN ).rstrip( '\n' ).split( '\t' )
+            target_counts[column_name] = dict()
 
-            for column_name in column_names:
+        if path.exists( input_file ):
+            
+            with open( input_file, 'r' ) as IN:
                 
-                if column_name not in target_columns[table]:
+                column_names = next( IN ).rstrip( '\n' ).split( '\t' )
+
+                for column_name in column_names:
                     
-                    print( *[ print_table, column_name ], sep='\t', file=SKIP )
+                    if column_name not in target_columns[table]:
+                        
+                        print( *[ print_table, column_name ], sep='\t', file=SKIP )
 
-            for column_name in target_columns[table]:
-                
-                target_counts[column_name] = dict()
-
-            for line in [ next_line.rstrip( '\n' ) for next_line in IN ]:
-                
-                record = dict( zip( column_names, line.split( '\t' ) ) )
-
-                for target_column in sorted( target_columns[table] ):
+                for line in [ next_line.rstrip( '\n' ) for next_line in IN ]:
                     
-                    value = record[target_column]
+                    record = dict( zip( column_names, line.split( '\t' ) ) )
 
-                    if value is None:
+                    for target_column in sorted( target_columns[table] ):
                         
                         value = ''
 
-                    if value in target_counts[target_column]:
-                        
-                        target_counts[target_column][value] = target_counts[target_column][value] + 1
+                        if target_column in record and record[target_column] is not None:
+                            
+                            value = record[target_column]
 
-                    else:
-                        
-                        target_counts[target_column][value] = 1
+                        if value in target_counts[target_column]:
+                            
+                            target_counts[target_column][value] = target_counts[target_column][value] + 1
+
+                        else:
+                            
+                            target_counts[target_column][value] = 1
 
         for column_name in sorted( target_counts ):
             

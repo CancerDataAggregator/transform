@@ -26,7 +26,10 @@ harmonization_field_map_file = path.join( harmonization_map_dir, '000_cda_column
 
 debug=False
 
-# Enumerate (case-insensitive, space-collapsed) values (as regular expressions) that should be deleted wherever they are found.
+# Enumerate (case-insensitive, space-collapsed) values (as regular expressions) that
+# should be deleted wherever they are found, except for tables listed
+# in `exclude_tables` (some CDS submitter IDs, for example, are "Not Applicable",
+# hence the need to exclude certain files from value alteration).
 
 delete_everywhere = {
     r'n/a',
@@ -40,6 +43,24 @@ delete_everywhere = {
     r'notallowedtocollect',
     r'-',
     r'--'
+}
+
+exclude_tables = {
+    'diagnosis_identifier',
+    'diagnosis_treatment',
+    'file_associated_project',
+    'file_identifier',
+    'file_specimen',
+    'file_subject',
+    'researchsubject_diagnosis',
+    'researchsubject_identifier',
+    'researchsubject_specimen',
+    'researchsubject_treatment',
+    'specimen_identifier',
+    'subject_associated_project',
+    'subject_identifier',
+    'subject_researchsubject',
+    'treatment_identifier'
 }
 
 # EXECUTION
@@ -154,7 +175,7 @@ for file_basename in sorted( listdir( cda_tsv_dir ) ):
                             
                             all_subs_performed[table][column][old_value][new_value] = all_subs_performed[table][column][old_value][new_value] + 1
 
-                    else:
+                    elif table not in exclude_tables:
                         
                         if re.sub( r'\s', r'', old_value.strip().lower() ) in delete_everywhere:
                                 
@@ -181,6 +202,10 @@ for file_basename in sorted( listdir( cda_tsv_dir ) ):
                         else:
                             
                             output_row.append( old_value )
+
+                    else:
+                        
+                        output_row.append( old_value )
 
                 print( *output_row, sep='\t', file=OUT )
 
