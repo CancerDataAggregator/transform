@@ -7,7 +7,7 @@ from os import makedirs, path
 
 from cda_etl.lib import load_tsv_as_dict, map_columns_one_to_one, sort_file_with_header
 
-class mutation_transformer_INTERIM_HOTFIX:
+class mutation_transformer:
     
     def __init__(
         self,
@@ -17,13 +17,10 @@ class mutation_transformer_INTERIM_HOTFIX:
     ):
 
         self.columns_to_keep = columns_to_keep
-
         self.source_datasets = source_datasets
-
         self.source_version = source_version
 
         self.cda_data_sources = [
-            
             'CDS',
             'GDC',
             'ICDC',
@@ -32,17 +29,15 @@ class mutation_transformer_INTERIM_HOTFIX:
         ]
 
         self.input_dir = path.join( 'extracted_data', 'mutation', source_version )
-
-        self.cda_table_dir = path.join( 'cda_tsvs', 'mutation', source_version )
+        self.merged_cda_dir = path.join( 'cda_tsvs', 'merged_cds_idc_gdc_and_pdc_tables' )
 
         self.cda_table_inputs = {
             
-            'mutation' : path.join( self.cda_table_dir, 'mutation.tsv.gz' ),
-            'subject_mutation' : path.join( self.cda_table_dir, 'subject_mutation.tsv.gz' )
+            'mutation' : path.join( self.merged_cda_dir, 'mutation.tsv.gz' ),
+            'subject_mutation' : path.join( self.merged_cda_dir, 'subject_mutation.tsv.gz' )
         }
 
         self.sql_root = 'SQL_data'
-
         self.sql_table_output_dir = path.join( self.sql_root, 'new_table_data' )
 
         self.sql_outputs = {
@@ -55,19 +50,17 @@ class mutation_transformer_INTERIM_HOTFIX:
 
         self.display_increment = 500000
 
-        for target_dir in [ self.cda_table_dir, self.sql_table_output_dir ]:
+        for target_dir in [ self.merged_cda_dir, self.sql_table_output_dir ]:
             
             if not path.isdir( target_dir ):
                 
                 makedirs( target_dir )
 
-    def make_mutation_table_and_associations( self ):
+    def make_mutation_and_subject_mutation_TSVs( self ):
         
-        merged_cda_dir = path.join( 'cda_tsvs', 'merged_cds_idc_gdc_and_pdc_tables' )
-
         cda_subject_id_to_integer_alias = dict()
 
-        with gzip.open( path.join( merged_cda_dir, 'subject_integer_aliases.tsv.gz' ), 'rt' ) as IN:
+        with gzip.open( path.join( self.merged_cda_dir, 'subject_integer_aliases.tsv.gz' ), 'rt' ) as IN:
             
             for line in IN:
                 
@@ -123,7 +116,7 @@ class mutation_transformer_INTERIM_HOTFIX:
 
                 skipped_unfound = 0
 
-                print( f"Transcoding mutation JSONL for {source_dataset} and linking CDA records...", end='', file=sys.stderr )
+                print( f"Transcoding mutation JSONL for {source_dataset} into CDA-formatted mutation.tsv and subject_mutation.tsv and linking CDA records...", end='', file=sys.stderr )
 
                 with gzip.open( mutation_jsonl, 'rt' ) as IN:
                     
@@ -211,9 +204,9 @@ class mutation_transformer_INTERIM_HOTFIX:
 
                 print( f"done. processed {line_count} lines; skipped {skipped_null} due to missing records and {skipped_unfound} due to unmatched case barcodes.", end='\n\n', file=sys.stderr )
 
-    def transform_files_to_SQL( self ):
+    def transform_mutation_and_subject_mutation_to_SQL( self ):
         
-        print( 'Transcoding CDA mutation TSV to SQL...', file=sys.stderr )
+        print( 'Transcoding CDA mutation and subject_mutation TSVs to SQL...', file=sys.stderr )
 
         for target_table in self.cda_table_inputs.keys():
             
@@ -223,31 +216,12 @@ class mutation_transformer_INTERIM_HOTFIX:
 
             with gzip.open( self.cda_table_inputs[target_table], 'rt' ) as IN, gzip.open( self.sql_outputs[target_table], 'wt' ) as OUT:
                 
-                #######################
-                # Clear old table data.
-
-                print( '--', file=OUT )
-
-                print( '-- delete old table rows:', file=OUT )
-
-                print( '--', file=OUT )
-
-                print( f"TRUNCATE {target_table};", file=OUT )
-
                 ##########################################
                 # Add all the new rows using a COPY block.
 
-                print( '--', file=OUT )
-
-                print( '-- add new table rows:', file=OUT )
-
-                print( '--', file=OUT )
-
                 colnames = next( IN ).rstrip( '\n' ).split( '\t' )
 
-                # COPY public.diagnosis (id, primary_diagnosis, age_at_diagnosis, morphology, stage, grade, method_of_diagnosis) FROM stdin;
-
-                print( f"COPY public.{target_table} ( {', '.join( colnames )} ) FROM stdin;", file=OUT )
+                print( f"COPY {target_table} ( {', '.join( colnames )} ) FROM stdin;", file=OUT )
 
                 line_count = 0
 
@@ -266,6 +240,5 @@ class mutation_transformer_INTERIM_HOTFIX:
                 print( r'\.', end='\n\n', file=OUT )
 
                 print( f"   ...done with {target_table}: processed {line_count} data rows total.", end='\n\n', file=sys.stderr )
-
 
 

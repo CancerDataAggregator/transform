@@ -41,17 +41,17 @@ class CDA_loader:
                 
                 makedirs( target_dir )
 
-    def create_integer_aliases_for_entity_tables( self ):
+    def create_integer_alias_TSVs_for_main_entity_tables( self ):
         
-        print( 'Creating integer ID aliases...', file=sys.stderr )
+        print( 'Creating integer ID alias TSVs for main entity tables...', file=sys.stderr )
 
         for input_file_basename in [ 'diagnosis.tsv.gz', 'file.tsv.gz', 'researchsubject.tsv.gz', 'specimen.tsv.gz', 'subject.tsv.gz', 'treatment.tsv.gz' ]:
             
             input_file = path.join( self.merged_tsv_dir, input_file_basename )
 
-            print( f"   {input_file_basename}...", file=sys.stderr )
-
             output_file = path.join( self.merged_tsv_dir, re.sub( r'^(.*).tsv.gz', r'\1' + '_integer_aliases.tsv.gz', input_file_basename ) )
+
+            print( f"   {output_file} ...", file=sys.stderr )
 
             with gzip.open( input_file, 'rt' ) as IN, gzip.open( output_file, 'wt' ) as OUT:
                 
@@ -69,9 +69,9 @@ class CDA_loader:
 
         print( '...done.', file=sys.stderr )
 
-    def create_entity_data_source_tables( self ):
+    def create_data_source_TSVs_and_SQL_for_main_entity_tables( self ):
         
-        print( 'Creating data_source tables...', file=sys.stderr )
+        print( 'Creating data_source TSVs and SQL for main entity tables...', file=sys.stderr )
 
         table_file_dir = path.join( self.sql_output_dir, 'new_table_data' )
 
@@ -289,7 +289,7 @@ class CDA_loader:
 
         print( '...done.', file=sys.stderr )
 
-    def transform_files_to_SQL( self ):
+    def transform_main_entity_tables_to_SQL( self ):
         
         print( 'Transforming CDA TSVs to SQL...', file=sys.stderr )
 
@@ -378,7 +378,8 @@ class CDA_loader:
         # in self.merged_tsv_dir typically contain full ID strings and not aliases) before pushing
         # to postgres. SQL command sets for all of these tables are built in other subroutines (see
         # create_entity_data_source_tables(), create_integer_aliases_for_file_association_tables(),
-        # and create_integer_aliases_for_other_association_tables()).
+        # and create_integer_aliases_for_other_association_tables(), as well as the related subroutines
+        # in the mutation_transformer code).
 
         tables_with_aliases = {
             
@@ -390,6 +391,7 @@ class CDA_loader:
             'file_identifier',
             'file_specimen',
             'file_subject',
+            'mutation',
             'researchsubject_data_source',
             'researchsubject_diagnosis',
             'researchsubject_identifier',
@@ -400,6 +402,7 @@ class CDA_loader:
             'subject_associated_project',
             'subject_data_source',
             'subject_identifier',
+            'subject_mutation',
             'subject_researchsubject',
             'treatment_data_source',
             'treatment_identifier'
@@ -432,24 +435,26 @@ class CDA_loader:
                     if not path.exists( integer_alias_file ):
                         
                         # No integer aliases have been created for this table. This table is either an unaliased main-entity table (like the "treatment"
-                        # table, at the time this comment was written) or an association table that doesn't use integer aliases (like "diagnosis_identifier"
+                        # table, at the time this comment was written*) or an association table that doesn't use integer aliases (like "diagnosis_identifier"
                         # at time of writing). Either way, transcode the TSV data directly into a COPY block.
+                        # 
+                        # *Update 2024-06-22: all main-entity tables now get integer aliases.
 
                         print( f"      ...{input_file_basename} -> {output_file_basename} (no integer aliases loaded)...", file=sys.stderr )
 
                         with gzip.open( input_file, 'rt' ) as IN, gzip.open( output_file, 'wt' ) as OUT:
                             
-                            colnames = next(IN).rstrip('\n').split('\t')
+                            colnames = next( IN ).rstrip( '\n' ).split( '\t' )
 
-                            # COPY public.diagnosis (id, primary_diagnosis, age_at_diagnosis, morphology, stage, grade, method_of_diagnosis) FROM stdin;
+                            # COPY diagnosis (id, primary_diagnosis, age_at_diagnosis, morphology, stage, grade, method_of_diagnosis) FROM stdin;
 
                             print( f"COPY {target_table} (" + ', '.join( colnames ) + ') FROM stdin;', end='\n', file=OUT )
 
                             for next_line in IN:
                                 
-                                line = next_line.rstrip('\n')
+                                line = next_line.rstrip( '\n' )
     
-                                record = dict( zip( colnames, [ value for value in line.split('\t') ] ) )
+                                record = dict( zip( colnames, [ value for value in line.split( '\t' ) ] ) )
     
                                 print( '\t'.join( [ r'\N' if len( record[colname] ) == 0 else record[colname] for colname in colnames ] ), end='\n', file=OUT )
     
@@ -468,7 +473,7 @@ class CDA_loader:
 
                         with gzip.open( input_file, 'rt' ) as IN, gzip.open( integer_alias_file, 'rt' ) as ALIAS, gzip.open( output_file, 'wt' ) as OUT:
                             
-                            colnames = next(IN).rstrip('\n').split('\t')
+                            colnames = next( IN ).rstrip( '\n' ).split( '\t' )
     
                             colnames.append( 'integer_id_alias' )
     
@@ -476,11 +481,11 @@ class CDA_loader:
     
                             for next_line in IN:
                                 
-                                line = next_line.rstrip('\n')
+                                line = next_line.rstrip( '\n' )
     
-                                record = dict( zip( colnames[:-1], [ value for value in line.split('\t') ] ) )
+                                record = dict( zip( colnames[:-1], [ value for value in line.split( '\t' ) ] ) )
     
-                                id_alias = next(ALIAS).rstrip('\n').split('\t')[1]
+                                id_alias = next( ALIAS ).rstrip( '\n' ).split( '\t' )[1]
     
                                 record['integer_id_alias'] = id_alias
     
@@ -604,7 +609,7 @@ class CDA_loader:
 
         print( '...done transforming CDA TSVs to SQL.', file=sys.stderr )
 
-    def create_integer_aliases_for_file_association_tables( self ):
+    def create_integer_aliases_and_SQL_for_file_association_tables( self ):
         
         print( 'Creating integer aliases for association tables linked to the file table...', file=sys.stderr )
 
@@ -840,7 +845,7 @@ class CDA_loader:
 
         print( '...(aliased) file association table construction complete.', file=sys.stderr )
 
-    def create_integer_aliases_for_other_association_tables( self ):
+    def create_integer_aliases_and_SQL_for_other_association_tables( self ):
         
         print( 'Creating integer aliases for association tables not involving the file table...', file=sys.stderr )
 

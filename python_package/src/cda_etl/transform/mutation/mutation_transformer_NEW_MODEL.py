@@ -308,9 +308,9 @@ class mutation_transformer_NEW_MODEL:
 
                 colnames = next( IN ).rstrip( '\n' ).split( '\t' )
 
-                # COPY public.diagnosis (id, primary_diagnosis, age_at_diagnosis, morphology, stage, grade, method_of_diagnosis) FROM stdin;
+                # COPY diagnosis (id, primary_diagnosis, age_at_diagnosis, morphology, stage, grade, method_of_diagnosis) FROM stdin;
 
-                print( f"COPY public.{target_table} ( {', '.join( colnames )} ) FROM stdin;", file=OUT )
+                print( f"COPY {target_table} ( {', '.join( colnames )} ) FROM stdin;", file=OUT )
 
                 line_count = 0
 
