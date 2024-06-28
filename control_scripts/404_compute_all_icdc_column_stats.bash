@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+chmod 755 ./package_root/auxiliary_scripts/*py
+
+echo ./package_root/auxiliary_scripts/510_count_distinct_values_by_table_and_column.all_extracted_ICDC_data.py
+./package_root/auxiliary_scripts/510_count_distinct_values_by_table_and_column.all_extracted_ICDC_data.py
+
+echo ./package_root/auxiliary_scripts/511_count_distinct_values_by_table_and_column.ICDC_CDA_data.py
+./package_root/auxiliary_scripts/511_count_distinct_values_by_table_and_column.ICDC_CDA_data.py
+
+echo ./package_root/auxiliary_scripts/512_count_distinct_values_by_table_and_column.merged_ICDC_CDS_IDC_GDC_and_PDC_CDA_data.py
+./package_root/auxiliary_scripts/512_count_distinct_values_by_table_and_column.merged_ICDC_CDS_IDC_GDC_and_PDC_CDA_data.py
+
+echo ./package_root/auxiliary_scripts/520_tabulate_enumerable_values_by_table_and_column.all_extracted_ICDC_data.py
+./package_root/auxiliary_scripts/520_tabulate_enumerable_values_by_table_and_column.all_extracted_ICDC_data.py
+
+

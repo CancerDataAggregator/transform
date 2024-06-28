@@ -980,6 +980,305 @@ def columns_to_count( data_source ):
 
         # end enumerable_columns['cds']
 
+        'icdc': {
+            
+            'adverse_event/adverse_event': [
+                
+                'day_in_cycle',
+                'existing_adverse_event',
+                'ongoing_adverse_event',
+                'adverse_event_term',
+                'adverse_event_description',
+                'adverse_event_grade',
+                'adverse_event_grade_description',
+                'adverse_event_agent_name',
+                'adverse_event_agent_dose',
+                'attribution_to_research',
+                'attribution_to_ind',
+                'attribution_to_disease',
+                'attribution_to_commercial',
+                'attribution_to_other',
+                'other_attribution_description',
+                'dose_limiting_toxicity',
+                'unexpected_adverse_event'
+            ],
+            'agent/agent': [
+                
+                'medication'
+            ],
+            'agent_administration/agent_administration': [
+                
+                'medication',
+                'route_of_administration',
+                'medication_actual_units_of_measure',
+                'medication_duration',
+                'medication_duration_unit',
+                'medication_duration_original',
+                'medication_duration_original_unit',
+                'medication_units_of_measure',
+                'medication_actual_dose',
+                'medication_actual_dose_unit',
+                'medication_actual_dose_original',
+                'medication_actual_dose_original_unit',
+                'phase',
+                'dose_level',
+                'dose_level_unit',
+                'dose_level_original',
+                'dose_level_original_unit',
+                'dose_units_of_measure',
+                'medication_missed_dose',
+                'missed_dose_amount',
+                'missed_dose_amount_unit',
+                'missed_dose_amount_original',
+                'missed_dose_amount_original_unit',
+                'missed_dose_units_of_measure',
+                'medication_course_number',
+                'comment'
+            ],
+            'biospecimen_source/biospecimen_source': [
+                
+                'biospecimen_repository_acronym',
+                'biospecimen_repository_full_name'
+            ],
+            'cohort/cohort': [
+                
+                'cohort_description',
+                'cohort_dose'
+            ],
+            'cycle/cycle': [
+                
+                'cycle_number'
+            ],
+            'demographic/demographic': [
+                
+                'breed',
+                'additional_breed_detail',
+                'patient_age_at_enrollment',
+                'patient_age_at_enrollment_unit',
+                'patient_age_at_enrollment_original',
+                'patient_age_at_enrollment_original_unit',
+                'sex',
+                'weight',
+                'weight_unit',
+                'weight_original',
+                'weight_original_unit',
+                'neutered_indicator'
+            ],
+            'diagnosis/diagnosis': [
+                
+                'disease_term',
+                'primary_disease_site',
+                'stage_of_disease',
+                'histology_cytopathology',
+                'histological_grade',
+                'best_response',
+                'pathology_report',
+                'treatment_data',
+                'follow_up_data',
+                'concurrent_disease',
+                'concurrent_disease_type'
+            ],
+            'disease_extent/disease_extent': [
+                
+                'lesion_number',
+                'lesion_site',
+                'lesion_description',
+                'previously_irradiated',
+                'previously_treated',
+                'measurable_lesion',
+                'target_lesion',
+                'measured_how',
+                'longest_measurement',
+                'longest_measurement_unit',
+                'longest_measurement_original',
+                'longest_measurement_original_unit',
+                'evaluation_number',
+                'evaluation_code'
+            ],
+            'enrollment/enrollment': [
+                
+                'registering_institution',
+                'site_short_name',
+                'veterinary_medical_center',
+                'patient_subgroup'
+            ],
+            'file/file': [
+                
+                'file_type',
+                'file_description',
+                'file_format',
+                'file_status'
+            ],
+            'follow_up/follow_up': [
+                
+                'patient_status',
+                'explain_unknown_status',
+                'contact_type',
+                'treatment_since_last_contact',
+                'physical_exam_performed',
+                'physical_exam_changes'
+            ],
+            'image_collection/image_collection': [
+                
+                'image_type_included',
+                'repository_name',
+                'collection_access'
+            ],
+            'off_study/off_study': [
+                
+                'reason_off_study',
+                'best_resp_vet_tx_tp_secondary_response',
+                'best_resp_vet_tx_tp_best_response'
+            ],
+            'off_treatment/off_treatment': [
+                
+                'reason_off_treatment',
+                'best_resp_vet_tx_tp_secondary_response',
+                'best_resp_vet_tx_tp_best_response'
+            ],
+            'physical_exam/physical_exam': [
+                
+                'day_in_cycle',
+                'body_system',
+                'pe_finding',
+                'pe_comment',
+                'phase_pe',
+                'assessment_timepoint'
+            ],
+            'prior_surgery/prior_surgery': [
+                
+                'procedure',
+                'anatomical_site_of_surgery',
+                'residual_disease',
+                'therapeutic_indicator'
+            ],
+            'prior_therapy/prior_therapy': [
+                
+                'agent_name',
+                'dose_schedule',
+                'total_dose',
+                'total_dose_unit',
+                'total_dose_original',
+                'total_dose_original_unit',
+                'agent_units_of_measure',
+                'best_response_to_prior_therapy',
+                'nonresponse_therapy_type',
+                'prior_therapy_type',
+                'prior_steroid_exposure',
+                'number_of_prior_regimens_steroid',
+                'total_number_of_doses_steroid',
+                'prior_nsaid_exposure',
+                'number_of_prior_regimens_nsaid',
+                'total_number_of_doses_nsaid',
+                'tx_loc_geo_loc_ind_nsaid',
+                'min_rsdl_dz_tx_ind_nsaids_treatment_pe',
+                'therapy_type',
+                'any_therapy',
+                'number_of_prior_regimens_any_therapy',
+                'total_number_of_doses_any_therapy',
+                'treatment_performed_at_site',
+                'treatment_performed_in_minimal_residual'
+            ],
+            'program/program': [
+                
+                'program_name',
+                'program_acronym',
+                'program_short_description',
+                'program_full_description',
+                'program_external_url',
+                'program_sort_order'
+            ],
+            'registration/registration': [
+                
+                'registration_origin'
+            ],
+            'sample/sample': [
+                
+                'sample_site',
+                'physical_sample_type',
+                'general_sample_pathology',
+                'tumor_sample_origin',
+                'summarized_sample_type',
+                'molecular_subtype',
+                'specific_sample_pathology',
+                'sample_chronology',
+                'necropsy_sample',
+                'tumor_grade',
+                'length_of_tumor',
+                'length_of_tumor_unit',
+                'length_of_tumor_original',
+                'length_of_tumor_original_unit',
+                'width_of_tumor',
+                'width_of_tumor_unit',
+                'width_of_tumor_original',
+                'width_of_tumor_original_unit',
+                'volume_of_tumor',
+                'volume_of_tumor_unit',
+                'volume_of_tumor_original',
+                'volume_of_tumor_original_unit',
+                'percentage_tumor',
+                'sample_preservation',
+                'comment'
+            ],
+            'study/study': [
+                
+                'clinical_study_type',
+                'study_disposition'
+            ],
+            'study_arm/study_arm': [
+                
+                'ctep_treatment_assignment_code'
+            ],
+            'study_site/study_site': [
+                
+                'site_short_name',
+                'veterinary_medical_center',
+                'registering_institution'
+            ],
+            'visit/visit': [
+                
+                'visit_number'
+            ],
+            'vital_signs/vital_signs': [
+                
+                'body_temperature',
+                'body_temperature_unit',
+                'body_temperature_original',
+                'body_temperature_original_unit',
+                'pulse',
+                'pulse_unit',
+                'pulse_original',
+                'pulse_original_unit',
+                'respiration_rate',
+                'respiration_rate_unit',
+                'respiration_rate_original',
+                'respiration_rate_original_unit',
+                'respiration_pattern',
+                'systolic_bp',
+                'systolic_bp_unit',
+                'systolic_bp_original',
+                'systolic_bp_original_unit',
+                'pulse_ox',
+                'pulse_ox_unit',
+                'pulse_ox_original',
+                'pulse_ox_original_unit',
+                'patient_weight',
+                'patient_weight_unit',
+                'patient_weight_original',
+                'patient_weight_original_unit',
+                'body_surface_area',
+                'body_surface_area_unit',
+                'body_surface_area_original',
+                'body_surface_area_original_unit',
+                'modified_ecog',
+                'ecg',
+                'assessment_timepoint',
+                'phase'
+            ]
+        },
+
+        # end enumerable_columns['icdc']
+
         'idc': {
             
             'dicom_all': [
@@ -1222,15 +1521,15 @@ def map_columns_one_to_many( input_file, from_field, to_field, gzipped=False ):
         
         IN = open( input_file )
 
-    column_names = next(IN).rstrip('\n').split('\t')
+    column_names = next( IN ).rstrip( '\n' ).split( '\t' )
 
     if from_field not in column_names or to_field not in column_names:
         
         sys.exit( f"FATAL: One or both requested map fields ('{from_field}', '{to_field}') not found in specified input file '{input_file}'; aborting.\n" )
 
-    for line in [ next_line.rstrip('\n') for next_line in IN ]:
+    for line in [ next_line.rstrip( '\n' ) for next_line in IN ]:
         
-        values = line.split('\t')
+        values = line.split( '\t' )
 
         current_from = ''
 
@@ -1250,7 +1549,7 @@ def map_columns_one_to_many( input_file, from_field, to_field, gzipped=False ):
             
             return_map[current_from] = set()
 
-        return_map[current_from].add(current_to)
+        return_map[current_from].add( current_to )
 
     IN.close()
 

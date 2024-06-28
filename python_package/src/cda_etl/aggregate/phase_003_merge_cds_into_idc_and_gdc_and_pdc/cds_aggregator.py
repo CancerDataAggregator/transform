@@ -745,7 +745,7 @@ class CDS_aggregator:
 
                         for colname in colnames:
                             
-                            # Replace any values that are null in the existing GDC+PDC-merged data with corresponding non-null values from IDC.
+                            # Replace any values that are null in the existing IDC+GDC+PDC-merged data with corresponding non-null values from CDS.
 
                             if record[colname] is None or record[colname] == '':
                                 

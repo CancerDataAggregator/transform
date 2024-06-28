@@ -42,7 +42,7 @@ demographic_output_json = path.join( json_out_dir, 'demographic_metadata.json' )
 #     weight_original_unit: String
 #     neutered_indicator: String
 #     case {
-#         # Just for validation.
+#         # Because demographic_id is sometimes null.
 #         case_id
 #     }
 # }
@@ -90,11 +90,11 @@ null_result = False
 offset = 0
 
 with open( demographic_output_json, 'w' ) as JSON, \
-    open( demographic_output_tsv, 'w' ) as DEMOGRAPHIC, \
-    open( demographic_case_output_tsv, 'w' ) as DEMOGRAPHIC_CASE:
+    open( demographic_output_tsv, 'w' ) as DEMOGRAPHIC:
 
-    print( *scalar_demographic_fields, sep='\t', file=DEMOGRAPHIC )
-    print( *[ 'demographic_id', 'case_id' ], sep='\t', file=DEMOGRAPHIC_CASE )
+    print_fields = [ 'case_id' ] + scalar_demographic_fields
+
+    print( *print_fields, sep='\t', file=DEMOGRAPHIC )
 
     while not null_result:
     
@@ -151,11 +151,15 @@ with open( demographic_output_json, 'w' ) as JSON, \
 
                     demographic_row.append( field_value )
 
-                print( *demographic_row, sep='\t', file=DEMOGRAPHIC )
-
                 if 'case' in demographic and demographic['case'] is not None and demographic['case']['case_id'] is not None:
                     
-                    print( *[ demographic_id, demographic['case']['case_id'] ], sep='\t', file=DEMOGRAPHIC_CASE )
+                    demographic_row = [ demographic['case']['case_id'] ] + demographic_row
+
+                else:
+                    
+                    sys.exit( f"FATAL: demographic_id '{demographic_id}' not linked to any case_id; violates downstream assumptions, aborting." )
+
+                print( *demographic_row, sep='\t', file=DEMOGRAPHIC )
 
         offset = offset + page_size
 

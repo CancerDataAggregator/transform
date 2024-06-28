@@ -29,7 +29,7 @@ class mutation_transformer:
         ]
 
         self.input_dir = path.join( 'extracted_data', 'mutation', source_version )
-        self.merged_cda_dir = path.join( 'cda_tsvs', 'merged_cds_idc_gdc_and_pdc_tables' )
+        self.merged_cda_dir = path.join( 'cda_tsvs', 'merged_icdc_cds_idc_gdc_and_pdc_tables' )
 
         self.cda_table_inputs = {
             

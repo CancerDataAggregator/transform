@@ -25,7 +25,7 @@ class CDA_loader:
 
         self.max_alias_cache_size = 25000000
 
-        self.merged_tsv_dir = path.join( 'cda_tsvs', 'merged_cds_idc_gdc_and_pdc_tables' )
+        self.merged_tsv_dir = path.join( 'cda_tsvs', 'merged_icdc_cds_idc_gdc_and_pdc_tables' )
 
         self.sql_output_dir = 'SQL_data'
 
