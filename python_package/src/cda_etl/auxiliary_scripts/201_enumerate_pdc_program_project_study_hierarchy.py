@@ -2,7 +2,7 @@
 
 import re
 
-from os import path
+from os import makedirs, path
 
 from cda_etl.lib import load_tsv_as_dict, map_columns_one_to_many, map_columns_one_to_one, sort_file_with_header
 
@@ -24,7 +24,7 @@ input_data = {
 
 aux_root = 'auxiliary_metadata'
 
-output_dir = path.join( aux_root, '__project_crossrefs' )
+output_dir = path.join( aux_root, '__PDC_supplemental_metadata' )
 
 output_file = path.join( output_dir, 'PDC_all_programs_projects_and_studies.tsv' )
 
@@ -51,6 +51,10 @@ output_fields = [
 ]
 
 # EXECUTION
+
+if not path.exists( output_dir ):
+    
+    makedirs( output_dir )
 
 with open( output_file, 'w' ) as OUT:
     

@@ -13,7 +13,7 @@ input_root = path.join( 'extracted_data', 'pdc_postprocessed' )
 
 aux_root = 'auxiliary_metadata'
 
-output_dir = path.join( aux_root, '__project_crossrefs' )
+output_dir = path.join( aux_root, '__PDC_supplemental_metadata' )
 
 out_file = path.join( output_dir, 'PDC_entity_submitter_id_to_program_project_and_study.tsv' )
 
@@ -87,7 +87,7 @@ with open( out_file, 'w' ) as OUT:
 
         program_name = project_id_to_program_name[project_id]
 
-        for study_id in aliquot_id_to_study_id[aliquot_id]:
+        for study_id in sorted( aliquot_id_to_study_id[aliquot_id] ):
             
             study_submitter_id = study_id_to_submitter_id[study_id]
 
@@ -103,7 +103,7 @@ with open( out_file, 'w' ) as OUT:
 
         program_name = project_id_to_program_name[project_id]
 
-        for study_id in sample_id_to_study_id[sample_id]:
+        for study_id in sorted( sample_id_to_study_id[sample_id] ):
             
             study_submitter_id = study_id_to_submitter_id[study_id]
 
@@ -119,7 +119,7 @@ with open( out_file, 'w' ) as OUT:
 
         program_name = project_id_to_program_name[project_id]
 
-        for study_id in diagnosis_id_to_study_id[diagnosis_id]:
+        for study_id in sorted( diagnosis_id_to_study_id[diagnosis_id] ):
             
             study_submitter_id = study_id_to_submitter_id[study_id]
 
@@ -137,7 +137,7 @@ with open( out_file, 'w' ) as OUT:
 
         program_name = project_id_to_program_name[project_id]
 
-        for study_id in demographic_id_to_study_id[demographic_id]:
+        for study_id in sorted( demographic_id_to_study_id[demographic_id] ):
             
             study_submitter_id = study_id_to_submitter_id[study_id]
 
@@ -153,7 +153,7 @@ with open( out_file, 'w' ) as OUT:
 
         program_name = project_id_to_program_name[project_id]
 
-        for study_id in case_id_to_study_id[case_id]:
+        for study_id in sorted( case_id_to_study_id[case_id] ):
             
             study_submitter_id = study_id_to_submitter_id[study_id]
 

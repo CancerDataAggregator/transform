@@ -19,7 +19,7 @@ input_data = {
     'project_studies_primary_site' : map_columns_one_to_many( path.join( input_dir, 'project_studies_primary_site.tsv' ), 'project_id', 'primary_site' )
 }
 
-output_dir = path.join( 'auxiliary_metadata', '__project_crossrefs' )
+output_dir = path.join( 'auxiliary_metadata', '__GDC_supplemental_metadata' )
 
 output_file = path.join( output_dir, 'GDC_all_programs_and_projects.tsv' )
 

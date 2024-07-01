@@ -31,15 +31,19 @@ class mutation_transformer_NEW_MODEL:
             'PDC'
         ]
 
+        self.gdc_entity_map = path.join( 'auxiliary_metadata', '__GDC_supplemental_metadata', 'GDC_entity_submitter_id_to_program_name_and_project_id.tsv' )
+
         self.input_dir = path.join( 'extracted_data', 'mutation', source_version )
 
-        self.cda_table_dir = path.join( 'cda_tsvs', 'mutation', source_version )
+        self.merged_cda_dir = path.join( 'cda_tsvs', 'merged_icdc_cds_idc_gdc_and_pdc_tables' )
 
         self.cda_table_inputs = {
             
-            'mutation' : path.join( self.cda_table_dir, 'mutation.tsv.gz' ),
-            'subject_mutation' : path.join( self.cda_table_dir, 'subject_mutation.tsv.gz' ),
-            'mutation_in_project' : path.join( self.cda_table_dir, 'mutation_in_project.tsv.gz' )
+            'mutation' : path.join( self.merged_cda_dir, 'mutation.tsv.gz' ),
+            'subject_data_source' : path.join( self.merged_cda_dir, 'subject_data_source.tsv.gz' ),
+            'subject_integer_aliases' : path.join( self.merged_cda_dir, 'subject_integer_aliases.tsv.gz' ),
+            'subject_mutation' : path.join( self.merged_cda_dir, 'subject_mutation.tsv.gz' ),
+            'mutation_in_project' : path.join( self.merged_cda_dir, 'mutation_in_project.tsv.gz' )
         }
 
         self.data_source_boolean_fields = [ f"data_at_{data_source.lower()}" for data_source in self.cda_data_sources ]
@@ -59,7 +63,7 @@ class mutation_transformer_NEW_MODEL:
 
         self.display_increment = 500000
 
-        for target_dir in [ self.cda_table_dir, self.sql_table_output_dir ]:
+        for target_dir in [ self.sql_table_output_dir ]:
             
             if not path.isdir( target_dir ):
                 
@@ -67,13 +71,11 @@ class mutation_transformer_NEW_MODEL:
 
     def make_mutation_table_and_associations( self ):
         
-        merged_cda_dir = path.join( 'cda_tsvs', 'merged_cds_idc_gdc_and_pdc_tables' )
-
         cda_subject_alias_to_data_source = dict()
 
         cda_subject_alias_data_source_count = dict()
 
-        with gzip.open( path.join( merged_cda_dir, 'subject_data_source.tsv.gz' ), 'rt' ) as IN:
+        with gzip.open( self.cda_table_inputs['subject_data_source'], 'rt' ) as IN:
             
             header = next( IN ).rstrip( '\n' )
 
@@ -105,7 +107,7 @@ class mutation_transformer_NEW_MODEL:
 
         cda_subject_id_to_integer_alias = dict()
 
-        with gzip.open( path.join( merged_cda_dir, 'subject_integer_aliases.tsv.gz' ), 'rt' ) as IN:
+        with gzip.open( self.cda_table_inputs['subject_integer_aliases'], 'rt' ) as IN:
             
             for line in IN:
                 
@@ -113,13 +115,11 @@ class mutation_transformer_NEW_MODEL:
 
                 cda_subject_id_to_integer_alias[subject_id] = subject_alias
 
-        gdc_entity_map = path.join( 'auxiliary_metadata', '__project_crossrefs', 'GDC_entity_submitter_id_to_program_name_and_project_id.tsv' )
-
         gdc_project_and_case_submitter_id_to_cda_subject_id = dict()
 
         gdc_project_to_containing_program = dict()
 
-        with open( gdc_entity_map ) as IN:
+        with open( self.gdc_entity_map ) as IN:
             
             header = next( IN ).rstrip( '\n' )
 

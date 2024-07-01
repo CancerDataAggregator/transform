@@ -3,91 +3,15 @@
 import shutil
 import sys
 
+from cda_etl.lib import map_columns_one_to_one
+
 from os import path, makedirs
-
-# SUBROUTINES
-
-def map_columns_one_to_one( input_file, from_field, to_field ):
-    
-    return_map = dict()
-
-    with open( input_file ) as IN:
-        
-        header = next(IN).rstrip('\n')
-
-        column_names = header.split('\t')
-
-        if from_field not in column_names or to_field not in column_names:
-            
-            sys.exit( f"FATAL: One or both requested map fields ('{from_field}', '{to_field}') not found in specified input file '{input_file}'; aborting.\n" )
-
-        for line in [ next_line.rstrip('\n') for next_line in IN ]:
-            
-            values = line.split('\t')
-
-            current_from = ''
-
-            current_to = ''
-
-            for i in range( 0, len( column_names ) ):
-                
-                if column_names[i] == from_field:
-                    
-                    current_from = values[i]
-
-                if column_names[i] == to_field:
-                    
-                    current_to = values[i]
-
-            return_map[current_from] = current_to
-
-    return return_map
-
-def map_columns_one_to_many( input_file, from_field, to_field ):
-    
-    return_map = dict()
-
-    with open( input_file ) as IN:
-        
-        header = next(IN).rstrip('\n')
-
-        column_names = header.split('\t')
-
-        if from_field not in column_names or to_field not in column_names:
-            
-            sys.exit( f"FATAL: One or both requested map fields ('{from_field}', '{to_field}') not found in specified input file '{input_file}'; aborting.\n" )
-
-        for line in [ next_line.rstrip('\n') for next_line in IN ]:
-            
-            values = line.split('\t')
-
-            current_from = ''
-
-            current_to = ''
-
-            for i in range( 0, len( column_names ) ):
-                
-                if column_names[i] == from_field:
-                    
-                    current_from = values[i]
-
-                if column_names[i] == to_field:
-                    
-                    current_to = values[i]
-
-            if current_from not in return_map:
-                
-                return_map[current_from] = set()
-
-            return_map[current_from].add(current_to)
-
-    return return_map
 
 # PARAMETERS
 
 input_root = path.join( 'extracted_data', 'gdc', 'all_TSV_output' )
 
-output_dir = path.join( 'auxiliary_metadata', '__project_crossrefs' )
+output_dir = path.join( 'auxiliary_metadata', '__GDC_supplemental_metadata' )
 
 out_file = path.join( output_dir, 'GDC_entity_submitter_id_to_program_name_and_project_id.tsv' )
 

@@ -20,17 +20,22 @@ class IDC_aggregator:
         self.merged_output_dir = path.join( 'cda_tsvs', 'merged_idc_gdc_and_pdc_tables' )
 
         self.aux_root = 'auxiliary_metadata'
+        self.gdc_metadata_dir = path.join( self.aux_root, '__GDC_supplemental_metadata' )
+        self.pdc_metadata_dir = path.join( self.aux_root, '__PDC_supplemental_metadata' )
         self.merge_log_dir = path.join( self.aux_root, '__merge_logs' )
         self.project_crossref_dir = path.join( self.aux_root, '__project_crossrefs' )
 
         self.input_files = {
             
-            'gdc_project_affiliations' : path.join( self.project_crossref_dir, 'GDC_entity_submitter_id_to_program_name_and_project_id.tsv' ),
+            'gdc_project_affiliations' : path.join( self.gdc_metadata_dir, 'GDC_entity_submitter_id_to_program_name_and_project_id.tsv' ),
             'gdc_to_idc_project_map' : path.join( self.project_crossref_dir, 'naive_GDC-IDC_project_id_map.hand_edited_to_remove_false_positives.tsv' ),
-            'pdc_project_affiliations' : path.join( self.project_crossref_dir, 'PDC_entity_submitter_id_to_program_project_and_study.tsv' ),
+
+            'pdc_project_affiliations' : path.join( self.pdc_metadata_dir, 'PDC_entity_submitter_id_to_program_project_and_study.tsv' ),
             'idc_to_pdc_project_map' : path.join( self.project_crossref_dir, 'naive_IDC-PDC_project_id_map.hand_edited_to_remove_false_positives.tsv' ),
+
             'gdc_pdc_merged_subject_ids' : path.join( self.merge_log_dir, 'PDC_subject_IDs_absorbed_into_corresponding_GDC_subject_IDs.tsv' ),
             'pdc_merged_subject_ids' : path.join( self.merge_log_dir, 'PDC_initial_default_subject_IDs_aggregated_across_projects.tsv' ),
+
             'subject_identifier' : path.join( self.idc_cda_dir, 'subject_identifier.tsv.gz' ),
             'subject_associated_project' : path.join( self.idc_cda_dir, 'subject_associated_project.tsv.gz' )
         }

@@ -17,18 +17,21 @@ class CDS_aggregator:
         self.merged_output_dir = path.join( 'cda_tsvs', 'merged_cds_idc_gdc_and_pdc_tables' )
 
         self.aux_root = 'auxiliary_metadata'
+        self.gdc_metadata_dir = path.join( self.aux_root, '__GDC_supplemental_metadata' )
+        self.pdc_metadata_dir = path.join( self.aux_root, '__PDC_supplemental_metadata' )
+        self.idc_metadata_dir = path.join( self.aux_root, '__IDC_supplemental_metadata' )
         self.merge_log_dir = path.join( self.aux_root, '__merge_logs' )
         self.project_crossref_dir = path.join( self.aux_root, '__project_crossrefs' )
 
         self.input_files = {
             
-            'gdc_project_affiliations' : path.join( self.project_crossref_dir, 'GDC_entity_submitter_id_to_program_name_and_project_id.tsv' ),
+            'gdc_project_affiliations' : path.join( self.gdc_metadata_dir, 'GDC_entity_submitter_id_to_program_name_and_project_id.tsv' ),
             'cds_to_gdc_project_map' : path.join( self.project_crossref_dir, 'naive_CDS-GDC_project_id_map.hand_edited_to_remove_false_positives.tsv' ),
 
-            'idc_project_affiliations' : path.join( self.aux_root, '__IDC_supplemental_metadata', 'IDC_entity_submitter_id_to_collection_id.tsv' ),
+            'idc_project_affiliations' : path.join( self.idc_metadata_dir, 'IDC_entity_submitter_id_to_collection_id.tsv' ),
             'cds_to_idc_project_map' : path.join( self.project_crossref_dir, 'naive_CDS-IDC_project_id_map.hand_edited_to_remove_false_positives.tsv' ),
 
-            'pdc_project_affiliations' : path.join( self.project_crossref_dir, 'PDC_entity_submitter_id_to_program_project_and_study.tsv' ),
+            'pdc_project_affiliations' : path.join( self.pdc_metadata_dir, 'PDC_entity_submitter_id_to_program_project_and_study.tsv' ),
             'cds_to_pdc_project_map' : path.join( self.project_crossref_dir, 'naive_CDS-PDC_project_id_map.hand_edited_to_remove_false_positives.tsv' ),
             'pdc_merged_subject_ids' : path.join( self.merge_log_dir, 'PDC_initial_default_subject_IDs_aggregated_across_projects.tsv' ),
 
