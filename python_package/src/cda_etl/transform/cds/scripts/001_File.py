@@ -129,7 +129,7 @@ with open( file_input_tsv ) as FILE_IN, open( file_output_tsv, 'w' ) as FILE_OUT
         output_record['data_type'] = ''
         output_record['file_format'] = input_record['file_type']
         output_record['drs_uri'] = 'drs://' + file_id
-        output_record['byte_size'] = '' if input_record['file_size'] == '' else int( float( input_record['file_size'] ) )
+        output_record['byte_size'] = '' if input_record['file_size'] == '' else input_record['file_size']
         output_record['checksum'] = input_record['md5sum']
         output_record['data_modality'] = ''
         output_record['imaging_modality'] = ''

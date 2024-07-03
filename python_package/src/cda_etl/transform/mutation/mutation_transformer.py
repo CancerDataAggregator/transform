@@ -209,7 +209,7 @@ class mutation_transformer:
         
         print( 'Transcoding CDA mutation and subject_mutation TSVs to SQL...', file=sys.stderr )
 
-        for target_table in self.cda_table_inputs.keys():
+        for target_table in self.sql_outputs.keys():
             
             # Transcode TSV rows into the body of a prepared SQL COPY statement, to populate `target_table` in postgres.
 

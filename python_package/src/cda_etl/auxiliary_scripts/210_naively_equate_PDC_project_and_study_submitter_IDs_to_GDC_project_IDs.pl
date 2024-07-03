@@ -10,7 +10,11 @@ my $gdcFile = 'auxiliary_metadata/__GDC_supplemental_metadata/GDC_entity_submitt
 
 my $pdcFile = 'auxiliary_metadata/__PDC_supplemental_metadata/PDC_entity_submitter_id_to_program_project_and_study.tsv';
 
-my $outFile = 'auxiliary_metadata/__project_crossrefs/naive_GDC-PDC_project_id_map.tsv';
+my $outDir = 'auxiliary_metadata/__project_crossrefs';
+
+system( "mkdir -p $outDir" ) if not -d $outDir;
+
+my $outFile = "$outDir/naive_GDC-PDC_project_id_map.tsv";
 
 die("Usage: $0 <pdc_file> <gdc_file> <output_file>\n") if ( $outFile eq '' );
 

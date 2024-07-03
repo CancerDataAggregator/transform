@@ -10,6 +10,8 @@ pdc_file=./auxiliary_metadata/__PDC_supplemental_metadata/PDC_entity_submitter_i
 
 idc_file=./auxiliary_metadata/__IDC_supplemental_metadata/IDC_entity_submitter_id_to_collection_id.tsv
 
+mkdir -p ./auxiliary_metadata/__project_crossrefs
+
 # ...
 
 worker_script=./package_root/auxiliary_scripts/400_naively_equate_CDS_program_and_study_IDs_to_GDC_program_and_project_IDs.pl

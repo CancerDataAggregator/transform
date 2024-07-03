@@ -12,6 +12,8 @@ worker_script=./package_root/auxiliary_scripts/300_naively_equate_PDC_project_an
 
 output_file=./auxiliary_metadata/__project_crossrefs/naive_IDC-PDC_project_id_map.tsv
 
+mkdir -p ./auxiliary_metadata/__project_crossrefs
+
 echo $worker_script $pdc_file $idc_file $output_file
 $worker_script $pdc_file $idc_file $output_file
 

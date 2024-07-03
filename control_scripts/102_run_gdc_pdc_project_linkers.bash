@@ -2,6 +2,8 @@
 
 chmod 755 ./package_root/auxiliary_scripts/*py ./package_root/auxiliary_scripts/*pl
 
+mkdir -p ./auxiliary_metadata/__project_crossrefs
+
 echo ./package_root/auxiliary_scripts/200_summarize_PDC_entities_by_program_project_and_study.py
 ./package_root/auxiliary_scripts/200_summarize_PDC_entities_by_program_project_and_study.py
 
