@@ -17,11 +17,11 @@ version_string = sys.argv[1]
 # compression ratio depends on the order in which data is scanned during
 # zip-style compression, and row order differs).
 
-bq_project_name = 'broad-cda-dev'
+bq_project_name = YOUR_PROJECT_NAME
 
-intermediate_bucket = 'gdc-bq-sample-bucket'
+intermediate_bucket = YOUR_TEMP_BUCKET
 
-target_table_path = 'github_testing.idc_patient_testing'
+target_table_path = YOUR_TARGET_TABLE
 
 if not path.isfile( 'GCS-service-account-key.etl-github-testing.json' ):
     
