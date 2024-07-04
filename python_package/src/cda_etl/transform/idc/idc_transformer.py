@@ -248,7 +248,7 @@ class IDC_transformer:
 
                 file_id = record['SOPInstanceUID']
 
-                print( *[ file_id, 'IDC', 'SOPInstanceUID', file_id ], sep='\t', end='\n', file=FILE_ID )
+                print( *[ file_id, 'IDC', 'dicom_all.SOPInstanceUID', file_id ], sep='\t', end='\n', file=FILE_ID )
 
                 print( *[ file_id, record['collection_id'] ], sep='\t', end='\n', file=FILE_PROJECT )
                 
