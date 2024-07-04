@@ -56,7 +56,11 @@ fields_to_pull = [
     'collection_id',
     'PatientID',
     'idc_case_id',
-    'collection_tumorLocation'
+    'collection_tumorLocation',
+    'SpecimenDescriptionSequence',
+    'AnatomicRegionSequence',
+    'RTROIObservationsSequence',
+    'SharedFunctionalGroupsSequence'
 ]
 
 idc.query_idc_to_table( fields_to_pull )
