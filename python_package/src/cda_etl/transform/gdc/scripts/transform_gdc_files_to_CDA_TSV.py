@@ -2,8 +2,9 @@
 
 import sys
 
-from cda_etl.lib import map_columns_one_to_one, map_columns_one_to_many
 from os import makedirs, path
+
+from cda_etl.lib import map_columns_one_to_one, map_columns_one_to_many
 
 # PARAMETERS
 

@@ -1342,6 +1342,15 @@ def get_safe_value( record, field_name ):
         
         sys.exit(f"FATAL: The given record does not have the expected {field_name} field; aborting.")
 
+def get_submitter_id_patterns_not_to_merge_across_projects():
+    
+    return [
+        
+        r'^ref$',
+        r'^P?[0-9]+$',
+        r'[Pp]ooled [Ss]ample'
+    ]
+
 def get_unique_values_from_tsv_column( tsv_path, column_name ):
     
     if not path.exists( tsv_path ):

@@ -4,7 +4,7 @@ import re, sys
 
 from os import makedirs, path
 
-from cda_etl.lib import load_tsv_as_dict, map_columns_one_to_one, map_columns_one_to_many
+from cda_etl.lib import load_tsv_as_dict, map_columns_one_to_one, map_columns_one_to_many, get_submitter_id_patterns_not_to_merge_across_projects
 
 # PARAMETERS
 
@@ -145,14 +145,16 @@ for output_dir in [ output_root, merge_log_dir ]:
 
 mergeable_case_submitter_id_to_program_and_project = dict()
 
-# Put these somewhere less... here.
+# Any case_submitter_id values matching certain patterns (like /^[0-9]+$/) will not
+# be merged across multiple projects (into unified CDA subject records), even
+# if identical values appear across multiple projects, because these matches
+# have upon examination been deemed spurious.
+# 
+# The spurious nature of these matches should be checked constantly: it's not
+# impossible that some valid matches may turn up in the future, in which case
+# we'd have to handle those differently.
 
-banned_submitter_id_patterns = [
-    
-    r'^ref$',
-    r'^P?[0-9]+$',
-    r'[Pp]ooled [Ss]ample'
-]
+submitter_id_patterns_not_to_merge_across_projects = get_submitter_id_patterns_not_to_merge_across_projects()
 
 with open( case_input_tsv ) as CASE_IN:
     
@@ -172,7 +174,7 @@ with open( case_input_tsv ) as CASE_IN:
 
             passed = True
 
-            for submitter_id_pattern in banned_submitter_id_patterns:
+            for submitter_id_pattern in submitter_id_patterns_not_to_merge_across_projects:
                 
                 if re.search( submitter_id_pattern, case_submitter_id ) is not None:
                     
