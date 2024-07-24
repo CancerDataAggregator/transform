@@ -54,7 +54,10 @@ def columns_to_count( data_source ):
                 'selected_normal_targeted_sequencing',
                 'selected_normal_wgs',
                 'selected_normal_wxs',
-                'state'
+                'state',
+                # Fields below this line were added at the request of DSS.
+                'aliquot_quantity',
+                'aliquot_volume'
             ],
             'analysis': [
                 
@@ -68,7 +71,9 @@ def columns_to_count( data_source ):
                 'experimental_protocol_type',
                 'normal_tumor_genotype_snp_match',
                 'spectrophotometer_method',
-                'state'
+                'state',
+                # Fields below this line were added at the request of DSS.
+                'a260_a280_ratio'
             ],
             'annotation': [
                 
@@ -176,7 +181,40 @@ def columns_to_count( data_source ):
                 'tumor_grade',
                 'who_cns_grade',
                 'wilms_tumor_histologic_subtype',
-                'year_of_diagnosis'
+                'year_of_diagnosis',
+                # Fields below this line were added at the request of DSS.
+                'cog_liver_stage',
+                'enneking_msts_stage',
+                'ensat_clinical_m',
+                'ensat_pathologic_n',
+                'ensat_pathologic_stage',
+                'ensat_pathologic_t',
+                'gleason_grade_group',
+                'gleason_grade_tertiary',
+                'gleason_score',
+                'inrg_stage',
+                'irs_stage',
+                'ishak_fibrosis_score',
+                'metastasis_at_diagnosis_site',
+                'pediatric_kidney_staging',
+                'perineural_invasion_present',
+                'primary_disease',
+                'tumor_grade_category',
+                'tumor_regression_grade',
+                'tumor_stage',
+                'tumor_stage',
+                'uicc_clinical_m',
+                'uicc_clinical_n',
+                'uicc_clinical_stage',
+                'uicc_clinical_t',
+                'uicc_pathologic_m',
+                'uicc_pathologic_n',
+                'uicc_pathologic_stage',
+                'uicc_pathologic_t',
+                'uicc_staging_system_edition',
+                'vascular_invasion_present',
+                'weiss_assessment_score',
+                'who_nte_grade'
             ],
             'diagnosis_has_site_of_involvement': [
                 
@@ -219,7 +257,9 @@ def columns_to_count( data_source ):
                 'platform',
                 'state',
                 'type',
-                'wgs_coverage'
+                'wgs_coverage',
+                # Fields below this line were added at the request of DSS.
+                'msi_score'
             ],
             'file_has_acl': [
                 
@@ -388,7 +428,9 @@ def columns_to_count( data_source ):
                 'tissue_type',
                 'tumor_code',
                 'tumor_code_id',
-                'tumor_descriptor'
+                'tumor_descriptor',
+                # Fields below this line were added at the request of DSS.
+                'distributor_reference'
             ],
             'slide': [
                 
@@ -415,7 +457,9 @@ def columns_to_count( data_source ):
                 'treatment_intent_type',
                 'treatment_or_therapy',
                 'treatment_outcome',
-                'treatment_type'
+                'treatment_type',
+                # Fields below this line were added at the request of DSS.
+                'drug_category'
             ]
         },
 
@@ -430,7 +474,10 @@ def columns_to_count( data_source ):
                 'pool',
                 'analyte_type',
                 'concentration',
-                'taxon'
+                'taxon',
+                # Fields below this line were added at the request of DSS.
+                'aliquot_quantity',
+                'aliquot_volume'
             ],
             'AliquotRunMetadata/AliquotRunMetadata': [
                 
@@ -773,7 +820,10 @@ def columns_to_count( data_source ):
                 'reconstitution_volume_uom',
                 'internal_standards',
                 'extraction_method',
-                'ionization_mode'
+                'ionization_mode',
+                # Fields below this line were added at the request of DSS.
+                'protocol_name',
+                'document_name'
             ],
             'Sample/Sample': [
                 
@@ -801,7 +851,10 @@ def columns_to_count( data_source ):
                 'catalog_reference',
                 'distributor_reference',
                 'annotation',
-                'taxon'
+                'taxon',
+                # Fields below this line were added at the request of DSS.
+                'initial_weight',
+                'current_weight'
             ],
             'Study/Study.dbgap_id': [
                 
@@ -917,6 +970,28 @@ def columns_to_count( data_source ):
                 'platform',
                 'instrument_model',
                 'sequence_alignment_software'
+            ],
+            'image': [
+                
+                'de_identification_method_type',
+                'embedding_medium',
+                'image_modality',
+                'imaging_assay_type',
+                'imaging_equipment_manufacturer',
+                'imaging_equipment_model',
+                'imaging_protocol',
+                'imaging_sofware',
+                'immersion',
+                'lens_numerical_aperture',
+                'license',
+                'nominal_magnification',
+                'objective',
+                'organ_or_tissue',
+                'pyramid',
+                'staining_method',
+                'tissue_fixative',
+                'tumor_tissue_type',
+                'working_distance'
             ],
             'participant': [
                 
@@ -1290,20 +1365,26 @@ def columns_to_count( data_source ):
                 'PatientSex',
                 'EthnicGroup',
                 'collection_id',
-                # The following are not (yet) used, but we're pulling them so we can profile what's available along with the values we do use.
                 'collection_tumorLocation'
             ],
             'original_collections_metadata': [
+                
+                'Program',
                 'collection_id',
+                'collection_name',
                 'CancerTypes'
             ],
             'tcga_biospecimen_rel9': [
-                'sample_type_name'
+                
+                'sample_type_name',
+                'program_name',
+                'project_short_name'
             ],
             'tcga_clinical_rel9': [
+                
                 'race',
                 'vital_status',
-                # The following are not (yet) used, but we're pulling them so we can profile what's available along with the values we do use.
+                'year_of_diagnosis',
                 'anatomic_neoplasm_subdivision',
                 'clinical_stage',
                 'disease_code',
