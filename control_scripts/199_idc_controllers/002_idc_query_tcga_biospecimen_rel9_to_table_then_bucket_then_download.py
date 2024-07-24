@@ -45,7 +45,9 @@ fields_to_pull = [
     'days_to_collection',
     'sample_type_name',
     'case_gdc_id',
-    'sample_gdc_id'
+    'sample_gdc_id',
+    'program_name',
+    'project_short_name'
 ]
 
 idc.query_idc_to_table( fields_to_pull )

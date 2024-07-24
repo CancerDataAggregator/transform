@@ -49,6 +49,7 @@ fields_to_pull = [
     'Modality',
     'tcia_tumorLocation',
     'PatientSpeciesDescription',
+    'PatientBirthDate',
     'PatientSex',
     'EthnicGroup',
     'crdc_series_uuid',
@@ -57,8 +58,9 @@ fields_to_pull = [
     'PatientID',
     'idc_case_id',
     'collection_tumorLocation',
-    'SpecimenDescriptionSequence',
     'AnatomicRegionSequence',
+    'SpecimenDescriptionSequence',
+    'SegmentSequence',
     'RTROIObservationsSequence',
     'SharedFunctionalGroupsSequence'
 ]
@@ -68,4 +70,5 @@ idc.query_idc_to_table( fields_to_pull )
 idc.extract_table_to_bucket()
 
 idc.download_bucket_data()
+
 

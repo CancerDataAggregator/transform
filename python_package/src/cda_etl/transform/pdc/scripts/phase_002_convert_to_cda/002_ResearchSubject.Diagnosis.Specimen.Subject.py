@@ -24,6 +24,8 @@ aliquot_input_tsv = path.join( input_root, 'Aliquot', 'Aliquot.tsv' )
 
 aliquot_case_input_tsv = path.join( input_root, 'Aliquot', 'Aliquot.case_id.tsv' )
 
+aliquot_study_input_tsv = path.join( input_root, 'Aliquot', 'Aliquot.study_id.tsv' )
+
 demographic_input_tsv = path.join( input_root, 'Demographic', 'Demographic.tsv' )
 
 diagnosis_input_tsv = path.join( input_root, 'Diagnosis', 'Diagnosis.tsv' )
@@ -43,6 +45,8 @@ program_project_input_tsv = path.join( input_root, 'Program', 'Program.project_i
 sample_input_tsv = path.join( input_root, 'Sample', 'Sample.tsv' )
 
 sample_aliquot_input_tsv = path.join( input_root, 'Sample', 'Sample.aliquot_id.tsv' )
+
+sample_study_input_tsv = path.join( input_root, 'Sample', 'Sample.study_id.tsv' )
 
 study_input_tsv = path.join( input_root, 'Study', 'Study.tsv' )
 
@@ -80,6 +84,8 @@ aliquot_sample = map_columns_one_to_one( sample_aliquot_input_tsv, 'aliquot_id',
 
 aliquot_submitter_id = map_columns_one_to_one( aliquot_input_tsv, 'aliquot_id', 'aliquot_submitter_id' )
 
+aliquot_study = map_columns_one_to_many( aliquot_study_input_tsv, 'aliquot_id', 'study_id' )
+
 diagnosis_submitter_id = map_columns_one_to_one( diagnosis_input_tsv, 'diagnosis_id', 'diagnosis_submitter_id' )
 
 project_submitter_id = map_columns_one_to_one( project_input_tsv, 'project_id', 'project_submitter_id' )
@@ -87,6 +93,8 @@ project_submitter_id = map_columns_one_to_one( project_input_tsv, 'project_id', 
 program_submitter_id = map_columns_one_to_one( program_input_tsv, 'program_id', 'program_submitter_id' )
 
 sample_submitter_id = map_columns_one_to_one( sample_input_tsv, 'sample_id', 'sample_submitter_id' )
+
+sample_study = map_columns_one_to_many( sample_study_input_tsv, 'sample_id', 'study_id' )
 
 pdc_study_id = map_columns_one_to_one( study_input_tsv, 'study_id', 'pdc_study_id' )
 
@@ -385,62 +393,74 @@ with open( case_input_tsv ) as CASE_IN, open( researchsubject_output_tsv, 'w' ) 
                 
                 for sample_id in sorted( case_sample[case_id] ):
                     
-                    sample_cda_id = f"{rs_id}.sample.{sample_submitter_id[sample_id]}"
-
-                    print( *[ rs_id, sample_cda_id ], sep='\t', end='\n', file=RS_SPECIMEN )
-
-                    if sample_id not in sample_records:
+                    if sample_id not in sample_study:
                         
-                        sample_records[sample_id] = dict()
+                        sys.exit(f"FATAL: Sample {sample_id} not affiliated with any study; aborting.\n")
 
-                        sample_records[sample_id]['cda_ids'] = { sample_cda_id }
-                        sample_records[sample_id]['associated_project'] = set()
-                        sample_records[sample_id]['associated_project'].add(pdc_study_id[study_id])
-                        sample_records[sample_id]['days_to_collection'] = sample[sample_id]['days_to_sample_procurement']
+                    if study_id in sample_study[sample_id]:
+                        
+                        sample_cda_id = f"{rs_id}.sample.{sample_submitter_id[sample_id]}"
 
-                        if sample_records[sample_id]['days_to_collection'] == '':
+                        print( *[ rs_id, sample_cda_id ], sep='\t', end='\n', file=RS_SPECIMEN )
+
+                        if sample_id not in sample_records:
                             
-                            sample_records[sample_id]['days_to_collection'] = sample[sample_id]['days_to_collection']
+                            sample_records[sample_id] = dict()
 
-                        sample_records[sample_id]['primary_disease_type'] = input_case_record['disease_type']
-                        sample_records[sample_id]['anatomical_site'] = sample[sample_id]['biospecimen_anatomic_site']
-                        sample_records[sample_id]['source_material_type'] = sample[sample_id]['tissue_type']
-                        sample_records[sample_id]['specimen_type'] = 'sample'
-                        sample_records[sample_id]['derived_from_specimen'] = 'initial specimen'
-                        sample_records[sample_id]['derived_from_subject'] = subject_id
+                            sample_records[sample_id]['cda_ids'] = { sample_cda_id }
+                            sample_records[sample_id]['associated_project'] = set()
+                            sample_records[sample_id]['associated_project'].add(pdc_study_id[study_id])
+                            sample_records[sample_id]['days_to_collection'] = sample[sample_id]['days_to_sample_procurement']
 
-                    else:
-                        
-                        sample_records[sample_id]['cda_ids'].add( sample_cda_id )
-                        sample_records[sample_id]['associated_project'].add(pdc_study_id[study_id])
+                            if sample_records[sample_id]['days_to_collection'] == '':
+                                
+                                sample_records[sample_id]['days_to_collection'] = sample[sample_id]['days_to_collection']
+
+                            sample_records[sample_id]['primary_disease_type'] = input_case_record['disease_type']
+                            sample_records[sample_id]['anatomical_site'] = sample[sample_id]['biospecimen_anatomic_site']
+                            sample_records[sample_id]['source_material_type'] = sample[sample_id]['tissue_type']
+                            sample_records[sample_id]['specimen_type'] = 'sample'
+                            sample_records[sample_id]['derived_from_specimen'] = 'initial specimen'
+                            sample_records[sample_id]['derived_from_subject'] = subject_id
+
+                        else:
+                            
+                            sample_records[sample_id]['cda_ids'].add( sample_cda_id )
+                            sample_records[sample_id]['associated_project'].add(pdc_study_id[study_id])
 
                     if sample_id in sample_aliquot:
                         
                         for aliquot_id in sorted( sample_aliquot[sample_id] ):
                             
-                            aliquot_cda_id = f"{rs_id}.aliquot.{aliquot_submitter_id[aliquot_id]}"
-
-                            print( *[ rs_id, aliquot_cda_id ], sep='\t', end='\n', file=RS_SPECIMEN )
-
-                            if aliquot_id not in aliquot_records:
+                            if aliquot_id not in aliquot_study:
                                 
-                                aliquot_records[aliquot_id] = dict()
+                                sys.exit(f"FATAL: Aliquot {aliquot_id} not affiliated with any study; aborting.\n")
 
-                                aliquot_records[aliquot_id]['cda_ids'] = { aliquot_cda_id }
-                                aliquot_records[aliquot_id]['associated_project'] = set()
-                                aliquot_records[aliquot_id]['associated_project'].add(pdc_study_id[study_id])
-                                aliquot_records[aliquot_id]['days_to_collection'] = ''
-                                aliquot_records[aliquot_id]['primary_disease_type'] = input_case_record['disease_type']
-                                aliquot_records[aliquot_id]['anatomical_site'] = ''
-                                aliquot_records[aliquot_id]['source_material_type'] = ''
-                                aliquot_records[aliquot_id]['specimen_type'] = 'aliquot'
-                                aliquot_records[aliquot_id]['derived_from_specimen'] = sample_cda_id
-                                aliquot_records[aliquot_id]['derived_from_subject'] = subject_id
-
-                            else:
+                            if study_id in aliquot_study[aliquot_id]:
                                 
-                                aliquot_records[aliquot_id]['cda_ids'].add( aliquot_cda_id )
-                                aliquot_records[aliquot_id]['associated_project'].add(pdc_study_id[study_id])
+                                aliquot_cda_id = f"{rs_id}.aliquot.{aliquot_submitter_id[aliquot_id]}"
+
+                                print( *[ rs_id, aliquot_cda_id ], sep='\t', end='\n', file=RS_SPECIMEN )
+
+                                if aliquot_id not in aliquot_records:
+                                    
+                                    aliquot_records[aliquot_id] = dict()
+
+                                    aliquot_records[aliquot_id]['cda_ids'] = { aliquot_cda_id }
+                                    aliquot_records[aliquot_id]['associated_project'] = set()
+                                    aliquot_records[aliquot_id]['associated_project'].add(pdc_study_id[study_id])
+                                    aliquot_records[aliquot_id]['days_to_collection'] = ''
+                                    aliquot_records[aliquot_id]['primary_disease_type'] = input_case_record['disease_type']
+                                    aliquot_records[aliquot_id]['anatomical_site'] = ''
+                                    aliquot_records[aliquot_id]['source_material_type'] = ''
+                                    aliquot_records[aliquot_id]['specimen_type'] = 'aliquot'
+                                    aliquot_records[aliquot_id]['derived_from_specimen'] = sample_cda_id
+                                    aliquot_records[aliquot_id]['derived_from_subject'] = subject_id
+
+                                else:
+                                    
+                                    aliquot_records[aliquot_id]['cda_ids'].add( aliquot_cda_id )
+                                    aliquot_records[aliquot_id]['associated_project'].add(pdc_study_id[study_id])
 
             # Write the main ResearchSubject record.
 
