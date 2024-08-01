@@ -1541,6 +1541,52 @@ def load_tsv_as_dict( input_file, id_column_count=1 ):
 
     return result
 
+def map_columns_one_to_many( input_file, from_field, to_field, gzipped=False ):
+    
+    return_map = dict()
+
+    if gzipped:
+        
+        IN = gzip.open( input_file, 'rt' )
+
+    else:
+        
+        IN = open( input_file )
+
+    column_names = next( IN ).rstrip( '\n' ).split( '\t' )
+
+    if from_field not in column_names or to_field not in column_names:
+        
+        sys.exit( f"FATAL: One or both requested map fields ('{from_field}', '{to_field}') not found in specified input file '{input_file}'; aborting.\n" )
+
+    for line in [ next_line.rstrip( '\n' ) for next_line in IN ]:
+        
+        values = line.split( '\t' )
+
+        current_from = ''
+
+        current_to = ''
+
+        for i in range( 0, len( column_names ) ):
+            
+            if column_names[i] == from_field:
+                
+                current_from = values[i]
+
+            if column_names[i] == to_field:
+                
+                current_to = values[i]
+
+        if current_from not in return_map:
+            
+            return_map[current_from] = set()
+
+        return_map[current_from].add( current_to )
+
+    IN.close()
+
+    return return_map
+
 def map_columns_one_to_one( input_file, from_field, to_field, where_field=None, where_value=None, gzipped=False ):
     
     return_map = dict()
@@ -1594,52 +1640,6 @@ def map_columns_one_to_one( input_file, from_field, to_field, where_field=None, 
         if passed_where:
             
             return_map[current_from] = current_to
-
-    IN.close()
-
-    return return_map
-
-def map_columns_one_to_many( input_file, from_field, to_field, gzipped=False ):
-    
-    return_map = dict()
-
-    if gzipped:
-        
-        IN = gzip.open( input_file, 'rt' )
-
-    else:
-        
-        IN = open( input_file )
-
-    column_names = next( IN ).rstrip( '\n' ).split( '\t' )
-
-    if from_field not in column_names or to_field not in column_names:
-        
-        sys.exit( f"FATAL: One or both requested map fields ('{from_field}', '{to_field}') not found in specified input file '{input_file}'; aborting.\n" )
-
-    for line in [ next_line.rstrip( '\n' ) for next_line in IN ]:
-        
-        values = line.split( '\t' )
-
-        current_from = ''
-
-        current_to = ''
-
-        for i in range( 0, len( column_names ) ):
-            
-            if column_names[i] == from_field:
-                
-                current_from = values[i]
-
-            if column_names[i] == to_field:
-                
-                current_to = values[i]
-
-        if current_from not in return_map:
-            
-            return_map[current_from] = set()
-
-        return_map[current_from].add( current_to )
 
     IN.close()
 
