@@ -5,7 +5,7 @@
 -- Dumped from database version 14.12
 -- Dumped by pg_dump version 15.2
 
--- Started on 2024-08-19 10:57:04 EDT
+-- Started on 2024-08-19 16:34:52 EDT
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -43,8 +43,8 @@ SET default_table_access_method = heap;
 --
 
 CREATE TABLE public.column_metadata (
-    "table" text NOT NULL,
-    "column" text NOT NULL,
+    cda_table text NOT NULL,
+    cda_column text NOT NULL,
     column_type text NOT NULL,
     summary_display boolean NOT NULL,
     fetch_rows_returns boolean NOT NULL,
@@ -2199,7 +2199,7 @@ ALTER TABLE ONLY public.treatment
     ADD CONSTRAINT treatment_subject_alias_fkey FOREIGN KEY (subject_alias) REFERENCES public.subject(id_alias);
 
 
--- Completed on 2024-08-19 10:57:07 EDT
+-- Completed on 2024-08-19 16:34:55 EDT
 
 --
 -- PostgreSQL database dump complete
