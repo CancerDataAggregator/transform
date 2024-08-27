@@ -6,15 +6,19 @@ import sys
 
 from os import makedirs, path
 
+from cda_etl.lib import get_current_date
+
 # PARAMETERS
 
 api_url = 'https://pdc.cancer.gov/graphql'
 
-output_root = 'extracted_data/pdc'
+output_root = path.join( 'extracted_data', 'pdc' )
 
-version_output_dir = f"{output_root}/__version_metadata"
+extraction_date_file = path.join( output_root, 'extraction_date.txt' )
 
-version_json_output_file = f"{version_output_dir}/uiDataVersionSoftwareVersion.json"
+version_output_dir = path.join( output_root, '__version_metadata' )
+
+version_json_output_file = path.join( version_output_dir, 'uiDataVersionSoftwareVersion.json' )
 
 api_query_json = {
     'query': '''    {
@@ -30,6 +34,10 @@ api_query_json = {
 if not path.exists(version_output_dir):
     
     makedirs(version_output_dir)
+
+with open( extraction_date_file, 'w' ) as OUT:
+    
+    print( get_current_date(), file=OUT )
 
 # Send the uiDataVersionSoftwareVersion() query to the API server.
 

@@ -10,7 +10,7 @@ import time
 from collections import defaultdict
 from os import listdir, makedirs, path, rename
 
-from cda_etl.lib import add_to_map, associate_id_list_with_parent, get_safe_value, singularize, sort_file_with_header, write_association_pairs
+from cda_etl.lib import add_to_map, associate_id_list_with_parent, get_current_date, get_safe_value, singularize, sort_file_with_header, write_association_pairs
 
 class GDC_extractor:
     
@@ -89,6 +89,10 @@ class GDC_extractor:
         self.complex_structure_list_file = f"{self.METADATA_DIR}/non-atomic_substructures.txt"
 
         self.base_table_tsv = f"{self.TSV_DIR}/{self.endpoint_singular}.tsv"
+
+        # A place to record the date of data extraction.
+
+        self.extraction_date_file = f"{self.MERGED_OUTPUT_DIR}/extraction_date.txt"
 
         # Load endpoint-specific configuration metadata.
 
@@ -1930,5 +1934,9 @@ class GDC_extractor:
         self.make_association_tables()
 
         self.update_merged_output_directory()
+
+        with open( self.extraction_date_file, 'w' ) as OUT:
+            
+            print( get_current_date(), file=OUT )
 
 
