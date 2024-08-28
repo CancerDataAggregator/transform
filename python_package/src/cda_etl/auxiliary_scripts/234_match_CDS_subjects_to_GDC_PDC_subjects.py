@@ -18,13 +18,13 @@ cds_pdc_merge_map = path.join( aux_dir, 'CDS_CDA_subjects_linked_to_PDC_CDA_subj
 
 cda_root = 'cda_tsvs'
 
-gdc_cds_dir = path.join( cda_root, 'gdc_002_decorated_harmonized' )
+gdc_cda_dir = path.join( cda_root, 'gdc_002_decorated_harmonized' )
 
-gdc_subject_tsv = path.join( gdc_cds_dir, 'subject.tsv' )
+gdc_subject_tsv = path.join( gdc_cda_dir, 'subject.tsv' )
 
-pdc_cds_dir = path.join( cda_root, 'pdc_002_decorated_harmonized' )
+pdc_cda_dir = path.join( cda_root, 'pdc_002_decorated_harmonized' )
 
-pdc_subject_tsv = path.join( pdc_cds_dir, 'subject.tsv' )
+pdc_subject_tsv = path.join( pdc_cda_dir, 'subject.tsv' )
 
 cds_cda_dir = path.join( cda_root, 'cds_002_decorated_harmonized' )
 

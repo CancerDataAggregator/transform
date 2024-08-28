@@ -12,7 +12,7 @@ upstream_data_source = 'CDS'
 
 # Unmodified extracted data, converted directly from a Neo4j JSONL dump.
 
-tsv_input_root = path.join( 'extracted_data', 'cds' )
+tsv_input_root = path.join( 'extracted_data', upstream_data_source.lower() )
 
 participant_input_tsv = path.join( tsv_input_root, 'participant.tsv' )
 
@@ -216,9 +216,9 @@ for participant_uuid in participant:
 
         new_cda_subject_id = f"{program_acronym[cda_project_id[program_uuid]]}.{participant[participant_uuid]['participant_id']}"
 
-        if participant_uuid in cda_subject_id and cda_subject_id[particpant_uuid] != new_cda_subject_id:
+        if participant_uuid in cda_subject_id and cda_subject_id[participant_uuid] != new_cda_subject_id:
             
-            sys.exit( f"FATAL: participant_uuid {participant_uuid} unexpectedly assigned to both CDA subject IDs {cda_subject_id[particpant_uuid]} and {new_cda_subject_id}; cannot continue, aborting." )
+            sys.exit( f"FATAL: participant_uuid {participant_uuid} unexpectedly assigned to both CDA subject IDs {cda_subject_id[participant_uuid]} and {new_cda_subject_id}; cannot continue, aborting." )
 
         cda_subject_id[participant_uuid] = new_cda_subject_id
 

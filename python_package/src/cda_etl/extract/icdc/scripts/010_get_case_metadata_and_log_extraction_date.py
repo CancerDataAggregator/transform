@@ -5,7 +5,7 @@ import json
 import re
 import sys
 
-from cda_etl.lib import sort_file_with_header
+from cda_etl.lib import get_current_date, sort_file_with_header
 
 from os import makedirs, path, rename
 
@@ -16,6 +16,8 @@ page_size = 1000
 api_url = 'https://caninecommons.cancer.gov/v1/graphql/'
 
 output_root = path.join( 'extracted_data', 'icdc' )
+
+extraction_date_file = path.join( output_root, 'extraction_date.txt' )
 
 case_out_dir = path.join( output_root, 'case' )
 case_output_tsv = path.join( case_out_dir, 'case.tsv' )
@@ -46,6 +48,7 @@ case_registration_output_tsv = path.join( registration_out_dir, 'registration.ts
 
 json_out_dir = path.join( output_root, '__API_result_json' )
 case_output_json = path.join( json_out_dir, 'case_metadata.json' )
+
 
 # type case {
 #    case_id: String
@@ -236,6 +239,10 @@ for output_dir in [ case_out_dir, off_study_out_dir, off_treatment_out_dir, cani
     if not path.exists( output_dir ):
         
         makedirs( output_dir )
+
+with open( extraction_date_file, 'w' ) as OUT:
+    
+    print( get_current_date(), file=OUT )
 
 null_result = False
 

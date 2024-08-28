@@ -11,19 +11,21 @@ from cda_etl.lib import deduplicate_and_sort_unsorted_file_with_header, get_univ
 
 cda_root = path.join( 'cda_tsvs' )
 
-last_merged_dataset_name = 'GDC'
+full_last_merged_dataset_name = 'merged_GDC_and_PDC'
 
-last_merged_cda_tsv_dir = path.join( cda_root, f"{last_merged_dataset_name.lower()}_002_decorated_harmonized" )
+abbreviated_last_merged_dataset_name = 'GDC_PDC'
+
+last_merged_cda_tsv_dir = path.join( cda_root, f"{full_last_merged_dataset_name.lower()}_002_decorated_harmonized" )
 
 last_merged_upstream_identifiers_tsv = path.join( last_merged_cda_tsv_dir, 'upstream_identifiers.tsv' )
 
-to_merge_dataset_name = 'PDC'
+to_merge_dataset_name = 'CDS'
 
 to_merge_cda_tsv_dir = path.join( cda_root, f"{to_merge_dataset_name.lower()}_002_decorated_harmonized" )
 
 to_merge_upstream_identifiers_tsv = path.join( to_merge_cda_tsv_dir, 'upstream_identifiers.tsv' )
 
-tsv_output_dir = path.join( cda_root, 'merged_gdc_and_pdc_002_decorated_harmonized' )
+tsv_output_dir = path.join( cda_root, 'merged_gdc_pdc_and_cds_002_decorated_harmonized' )
 
 upstream_identifiers_output_tsv = path.join( tsv_output_dir, 'upstream_identifiers.tsv' )
 
@@ -31,8 +33,8 @@ map_root = path.join( 'auxiliary_metadata', '__aggregation_logs' )
 
 merge_map = {
     
-    'project' : path.join( map_root, 'projects', f"{to_merge_dataset_name}_CDA_projects_merged_into_{last_merged_dataset_name}_CDA_projects.tsv" ),
-    'subject' : path.join( map_root, 'subjects', f"{to_merge_dataset_name}_CDA_subjects_merged_into_{last_merged_dataset_name}_CDA_subjects.tsv" )
+    'project' : path.join( map_root, 'projects', f"{to_merge_dataset_name}_CDA_projects_merged_into_{abbreviated_last_merged_dataset_name}_CDA_projects.tsv" ),
+    'subject' : path.join( map_root, 'subjects', f"{to_merge_dataset_name}_CDA_subjects_merged_into_{abbreviated_last_merged_dataset_name}_CDA_subjects.tsv" )
 }
 
 duplicates_possible = {
@@ -58,8 +60,8 @@ aux_value_output_dir = path.join( aux_output_root, 'values' )
 
 data_clash_log = {
     
-    'project': path.join( aux_value_output_dir, f"{to_merge_dataset_name}_into_{last_merged_dataset_name}_project_merge_clashes.all_fields.tsv" ),
-    'subject': path.join( aux_value_output_dir, f"{to_merge_dataset_name}_into_{last_merged_dataset_name}_subject_merge_clashes.all_fields.tsv" )
+    'project': path.join( aux_value_output_dir, f"{to_merge_dataset_name}_into_{abbreviated_last_merged_dataset_name}_project_merge_clashes.all_fields.tsv" ),
+    'subject': path.join( aux_value_output_dir, f"{to_merge_dataset_name}_into_{abbreviated_last_merged_dataset_name}_subject_merge_clashes.all_fields.tsv" )
 }
 
 # Enumerate (case-insensitive, space-collapsed) values (as regular expressions) that
@@ -102,7 +104,7 @@ for table in sorted( merge_map ):
 
         from_column = f"{to_merge_dataset_name}_{table}_alias"
 
-        with_column = f"{last_merged_dataset_name}_{table}_alias"
+        with_column = f"{abbreviated_last_merged_dataset_name}_{table}_alias"
 
         to_column = f"new_{table}_alias"
 
@@ -390,7 +392,7 @@ for table in sorted( merge_map ):
 
     with open( data_clash_log[table], 'w' ) as OUT:
         
-        print( *[ f"CDA_{table}_id", 'CDA_field_name', f"original_value_from_{last_merged_dataset_name}", f"observed_clashing_value_from_{to_merge_dataset_name}", f"CDA_kept_value" ], sep='\t', file=OUT )
+        print( *[ f"CDA_{table}_id", 'CDA_field_name', f"original_value_from_{abbreviated_last_merged_dataset_name}", f"observed_clashing_value_from_{to_merge_dataset_name}", f"CDA_kept_value" ], sep='\t', file=OUT )
 
         for record_id in sorted( data_clashes ):
             

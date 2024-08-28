@@ -11,21 +11,21 @@ from cda_etl.lib import deduplicate_and_sort_unsorted_file_with_header, get_univ
 
 cda_root = path.join( 'cda_tsvs' )
 
-full_last_merged_dataset_name = 'merged_GDC_and_PDC'
+full_last_merged_dataset_name = 'merged_GDC_PDC_and_CDS'
 
-abbreviated_last_merged_dataset_name = 'GDC_PDC'
+abbreviated_last_merged_dataset_name = 'GDC_PDC_CDS'
 
 last_merged_cda_tsv_dir = path.join( cda_root, f"{full_last_merged_dataset_name.lower()}_002_decorated_harmonized" )
 
 last_merged_upstream_identifiers_tsv = path.join( last_merged_cda_tsv_dir, 'upstream_identifiers.tsv' )
 
-to_merge_dataset_name = 'CDS'
+to_merge_dataset_name = 'ICDC'
 
 to_merge_cda_tsv_dir = path.join( cda_root, f"{to_merge_dataset_name.lower()}_002_decorated_harmonized" )
 
 to_merge_upstream_identifiers_tsv = path.join( to_merge_cda_tsv_dir, 'upstream_identifiers.tsv' )
 
-tsv_output_dir = path.join( cda_root, 'merged_gdc_pdc_and_cds_002_decorated_harmonized' )
+tsv_output_dir = path.join( cda_root, 'merged_gdc_pdc_cds_and_icdc_002_decorated_harmonized' )
 
 upstream_identifiers_output_tsv = path.join( tsv_output_dir, 'upstream_identifiers.tsv' )
 
@@ -407,8 +407,8 @@ for table in sorted( merge_map ):
     print( 'done.', file=sys.stderr )
 
 # Next, map all tables present in `last_merged_cda_tsv_dir` that we haven't yet
-# processed, except upstream_identifiers (handled separately) and release_metadata
-# (regenerated after merge build completes).
+# processed, except upstream_identifiers (handled separately), column_metadata and release_metadata
+# (both regenerated after merge build completes).
 
 completed_files = set()
 
@@ -418,7 +418,7 @@ for file_basename in sorted( listdir( last_merged_cda_tsv_dir ) ):
         
         table = re.sub( r'^(.*)\.tsv$', r'\1', file_basename )
 
-        if table not in merge_map and table != 'release_metadata' and table != 'upstream_identifiers':
+        if table not in merge_map and table != 'release_metadata' and table != 'upstream_identifiers' and table != 'column_metadata':
             
             print( f"Updating {file_basename}...", end='', file=sys.stderr )
 

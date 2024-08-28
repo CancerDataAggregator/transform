@@ -26,7 +26,7 @@ echo ./package_root/auxiliary_scripts/990_harmonize_cda_tsvs.py ./cda_tsvs/pdc_0
 
 # Compute aliases; replace ids with aliases wherever needed; create and populate data_at_* and data_source_count columns
 
-echo ./package_root/auxiliary_scripts/991_decorate_harmonized_cda_tsvs_with_aliases_and_provenance.py PDC ./cda_tsvs/last_merge ./cda_tsvs/pdc_001_harmonized ./cda_tsvs/pdc_002_decorated_harmonized
-./package_root/auxiliary_scripts/991_decorate_harmonized_cda_tsvs_with_aliases_and_provenance.py PDC ./cda_tsvs/last_merge ./cda_tsvs/pdc_001_harmonized ./cda_tsvs/pdc_002_decorated_harmonized
+echo ./package_root/auxiliary_scripts/991_decorate_harmonized_cda_tsvs_with_aliases_and_provenance.py PDC ./cda_tsvs/gdc_002_decorated_harmonized ./cda_tsvs/pdc_001_harmonized ./cda_tsvs/pdc_002_decorated_harmonized
+./package_root/auxiliary_scripts/991_decorate_harmonized_cda_tsvs_with_aliases_and_provenance.py PDC ./cda_tsvs/gdc_002_decorated_harmonized ./cda_tsvs/pdc_001_harmonized ./cda_tsvs/pdc_002_decorated_harmonized
 
 

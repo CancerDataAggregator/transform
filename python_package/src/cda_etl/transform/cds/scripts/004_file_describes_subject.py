@@ -12,7 +12,7 @@ upstream_data_source = 'CDS'
 
 # Unmodified extracted data, converted directly from a Neo4j JSONL dump.
 
-tsv_input_root = path.join( 'extracted_data', 'cds' )
+tsv_input_root = path.join( 'extracted_data', upstream_data_source.lower() )
 
 file_input_tsv = path.join( tsv_input_root, 'file.tsv' )
 

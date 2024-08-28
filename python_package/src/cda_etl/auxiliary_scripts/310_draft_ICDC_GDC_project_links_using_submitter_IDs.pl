@@ -41,11 +41,13 @@ my $icdc_study_to_program = {};
 
 my $icdc_program_to_study = {};
 
+my $icdc_program_acronym_to_name = {};
+
 while ( chomp( my $line = <IN> ) ) {
     
-    # entity_type	entity_id	program_acronym	study_name	study_id
+    # program.program_name	program.program_acronym	study.clinical_study_designation	study.clinical_study_id	study.accession_id	study.clinical_study_name	entity_id	entity_type
 
-    my ( $entity_type, $entity_id, $program_acronym, $study_name, $study_id ) = split( /\t/, $line );
+    my ( $program_name, $program_acronym, $study_id, $study_clinical_study_id, $study_accession_id, $study_name, $entity_id, $entity_type ) = split( /\t/, $line );
 
     if ( exists( $type_map->{$entity_type} ) ) {
         
@@ -56,6 +58,8 @@ while ( chomp( my $line = <IN> ) ) {
         $icdc_study_name_to_id->{$study_name} = $study_id;
 
         $icdc_study_to_program->{$study_name} = $program_acronym;
+
+        $icdc_program_acronym_to_name->{$program_acronym} = $program_name;
 
         $icdc_program_to_study->{$program_acronym}->{$study_name} = 1;
     }
@@ -73,15 +77,15 @@ my $gdc_project_to_program = {};
 
 while ( chomp( my $line = <IN> ) ) {
     
-    # entity_type	entity_submitter_id	GDC_project_id	GDC_program_name
+    # program.program_id	program.name	project.project_id	project.name	entity_submitter_id	entity_id	entity_type
 
-    my ( $entity_type, $submitter_id, $project_id, $program_name ) = split( /\t/, $line );
+    my ( $program_id, $program_name, $project_id, $project_name, $entity_submitter_id, $entity_id, $entity_type ) = split( /\t/, $line );
 
     if ( exists( $type_map->{$entity_type} ) ) {
         
         my $target_type = $type_map->{$entity_type};
 
-        $gdc_data->{$target_type}->{$submitter_id}->{$project_id} = 1;
+        $gdc_data->{$target_type}->{$entity_submitter_id}->{$project_id} = 1;
 
         $gdc_project_to_program->{$project_id} = $program_name;
     }
@@ -137,21 +141,23 @@ foreach my $target_type ( keys %$icdc_data ) {
 
 open OUT, ">$out_file" or die("Can't open $out_file for writing.\n");
 
-print OUT join( "\t", 'match_count', 'ICDC_program_acronym', 'ICDC_study_name', 'ICDC_study_id', 'GDC_program_name', 'GDC_project_id' ) . "\n";
+print OUT join( "\t", 'match_count', 'ICDC_program_acronym', 'ICDC_program_name', 'ICDC_study_clinical_study_designation', 'ICDC_study_name', 'GDC_program_name', 'GDC_project_id' ) . "\n";
 
 foreach my $program_acronym ( sort { $icdc_program_total_match_count->{$b} <=> $icdc_program_total_match_count->{$a} } keys %$icdc_program_total_match_count ) {
     
+    my $program_name = $icdc_program_acronym_to_name->{$program_acronym};
+
     foreach my $study_name ( sort { $icdc_study_total_match_count->{$b} <=> $icdc_study_total_match_count->{$a} } keys %{$icdc_program_to_study->{$program_acronym}} ) {
         
-        foreach my $project_id ( sort { $a cmp $b } keys %{$icdc_to_gdc_count->{$study_name}} ) {
+        my $study_id = $icdc_study_name_to_id->{$study_name};
+
+        foreach my $gdc_project_id ( sort { $a cmp $b } keys %{$icdc_to_gdc_count->{$study_name}} ) {
             
-            my $match_count = $icdc_to_gdc_count->{$study_name}->{$project_id};
+            my $match_count = $icdc_to_gdc_count->{$study_name}->{$gdc_project_id};
 
-            my $program_name = $gdc_project_to_program->{$project_id};
+            my $gdc_program_name = $gdc_project_to_program->{$gdc_project_id};
 
-            my $study_id = $icdc_study_name_to_id->{$study_name};
-
-            print OUT join( "\t", $match_count, $program_acronym, $study_name, $study_id, $program_name, $project_id ) . "\n";
+            print OUT join( "\t", $match_count, $program_acronym, $program_name, $study_id, $study_name, $gdc_program_name, $gdc_project_id ) . "\n";
         }
     }
 }

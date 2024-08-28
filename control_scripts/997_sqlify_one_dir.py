@@ -2,8 +2,9 @@
 
 import sys
 
-from os import path
+from os import makedirs, path
 
+from cda_etl.lib import get_column_metadata
 from cda_etl.load.cda_loader import CDA_loader
 
 # ARGUMENT
@@ -18,7 +19,54 @@ if not path.isdir( tsv_dir ):
     
     sys.exit( f"\n   Usage: {sys.argv[0]} <input CDA-formatted TSV directory>\n" )
 
+output_file = path.join( tsv_dir, 'column_metadata.tsv' )
+
+column_metadata_fields = [
+    
+    'cda_table',
+    'cda_column',
+    'column_type',
+    'summary_display',
+    'fetch_rows_returns',
+    'process_before_display',
+    'virtual_table'
+]
+
 # EXECUTION
+
+if not path.isdir( tsv_dir ):
+    
+    makedirs( tsv_dir )
+
+# Make column_metadata.tsv.
+
+column_metadata = get_column_metadata()
+
+with open( output_file, 'w' ) as OUT:
+    
+    print( *column_metadata_fields, sep='\t', file=OUT )
+
+    for table_name in sorted( column_metadata ):
+        
+        for column_name in sorted( column_metadata[table_name] ):
+            
+            current_record = column_metadata[table_name][column_name]
+
+            process_before_display = ''
+
+            if 'process_before_display' in current_record:
+                
+                process_before_display = current_record['process_before_display']
+
+            virtual_table = ''
+
+            if 'virtual_table' in current_record:
+                
+                virtual_table = current_record['virtual_table']
+
+            print( *[ table_name, column_name, current_record['column_type'], current_record['summary_display'], current_record['fetch_rows_returns'], process_before_display, virtual_table ], sep='\t', file=OUT )
+
+# Transform all input TSVs to SQL and make the pre- and postprocessing scripts to manage index destruction/reconstruction.
 
 loader = CDA_loader()
 

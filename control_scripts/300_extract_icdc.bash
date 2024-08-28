@@ -5,8 +5,8 @@ chmod 755 package_root/extract/icdc/scripts/*py
 echo ./package_root/extract/icdc/scripts/000_get_schema_via_introspection.py
 ./package_root/extract/icdc/scripts/000_get_schema_via_introspection.py
 
-echo ./package_root/extract/icdc/scripts/010_get_case_metadata.py
-./package_root/extract/icdc/scripts/010_get_case_metadata.py
+echo ./package_root/extract/icdc/scripts/010_get_case_metadata_and_log_extraction_date.py
+./package_root/extract/icdc/scripts/010_get_case_metadata_and_log_extraction_date.py
 
 echo ./package_root/extract/icdc/scripts/011_get_file_metadata.py
 ./package_root/extract/icdc/scripts/011_get_file_metadata.py

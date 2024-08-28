@@ -12,7 +12,7 @@ upstream_data_source = 'CDS'
 
 # Unmodified extracted data, converted directly from a Neo4j JSONL dump.
 
-tsv_input_root = path.join( 'extracted_data', 'cds' )
+tsv_input_root = path.join( 'extracted_data', upstream_data_source.lower() )
 
 participant_input_tsv = path.join( tsv_input_root, 'participant.tsv' )
 
@@ -99,7 +99,7 @@ with open( upstream_identifiers_tsv ) as IN:
 
             original_participant_uuids[subject_id].add( participant_uuid )
 
-# Load subject.sex from participant.gender and log internal data clashes.
+# Load observation.sex from participant.gender and log internal data clashes.
 
 print( f"[{get_current_timestamp()}] Loading observation metadata from participant.gender...", end='', file=sys.stderr )
 
@@ -180,7 +180,7 @@ for subject_id in original_participant_uuids:
 
 print( 'done.', file=sys.stderr )
 
-# Load subject.resection_anatomic_site from participant->sample.sample_anatomic_site and create a separate CDA observation record for each distinct site.
+# Load observation.resection_anatomic_site from participant->sample.sample_anatomic_site and create a separate CDA observation record for each distinct site.
 
 print( f"[{get_current_timestamp()}] Loading observation.resection_anatomic_site metadata from sample.sample_anatomic_site...", end='', file=sys.stderr )
 
