@@ -2650,6 +2650,96 @@ def get_dbgap_study_metadata( dbgap_study_id ):
         
         sys.exit( f"FATAL: Could not load study_name for accession '{phs_accession}' from dbGaP page {dbgap_full_web_url}; aborting." )
 
+def get_idc_extraction_fields( ):
+    
+    target_field_lists_by_table = [
+        
+        {
+            'auxiliary_metadata': [
+                
+                'idc_case_id',
+                'submitter_case_id'
+            ]
+        },
+        {
+            'original_collections_metadata': [
+                
+                'Program',
+                'collection_id',
+                'collection_name',
+                'CancerTypes'
+            ]
+        },
+        {
+            'tcga_biospecimen_rel9': [
+                
+                'sample_barcode',
+                'case_barcode',
+                'days_to_collection',
+                'sample_type_name',
+                'case_gdc_id',
+                'sample_gdc_id',
+                'program_name',
+                'project_short_name'
+            ]
+        },
+        {
+            'tcga_clinical_rel9': [
+                
+                'case_barcode',
+                'race',
+                'gender',
+                'days_to_birth',
+                'vital_status',
+                'year_of_diagnosis',
+                'disease_code',
+                'icd_o_3_histology',
+                'neoplasm_histologic_grade',
+                'clinical_stage',
+                'pathologic_stage',
+                'histological_type',
+                'days_to_death',
+                'case_gdc_id',
+                'anatomic_neoplasm_subdivision',
+                'ethnicity',
+                'icd_10',
+                'icd_o_3_site',
+                'person_neoplasm_cancer_status',
+                'tumor_tissue_site',
+                'tumor_type'
+            ]
+        },
+        {
+            'dicom_all': [
+                
+                'SOPInstanceUID',
+                'gcs_url',
+                'SOPClassUID',
+                'crdc_instance_uuid',
+                'instance_size',
+                'instance_hash',
+                'Modality',
+                'tcia_tumorLocation',
+                'PatientSpeciesDescription',
+                'PatientBirthDate',
+                'PatientSex',
+                'EthnicGroup',
+                'crdc_series_uuid',
+                'SeriesDescription',
+                'collection_id',
+                'PatientID',
+                'idc_case_id',
+                'collection_tumorLocation',
+                'AnatomicRegionSequence',
+                'SpecimenDescriptionSequence',
+                'SegmentSequence',
+                'RTROIObservationsSequence',
+                'SharedFunctionalGroupsSequence'
+            ]
+        }
+    ]
+
+    return target_field_lists_by_table
 
 def get_safe_value( record, field_name ):
     
@@ -2661,7 +2751,7 @@ def get_safe_value( record, field_name ):
         
         sys.exit( f"FATAL: The given record does not have the expected {field_name} field; aborting." )
 
-def get_submitter_id_patterns_not_to_merge_across_projects():
+def get_submitter_id_patterns_not_to_merge_across_projects( ):
     
     return [
         
