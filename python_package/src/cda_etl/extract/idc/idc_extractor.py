@@ -5,6 +5,8 @@ from math import ceil
 
 from os import makedirs, path
 
+from cda_etl.lib import get_current_date
+
 class IDC_extractor:
     
     def __init__( self, gsa_key=None, gsa_info=None, source_version=None, source_table=None, dest_table=None,
@@ -12,12 +14,17 @@ class IDC_extractor:
         
         self.gsa_key = gsa_key
         self.gsa_info = gsa_info
-        self.idc_version_string = f"idc_{source_version}"
+        self.bq_idc_version_path_string = f"idc_{source_version}"
 
-        self.output_dir = f"extracted_data/idc/{source_version}"
+        self.output_root = path.join( 'extracted_data', 'idc' )
+
+        self.output_dir = path.join( self.output_root, '__raw_BigQuery_JSONL' )
+
+        self.version_file = path.join( self.output_root, 'data_version.txt' )
+        self.extraction_file = path.join( self.output_root, 'extraction_date.txt' )
 
         self.source_project = 'bigquery-public-data'
-        self.source_dataset = f"{self.source_project}.{self.idc_version_string}"
+        self.source_dataset = f"{self.source_project}.{self.bq_idc_version_path_string}"
         self.source_table = f"{self.source_dataset}.{source_table}"
 
         self.dest_table = dest_table
@@ -32,6 +39,14 @@ class IDC_extractor:
         if not path.isdir( self.output_dir ):
             
             makedirs( self.output_dir )
+
+        with open( self.version_file, 'w' ) as OUT:
+            
+            print( source_version, file=OUT )
+
+        with open( self.extraction_file, 'w' ) as OUT:
+            
+            print( get_current_date(), file=OUT )
 
     def __load_service_account_credentials( self ):
         
@@ -87,7 +102,7 @@ class IDC_extractor:
 
         # Remove the final composed file, if present.
 
-        previous_final_file = bucket.get_blob( f"{self.idc_version_string}/{self.output_filename}" )
+        previous_final_file = bucket.get_blob( f"{self.bq_idc_version_path_string}/{self.output_filename}" )
 
         if previous_final_file is not None:
             
@@ -99,7 +114,7 @@ class IDC_extractor:
             
             to_delete = list()
 
-            for blob in bucket.list_blobs( prefix=f"{self.idc_version_string}/{filename_components[0]}" ):
+            for blob in bucket.list_blobs( prefix=f"{self.bq_idc_version_path_string}/{filename_components[0]}" ):
                 
                 to_delete.append(blob)
 
@@ -125,7 +140,7 @@ class IDC_extractor:
         dataset_ref = bigquery.DatasetReference( self.service_account_credentials.project_id, dataset_id )
         table_ref = dataset_ref.table( table_name )
 
-        destination_uri = f"gs://{self.dest_bucket}/{self.idc_version_string}/{self.dest_bucket_filename}"
+        destination_uri = f"gs://{self.dest_bucket}/{self.bq_idc_version_path_string}/{self.dest_bucket_filename}"
 
         extract_job = query_client.extract_table(
             table_ref,
@@ -144,7 +159,7 @@ class IDC_extractor:
         """Downloads `self.dest_bucket_filename` from `self.dest_bucket` to `self.output_filename`."""
 
         local_destination_path = f"{self.output_dir}/{self.output_filename}"
-        bucket_destination_path = f"{self.idc_version_string}/{self.output_filename}"
+        bucket_destination_path = f"{self.bq_idc_version_path_string}/{self.output_filename}"
 
         storage_client = storage.Client.from_service_account_json( self.gsa_key )
 
@@ -161,7 +176,7 @@ class IDC_extractor:
 
             blobs = []
 
-            for blob in bucket.list_blobs( prefix=f"{self.idc_version_string}/{target_file_prefix}" ):
+            for blob in bucket.list_blobs( prefix=f"{self.bq_idc_version_path_string}/{target_file_prefix}" ):
                 
                 blobs.append(blob)
 
@@ -175,9 +190,9 @@ class IDC_extractor:
 
                     max_index = min( min_index + self.max_blobs_compose, len( blobs ) )
 
-                    compose_filename = f"{self.idc_version_string}/{target_file_prefix}" + str(i) + ".jsonl.gz"
+                    compose_filename = f"{self.bq_idc_version_path_string}/{target_file_prefix}" + str(i) + ".jsonl.gz"
 
-                    print( f"Composing {self.idc_version_string}/{target_file_prefix}{min_index}:{max_index} into {compose_filename}...", end='' )
+                    print( f"Composing {self.bq_idc_version_path_string}/{target_file_prefix}{min_index}:{max_index} into {compose_filename}...", end='' )
 
                     bucket.blob( compose_filename ).compose( blobs[min_index:max_index] )
 
@@ -195,7 +210,7 @@ class IDC_extractor:
 
                 blobs = []
 
-                for blob in bucket.list_blobs( prefix=f"{self.idc_version_string}/{target_file_prefix}"):
+                for blob in bucket.list_blobs( prefix=f"{self.bq_idc_version_path_string}/{target_file_prefix}"):
                     
                     blobs.append(blob)
 
