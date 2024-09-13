@@ -1,6 +1,6 @@
 #!/usr/bin/env python -u
 
-import re, sys
+import gzip, re, sys
 
 from os import listdir, makedirs, path
 
@@ -56,6 +56,29 @@ skip_files = {
     'release_metadata.tsv'
 }
 
+# Don't attempt to load distinct value sets for certain columns covering tens of millions of DICOM files.
+
+skip_columns = {
+    
+    'dicom_instance': {
+        
+        'SOPInstanceUID',
+        'gcs_url',
+        'crdc_instance_uuid',
+        'instance_size',
+        'instance_hash'
+    },
+    'dicom_series_instance': {
+        
+        'id',
+        'crdc_id',
+        'name',
+        'drs_uri',
+        'size',
+        'checksum_value'
+    }
+}
+
 # EXECUTION
 
 if not path.exists( output_dir ):
@@ -82,31 +105,45 @@ with open( output_file, 'w' ) as OUT:
         
         file_label = display_filename[input_file_path]
 
-        if file_label not in skip_files and re.search( r'\.tsv$', file_label ) is not None:
+        if file_label not in skip_files and re.search( r'\.tsv', file_label ) is not None:
             
             print( f"   [{get_current_timestamp()}] Processing {file_label}...", end='', file=sys.stderr )
 
-            with open( input_file_path ) as IN:
+            table = re.sub( r'\.tsv(\.gz)?$', r'', file_label )
+
+            IN = open( input_file_path )
+
+            if re.search( r'\.tsv\.gz$', file_label ) is not None:
                 
-                column_names = next( IN ).rstrip( '\n' ).split( '\t' )
+                # Sometimes things are gzipped.
 
-                column_has_nulls = dict( zip( column_names, [ False ] * len( column_names ) ) )
+                IN.close()
 
-                column_all_numbers = dict( zip( column_names, [ True ] * len( column_names ) ) )
+                IN = gzip.open( input_file_path, 'rt' )
+                
+            column_names = next( IN ).rstrip( '\n' ).split( '\t' )
 
-                column_null_count = dict( zip( column_names, [ 0 ] * len( column_names ) ) )
+            column_has_nulls = dict( zip( column_names, [ False ] * len( column_names ) ) )
 
-                column_distinct_values = dict( zip( column_names, [ set() for column_name in column_names ] ) )
+            column_all_numbers = dict( zip( column_names, [ True ] * len( column_names ) ) )
 
-                row_count = 0
+            column_null_count = dict( zip( column_names, [ 0 ] * len( column_names ) ) )
 
-                for line in [ next_line.rstrip( '\n' ) for next_line in IN ]:
+            column_distinct_values = dict( zip( column_names, [ set() for column_name in column_names ] ) )
+
+            row_count = 0
+
+            for next_line in IN:
+                
+                line = next_line.rstrip( '\n' )
+                
+                row_count = row_count + 1
+
+                values = line.split( '\t' )
+
+                for i in range( 0, len( values ) ):
                     
-                    row_count = row_count + 1
-
-                    values = line.split( '\t' )
-
-                    for i in range( 0, len( values ) ):
+                    if table not in skip_columns or column_names[i] not in skip_columns[table]:
                         
                         if values[i] == '':
                             
@@ -122,7 +159,9 @@ with open( output_file, 'w' ) as OUT:
                                 
                                 column_all_numbers[column_names[i]] = False
 
-                for column_name in column_names:
+            for column_name in column_names:
+                
+                if table not in skip_columns or column_name not in skip_columns[table]:
                     
                     has_nulls = str( column_has_nulls[column_name] )
 

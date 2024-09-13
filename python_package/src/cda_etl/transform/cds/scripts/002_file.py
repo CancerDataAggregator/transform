@@ -68,8 +68,7 @@ cda_file_fields = [
     'checksum_value',
     'format',
     'type',
-    'category',
-    'instance_count'
+    'category'
 ]
 
 upstream_identifiers_fields = [
@@ -114,7 +113,6 @@ for file_uuid in file:
     cda_file_records[file_id]['type'] = ''
     # Load as a list. Output as a single string containing a comma-delimited sequence of list elements.
     cda_file_records[file_id]['category'] = json.loads( file[file_uuid]['experimental_strategy_and_data_subtypes'] )
-    cda_file_records[file_id]['instance_count'] = 1
 
 print( 'done.', file=sys.stderr )
 

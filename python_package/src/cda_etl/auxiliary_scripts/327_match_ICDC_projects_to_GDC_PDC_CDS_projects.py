@@ -54,6 +54,16 @@ cds_to_merged = map_columns_one_to_one( gdc_pdc_cds_merge_map, 'CDS_project_alia
 
 merged_id = map_columns_one_to_one( gdc_pdc_cds_merge_map, 'new_project_alias', 'new_project_id' )
 
+for merge_file in [ gdc_pdc_merge_map ]:
+    
+    new_merged_id = map_columns_one_to_one( merge_file, 'new_project_alias', 'new_project_id' )
+
+    for id_alias in new_merged_id:
+        
+        if id_alias not in merged_id:
+            
+            merged_id[id_alias] = new_merged_id[id_alias]
+
 icdc_to_gdc = map_columns_one_to_one( icdc_gdc_merge_map, 'ICDC_project_alias', 'GDC_project_alias' )
 
 icdc_to_pdc = map_columns_one_to_one( icdc_pdc_merge_map, 'ICDC_project_alias', 'PDC_project_alias' )

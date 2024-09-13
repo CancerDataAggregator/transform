@@ -60,23 +60,12 @@ with open( count_summary_file ) as IN, open( release_metadata_output_tsv, 'w' ) 
         
         [ table_filename, column_name, distinct_non_null_values, total_data_rows, has_nulls, number_of_rows_with_nulls, numeric_column ] = next_line.split( '\t' )
 
-        table_name = re.sub( r'\.tsv$', r'', table_filename )
-
-        # Override default behavior when we've got a user-facing column with categorical values.
-        # 
-        # TO DO: Add proper counting support for metadata from the `dicom_series_instance` table and integrate that into `file` column summaries.
+        table_name = re.sub( r'\.tsv(?:\.gz)?$', r'', table_filename )
 
         column_result = get_column_metadata( table_name, column_name )
 
-        if 'column_type' in column_result and column_result['column_type'] == 'categorical' and \
-            'summary_display' in column_result and column_result['summary_display'] == True and \
-            ( 'virtual_table' in column_result or 'process_before_display' not in column_result ):
-            
-            column_type = column_result['column_type']
-
-            if 'virtual_table' in column_result:
-                
-                table_name = column_result['virtual_table']
+        if ( table_name == 'dicom_series_type' and column_name == 'type' ) or \
+            ( 'column_type' in column_result and column_result['column_type'] == 'categorical' and 'fetch_rows_returns' in column_result and column_result['fetch_rows_returns'] == True ):
             
             print( *[ table_name, column_name, data_source_label, data_source_version_string, data_source_extraction_date, total_data_rows, distinct_non_null_values, number_of_rows_with_nulls ], sep='\t', file=OUT )
 

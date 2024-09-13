@@ -1,6 +1,6 @@
 #!/usr/bin/env python3 -u
 
-import re, sys
+import gzip, re, sys
 
 from os import makedirs, path
 
@@ -38,45 +38,65 @@ with open( skip_file, 'w' ) as SKIP:
         
         input_file = path.join( input_root, f"{table_path}.tsv" )
 
+        gzipped = False
+
+        # Sometimes things are gzipped.
+
+        if not path.exists( input_file ):
+            
+            input_file = path.join( input_root, f"{table_path}.tsv.gz" )
+
+            gzipped = True
+
         target_counts = dict()
 
         table = re.sub( r'^[^\/]+\/', r'', table_path )
 
         if path.exists( input_file ):
             
-            with open( input_file, 'r' ) as IN:
+            IN = open( input_file )
+
+            if gzipped:
                 
-                column_names = next( IN ).rstrip( '\n' ).split( '\t' )
+                # Sometimes things are gzipped.
 
-                for column_name in column_names:
+                IN.close()
+
+                IN = gzip.open( input_file, 'rt' )
+
+            column_names = next( IN ).rstrip( '\n' ).split( '\t' )
+
+            for column_name in column_names:
+                
+                if column_name not in target_columns[table_path]:
                     
-                    if column_name not in target_columns[table_path]:
+                    print( *[ table, column_name ], sep='\t', file=SKIP )
+
+            for column_name in target_columns[table_path]:
+                
+                target_counts[column_name] = dict()
+
+            for next_line in IN:
+                
+                line = next_line.rstrip( '\n' )
+                
+                record = dict( zip( column_names, line.split( '\t' ) ) )
+
+                for target_column in sorted( target_columns[table_path] ):
+                    
+                    value = ''
+
+                    if target_column in record and record[target_column] is not None:
                         
-                        print( *[ table, column_name ], sep='\t', file=SKIP )
+                        value = record[target_column]
 
-                for column_name in target_columns[table_path]:
-                    
-                    target_counts[column_name] = dict()
-
-                for line in [ next_line.rstrip( '\n' ) for next_line in IN ]:
-                    
-                    record = dict( zip( column_names, line.split( '\t' ) ) )
-
-                    for target_column in sorted( target_columns[table_path] ):
+                    if value in target_counts[target_column]:
                         
-                        value = ''
+                        target_counts[target_column][value] = target_counts[target_column][value] + 1
 
-                        if target_column in record and record[target_column] is not None:
-                            
-                            value = record[target_column]
-
-                        if value in target_counts[target_column]:
-                            
-                            target_counts[target_column][value] = target_counts[target_column][value] + 1
-
-                        else:
-                            
-                            target_counts[target_column][value] = 1
+                    else:
+                        
+                        target_counts[target_column][value] = 1
 
             for column_name in sorted( target_counts ):
                 

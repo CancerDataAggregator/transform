@@ -1,3 +1,5 @@
+import re
+
 from google.cloud import bigquery, storage
 from google.oauth2 import service_account
 
@@ -75,7 +77,21 @@ class IDC_extractor:
             write_disposition=bigquery.WriteDisposition.WRITE_TRUNCATE
         )
 
-        query_sql = f"SELECT " + ', '.join( fields_to_pull ) + f" FROM `{self.source_table}`"
+        field_sequence = ', '.join( fields_to_pull )
+
+        # This is an ugly hack to remove STRUCT fields from the ORDER BY clause when querying dicom_all.
+
+        order_by_fields = list()
+
+        for field in fields_to_pull:
+            
+            if re.search( r'Sequence$', field ) is None:
+                
+                order_by_fields.append( field )
+
+        order_by_field_sequence = ', '.join( order_by_fields )
+
+        query_sql = f"SELECT DISTINCT {field_sequence} FROM `{self.source_table}` ORDER BY {order_by_field_sequence}"
 
         print('Querying\n\n    ' + query_sql + '\n\ninto\n\n    ' + self.dest_table, end=' ...\n\n')
 

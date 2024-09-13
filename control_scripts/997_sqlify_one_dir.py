@@ -48,7 +48,11 @@ with open( output_file, 'w' ) as OUT:
 
     for table_name in sorted( column_metadata ):
         
-        for column_name in sorted( column_metadata[table_name] ):
+        # Python 3 preserves insert order for dicts. That means column data will be displayed
+        # in the order in which columns are listed in the definition (in lib.py) of
+        # get_column_metadata(). Handy. Also worth noting because it's not obvious.
+
+        for column_name in column_metadata[table_name]:
             
             current_record = column_metadata[table_name][column_name]
 

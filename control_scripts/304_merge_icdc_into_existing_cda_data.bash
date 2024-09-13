@@ -34,7 +34,7 @@ echo ./package_root/auxiliary_scripts/326_match_ICDC_subjects_to_GDC_PDC_CDS_sub
 echo ./package_root/auxiliary_scripts/327_match_ICDC_projects_to_GDC_PDC_CDS_projects.py
 ./package_root/auxiliary_scripts/327_match_ICDC_projects_to_GDC_PDC_CDS_projects.py
 
-# Merge ICDC into GDC+PDC_CDS.
+# Merge ICDC into GDC+PDC+CDS.
 
 echo ./package_root/aggregate/phase_003_merge_icdc_into_gdc_and_pdc_and_cds/scripts/merge_ICDC_CDA_data_into_GDC_PDC_CDS_CDA_data.py 
 ./package_root/aggregate/phase_003_merge_icdc_into_gdc_and_pdc_and_cds/scripts/merge_ICDC_CDA_data_into_GDC_PDC_CDS_CDA_data.py

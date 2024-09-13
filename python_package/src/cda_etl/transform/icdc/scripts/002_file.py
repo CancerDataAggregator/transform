@@ -66,8 +66,7 @@ cda_file_fields = [
     'checksum_value',
     'format',
     'type',
-    'category',
-    'instance_count'
+    'category'
 ]
 
 upstream_identifiers_fields = [
@@ -107,7 +106,6 @@ for file_uuid in file:
     cda_file_records[file_uuid]['format'] = file[file_uuid]['file_format']
     cda_file_records[file_uuid]['type'] = ''
     cda_file_records[file_uuid]['category'] = file[file_uuid]['file_type']
-    cda_file_records[file_uuid]['instance_count'] = 1
 
 print( 'done.', file=sys.stderr )
 

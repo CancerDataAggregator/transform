@@ -44,6 +44,7 @@ base_tables = {
     
     'project',
     'file',
+    'dicom_series',
     'subject',
     'observation',
     'treatment',
@@ -58,8 +59,53 @@ reference_tables = {
     
     'dicom_series_instance': [
         {
-            'referencing_field': 'series_alias',
-            'referenced_table': 'file',
+            'referencing_field': 'dicom_series_alias',
+            'referenced_table': 'dicom_series',
+            'referenced_field': 'id_alias'
+        }
+    ],
+    'dicom_series_describes_subject': [
+        {
+            'referencing_field': 'dicom_series_alias',
+            'referenced_table': 'dicom_series',
+            'referenced_field': 'id_alias'
+        },
+        {
+            'referencing_field': 'subject_alias',
+            'referenced_table': 'subject',
+            'referenced_field': 'id_alias'
+        }
+    ],
+    'dicom_series_anatomic_site': [
+        {
+            'referencing_field': 'dicom_series_alias',
+            'referenced_table': 'dicom_series',
+            'referenced_field': 'id_alias'
+        }
+    ],
+    'dicom_series_tumor_vs_normal': [
+        {
+            'referencing_field': 'dicom_series_alias',
+            'referenced_table': 'dicom_series',
+            'referenced_field': 'id_alias'
+        }
+    ],
+    'dicom_series_type': [
+        {
+            'referencing_field': 'dicom_series_alias',
+            'referenced_table': 'dicom_series',
+            'referenced_field': 'id_alias'
+        }
+    ],
+    'dicom_series_in_project': [
+        {
+            'referencing_field': 'dicom_series_alias',
+            'referenced_table': 'dicom_series',
+            'referenced_field': 'id_alias'
+        },
+        {
+            'referencing_field': 'project_alias',
+            'referenced_table': 'project',
             'referenced_field': 'id_alias'
         }
     ],
@@ -175,7 +221,7 @@ for file_basename in sorted( listdir( harmonized_tsv_dir ) ):
     
     if re.search( r'\.tsv', file_basename ) is not None:
         
-        table = re.sub( r'^(.*)\.tsv', r'\1', file_basename )
+        table = re.sub( r'^(.*)\.tsv.*$', r'\1', file_basename )
 
         if table in base_tables and table not in reference_tables:
             
@@ -186,6 +232,12 @@ for file_basename in sorted( listdir( harmonized_tsv_dir ) ):
             new_table_file = path.join( decorated_harmonized_tsv_dir, file_basename )
 
             output_files_by_table[table] = new_table_file
+
+            gzipped = False
+
+            if re.search( r'\.tsv\.gz$', file_basename ) is not None:
+                
+                gzipped = True
 
             if debug:
                 
@@ -201,17 +253,19 @@ for file_basename in sorted( listdir( harmonized_tsv_dir ) ):
 
             if path.exists( last_merge_dir ):
                 
-                # Sometimes new versions of plaintext antecedent TSVs are gzipped. Handle that.
+                # Sometimes new versions of (so far) plaintext antecedent TSVs are gzipped. Handle that.
 
-                if re.search( r'\.tsv\.gz$', file_basename ) is not None:
+                merged_file_basename = file_basename
+
+                if gzipped:
                     
-                    alt_basename = re.sub( r'\.gz$', r'', alt_basename )
+                    alt_basename = re.sub( r'\.gz$', r'', merged_file_basename )
 
-                if not path.exists( path.join( last_merge_dir, file_basename ) ):
-                    
-                    file_basename = alt_basename
+                    if not path.exists( path.join( last_merge_dir, merged_file_basename ) ):
+                        
+                        merged_file_basename = alt_basename
 
-                merged_table_file = path.join( last_merge_dir, file_basename )
+                merged_table_file = path.join( last_merge_dir, merged_file_basename )
 
                 if path.exists( merged_table_file ):
                     
@@ -225,8 +279,10 @@ for file_basename in sorted( listdir( harmonized_tsv_dir ) ):
 
                     colnames = next( IN ).rstrip( '\n' ).split( '\t' )
 
-                    for line in [ next_line.rstrip( '\n' ) for next_line in IN ]:
+                    for next_line in IN:
                         
+                        line = next_line.rstrip( '\n' )
+
                         input_record = dict( zip( colnames, line.split( '\t' ) ) )
 
                         current_alias = int( input_record['id_alias'] )
@@ -247,7 +303,7 @@ for file_basename in sorted( listdir( harmonized_tsv_dir ) ):
 
             OUT = open( new_table_file, 'w' )
 
-            if re.search( r'\.tsv\.gz$', file_basename ) is not None:
+            if gzipped:
                 
                 # Sometimes things are gzipped.
 
@@ -275,8 +331,10 @@ for file_basename in sorted( listdir( harmonized_tsv_dir ) ):
 
             print( *output_colnames, sep='\t', file=OUT )
 
-            for line in [ next_line.rstrip( '\n' ) for next_line in IN ]:
+            for next_line in IN:
                 
+                line = next_line.rstrip( '\n' )
+
                 input_record = dict( zip( colnames, line.split( '\t' ) ) )
 
                 output_row = [ input_record['id'] ] + [ next_alias ]
@@ -318,7 +376,7 @@ for file_basename in sorted( listdir( harmonized_tsv_dir ) ):
     
     if re.search( r'\.tsv', file_basename ) is not None:
         
-        table = re.sub( r'^(.*)\.tsv', r'\1', file_basename )
+        table = re.sub( r'^(.*)\.tsv.*$', r'\1', file_basename )
 
         if table in reference_tables:
             
@@ -327,6 +385,12 @@ for file_basename in sorted( listdir( harmonized_tsv_dir ) ):
             old_table_file = path.join( harmonized_tsv_dir, file_basename )
 
             new_table_file = path.join( decorated_harmonized_tsv_dir, file_basename )
+
+            gzipped = False
+
+            if re.search( r'\.tsv\.gz$', file_basename ) is not None:
+                
+                gzipped = True
 
             if debug:
                 
@@ -406,8 +470,10 @@ for file_basename in sorted( listdir( harmonized_tsv_dir ) ):
 
                 colnames = next( IN ).rstrip( '\n' ).split( '\t' )
 
-                for line in [ next_line.rstrip( '\n' ) for next_line in IN ]:
+                for next_line in IN:
                     
+                    line = next_line.rstrip( '\n' )
+
                     input_record = dict( zip( colnames, line.split( '\t' ) ) )
 
                     alias_map[alias_table][input_record['id']] = input_record[alias_field[alias_table]]
@@ -418,7 +484,7 @@ for file_basename in sorted( listdir( harmonized_tsv_dir ) ):
 
             OUT = open( new_table_file, 'w' )
 
-            if re.search( r'\.tsv\.gz$', file_basename ) is not None:
+            if gzipped:
                 
                 # Sometimes things are gzipped.
 
@@ -464,17 +530,19 @@ for file_basename in sorted( listdir( harmonized_tsv_dir ) ):
     
                 if path.exists( last_merge_dir ):
                     
-                    # Sometimes new versions of plaintext antecedent TSVs are gzipped. Handle that.
-    
-                    if re.search( r'\.tsv\.gz$', file_basename ) is not None:
+                    # Sometimes new versions of (so far) plaintext antecedent TSVs are gzipped. Handle that.
+
+                    merged_file_basename = file_basename
+
+                    if gzipped:
                         
-                        alt_basename = re.sub( r'\.gz$', r'', alt_basename )
+                        alt_basename = re.sub( r'\.gz$', r'', merged_file_basename )
     
-                    if not path.exists( path.join( last_merge_dir, file_basename ) ):
-                        
-                        file_basename = alt_basename
+                        if not path.exists( path.join( last_merge_dir, merged_file_basename ) ):
+                            
+                            merged_file_basename = alt_basename
     
-                    merged_table_file = path.join( last_merge_dir, file_basename )
+                    merged_table_file = path.join( last_merge_dir, merged_file_basename )
     
                     if path.exists( merged_table_file ):
                         
@@ -506,7 +574,9 @@ for file_basename in sorted( listdir( harmonized_tsv_dir ) ):
 
             print( *output_colnames, sep='\t', file=OUT )
 
-            for line in [ next_line.rstrip( '\n' ) for next_line in IN ]:
+            for next_line in IN:
+                
+                line = next_line.rstrip( '\n' )
                 
                 input_record = dict( zip( input_colnames, line.split( '\t' ) ) )
 
