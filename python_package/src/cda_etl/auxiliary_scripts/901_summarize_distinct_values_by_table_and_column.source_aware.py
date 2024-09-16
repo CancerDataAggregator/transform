@@ -24,7 +24,7 @@ def find_input_tsvs( scan_dir, skip_files=dict() ):
                 
                 found_tsvs = found_tsvs | find_input_tsvs( usable_path )
 
-            elif re.search( r'\.tsv', basename ) is not None:
+            elif re.search( r'\.tsv$', basename ) is not None or re.search( r'\.tsv\.gz$', basename ) is not None:
                 
                 found_tsvs.add( path.join( scan_dir, basename ) )
 
@@ -32,9 +32,9 @@ def find_input_tsvs( scan_dir, skip_files=dict() ):
 
 # ARGUMENTS
 
-if ( len( sys.argv ) < 8 ) or ( ( len( sys.argv ) - 2 ) % 3 != 0 ):
+if ( len( sys.argv ) < 9 ) or ( len( sys.argv ) % 3 != 0 ) or ( sys.argv[5] not in { 'suppress_CDA_rows', 'print_CDA_rows' } ):
     
-    sys.exit( f"\n   [{len( sys.argv )}] Usage: {sys.argv[0]} <TSV directory to scan> <desired output file> <CDA release version> <current date, e.g. 2024-08-19> [<data source, e.g. 'gdc'> <extraction_date, e.g. '2024-08-18'> <version string, e.g. \"Data Release 40.0\">]+\n" )
+    sys.exit( f"\n   [{len( sys.argv )}] Usage: {sys.argv[0]} <TSV directory to scan> <desired output file> <CDA release version> <current date, e.g. 2024-08-19> <suppress_CDA_rows|print_CDA_rows> [<data source, e.g. 'gdc'> <extraction_date, e.g. '2024-08-18'> <version string, e.g. \"Data Release 40.0\">]+\n" )
 
 input_root = sys.argv[1]
 
@@ -48,7 +48,15 @@ extraction_date = dict()
 
 extraction_date['CDA'] = sys.argv[4]
 
-arg_index = 5
+row_arg = sys.argv[5]
+
+print_CDA_rows = True
+
+if row_arg == 'suppress_CDA_rows':
+    
+    print_CDA_rows = False
+
+arg_index = 6
 
 while arg_index < len( sys.argv ):
     
@@ -668,6 +676,8 @@ with open( output_file, 'w' ) as OUT:
                     
                     is_all_numbers = 'NA'
 
-                print( *[ table_name, column_name, data_source, version_string[data_source], extraction_date[data_source], distinct_values, str( row_count[table_name][data_source] ), has_nulls, null_count, is_all_numbers ], sep='\t', end='\n', file=OUT )
+                if ( print_CDA_rows ) or ( data_source != 'CDA' ):
+                    
+                    print( *[ table_name, column_name, data_source, version_string[data_source], extraction_date[data_source], distinct_values, str( row_count[table_name][data_source] ), has_nulls, null_count, is_all_numbers ], sep='\t', end='\n', file=OUT )
 
 

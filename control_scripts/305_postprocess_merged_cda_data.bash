@@ -59,14 +59,14 @@ summary_file="${summary_output_dir}/GDC_plus_PDC_plus_CDS_plus_ICDC.converted_to
 
 current_date=$(date '+%Y-%m-%d')
 
-echo ./package_root/auxiliary_scripts/901_summarize_distinct_values_by_table_and_column.source_aware.py $input_root $summary_file "${cda_version_string}" $current_date gdc $gdc_extraction_date_string "${gdc_version_string}" pdc $pdc_extraction_date_string "${pdc_version_string}" cds $cds_extraction_date_string "${cds_version_string}" icdc $icdc_extraction_date_string "${icdc_version_string}"
-./package_root/auxiliary_scripts/901_summarize_distinct_values_by_table_and_column.source_aware.py $input_root $summary_file "${cda_version_string}" $current_date gdc $gdc_extraction_date_string "${gdc_version_string}" pdc $pdc_extraction_date_string "${pdc_version_string}" cds $cds_extraction_date_string "${cds_version_string}" icdc $icdc_extraction_date_string "${icdc_version_string}"
+echo ./package_root/auxiliary_scripts/901_summarize_distinct_values_by_table_and_column.source_aware.py $input_root $summary_file "${cda_version_string}" $current_date print_CDA_rows gdc $gdc_extraction_date_string "${gdc_version_string}" pdc $pdc_extraction_date_string "${pdc_version_string}" cds $cds_extraction_date_string "${cds_version_string}" icdc $icdc_extraction_date_string "${icdc_version_string}"
+./package_root/auxiliary_scripts/901_summarize_distinct_values_by_table_and_column.source_aware.py $input_root $summary_file "${cda_version_string}" $current_date print_CDA_rows gdc $gdc_extraction_date_string "${gdc_version_string}" pdc $pdc_extraction_date_string "${pdc_version_string}" cds $cds_extraction_date_string "${cds_version_string}" icdc $icdc_extraction_date_string "${icdc_version_string}"
 
 # Add a release_metadata table to $input_root by combining a curated set of CDA
 # column types ('categorical', 'numeric', null) from lib.py with the profiling
 # done by 901_summarize_distinct_values_by_table_and_column.source_aware.py above.
 
-echo ./package_root/auxiliary_scripts/996_create_multi-DC_release_metadata_table.py $summary_file $input_root
-./package_root/auxiliary_scripts/996_create_multi-DC_release_metadata_table.py $summary_file $input_root
+echo ./package_root/auxiliary_scripts/992_create_release_metadata_table.py $summary_file $input_root
+./package_root/auxiliary_scripts/992_create_release_metadata_table.py $summary_file $input_root
 
 

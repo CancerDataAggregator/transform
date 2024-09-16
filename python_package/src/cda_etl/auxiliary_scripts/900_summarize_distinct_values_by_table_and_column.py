@@ -8,7 +8,7 @@ from cda_etl.lib import get_current_timestamp
 
 # SUBROUTINE
 
-def find_input_tsvs( scan_dir ):
+def find_input_tsvs( scan_dir, skip_files=dict() ):
     
     found_tsvs = set()
 
@@ -16,7 +16,7 @@ def find_input_tsvs( scan_dir ):
         
         # Ignore files and directories beginning with '__' by convention.
 
-        if re.search( r'^__', basename ) is None:
+        if re.search( r'^__', basename ) is None and basename not in skip_files:
             
             usable_path = path.join( scan_dir, basename )
 
@@ -24,7 +24,7 @@ def find_input_tsvs( scan_dir ):
                 
                 found_tsvs = found_tsvs | find_input_tsvs( usable_path )
 
-            elif re.search( r'\.tsv', basename ) is not None:
+            elif re.search( r'\.tsv$', basename ) is not None or re.search( r'\.tsv\.gz$', basename ) is not None:
                 
                 found_tsvs.add( path.join( scan_dir, basename ) )
 
@@ -48,35 +48,25 @@ if len( match_list ) > 0:
     
     output_dir = match_list[0]
 
-# Don't scan CDA release-metadata files if they've been built out of sequence.
+# Don't scan CDA release-metadata files if they've been built out of sequence;
+# also skip dicom_[series_]instance.tsv.gz because everything we need is summarized
+# in dicom_series.tsv and its association tables; also skip upstream_identifiers.tsv
+# because it's not exposed to the user; also skip association tables that introduce no
+# new values.
 
-skip_files = {
+files_to_skip = {
     
     'column_metadata.tsv',
-    'release_metadata.tsv'
-}
-
-# Don't attempt to load distinct value sets for certain columns covering tens of millions of DICOM files.
-
-skip_columns = {
-    
-    'dicom_instance': {
-        
-        'SOPInstanceUID',
-        'gcs_url',
-        'crdc_instance_uuid',
-        'instance_size',
-        'instance_hash'
-    },
-    'dicom_series_instance': {
-        
-        'id',
-        'crdc_id',
-        'name',
-        'drs_uri',
-        'size',
-        'checksum_value'
-    }
+    'dicom_instance.tsv.gz',
+    'dicom_series_describes_subject.tsv',
+    'dicom_series_in_project.tsv',
+    'dicom_series_instance.tsv.gz',
+    'file_describes_subject.tsv',
+    'file_in_project.tsv',
+    'project_in_project.tsv',
+    'subject_in_project.tsv',
+    'release_metadata.tsv',
+    'upstream_identifiers.tsv'
 }
 
 # EXECUTION
@@ -87,15 +77,13 @@ if not path.exists( output_dir ):
 
 # Locate input TSVs.
 
-input_files = find_input_tsvs( input_root )
+input_files = find_input_tsvs( input_root, skip_files=files_to_skip )
 
 display_filename = dict()
 
 for input_file in input_files:
     
-    if input_file not in skip_files:
-        
-        display_filename[input_file] = re.sub( r'^' + re.escape( input_root ) + r'\/?', r'', input_file )
+    display_filename[input_file] = re.sub( r'^' + re.escape( input_root ) + r'\/?', r'', input_file )
 
 with open( output_file, 'w' ) as OUT:
     
@@ -105,7 +93,7 @@ with open( output_file, 'w' ) as OUT:
         
         file_label = display_filename[input_file_path]
 
-        if file_label not in skip_files and re.search( r'\.tsv', file_label ) is not None:
+        if re.search( r'\.tsv', file_label ) is not None:
             
             print( f"   [{get_current_timestamp()}] Processing {file_label}...", end='', file=sys.stderr )
 
@@ -143,40 +131,36 @@ with open( output_file, 'w' ) as OUT:
 
                 for i in range( 0, len( values ) ):
                     
-                    if table not in skip_columns or column_names[i] not in skip_columns[table]:
+                    if values[i] == '':
                         
-                        if values[i] == '':
+                        column_has_nulls[column_names[i]] = True
+
+                        column_null_count[column_names[i]] = column_null_count[column_names[i]] + 1
+
+                    else:
+                        
+                        column_distinct_values[column_names[i]].add(values[i])
+
+                        if re.search( r'^-?\d+(\.\d+([eE]-?\d+)?)?$', values[i] ) is None:
                             
-                            column_has_nulls[column_names[i]] = True
-
-                            column_null_count[column_names[i]] = column_null_count[column_names[i]] + 1
-
-                        else:
-                            
-                            column_distinct_values[column_names[i]].add(values[i])
-
-                            if re.search( r'^-?\d+(\.\d+([eE]-?\d+)?)?$', values[i] ) is None:
-                                
-                                column_all_numbers[column_names[i]] = False
+                            column_all_numbers[column_names[i]] = False
 
             for column_name in column_names:
                 
-                if table not in skip_columns or column_name not in skip_columns[table]:
+                has_nulls = str( column_has_nulls[column_name] )
+
+                is_all_numbers = str( column_all_numbers[column_name] )
+
+                if row_count == 0:
                     
-                    has_nulls = str( column_has_nulls[column_name] )
+                    has_nulls = 'NA'
+                    is_all_numbers = 'NA'
 
-                    is_all_numbers = str( column_all_numbers[column_name] )
+                if column_null_count[column_name] == row_count:
+                    
+                    is_all_numbers = 'NA'
 
-                    if row_count == 0:
-                        
-                        has_nulls = 'NA'
-                        is_all_numbers = 'NA'
-
-                    if column_null_count[column_name] == row_count:
-                        
-                        is_all_numbers = 'NA'
-
-                    print( *[ f"{file_label}", column_name, str( len( column_distinct_values[column_name] ) ), str( row_count ), has_nulls, column_null_count[column_name], is_all_numbers ], sep='\t', end='\n', file=OUT )
+                print( *[ f"{file_label}", column_name, str( len( column_distinct_values[column_name] ) ), str( row_count ), has_nulls, column_null_count[column_name], is_all_numbers ], sep='\t', end='\n', file=OUT )
 
             print( 'done.', file=sys.stderr )
 

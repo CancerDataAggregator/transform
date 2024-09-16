@@ -1,6 +1,7 @@
 #!/usr/bin/env python3 -u
 
 import gzip
+import json
 import jsonlines
 import sys
 
@@ -90,7 +91,9 @@ with gzip.open( input_file ) as IN:
                 
                 if field_name in record and record[field_name] is not None and record[field_name] != '':
                     
-                    series[series_id][field_name] = record[field_name]
+                    # There are all manner of format-breaking nonprintable characters embedded in SeriesDescription values (at least). Trust no data fields when it comes to text encoding.
+
+                    series[series_id][field_name] = json.dumps( record[field_name] ).strip( '"' )
 
                 else:
                     
@@ -110,7 +113,9 @@ with gzip.open( input_file ) as IN:
 
                     old_value = series[series_id][field_name]
 
-                    new_value = record[field_name]
+                    # There are all manner of format-breaking nonprintable characters embedded in SeriesDescription values (at least). Trust no data fields when it comes to text encoding.
+
+                    new_value = json.dumps( record[field_name] ).strip( '"' )
 
                     # If there's no conflict, do nothing. Otherwise:
 
@@ -124,7 +129,7 @@ with gzip.open( input_file ) as IN:
                             
                             # Replace nulls with non-null values.
 
-                            series[series_id][field_name] = record[field_name]
+                            series[series_id][field_name] = new_value
 
                             updated = True
 

@@ -41,9 +41,9 @@ clash_log_file = path.join( log_dir, f"IDC_same_idc_case_id_clashes.all_fields.t
 
 for target_dir in [ output_dir, log_dir ]:
     
-    if not path.isdir( output_dir ):
+    if not path.isdir( target_dir ):
         
-        makedirs( output_dir )
+        makedirs( target_dir )
 
 print( f"[{get_current_timestamp()}] Loading submitter_case_id for each idc_case_id...", end='', file=sys.stderr )
 
