@@ -54,7 +54,9 @@ with open( count_summary_file ) as IN, open( release_metadata_output_tsv, 'w' ) 
         
         [ table_name, column_name, data_source, data_source_version, data_source_extraction_date, distinct_non_null_values, number_of_data_rows, has_nulls, number_of_rows_with_nulls, numeric_column ] = next_line.split( '\t' )
 
-        print( *[ table_name, column_name, data_source, data_source_version, data_source_extraction_date, number_of_data_rows, distinct_non_null_values, number_of_rows_with_nulls ], sep='\t', file=OUT )
+        if int( number_of_data_rows ) > 0:
+            
+            print( *[ table_name, column_name, data_source, data_source_version, data_source_extraction_date, number_of_data_rows, distinct_non_null_values, number_of_rows_with_nulls ], sep='\t', file=OUT )
 
 print( 'done.', file=sys.stderr )
 
