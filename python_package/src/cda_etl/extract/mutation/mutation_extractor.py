@@ -5,6 +5,8 @@ from math import ceil
 
 from os import makedirs, path
 
+from cda_etl.lib import get_current_date
+
 class mutation_extractor:
     
     def __init__(
@@ -41,11 +43,23 @@ class mutation_extractor:
 
         self.max_blobs_compose = 32  # Maximum number of GCS blobs to compose (merge) at one time
 
-        self.local_output_dir = f"extracted_data/mutation/{source_version}"
+        self.local_output_dir = f"extracted_data/mutation"
 
         if not path.isdir( self.local_output_dir ):
             
             makedirs( self.local_output_dir )
+
+        self.version_file = f"{self.local_output_dir}/source_data_version.txt"
+
+        with open( self.version_file, 'w' ) as OUT:
+            
+            print( source_version, file=OUT )
+
+        self.extraction_date_file = f"{self.local_output_dir}/extraction_date.txt"
+
+        with open( self.extraction_date_file, 'w' ) as OUT:
+            
+            print( get_current_date(), file=OUT )
 
     def __load_service_account_credentials( self ):
         

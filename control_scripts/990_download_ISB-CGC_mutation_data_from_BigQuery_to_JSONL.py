@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3 -u
 
 import sys
 
@@ -20,9 +20,9 @@ source_project = 'isb-cgc-bq'
 
 processing_bucket = 'gdc-bq-sample-bucket'
 
-key_file = 'GCS-service-account-key.etl-github-testing.json'
+key_file = 'GCS-service-account-key.json'
 
-key_generator = './999_create_service_account_key.etl-github-testing.bash'
+key_generator = './999_create_service_account_key.bash'
 
 if not path.isfile( key_file ):
     
@@ -44,6 +44,10 @@ datasets = [
 
 for dataset in datasets:
     
+    print( '==================================================================================================', file=sys.stderr )
+
+    print( f"Extracting {dataset} from ISB-CGC {source_version} mutation data...", file=sys.stderr )
+
     mtx = mutation_extractor(
         
         gsa_key = key_file,
