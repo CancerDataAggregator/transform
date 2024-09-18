@@ -43,12 +43,6 @@ class mutation_transformer:
 
         self.display_increment = 500000
 
-        for target_dir in [ self.merged_cda_dir ]:
-            
-            if not path.isdir( target_dir ):
-                
-                makedirs( target_dir )
-
     def make_mutation_TSV( self ):
         
         cda_subject_alias_to_project_alias = map_columns_one_to_many( self.cda_table_files['subject_in_project'], 'subject_alias', 'project_alias' )
