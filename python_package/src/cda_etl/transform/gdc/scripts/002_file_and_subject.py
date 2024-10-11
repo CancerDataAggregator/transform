@@ -618,9 +618,13 @@ for file_id in file_associated_with_entity:
 
         elif entity_type == 'portion':
             
-            for sample_id in portion_from_sample[portion_id]:
+            for sample_id in portion_from_sample[entity_id]:
                 
                 ancestor_samples.add( sample_id )
+
+        elif entity_type == 'sample':
+            
+            ancestor_samples.add( entity_id )
 
         elif entity_type != 'case':
             

@@ -67,7 +67,7 @@ sample_diagnoses_tsv = f"{case_out_dir}/Sample.diagnoses.tsv"
 sample_case_tsv = f"{case_out_dir}/Sample.case.tsv"
 sample_project_tsv = f"{case_out_dir}/Sample.project.tsv"
 
-json_output_file = f"{json_out_dir}/case_with_demographics_and_samples.json"
+json_output_file = f"{json_out_dir}/case_with_samples.json"
 
 scalar_case_fields = (
     'case_id',
@@ -468,16 +468,9 @@ scalar_treatment_fields = (
 api_query_json = {
     'query': '''    {
         case( acceptDUA: true ) {
-            ''' + '\n            '.join(scalar_case_fields) + '''
-            demographics {
-                ''' + '\n                '.join(scalar_demographic_fields) + '''
-                case {
-                    case_id
-                }
-                project {
-                    project_id
-                }
-            }
+            
+            case_id
+            case_submitter_id
             samples {
                 ''' + '\n                '.join(scalar_sample_fields) + '''
                 aliquots {
@@ -612,8 +605,8 @@ with open(json_output_file, 'w') as JSON:
 ### Create association TSVs enumerating inter-object relationships for sub-objects.
 
 output_tsv_keywords = [
-    'CASE',
-    'CASE_DEMOGRAPHICS',
+#    'CASE',
+#    'CASE_DEMOGRAPHICS',
 #    'CASE_DIAGNOSES',
 #    'CASE_EXPOSURES',
 #    'CASE_EXTERNAL_REFERENCES',
@@ -621,9 +614,9 @@ output_tsv_keywords = [
 #    'CASE_FOLLOW_UPS',
     'CASE_SAMPLES',
 #    'CASE_TREATMENTS',
-    'DEMOGRAPHIC',
-    'DEMOGRAPHIC_CASE',
-    'DEMOGRAPHIC_PROJECT',
+#    'DEMOGRAPHIC',
+#    'DEMOGRAPHIC_CASE',
+#    'DEMOGRAPHIC_PROJECT',
 #    'DIAGNOSIS',
 #    'DIAGNOSIS_STUDIES',
 #    'DIAGNOSIS_SAMPLES',
@@ -642,8 +635,8 @@ output_tsv_keywords = [
 ]
 
 output_tsv_filenames = [
-    case_tsv,
-    case_demographics_tsv,
+#    case_tsv,
+#    case_demographics_tsv,
 #    case_diagnoses_tsv,
 #    case_exposures_tsv,
 #    case_external_references_tsv,
@@ -651,9 +644,9 @@ output_tsv_filenames = [
 #    case_follow_ups_tsv,
     case_samples_tsv,
 #    case_treatments_tsv,
-    demographic_tsv,
-    demographic_case_tsv,
-    demographic_project_tsv,
+#    demographic_tsv,
+#    demographic_case_tsv,
+#    demographic_project_tsv,
 #    diagnosis_tsv,
 #    diagnosis_studies_tsv,
 #    diagnosis_samples_tsv,
@@ -675,9 +668,9 @@ output_tsvs = dict( zip( output_tsv_keywords, [ open(file_name, 'w') for file_na
 
 # Table headers.
 
-print( *scalar_case_fields, sep='\t', end='\n', file=output_tsvs['CASE'] )
+#print( *scalar_case_fields, sep='\t', end='\n', file=output_tsvs['CASE'] )
 #print( *scalar_entity_reference_fields, sep='\t', end='\n', file=output_tsvs['ENTITY_REFERENCE'] )
-print( *scalar_demographic_fields, sep='\t', end='\n', file=output_tsvs['DEMOGRAPHIC'] )
+#print( *scalar_demographic_fields, sep='\t', end='\n', file=output_tsvs['DEMOGRAPHIC'] )
 print( *scalar_sample_fields, sep='\t', end='\n', file=output_tsvs['SAMPLE'] )
 #print( *scalar_diagnosis_fields, sep='\t', end='\n', file=output_tsvs['DIAGNOSIS'] )
 #print( *scalar_exposure_fields, sep='\t', end='\n', file=output_tsvs['EXPOSURE'] )
@@ -685,7 +678,7 @@ print( *scalar_sample_fields, sep='\t', end='\n', file=output_tsvs['SAMPLE'] )
 #print( *scalar_follow_up_fields, sep='\t', end='\n', file=output_tsvs['FOLLOW_UP'] )
 #print( *scalar_treatment_fields, sep='\t', end='\n', file=output_tsvs['TREATMENT'] )
 
-print( *['case_id', 'demographic_id'], sep='\t', end='\n', file=output_tsvs['CASE_DEMOGRAPHICS'] )
+#print( *['case_id', 'demographic_id'], sep='\t', end='\n', file=output_tsvs['CASE_DEMOGRAPHICS'] )
 #print( *['case_id', 'diagnosis_id'], sep='\t', end='\n', file=output_tsvs['CASE_DIAGNOSES'] )
 #print( *['case_id', 'exposure_id'], sep='\t', end='\n', file=output_tsvs['CASE_EXPOSURES'] )
 #print( *['case_id', 'external_reference_id'], sep='\t', end='\n', file=output_tsvs['CASE_EXTERNAL_REFERENCES'] )
@@ -694,8 +687,8 @@ print( *['case_id', 'demographic_id'], sep='\t', end='\n', file=output_tsvs['CAS
 print( *['case_id', 'sample_id'], sep='\t', end='\n', file=output_tsvs['CASE_SAMPLES'] )
 #print( *['case_id', 'treatment_id'], sep='\t', end='\n', file=output_tsvs['CASE_TREATMENTS'] )
 
-print( *['demographic_id', 'case_id'], sep='\t', end='\n', file=output_tsvs['DEMOGRAPHIC_CASE'] )
-print( *['demographic_id', 'project_id'], sep='\t', end='\n', file=output_tsvs['DEMOGRAPHIC_PROJECT'] )
+#print( *['demographic_id', 'case_id'], sep='\t', end='\n', file=output_tsvs['DEMOGRAPHIC_CASE'] )
+#print( *['demographic_id', 'project_id'], sep='\t', end='\n', file=output_tsvs['DEMOGRAPHIC_PROJECT'] )
 print( *['sample_id', 'aliquot_id'], sep='\t', end='\n', file=output_tsvs['SAMPLE_ALIQUOTS'] )
 print( *['sample_id', 'diagnosis_id'], sep='\t', end='\n', file=output_tsvs['SAMPLE_DIAGNOSES'] )
 print( *['sample_id', 'case_id'], sep='\t', end='\n', file=output_tsvs['SAMPLE_CASE'] )
@@ -713,19 +706,19 @@ seen_external_reference_IDs = set()
 
 for case in result['data']['case']:
     
-    case_row = list()
-
-    for field_name in scalar_case_fields:
-        
-        if case[field_name] is not None:
-            
-            case_row.append(case[field_name])
-
-        else:
-            
-            case_row.append('')
-
-    print( *case_row, sep='\t', end='\n', file=output_tsvs['CASE'] )
+#    case_row = list()
+#
+#    for field_name in scalar_case_fields:
+#        
+#        if case[field_name] is not None:
+#            
+#            case_row.append(case[field_name])
+#
+#        else:
+#            
+#            case_row.append('')
+#
+#    print( *case_row, sep='\t', end='\n', file=output_tsvs['CASE'] )
 
 #    if case['externalReferences'] is not None and len(case['externalReferences']) > 0:
 #        
@@ -756,33 +749,33 @@ for case in result['data']['case']:
 #
 #            print( *[case['case_id'], entity_reference['external_reference_id']], sep='\t', end='\n', file=output_tsvs['CASE_EXTERNAL_REFERENCES'] )
 
-    if case['demographics'] is not None and len(case['demographics']) > 0:
-        
-        for demographic in case['demographics']:
-            
-            demographic_row = list()
-
-            for field_name in scalar_demographic_fields:
-                
-                if demographic[field_name] is not None:
-                    
-                    demographic_row.append(demographic[field_name])
-
-                else:
-                    
-                    demographic_row.append('')
-
-            print( *demographic_row, sep='\t', end='\n', file=output_tsvs['DEMOGRAPHIC'] )
-
-            print( *[case['case_id'], demographic['demographic_id']], sep='\t', end='\n', file=output_tsvs['CASE_DEMOGRAPHICS'] )
-
-            if demographic['case'] is not None:
-                
-                print( *[demographic['demographic_id'], demographic['case']['case_id']], sep='\t', end='\n', file=output_tsvs['DEMOGRAPHIC_CASE'] )
-
-            if demographic['project'] is not None:
-                
-                print( *[demographic['demographic_id'], demographic['project']['project_id']], sep='\t', end='\n', file=output_tsvs['DEMOGRAPHIC_PROJECT'] )
+#    if case['demographics'] is not None and len(case['demographics']) > 0:
+#        
+#        for demographic in case['demographics']:
+#            
+#            demographic_row = list()
+#
+#            for field_name in scalar_demographic_fields:
+#                
+#                if demographic[field_name] is not None:
+#                    
+#                    demographic_row.append(demographic[field_name])
+#
+#                else:
+#                    
+#                    demographic_row.append('')
+#
+#            print( *demographic_row, sep='\t', end='\n', file=output_tsvs['DEMOGRAPHIC'] )
+#
+#            print( *[case['case_id'], demographic['demographic_id']], sep='\t', end='\n', file=output_tsvs['CASE_DEMOGRAPHICS'] )
+#
+#            if demographic['case'] is not None:
+#                
+#                print( *[demographic['demographic_id'], demographic['case']['case_id']], sep='\t', end='\n', file=output_tsvs['DEMOGRAPHIC_CASE'] )
+#
+#            if demographic['project'] is not None:
+#                
+#                print( *[demographic['demographic_id'], demographic['project']['project_id']], sep='\t', end='\n', file=output_tsvs['DEMOGRAPHIC_PROJECT'] )
 
     if case['samples'] is not None and len(case['samples']) > 0:
         
