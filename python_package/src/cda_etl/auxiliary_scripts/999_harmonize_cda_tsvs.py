@@ -33,11 +33,14 @@ debug=False
 
 delete_everywhere = {
     r'n/a',
+    r'nototherwisespecified',
+    r'notspecifiedindata',
     r'notreported',
     r'notdetermined',
     r'other',
     r'undefined',
     r'unknown',
+    r'unspecified',
     r'null',
     r'unknowntumorstatus',
     r'notreported/unknown',
