@@ -105,6 +105,8 @@ with gzip.open( dump_file ) as IN:
 
 output_data = dict()
 
+new_relationships = dict()
+
 with gzip.open( dump_file ) as IN:
     
     reader = jsonlines.Reader( IN )
@@ -123,23 +125,59 @@ with gzip.open( dump_file ) as IN:
 
             dest_entity_type = record['end']['labels'][0]
 
-            try:
+            if relationship_type not in relationship_table_name:
                 
-                output_table_name = relationship_table_name[relationship_type][source_entity_type][dest_entity_type]
+                if relationship_type not in new_relationships:
+                    
+                    new_relationships[relationship_type] = dict()
 
-            except Exception as error:
+                if source_entity_type not in new_relationships[relationship_type]:
+                    
+                    new_relationships[relationship_type][source_entity_type] = dict()
+
+                if dest_entity_type not in new_relationships[relationship_type][source_entity_type]:
+                    
+                    new_relationships[relationship_type][source_entity_type][dest_entity_type] = 1
+
+                else:
+                    
+                    new_relationships[relationship_type][source_entity_type][dest_entity_type] = new_relationships[relationship_type][source_entity_type][dest_entity_type] + 1
+
+            else:
                 
-                print( *[ relationship_type, source_entity_type, dest_entity_type ], sep='\t', file=sys.stderr )
+                try:
+                    
+                    output_table_name = relationship_table_name[relationship_type][source_entity_type][dest_entity_type]
 
-                print( f"error type '{type(error)}'", file=sys.stderr )
+                except Exception as error:
+                    
+                    print( *[ relationship_type, source_entity_type, dest_entity_type ], sep='\t', file=sys.stderr )
 
-                print( f"error message '{error}'", file=sys.stderr )
+                    print( f"error type '{type(error)}'", file=sys.stderr )
 
-            if output_table_name not in output_data:
+                    print( f"error message '{error}'", file=sys.stderr )
+
+                if output_table_name not in output_data:
+                    
+                    output_data[output_table_name] = list()
+
+                output_data[output_table_name].append( [ id_to_uuid[record['start']['id']], id_to_uuid[record['end']['id']] ] )
+
+# Warn if we saw any unexpected relationships.
+
+if len( new_relationships ) > 0:
+    
+    print( 'WARNING: Unanticipated relationships encountered:', end='\n\n', file=sys.stderr )
+
+    for relationship_type in sorted( new_relationships ):
+        
+        for source_entity_type in sorted( new_relationships[relationship_type] ):
+            
+            for dest_entity_type in sorted( new_relationships[relationship_type][source_entity_type] ):
                 
-                output_data[output_table_name] = list()
+                print( f"    <{source_entity_type}> <{relationship_type}> <{dest_entity_type}> [{new_relationships[relationship_type][source_entity_type][dest_entity_type]} records]", file=sys.stderr )
 
-            output_data[output_table_name].append( [ id_to_uuid[record['start']['id']], id_to_uuid[record['end']['id']] ] )
+    print( file=sys.stderr )
 
 for output_table_name in sorted( output_data ):
     

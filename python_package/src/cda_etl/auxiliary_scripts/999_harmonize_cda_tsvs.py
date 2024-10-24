@@ -32,22 +32,26 @@ debug=False
 # hence the need to exclude certain files from value alteration).
 
 delete_everywhere = {
-    r'n/a',
-    r'nototherwisespecified',
-    r'notspecifiedindata',
-    r'notreported',
-    r'notdetermined',
-    r'other',
-    r'undefined',
-    r'unknown',
-    r'unspecified',
-    r'null',
-    r'unknowntumorstatus',
-    r'notreported/unknown',
-    r'notapplicable',
-    r'notallowedtocollect',
     r'-',
-    r'--'
+    r'--',
+    r'anonymized',
+    r'n/a',
+    r'notallowedtocollect',
+    r'notapplicable',
+    r'notdetermined',
+    r'nototherwisespecified',
+    r'notreported',
+    r'notreported/unknown',
+    r'notspecifiedindata',
+    r'null',
+    r'other',
+    r'patientrefused',
+    r'removed',
+    r'undefined',
+    r'unk',
+    r'unknown',
+    r'unknowntumorstatus',
+    r'unspecified'
 }
 
 exclude_tables = {
@@ -112,9 +116,9 @@ all_subs_performed = dict()
 
 for file_basename in sorted( listdir( cda_tsv_dir ) ):
     
-    if re.search( r'\.tsv$', file_basename ) is not None:
+    if re.search( r'\.tsv', file_basename ) is not None:
         
-        table = re.sub( r'^(.*)\.tsv$', r'\1', file_basename )
+        table = re.sub( r'^(.*)\.tsv.*$', r'\1', file_basename )
 
         old_table_file = path.join( cda_tsv_dir, file_basename )
 
@@ -134,185 +138,105 @@ for file_basename in sorted( listdir( cda_tsv_dir ) ):
 
             print( file=sys.stderr )
 
+        IN = open( old_table_file )
+
+        OUT = open( new_table_file, 'w' )
+
+        if re.search( r'\.gz$', old_table_file ) is not None:
+            
+            # Sometimes things are gzipped.
+
+            IN.close()
+
+            OUT.close()
+
+            IN = gzip.open( old_table_file, 'rt' )
+
+            OUT = gzip.open( new_table_file, 'wt' )
+
         all_subs_performed[table] = dict()
 
-        with open( old_table_file ) as IN, open( new_table_file, 'w' ) as OUT:
+        colnames = next( IN ).rstrip( '\n' ).split( '\t' )
+
+        print( *colnames, sep='\t', file=OUT )
+
+        for line in [ next_line.rstrip( '\n' ) for next_line in IN ]:
             
-            colnames = next( IN ).rstrip( '\n' ).split( '\t' )
+            input_row_dict = dict( zip( colnames, line.split( '\t' ) ) )
 
-            print( *colnames, sep='\t', file=OUT )
+            output_row = list()
 
-            for line in [ next_line.rstrip( '\n' ) for next_line in IN ]:
+            for column in colnames:
                 
-                input_row_dict = dict( zip( colnames, line.split( '\t' ) ) )
+                old_value = input_row_dict[column]
 
-                output_row = list()
-
-                for column in colnames:
+                if table in harmonized_value and column in harmonized_value[table]:
                     
-                    old_value = input_row_dict[column]
-
-                    if table in harmonized_value and column in harmonized_value[table]:
+                    if column not in all_subs_performed[table]:
                         
+                        all_subs_performed[table][column] = dict()
+
+                    new_value = ''
+
+                    if old_value is not None and old_value in harmonized_value[table][column]:
+                        
+                        new_value = harmonized_value[table][column][old_value]
+
+                        # Check target values for global cleanup: `delete_everywhere` takes precedence.
+
+                        if re.sub( r'\s', r'', new_value.strip().lower() ) in delete_everywhere:
+                            
+                            new_value = ''
+
+                    output_row.append( new_value )
+
+                    if old_value not in all_subs_performed[table][column]:
+                        
+                        all_subs_performed[table][column][old_value] = {
+                            new_value : 1
+                        }
+
+                    elif new_value not in all_subs_performed[table][column][old_value]:
+                        
+                        all_subs_performed[table][column][old_value][new_value] = 1
+
+                    else:
+                        
+                        all_subs_performed[table][column][old_value][new_value] = all_subs_performed[table][column][old_value][new_value] + 1
+
+                elif table not in exclude_tables:
+                    
+                    if re.sub( r'\s', r'', old_value.strip().lower() ) in delete_everywhere:
+                            
                         if column not in all_subs_performed[table]:
                             
                             all_subs_performed[table][column] = dict()
 
-                        new_value = ''
-
-                        if old_value is not None and old_value in harmonized_value[table][column]:
-                            
-                            new_value = harmonized_value[table][column][old_value]
-
-                        output_row.append( new_value )
-
                         if old_value not in all_subs_performed[table][column]:
                             
                             all_subs_performed[table][column][old_value] = {
-                                new_value : 1
+                                '' : 1
                             }
 
-                        elif new_value not in all_subs_performed[table][column][old_value]:
+                        elif '' not in all_subs_performed[table][column][old_value]:
                             
-                            all_subs_performed[table][column][old_value][new_value] = 1
+                            all_subs_performed[table][column][old_value][''] = 1
 
                         else:
                             
-                            all_subs_performed[table][column][old_value][new_value] = all_subs_performed[table][column][old_value][new_value] + 1
+                            all_subs_performed[table][column][old_value][''] = all_subs_performed[table][column][old_value][''] + 1
 
-                    elif table not in exclude_tables:
-                        
-                        if re.sub( r'\s', r'', old_value.strip().lower() ) in delete_everywhere:
-                                
-                            if column not in all_subs_performed[table]:
-                                
-                                all_subs_performed[table][column] = dict()
-
-                            if old_value not in all_subs_performed[table][column]:
-                                
-                                all_subs_performed[table][column][old_value] = {
-                                    '' : 1
-                                }
-
-                            elif '' not in all_subs_performed[table][column][old_value]:
-                                
-                                all_subs_performed[table][column][old_value][''] = 1
-
-                            else:
-                                
-                                all_subs_performed[table][column][old_value][''] = all_subs_performed[table][column][old_value][''] + 1
-
-                            output_row.append( '' )
-
-                        else:
-                            
-                            output_row.append( old_value )
+                        output_row.append( '' )
 
                     else:
                         
                         output_row.append( old_value )
 
-                print( *output_row, sep='\t', file=OUT )
-
-    elif re.search( r'\.tsv.gz$', file_basename ) is not None:
-        
-        # Sometimes things are gzipped.
-
-        table = re.sub( r'^(.*)\.tsv.gz$', r'\1', file_basename )
-
-        old_table_file = path.join( cda_tsv_dir, file_basename )
-
-        new_table_file = path.join( harmonized_cda_tsv_dir, file_basename )
-
-        if debug:
-            
-            print( f"table: {table}", file=sys.stderr )
-
-            print( f"old file: {old_table_file}", file=sys.stderr )
-
-            print( f"new file: {new_table_file}", end='\n\n', file=sys.stderr )
-
-            for column in sorted( harmonized_value[table] ):
-                
-                print( f"   {column}", file=sys.stderr )
-
-            print( file=sys.stderr )
-
-        all_subs_performed[table] = dict()
-
-        with gzip.open( old_table_file, 'rt' ) as IN, gzip.open( new_table_file, 'wt' ) as OUT:
-            
-            colnames = next( IN ).rstrip( '\n' ).split( '\t' )
-
-            print( *colnames, sep='\t', file=OUT )
-
-            for line in [ next_line.rstrip( '\n' ) for next_line in IN ]:
-                
-                input_row_dict = dict( zip( colnames, line.split( '\t' ) ) )
-
-                output_row = list()
-
-                for column in colnames:
+                else:
                     
-                    old_value = input_row_dict[column]
+                    output_row.append( old_value )
 
-                    if table in harmonized_value and column in harmonized_value[table]:
-                        
-                        if column not in all_subs_performed[table]:
-                            
-                            all_subs_performed[table][column] = dict()
-
-                        new_value = ''
-
-                        if old_value is not None and old_value in harmonized_value[table][column]:
-                            
-                            new_value = harmonized_value[table][column][old_value]
-
-                        output_row.append( new_value )
-
-                        if old_value not in all_subs_performed[table][column]:
-                            
-                            all_subs_performed[table][column][old_value] = {
-                                new_value : 1
-                            }
-
-                        elif new_value not in all_subs_performed[table][column][old_value]:
-                            
-                            all_subs_performed[table][column][old_value][new_value] = 1
-
-                        else:
-                            
-                            all_subs_performed[table][column][old_value][new_value] = all_subs_performed[table][column][old_value][new_value] + 1
-
-                    else:
-                        
-                        if re.sub( r'\s', r'', old_value.strip().lower() ) in delete_everywhere:
-                            
-                            if column not in all_subs_performed[table]:
-                                
-                                all_subs_performed[table][column] = dict()
-
-                            if old_value not in all_subs_performed[table][column]:
-                                
-                                all_subs_performed[table][column][old_value] = {
-                                    '' : 1
-                                }
-
-                            elif '' not in all_subs_performed[table][column][old_value]:
-                                
-                                all_subs_performed[table][column][old_value][''] = 1
-
-                            else:
-                                
-                                all_subs_performed[table][column][old_value][''] = all_subs_performed[table][column][old_value][''] + 1
-
-                            output_row.append( '' )
-
-                        else:
-                            
-                            output_row.append( old_value )
-
-                print( *output_row, sep='\t', file=OUT )
+            print( *output_row, sep='\t', file=OUT )
 
 # Dump substitution logs.
 
