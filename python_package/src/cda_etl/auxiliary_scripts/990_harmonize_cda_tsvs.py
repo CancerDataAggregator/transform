@@ -207,6 +207,12 @@ for file_basename in sorted( listdir( cda_tsv_dir ) ):
                         
                         new_value = harmonized_value[table][column][old_value]
 
+                        # Check target values for global cleanup: `delete_everywhere` takes precedence.
+
+                        if re.sub( r'\s', r'', new_value.strip().lower() ) in delete_everywhere:
+                            
+                            new_value = ''
+
                     output_row.append( new_value )
 
                     if old_value not in all_subs_performed[table][column]:
