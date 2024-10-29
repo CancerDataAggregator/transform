@@ -160,9 +160,9 @@ for file_basename in sorted( listdir( cda_tsv_dir ) ):
 
         print( *colnames, sep='\t', file=OUT )
 
-        for line in [ next_line.rstrip( '\n' ) for next_line in IN ]:
+        for next_line in IN:
             
-            input_row_dict = dict( zip( colnames, line.split( '\t' ) ) )
+            input_row_dict = dict( zip( colnames, next_line.rstrip( '\n' ).split( '\t' ) ) )
 
             output_row = list()
 
