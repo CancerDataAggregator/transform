@@ -23,7 +23,7 @@ gdc_extraction_date_file="${gdc_extraction_root}/extraction_date.txt"
 
 gdc_extraction_date_string=`cat ${gdc_extraction_date_file}`
 
-gdc_version_string=`cat ${gdc_extraction_root}/API_version_metadata.files_endpoint_extraction.json | grep data_release | sed -E 's/^ +"data_release": "(.*)",?$/\1/' | sed -E 's/"//g'`
+gdc_version_string=`cat ${gdc_extraction_root}/API_version_metadata.files_endpoint_extraction.json | grep data_release | grep -v data_release_version | sed -E 's/^ +"data_release": "(.*)",?$/\1/' | sed -E 's/"//g'`
 
 pdc_extraction_root="./extracted_data/pdc"
 
@@ -31,7 +31,7 @@ pdc_extraction_date_file="${pdc_extraction_root}/extraction_date.txt"
 
 pdc_extraction_date_string=`cat ${pdc_extraction_date_file}`
 
-pdc_version_string=`cat ${pdc_extraction_root}/__version_metadata/uiDataVersionSoftwareVersion.json | grep data_release | sed -E 's/^ +"data_release": "(.*)",?$/Data Release \1/' | sed -E 's/"//g'`
+pdc_version_string=`cat ${pdc_extraction_root}/__version_metadata/uiDataVersionSoftwareVersion.json | grep data_release | grep -v data_release_version | sed -E 's/^ +"data_release": "(.*)",?$/Data Release \1/' | sed -E 's/"//g'`
 
 input_root=./cda_tsvs/merged_gdc_and_pdc_002_decorated_harmonized
 

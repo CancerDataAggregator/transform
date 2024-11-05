@@ -20,6 +20,8 @@ with open( version_file ) as IN:
     
     source_version = next( IN ).rstrip( '\n' )
 
+substitution_log_dir = path.join( 'auxiliary_metadata', '__harmonization_logs', 'mutation' )
+
 columns_to_keep = [
     
     'hugo_symbol',
@@ -68,7 +70,8 @@ mtx = mutation_transformer(
     
     columns_to_keep = columns_to_keep,
     source_datasets = source_datasets,
-    source_version = source_version
+    source_version = source_version,
+    substitution_log_dir = substitution_log_dir
 )
 
 mtx.make_mutation_TSV()

@@ -12,7 +12,7 @@ extraction_date_file="${extraction_root}/extraction_date.txt"
 
 extraction_date_string=`cat $extraction_date_file`
 
-version_string=`cat ${extraction_root}/__version_metadata/uiDataVersionSoftwareVersion.json | grep data_release | sed -E 's/^ +"data_release": "(.*)",?$/Data Release \1/' | sed -E 's/"//g'`
+version_string=`cat ${extraction_root}/__version_metadata/uiDataVersionSoftwareVersion.json | grep data_release | grep -v data_release_version | sed -E 's/^ +"data_release": "(.*)",?$/Data Release \1/' | sed -E 's/"//g'`
 
 aux_dir="./auxiliary_metadata/__column_value_statistics/${upper_data_source}/extracted__${extraction_date_string}"
 
