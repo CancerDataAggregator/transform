@@ -3,9 +3,9 @@ import jsonlines
 import re
 import sys
 
-from os import makedirs, path
+from os import makedirs, path, rename
 
-from cda_etl.lib import load_tsv_as_dict, map_columns_one_to_one, sort_file_with_header
+from cda_etl.lib import deduplicate_and_sort_unsorted_file_with_header, get_universal_value_deletion_patterns, load_tsv_as_dict, map_columns_one_to_one, sort_file_with_header
 
 class mutation_transformer:
     
@@ -13,12 +13,15 @@ class mutation_transformer:
         self,
         columns_to_keep = [],
         source_datasets = [], # e.g. TCGA, TARGET, HCMI
-        source_version = None # ISB-CGC-assigned version suffix on mutation table names, e.g. source_version == 'hg38_gdc_current' --> TCGA mutations table address inside BQ isb-cgc-bq project space == 'TCGA.masked_somatic_mutation_hg38_gdc_current'
+        source_version = None, # ISB-CGC-assigned version suffix on mutation table names, e.g. source_version == 'hg38_gdc_current' --> TCGA mutations table address inside BQ isb-cgc-bq project space == 'TCGA.masked_somatic_mutation_hg38_gdc_current'
+        substitution_log_dir = None
     ):
 
         self.columns_to_keep = columns_to_keep
         self.source_datasets = source_datasets
         self.source_version = source_version
+
+        self.substitution_log_dir = substitution_log_dir
 
         self.cda_data_sources = [
             'CDS',
@@ -49,11 +52,57 @@ class mutation_transformer:
             'subject_mutation' : path.join( self.sql_table_output_dir, 'subject_mutation.sql.gz' )
         }
 
+        # Load any relevant value-harmonization maps.
+
+        harmonization_map_dir = path.join( '.', 'harmonization_maps' )
+
+        harmonization_map_index = path.join( harmonization_map_dir, '000_cda_column_targets.tsv' )
+
+        self.delete_everywhere = get_universal_value_deletion_patterns()
+
+        ### EXAMINE OUTPUTS: remove_possible_unsorted_dupes = True
+
+        # Load harmonization value maps by column.
+
+        self.harmonized_value = dict()
+
+        with open( harmonization_map_index )  as IN:
+            
+            colnames = next( IN ).rstrip( '\n' ).split( '\t' )
+
+            for line in [ next_line.rstrip( '\n' ) for next_line in IN ]:
+                
+                row_dict = dict( zip( colnames, line.split( '\t' ) ) )
+
+                table = row_dict['cda_table']
+
+                if table == 'mutation':
+                    
+                    column = row_dict['cda_column']
+
+                    map_file = path.join( harmonization_map_dir, f"{row_dict['concept_map_name']}.tsv" )
+
+                    if column not in self.harmonized_value:
+                        
+                        self.harmonized_value[column] = dict()
+
+                    with open( map_file ) as MAP:
+                        
+                        for next_term_pair in MAP:
+                            
+                            ( old_value, new_value ) = next_term_pair.rstrip( '\n' ).split( '\t' )
+                            
+                            self.harmonized_value[column][old_value] = new_value
+
+        # Track all substitutions.
+
+        self.all_subs_performed = dict()
+
         # Spit out a logger message every `self.display_increment` lines while transcoding.
 
         self.display_increment = 500000
 
-        for target_dir in [ self.merged_cda_dir, self.sql_table_output_dir ]:
+        for target_dir in [ self.merged_cda_dir, self.sql_table_output_dir, self.substitution_log_dir ]:
             
             if not path.isdir( target_dir ):
                 
@@ -117,6 +166,8 @@ class mutation_transformer:
 
                 skipped_unfound = 0
 
+                skipped_nulled = 0
+
                 print( f"Transcoding mutation JSONL for {source_dataset} into CDA-formatted mutation.tsv and subject_mutation.tsv and linking CDA records...", end='', file=sys.stderr )
 
                 with gzip.open( mutation_jsonl, 'rt' ) as IN:
@@ -155,33 +206,125 @@ class mutation_transformer:
 
                                 cda_mutation_id = f"{cda_subject_id}.mutation_{current_mutation_alias}"
 
-                                kept_columns = list()
+                                result_row = [ cda_mutation_id, current_mutation_alias ]
 
-                                for column_name in self.columns_to_keep:
+                                current_mutation_alias = current_mutation_alias + 1
+
+                                for column in self.columns_to_keep:
                                     
-                                    if column_name in record:
+                                    if column in record:
                                         
-                                        value = record[column_name]
+                                        old_value = record[column]
+
+                                        if old_value is None:
+                                            
+                                            old_value = ''
+
+                                        new_value = ''
 
                                         # Nitpick about capitalization for boolean literals in postgresql INSERTs (while refusing to capitalize "Boolean")
 
-                                        if str(value) == 'False':
+                                        if str( old_value ) == 'False':
                                             
-                                            value = 'false'
+                                            new_value = 'false'
 
-                                        elif str(value) == 'True':
+                                        elif str( old_value ) == 'True':
                                             
-                                            value = 'true'
+                                            new_value = 'true'
 
-                                        kept_columns.append( value )
+                                        # Harmonize values as directed by the contents of the `harmonization_map_index` file (cf. __init__() definition above).
+
+                                        if column in self.harmonized_value:
+                                            
+                                            if old_value in self.harmonized_value[column]:
+                                                
+                                                new_value = self.harmonized_value[column][old_value]
+
+                                                # Check target values for global cleanup: `self.delete_everywhere` takes precedence.
+
+                                                if re.sub( r'\s', r'', new_value.strip().lower() ) in self.delete_everywhere:
+                                                    
+                                                    new_value = ''
+
+                                            if column not in self.all_subs_performed:
+                                                
+                                                self.all_subs_performed[column] = dict()
+
+                                            if old_value not in self.all_subs_performed[column]:
+                                                
+                                                self.all_subs_performed[column][old_value] = {
+                                                    new_value : 1
+                                                }
+
+                                            elif new_value not in self.all_subs_performed[column][old_value]:
+                                                
+                                                self.all_subs_performed[column][old_value][new_value] = 1
+
+                                            else:
+                                                
+                                                self.all_subs_performed[column][old_value][new_value] = self.all_subs_performed[column][old_value][new_value] + 1
+
+                                        elif not isinstance( old_value, bool ) and re.sub( r'\s', r'', old_value.strip().lower() ) in self.delete_everywhere:
+                                            
+                                            # This column is not harmonized, but this value is slated for global deletion.
+
+                                            if column not in self.all_subs_performed:
+                                                
+                                                self.all_subs_performed[column] = dict()
+
+                                            if old_value not in self.all_subs_performed[column]:
+                                                
+                                                self.all_subs_performed[column][old_value] = {
+                                                    '' : 1
+                                                }
+
+                                            elif '' not in self.all_subs_performed[column][old_value]:
+                                                
+                                                self.all_subs_performed[column][old_value][''] = 1
+
+                                            else:
+                                                
+                                                self.all_subs_performed[column][old_value][''] = self.all_subs_performed[column][old_value][''] + 1
+
+                                        else:
+                                            
+                                            # Column not harmonized; value not slated for deletion. Preserve value as is.
+
+                                            new_value = old_value
+
+                                        result_row.append( new_value )
 
                                     else:
                                         
-                                        kept_columns.append( '' )
+                                        # `column` didn't appear at all in the loaded record.
 
-                                result_row = [ cda_mutation_id, current_mutation_alias ] + kept_columns
+                                        result_row.append( '' )
 
-                                print( *result_row, sep='\t', file=OUT )
+                                # end for ( column in self.columns_to_keep )
+
+                                # Did we delete everything of possible use?
+
+                                values_all_null = True
+
+                                # Fast-forward past the two ID values at the beginning of each row.
+
+                                row_index = 2
+
+                                for column in self.columns_to_keep:
+                                    
+                                    if result_row[row_index] != '':
+                                        
+                                        values_all_null = False
+
+                                    row_index = row_index + 1
+
+                                if not values_all_null:
+                                    
+                                    print( *result_row, sep='\t', file=OUT )
+
+                                else:
+                                    
+                                    skipped_nulled = skipped_nulled + 1
 
                             else:
                                 
@@ -190,8 +333,6 @@ class mutation_transformer:
                         else:
                             
                             skipped_null = skipped_null + 1
-
-                        current_mutation_alias = current_mutation_alias + 1
 
                         line_count = line_count + 1
 
@@ -203,7 +344,59 @@ class mutation_transformer:
                             
                             print( f"   ...processed {line_count} lines...", file=sys.stderr )
 
-                print( f"done. processed {line_count} lines; skipped {skipped_null} due to missing records and {skipped_unfound} due to unmatched case barcodes.", end='\n\n', file=sys.stderr )
+                print( f"done. Processed {line_count} lines; skipped {skipped_null} due to missing records; skipped {skipped_nulled} due to harmonization deleting all row data; and skipped {skipped_unfound} due to unmatched case barcodes.", end='\n\n', file=sys.stderr )
+
+        # Remove any duplicate rows created by value harmonization.
+
+        print( 'Deduplicating output...', end='', file=sys.stderr )
+
+        removed_mutation_aliases = deduplicate_and_sort_unsorted_file_with_header( self.cda_table_inputs['mutation'], gzipped=True, ignore_primary_id_fields=True )
+
+        temp_file = f"{self.cda_table_inputs['subject_mutation']}.tmp"
+
+        with gzip.open( self.cda_table_inputs['subject_mutation'], 'rt' ) as IN, gzip.open( temp_file, 'wt' ) as OUT:
+            
+            header = next( IN ).rstrip( '\n' )
+
+            columns = header.split( '\t' )
+
+            print( header, file=OUT )
+
+            for next_line in IN:
+                
+                line = next_line.rstrip( '\n' )
+
+                record = dict( zip( columns, line.split( '\t' ) ) )
+
+                current_mutation_alias = record['mutation_alias']
+
+                if current_mutation_alias not in removed_mutation_aliases:
+                    
+                    print( line, file=OUT )
+
+        rename( temp_file, self.cda_table_inputs['subject_mutation'] )
+
+        print( f"done. Removed {len( removed_mutation_aliases )} duplicate mutation records and associated subject-mutation links.", end='\n\n', file=sys.stderr )
+
+        # Dump substitution logs.
+
+        print( 'Dumping substitution logs...', end='', file=sys.stderr )
+
+        for column in sorted( self.all_subs_performed ):
+            
+            log_file = path.join( self.substitution_log_dir, f"mutation.{column}.substitution_log.tsv" )
+
+            with open( log_file, 'w' ) as OUT:
+                
+                print( *[ 'raw_value', 'harmonized_value', 'number_of_substitutions' ], sep='\t', file=OUT )
+
+                for old_value in sorted( self.all_subs_performed[column] ):
+                    
+                    for new_value in sorted( self.all_subs_performed[column][old_value] ):
+                        
+                        print( *[ old_value, new_value, self.all_subs_performed[column][old_value][new_value] ], sep='\t', file=OUT )
+
+        print( 'done.', end='\n\n', file=sys.stderr )
 
     def transform_mutation_and_subject_mutation_to_SQL( self ):
         

@@ -1413,6 +1413,104 @@ def columns_to_count( data_source ):
         
         sys.exit( f"FATAL: data_source '{data_source}' not recognized; cannot provide list of enumerable columns." )
 
+def deduplicate_and_sort_unsorted_file_with_header( file_path, gzipped=False, ignore_primary_id_fields=False ):
+    
+    IN = open( path.join( file_path ) )
+
+    OUT = open( path.join( file_path + '.tmp' ), 'w' )
+
+    if gzipped:
+        
+        IN.close()
+
+        OUT.close()
+
+        IN = gzip.open( path.join( file_path ), 'rt' )
+
+        OUT = gzip.open( path.join( file_path + '.tmp' ), 'wt' )
+
+    header = next( IN ).rstrip( '\n' )
+
+    print( header, file=OUT )
+
+    removed_aliases = set()
+
+    if not ignore_primary_id_fields:
+        
+        # Sort the set of lines (as unparsed strings) and make sure we don't repeat identical adjacent lines.
+
+        last_line = ''
+
+        line_count = 0
+
+        for next_line in sorted( [ line.rstrip( '\n' ) for line in IN ] ):
+            
+            line_count = line_count + 1
+
+            if next_line != last_line:
+                
+                print( next_line, file=OUT )
+
+            last_line = next_line
+
+    else:
+        
+        # Find the id fields.
+
+        column_names = header.split( '\t' )
+
+        alias_index = -1
+
+        id_indices = set()
+
+        if 'id' in column_names:
+            
+            id_indices.add( column_names.index( 'id' ) )
+
+        if 'integer_id_alias' in column_names:
+            
+            alias_index = column_names.index( 'integer_id_alias' )
+
+            id_indices.add( alias_index )
+
+        if len( id_indices ) == 0:
+            
+            sys.exit( f"\n   FATAL: deduplicate_and_sort_unsorted_file_with_header(): Parameter 'ignore_primary_id_fields' was set to True, but the table encoded in '{file_path}' has neither 'id' nor 'integer_id_alias' fields. Cannot continue.\n" )
+
+        record_data = set()
+
+        output_lines = set()
+
+        for line in IN:
+            
+            next_line = line.rstrip( '\n' )
+
+            record = next_line.split( '\t' )
+            
+            record_string = '\t'.join( [ value for index, value in enumerate( record ) if index not in id_indices ] )
+
+            if record_string not in record_data:
+                
+                output_lines.add( next_line )
+
+            elif alias_index != -1:
+                
+                removed_aliases.add( record[alias_index] )
+
+            record_data.add( record_string )
+
+        for next_line in sorted( output_lines ):
+            
+            print( next_line, file=OUT )
+
+    IN.close()
+
+    OUT.close()
+
+    rename( file_path + '.tmp', file_path )
+
+    return removed_aliases
+
 def get_safe_value( record, field_name ):
     
     if field_name in record:
@@ -1455,6 +1553,37 @@ def get_unique_values_from_tsv_column( tsv_path, column_name ):
             values_seen.add( row_dict[column_name] )
 
         return sorted( values_seen )
+
+def get_universal_value_deletion_patterns( ):
+    
+    # Enumerate (case-insensitive, space-collapsed) values (as regular expressions) that
+    # should be deleted wherever they are found in search metadata.
+
+    delete_everywhere = {
+        
+        r'-',
+        r'--',
+        r'anonymized',
+        r'n/a',
+        r'notallowedtocollect',
+        r'notapplicable',
+        r'notdetermined',
+        r'nototherwisespecified',
+        r'notreported',
+        r'notreported/unknown',
+        r'notspecifiedindata',
+        r'null',
+        r'other',
+        r'patientrefused',
+        r'removed',
+        r'undefined',
+        r'unk',
+        r'unknown',
+        r'unknowntumorstatus',
+        r'unspecified'
+    }
+
+    return delete_everywhere
 
 def load_qualified_id_association( input_file, qualifier_field_name, id_one_field_name, id_two_field_name ):
     
