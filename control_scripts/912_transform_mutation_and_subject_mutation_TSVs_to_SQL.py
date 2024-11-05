@@ -2,6 +2,8 @@
 
 import sys
 
+from os import path
+
 from cda_etl.transform.mutation.mutation_transformer import mutation_transformer
 
 # A version string (e.g. 'hg38_gdc_current') is required by the processor scripts.
@@ -13,6 +15,8 @@ if len( sys.argv ) <= 1:
     sys.exit( 'FATAL: This script needs an ISB source-version string (like "hg38_gdc_current") as its argument.' )
 
 source_version = sys.argv[1]
+
+substitution_log_dir = path.join( 'auxiliary_metadata', '__substitution_logs', 'mutation' )
 
 columns_to_keep = [
     
@@ -66,7 +70,8 @@ mtx = mutation_transformer(
     
     columns_to_keep = columns_to_keep,
     source_datasets = source_datasets,
-    source_version = source_version
+    source_version = source_version,
+    substitution_log_dir = substitution_log_dir
 )
 
 mtx.transform_mutation_and_subject_mutation_to_SQL()
