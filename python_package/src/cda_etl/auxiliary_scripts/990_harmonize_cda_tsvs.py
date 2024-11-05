@@ -71,12 +71,14 @@ delete_row_if_all_null_but = {
 
 exclude_tables = {
     
+    'column_metadata',
     'dicom_series_describes_subject',
     'dicom_series_in_project',
     'file_describes_subject',
     'file_in_project',
     'project',
     'project_in_project',
+    'release_metadata',
     'subject_in_project',
     'upstream_identifiers'
 }
