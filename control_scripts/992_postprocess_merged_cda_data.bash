@@ -70,6 +70,11 @@ current_date=$(date '+%Y-%m-%d')
 echo ./package_root/auxiliary_scripts/901_summarize_distinct_values_by_table_and_column.source_aware.py $input_root $summary_file "${cda_version_string}" $current_date print_CDA_rows gdc $gdc_extraction_date_string "${gdc_version_string}" pdc $pdc_extraction_date_string "${pdc_version_string}" cds $cds_extraction_date_string "${cds_version_string}" icdc $icdc_extraction_date_string "${icdc_version_string}" idc $idc_extraction_date_string "${idc_version_string}"
 ./package_root/auxiliary_scripts/901_summarize_distinct_values_by_table_and_column.source_aware.py $input_root $summary_file "${cda_version_string}" $current_date print_CDA_rows gdc $gdc_extraction_date_string "${gdc_version_string}" pdc $pdc_extraction_date_string "${pdc_version_string}" cds $cds_extraction_date_string "${cds_version_string}" icdc $icdc_extraction_date_string "${icdc_version_string}" idc $idc_extraction_date_string "${idc_version_string}"
 
+full_count_output_dir=./auxiliary_metadata/__column_value_statistics/merged_CDA_data/GDC_${gdc_extraction_date_string}_plus_PDC_${pdc_extraction_date_string}_plus_CDS_${cds_extraction_date_string}_plus_ICDC_${icdc_extraction_date_string}_plus_IDC_${idc_extraction_date_string}/full_counts_by_column_and_value
+
+echo ./package_root/auxiliary_scripts/902_tabulate_enumerable_values_by_table_and_column.py cda $input_root $full_count_output_dir
+./package_root/auxiliary_scripts/902_tabulate_enumerable_values_by_table_and_column.py cda $input_root $full_count_output_dir
+
 # Add a release_metadata table to $input_root by combining a curated set of CDA
 # column types ('categorical', 'numeric', null) from lib.py with the profiling
 # done by 901_summarize_distinct_values_by_table_and_column.source_aware.py above.

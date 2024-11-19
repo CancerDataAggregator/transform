@@ -26,7 +26,7 @@ version_string=`cat ${extraction_root}/API_version_metadata.files_endpoint_extra
 
 aux_dir="./auxiliary_metadata/__column_value_statistics/${upper_data_source}/extracted__${extraction_date_string}"
 
-full_count_output_dir="${aux_dir}/full_counts_by_column_and_value"
+full_count_output_root="${aux_dir}/full_counts_by_column_and_value"
 
 summary_output_dir="${aux_dir}/dataset_summaries"
 
@@ -44,6 +44,8 @@ echo ./package_root/auxiliary_scripts/900_summarize_distinct_values_by_table_and
 
 input_root=$extraction_root
 
+full_count_output_dir="${full_count_output_root}/000_as_extracted"
+
 echo ./package_root/auxiliary_scripts/902_tabulate_enumerable_values_by_table_and_column.py $data_source $input_root $full_count_output_dir
 ./package_root/auxiliary_scripts/902_tabulate_enumerable_values_by_table_and_column.py $data_source $input_root $full_count_output_dir
 
@@ -54,12 +56,26 @@ summary_file="${summary_output_dir}/${upper_data_source}_column_stats_by_table.c
 echo ./package_root/auxiliary_scripts/900_summarize_distinct_values_by_table_and_column.py $input_root $summary_file
 ./package_root/auxiliary_scripts/900_summarize_distinct_values_by_table_and_column.py $input_root $summary_file
 
+full_count_output_dir="${full_count_output_root}/001_converted_to_CDA.unharmonized"
+
+# Switch data source to 'cda' to identify the right columns to enumerate for the new format.
+
+echo ./package_root/auxiliary_scripts/902_tabulate_enumerable_values_by_table_and_column.py cda $input_root $full_count_output_dir
+./package_root/auxiliary_scripts/902_tabulate_enumerable_values_by_table_and_column.py cda $input_root $full_count_output_dir
+
 input_root="./cda_tsvs/${data_source}_001_harmonized"
 
 summary_file="${summary_output_dir}/${upper_data_source}_column_stats_by_table.converted_to_CDA.harmonized.tsv"
 
 echo ./package_root/auxiliary_scripts/900_summarize_distinct_values_by_table_and_column.py $input_root $summary_file
 ./package_root/auxiliary_scripts/900_summarize_distinct_values_by_table_and_column.py $input_root $summary_file
+
+full_count_output_dir="${full_count_output_root}/002_converted_to_CDA.harmonized"
+
+# Switch data source to 'cda' to identify the right columns to enumerate for the new format.
+
+echo ./package_root/auxiliary_scripts/902_tabulate_enumerable_values_by_table_and_column.py cda $input_root $full_count_output_dir
+./package_root/auxiliary_scripts/902_tabulate_enumerable_values_by_table_and_column.py cda $input_root $full_count_output_dir
 
 input_root="./cda_tsvs/${data_source}_002_decorated_harmonized"
 

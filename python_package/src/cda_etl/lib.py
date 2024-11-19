@@ -1405,9 +1405,98 @@ def columns_to_count( data_source ):
                 'tumor_tissue_site',
                 'tumor_type'
             ]
-        }
+        },
 
         # end enumerable_columns['idc']
+
+        'cda': {
+            
+            'dicom_series': [
+                
+                'access',
+                'checksum_type',
+                'format',
+                'category',
+                'instance_count'
+            ],
+            'dicom_series_anatomic_site': [
+                
+                'anatomic_site'
+            ],
+            'dicom_series_tumor_vs_normal': [
+                
+                'tumor_vs_normal'
+            ],
+            'dicom_series_type': [
+                
+                'type'
+            ],
+            'file': [
+                
+                'access',
+                'checksum_type',
+                'format',
+                'type',
+                'category'
+            ],
+            'file_anatomic_site': [
+                
+                'anatomic_site'
+            ],
+            'file_tumor_vs_normal': [
+                
+                'tumor_vs_normal'
+            ],
+            'mutation': [
+                
+                'hugo_symbol',
+                'entrez_gene_id',
+                'hotspot',
+                'ncbi_build',
+                'chromosome',
+                'variant_type',
+                'mutation_status',
+                'gene',
+                'one_consequence',
+                'hgnc_id',
+                'primary_site'
+            ],
+            'observation': [
+                
+                'vital_status',
+                'sex',
+                'year_of_observation',
+                'diagnosis',
+                'morphology',
+                'grade',
+                'stage',
+                'observed_anatomic_site',
+                'resection_anatomic_site'
+            ],
+            'project': [
+                
+                'type',
+                'name',
+                'short_name'
+            ],
+            'subject': [
+                
+                'species',
+                'year_of_birth',
+                'year_of_death',
+                'cause_of_death',
+                'race',
+                'ethnicity'
+            ],
+            'treatment': [
+                
+                'anatomic_site',
+                'type',
+                'therapeutic_agent'
+            ]
+        }
+
+        # end enumerable_columns['cda']
     }
 
     if data_source in enumerable_columns:
