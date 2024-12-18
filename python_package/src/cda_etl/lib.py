@@ -1360,7 +1360,6 @@ def columns_to_count( data_source ):
                 
                 'SOPClassUID',
                 'Modality',
-                'tcia_tumorLocation',
                 'PatientSpeciesDescription',
                 'PatientSex',
                 'EthnicGroup',

@@ -474,9 +474,9 @@ class IDC_transformer:
 
                 rs_values['id'] = rs_id
 
-                if record['tcia_tumorLocation'] != '':
+                if record['collection_tumorLocation'] != '':
                     
-                    rs_values['primary_diagnosis_site'] = record['tcia_tumorLocation']
+                    rs_values['primary_diagnosis_site'] = record['collection_tumorLocation']
 
                 rs_values['member_of_research_project'] = record['collection_id']
 
