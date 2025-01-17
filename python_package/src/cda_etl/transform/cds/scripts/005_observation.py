@@ -229,6 +229,8 @@ for subject_id in original_participant_uuids:
 
 print( 'done.', file=sys.stderr )
 
+print( f"[{get_current_timestamp()}] Creating observation records from diagnosis records...", end='', file=sys.stderr )
+
 # Make CDA observation records from diagnosis records.
 
 participant_has_diagnosis = map_columns_one_to_many( diagnosis_of_participant_input_tsv, 'participant_uuid', 'diagnosis_uuid' )

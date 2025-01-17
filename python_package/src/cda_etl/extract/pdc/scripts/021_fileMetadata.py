@@ -73,7 +73,7 @@ offset = 0
 
 # Pre-fix for above: offset_increment = 500
 
-offset_increment = 20000
+offset_increment = 10000
 
 returned_nothing = False
 

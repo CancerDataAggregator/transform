@@ -1369,8 +1369,7 @@ def columns_to_count( data_source ):
                 'PatientSex',
                 'EthnicGroup',
                 'collection_id',
-                'collection_tumorLocation',
-                'tcia_tumorLocation'
+                'collection_tumorLocation'
             ],
             'original_collections_metadata': [
                 
@@ -3009,7 +3008,6 @@ def get_idc_extraction_fields( ):
                 'instance_size',
                 'instance_hash',
                 'Modality',
-                'tcia_tumorLocation',
                 'PatientSpeciesDescription',
                 'PatientBirthDate',
                 'PatientSex',

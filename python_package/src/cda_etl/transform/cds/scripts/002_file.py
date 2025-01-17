@@ -1,11 +1,12 @@
 #!/usr/bin/env python3 -u
 
 import json
+import re
 import sys
 
 from os import makedirs, path
 
-from cda_etl.lib import get_cda_project_ancestors, get_current_timestamp, load_tsv_as_dict, map_columns_one_to_one, map_columns_one_to_many
+from cda_etl.lib import get_cda_project_ancestors, get_current_timestamp, get_universal_value_deletion_patterns, load_tsv_as_dict, map_columns_one_to_one, map_columns_one_to_many
 
 # PARAMETERS
 
@@ -20,6 +21,10 @@ file_input_tsv = path.join( tsv_input_root, 'file.tsv' )
 study_input_tsv = path.join( tsv_input_root, 'study.tsv' )
 
 file_study_input_tsv = path.join( tsv_input_root, 'file_from_study.tsv' )
+
+genomic_info_input_tsv = path.join( tsv_input_root, 'genomic_info.tsv' )
+
+genomic_info_file_input_tsv = path.join( tsv_input_root, 'genomic_info_of_file.tsv' )
 
 sample_input_tsv = path.join( tsv_input_root, 'sample.tsv' )
 
@@ -53,6 +58,14 @@ file_tumor_vs_normal_output_tsv = path.join( tsv_output_root, 'file_tumor_vs_nor
 
 file_in_project_output_tsv = path.join( tsv_output_root, 'file_in_project.tsv' )
 
+# ETL metadata.
+
+aux_output_root = path.join( 'auxiliary_metadata', '__aggregation_logs' )
+
+aux_value_output_dir = path.join( aux_output_root, 'values' )
+
+file_genomic_info_data_clash_log = path.join( aux_value_output_dir, f"{upstream_data_source}_same_file_genmomic_info_clashes.library_strategy.tsv" )
+
 # Table header sequences.
 
 cda_file_fields = [
@@ -82,7 +95,87 @@ upstream_identifiers_fields = [
 
 debug = False
 
+# Enumerate (case-insensitive, space-collapsed) values (as regular expressions) that
+# should be deleted wherever they are found in search metadata, to guide value
+# replacement decisions in the event of clashes.
+
+delete_everywhere = get_universal_value_deletion_patterns()
+
 # EXECUTION
+
+for output_dir in [ aux_value_output_dir ]:
+    
+    if not path.exists( output_dir ):
+        
+        makedirs( output_dir )
+
+print( f"[{get_current_timestamp()}] Loading library_strategy metadata from genomic_info...", end='', file=sys.stderr )
+
+file_uuid_genomic_info_uuid = map_columns_one_to_many( genomic_info_file_input_tsv, 'file_uuid', 'genomic_info_uuid' )
+
+genomic_info_library_strategy = map_columns_one_to_one( genomic_info_input_tsv, 'uuid', 'library_strategy' )
+
+# Pre-load file.data_category values from genomic_info.library_strategy in associated genomic_info records.
+
+file_uuid_data_category = dict()
+
+# Record conflicts.
+
+genomic_info_library_strategy_data_clashes = dict()
+
+for file_uuid in file_uuid_genomic_info_uuid:
+    
+    for genomic_info_uuid in file_uuid_genomic_info_uuid[file_uuid]:
+        
+        current_library_strategy = genomic_info_library_strategy[genomic_info_uuid]
+
+        if file_uuid not in file_uuid_data_category or file_uuid_data_category[file_uuid] == '':
+            
+            file_uuid_data_category[file_uuid] = current_library_strategy
+
+        elif file_uuid_data_category[file_uuid] != current_library_strategy and current_library_strategy != '':
+            
+            # Set up comparison and clash-tracking data structures.
+
+            original_value = file_uuid_data_category[file_uuid]
+
+            new_value = current_library_strategy
+
+            if file_uuid not in genomic_info_library_strategy_data_clashes:
+                
+                genomic_info_library_strategy_data_clashes[file_uuid] = dict()
+
+            if original_value not in genomic_info_library_strategy_data_clashes[file_uuid]:
+                
+                genomic_info_library_strategy_data_clashes[file_uuid][original_value] = dict()
+
+            # Does the existing value match a pattern we know will be deleted later?
+
+            if re.sub( r'\s', r'', original_value.strip().lower() ) in delete_everywhere:
+                
+                # Is the new value any better?
+
+                if re.sub( r'\s', r'', new_value.strip().lower() ) in delete_everywhere:
+                    
+                    # Both old and new values will eventually be deleted. Go with the first one observed (dict value of False. True, by contrast, indicates the replacement of the old value with the new one), but log the clash.
+
+                    genomic_info_library_strategy_data_clashes[file_uuid][original_value][new_value] = False
+
+                else:
+                    
+                    # Replace the old value with the new one.
+
+                    file_uuid_data_category[file_uuid] = new_value
+
+                    genomic_info_library_strategy_data_clashes[file_uuid][original_value][new_value] = True
+
+            else:
+                
+                # The original value is not one known to be slated for deletion later, so there will be no replacement. Log the clash.
+
+                genomic_info_library_strategy_data_clashes[file_uuid][original_value][new_value] = False
+
+print( 'done.', file=sys.stderr )
 
 print( f"[{get_current_timestamp()}] Loading file metadata...", end='', file=sys.stderr )
 
@@ -111,8 +204,7 @@ for file_uuid in file:
     cda_file_records[file_id]['format'] = file[file_uuid]['file_type']
     # Will be filled in later from image.image_modality:
     cda_file_records[file_id]['type'] = ''
-    # Load as a list. Output as a single string containing a comma-delimited sequence of list elements.
-    cda_file_records[file_id]['category'] = json.loads( file[file_uuid]['experimental_strategy_and_data_subtypes'] )
+    cda_file_records[file_id]['category'] = '' if ( file_uuid not in file_uuid_data_category or file_uuid_data_category[file_uuid] is None ) else file_uuid_data_category[file_uuid]
 
 print( 'done.', file=sys.stderr )
 
@@ -283,7 +375,10 @@ for image_uuid in image_of_file:
     
     organ_or_tissue = image[image_uuid]['organ_or_tissue']
 
-    tumor_tissue_type = image[image_uuid]['tumor_tissue_type']
+    # CDS removed this field from their `image` entity between October and December 2024.
+    # 
+    # tumor_tissue_type = image[image_uuid]['tumor_tissue_type']
+    tumor_tissue_type = ''
 
     image_modality = image[image_uuid]['image_modality']
 
@@ -337,13 +432,7 @@ with open( file_output_tsv, 'w' ) as OUT:
 
         for cda_file_field in cda_file_fields:
             
-            if cda_file_field == 'category':
-                
-                output_row.append( ', '.join( sorted( file_record[cda_file_field] ) ) )
-
-            else:
-                
-                output_row.append( file_record[cda_file_field] )
+            output_row.append( file_record[cda_file_field] )
 
         print( *output_row, sep='\t', file=OUT )
 
@@ -384,5 +473,29 @@ with open( file_tumor_vs_normal_output_tsv, 'w' ) as OUT:
             print( *[ file_id, tumor_vs_normal ], sep='\t', file=OUT )
 
 print( 'done.', file=sys.stderr )
+
+# Log data clashes within the same file across multiple associated genomic_info records with respect to the genomic_info.library_strategy field.
+
+# genomic_info_library_strategy_data_clashes[file_uuid][original_value][new_value] = True
+
+with open( file_genomic_info_data_clash_log, 'w' ) as OUT:
+    
+    print( *[ f"{upstream_data_source}_file_uuid", f"{upstream_data_source}_genomic_info_field_name", f"observed_value_from_{upstream_data_source}", f"clashing_value_at_{upstream_data_source}", 'CDA_kept_value' ], sep='\t', file=OUT )
+
+    for file_uuid in sorted( genomic_info_library_strategy_data_clashes ):
+        
+        field_name = 'library_strategy'
+
+        for original_value in sorted( genomic_info_library_strategy_data_clashes[file_uuid] ):
+            
+            for clashing_value in sorted( genomic_info_library_strategy_data_clashes[file_uuid][original_value] ):
+                
+                if genomic_info_library_strategy_data_clashes[file_uuid][original_value][clashing_value] == False:
+                    
+                    print( *[ file_uuid, field_name, original_value, clashing_value, original_value ], sep='\t', file=OUT )
+
+                else:
+                    
+                    print( *[ file_uuid, field_name, original_value, clashing_value, clashing_value ], sep='\t', file=OUT )
 
 

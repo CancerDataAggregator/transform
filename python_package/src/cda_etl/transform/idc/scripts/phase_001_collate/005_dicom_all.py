@@ -51,8 +51,7 @@ series_metadata_fields = [
     'PatientSex',
     'EthnicGroup',
     'collection_id',
-    'collection_tumorLocation',
-    'tcia_tumorLocation'
+    'collection_tumorLocation'
 ]
 
 instance_metadata_fields = [
