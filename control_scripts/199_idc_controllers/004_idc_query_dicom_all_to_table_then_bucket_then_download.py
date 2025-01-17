@@ -47,7 +47,6 @@ fields_to_pull = [
     'instance_size',
     'instance_hash',
     'Modality',
-    'tcia_tumorLocation',
     'PatientSpeciesDescription',
     'PatientBirthDate',
     'PatientSex',
