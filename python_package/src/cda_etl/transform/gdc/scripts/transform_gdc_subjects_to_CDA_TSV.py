@@ -809,7 +809,7 @@ with open( diagnosis_input_tsv ) as IN:
             diagnosis[diagnosis_cda_id]['primary_diagnosis'] = record['primary_diagnosis'] if record['primary_diagnosis'] != '' else None
             diagnosis[diagnosis_cda_id]['age_at_diagnosis'] = int(record['age_at_diagnosis']) if record['age_at_diagnosis'] != '' else None
             diagnosis[diagnosis_cda_id]['morphology'] = record['morphology'] if record['morphology'] != '' else None
-            diagnosis[diagnosis_cda_id]['stage'] = record['tumor_stage'] if record['tumor_stage'] != '' else None
+            diagnosis[diagnosis_cda_id]['stage'] = record['ajcc_pathologic_stage'] if record['ajcc_pathologic_stage'] != '' else None
             diagnosis[diagnosis_cda_id]['grade'] = record['tumor_grade'] if record['tumor_grade'] != '' else None
             diagnosis[diagnosis_cda_id]['method_of_diagnosis'] = record['method_of_diagnosis'] if record['method_of_diagnosis'] != '' else None
 

@@ -116,6 +116,14 @@ for file_uuid in file_uuid_genomic_info_uuid:
 
     file_uuid_data_category[file_uuid] = library_strategy
 
+# EXECUTION
+
+for output_dir in [ cds_aux_dir, output_root ]:
+    
+    if not path.exists( output_dir ):
+        
+        makedirs( output_dir )
+
 with open( warning_log, 'w' ) as WARN:
     
     print( *[ 'file_uuid', 'nonunique__genomic_info.library_strategy' ], sep='\t', file=WARN )
@@ -126,14 +134,6 @@ with open( warning_log, 'w' ) as WARN:
             
             print( *[ file_uuid, library_strategy ], sep='\t', file=WARN )
 
-# EXECUTION
-
-for output_dir in [ output_root ]:
-    
-    if not path.exists( output_dir ):
-        
-        makedirs( output_dir )
-
 with open( file_input_tsv ) as FILE_IN, open( file_output_tsv, 'w' ) as FILE_OUT, open( file_identifier_output_tsv, 'w' ) as FILE_IDENTIFIER, open( file_associated_project_output_tsv, 'w' ) as FILE_ASSOCIATED_PROJECT:
     
     input_column_names = next( FILE_IN ).rstrip( '\n' ).split( '\t' )
@@ -143,7 +143,7 @@ with open( file_input_tsv ) as FILE_IN, open( file_output_tsv, 'w' ) as FILE_OUT
     print( *[ 'file_id', 'system', 'field_name', 'value' ], sep='\t', end='\n', file=FILE_IDENTIFIER )
     print( *[ 'file_id', 'associated_project' ], sep='\t', end='\n', file=FILE_ASSOCIATED_PROJECT )
 
-    for line in [ next_line.rstrip( '\n' ) for next_line in FILE_IN ]:
+    for line in sorted( [ next_line.rstrip( '\n' ) for next_line in FILE_IN ] ):
         
         input_record = dict( zip( input_column_names, line.split( '\t' ) ) )
 

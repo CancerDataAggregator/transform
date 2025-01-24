@@ -38,15 +38,18 @@ chmod 755 ./package_root/extract/pdc/scripts/*py
 ( echo ./package_root/extract/pdc/scripts/030_case_with_diagnoses.py && \
   ( ( sleep 10; ./package_root/extract/pdc/scripts/030_case_with_diagnoses.py ) || \
       echo "FAILED: ./package_root/extract/pdc/scripts/030_case_with_diagnoses.py\n\nTry rerunning the failed script: that often works. Sometimes waiting a few minutes helps." ) ) && \
-( echo ./package_root/extract/pdc/scripts/031_case_with_demographics_and_samples.py && \
-  ( ( sleep 10; ./package_root/extract/pdc/scripts/031_case_with_demographics_and_samples.py ) || \
-      echo "FAILED: ./package_root/extract/pdc/scripts/031_case_with_demographics_and_samples.py\n\nTry rerunning the failed script: that often works. Sometimes waiting a few minutes helps." ) ) && \
-( echo ./package_root/extract/pdc/scripts/032_case_with_the_rest.py && \
-  ( ( sleep 10; ./package_root/extract/pdc/scripts/032_case_with_the_rest.py ) || \
-      echo "FAILED: ./package_root/extract/pdc/scripts/032_case_with_the_rest.py\n\nTry rerunning the failed script: that often works. Sometimes waiting a few minutes helps." ) ) && \
-( echo ./package_root/extract/pdc/scripts/033_paginatedCasesSamplesAliquots.py && \
-  ( ( sleep 10; ./package_root/extract/pdc/scripts/033_paginatedCasesSamplesAliquots.py ) || \
-      echo "FAILED: ./package_root/extract/pdc/scripts/033_paginatedCasesSamplesAliquots.py\n\nTry rerunning the failed script: that often works. Sometimes waiting a few minutes helps." ) ) && \
+( echo ./package_root/extract/pdc/scripts/031_case_with_demographics.py && \
+  ( ( sleep 10; ./package_root/extract/pdc/scripts/031_case_with_demographics.py ) || \
+      echo "FAILED: ./package_root/extract/pdc/scripts/031_case_with_demographics.py\n\nTry rerunning the failed script: that often works. Sometimes waiting a few minutes helps." ) ) && \
+( echo ./package_root/extract/pdc/scripts/032_case_with_samples.py && \
+  ( ( sleep 10; ./package_root/extract/pdc/scripts/032_case_with_samples.py ) || \
+      echo "FAILED: ./package_root/extract/pdc/scripts/032_case_with_samples.py\n\nTry rerunning the failed script: that often works. Sometimes waiting a few minutes helps." ) ) && \
+( echo ./package_root/extract/pdc/scripts/038_case_with_the_rest.py && \
+  ( ( sleep 10; ./package_root/extract/pdc/scripts/038_case_with_the_rest.py ) || \
+      echo "FAILED: ./package_root/extract/pdc/scripts/038_case_with_the_rest.py\n\nTry rerunning the failed script: that often works. Sometimes waiting a few minutes helps." ) ) && \
+( echo ./package_root/extract/pdc/scripts/039_paginatedCasesSamplesAliquots.py && \
+  ( ( sleep 10; ./package_root/extract/pdc/scripts/039_paginatedCasesSamplesAliquots.py ) || \
+      echo "FAILED: ./package_root/extract/pdc/scripts/039_paginatedCasesSamplesAliquots.py\n\nTry rerunning the failed script: that often works. Sometimes waiting a few minutes helps." ) ) && \
 ( echo ./package_root/extract/pdc/scripts/040_protocolPerStudy.py && \
   ( ( sleep 10; ./package_root/extract/pdc/scripts/040_protocolPerStudy.py ) || \
       echo "FAILED: ./package_root/extract/pdc/scripts/040_protocolPerStudy.py\n\nTry rerunning the failed script: that often works. Sometimes waiting a few minutes helps." ) ) && \

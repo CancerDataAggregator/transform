@@ -347,6 +347,10 @@ with open( participant_input_tsv ) as PARTICIPANT_IN, open( researchsubject_outp
                         
                         diagnosis_record['grade'] = diagnosis[diagnosis_uuid]['tumor_grade']
 
+                    if diagnosis[diagnosis_uuid]['tumor_stage_clinical_m'] is not None:
+                        
+                        diagnosis_record['stage'] = diagnosis[diagnosis_uuid]['tumor_stage_clinical_m']
+
                     print( *[ diagnosis_record[column_name] for column_name in diagnosis_output_column_names ], sep='\t', file=DIAGNOSIS )
 
                     printed_diagnosis.add( diagnosis_cda_id )
