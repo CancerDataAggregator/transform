@@ -187,7 +187,7 @@ for subject_id in subject_has_diagnosis:
         p_diagnosis = diagnosis[diagnosis_id]['primary_diagnosis']
         morphology = diagnosis[diagnosis_id]['morphology']
         grade = diagnosis[diagnosis_id]['tumor_grade']
-        stage = diagnosis[diagnosis_id]['tumor_stage']
+        stage = diagnosis[diagnosis_id]['ajcc_pathologic_stage']
         observed_anatomic_site = diagnosis[diagnosis_id]['tissue_or_organ_of_origin']
         resection_anatomic_site = diagnosis[diagnosis_id]['site_of_resection_or_biopsy']
 

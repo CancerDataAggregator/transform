@@ -9,13 +9,13 @@ from cda_etl.lib import get_idc_extraction_fields
 
 # ARGUMENT
 
-# An IDC version string (e.g. 'v18') is required.
+# An IDC version string (e.g. 'v20') is required.
 # 
 # If the length of the argument list to this script is zero, fail.
 
 if len( sys.argv ) != 2:
     
-    sys.exit( f"\n   [{len( sys.argv )}] Usage: {sys.argv[0]} <IDC version string, e.g. v18>\n" )
+    sys.exit( f"\n   [{len( sys.argv )}] Usage: {sys.argv[0]} <IDC version string, e.g. v20>\n" )
 
 version_string = sys.argv[1]
 
@@ -28,11 +28,11 @@ version_string = sys.argv[1]
 # compression ratio depends on the order in which data is scanned during
 # zip-style compression, and row order differs).
 
-bq_project_name = YOUR_PROJECT_NAME
+bq_project_name = 'broad-cda-dev'
 
-intermediate_bucket = YOUR_TEMP_BUCKET
+intermediate_bucket = 'gdc-bq-sample-bucket'
 
-target_table_path = YOUR_TARGET_TABLE
+target_table_path = f"{bq_project_name}.github_testing.idc_patient_testing"
 
 service_account_key_file = 'GCS-service-account-key.json'
 
