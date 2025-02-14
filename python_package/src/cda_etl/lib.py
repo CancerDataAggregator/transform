@@ -1564,6 +1564,7 @@ def get_universal_value_deletion_patterns( ):
         r'notapplicable',
         r'notdetermined',
         r'nototherwisespecified',
+        r'notprovided',
         r'notreported',
         r'notreported/unknown',
         r'notspecifiedindata',
