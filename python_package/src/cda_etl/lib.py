@@ -3140,6 +3140,7 @@ def get_universal_value_deletion_patterns( ):
         r'notapplicable',
         r'notdetermined',
         r'nototherwisespecified',
+        r'notprovided',
         r'notreported',
         r'notreported/unknown',
         r'notspecifiedindata',
@@ -3155,6 +3156,64 @@ def get_universal_value_deletion_patterns( ):
     }
 
     return delete_everywhere
+
+def load_obo_file( input_file ):
+    
+    obo_data = dict()
+
+    with open( input_file ) as IN:
+        
+        in_term = False
+
+        current_term = dict()
+
+        for next_line in IN:
+            
+            line = next_line.rstrip( '\n' )
+
+            if line == '':
+                
+                if len( current_term ) > 0:
+                    
+                    obo_data[current_term['id']] = dict()
+
+                    for property_name in current_term:
+                        
+                        if property_name != 'id':
+                            
+                            obo_data[current_term['id']][property_name] = current_term[property_name]
+
+                current_term = dict()
+
+                in_term = False
+
+            elif line == r'[Term]':
+                
+                in_term = True
+
+            elif in_term:
+                
+                match_result = re.search( r'^([^:]+):\s*(\S.*)\s*$', line )
+
+                if match_result is not None:
+                    
+                    property_name = match_result.group(1)
+
+                    property_value = match_result.group(2)
+
+                    if property_name == 'id':
+                        
+                        current_term[property_name] = property_value
+
+                    else:
+                        
+                        if property_name not in current_term:
+                            
+                            current_term[property_name] = set()
+
+                        current_term[property_name].add( property_value )
+
+    return obo_data
 
 def load_qualified_id_association( input_file, qualifier_field_name, id_one_field_name, id_two_field_name ):
     
