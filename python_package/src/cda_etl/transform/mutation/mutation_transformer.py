@@ -80,7 +80,9 @@ class mutation_transformer:
                     
                     column = row_dict['cda_column']
 
-                    map_file = path.join( harmonization_map_dir, f"{row_dict['concept_map_name']}.tsv" )
+                    concept_map_name = row_dict['concept_map_name']
+
+                    map_file = path.join( harmonization_map_dir, f"{concept_map_name}.tsv" )
 
                     if column not in self.harmonized_value:
                         
@@ -88,11 +90,37 @@ class mutation_transformer:
 
                     with open( map_file ) as MAP:
                         
-                        for next_term_pair in MAP:
+                        header_line = next( MAP ).rstrip( '\n' )
+
+                        if concept_map_name == 'anatomic_site':
                             
-                            ( old_value, new_value ) = next_term_pair.rstrip( '\n' ).split( '\t' )
+                            for ( old_value, uberon_id, uberon_name ) in [ next_term_tuple.rstrip( '\n' ).split( '\t' ) for next_term_tuple in MAP ]:
+                                
+                                if uberon_name != '__CDA_UNASSIGNED__':
+                                    
+                                    self.harmonized_value[column][old_value] = uberon_name
+
+                        elif concept_map_name == 'disease':
                             
-                            self.harmonized_value[column][old_value] = new_value
+                            for ( old_value, do_id, do_name, icd_code, icd_name ) in [ next_term_tuple.rstrip( '\n' ).split( '\t' ) for next_term_tuple in MAP ]:
+                                
+                                if do_name != '__CDA_UNASSIGNED__':
+                                    
+                                    self.harmonized_value[column][old_value] = do_name
+
+                        elif concept_map_name == 'species':
+                            
+                            for ( old_value, ncbi_tax_id, ncbi_tax_sci_name, cda_common_name ) in [ next_term_tuple.rstrip( '\n' ).split( '\t' ) for next_term_tuple in MAP ]:
+                                
+                                if cda_common_name != '__CDA_UNASSIGNED__':
+                                    
+                                    self.harmonized_value[column][old_value] = cda_common_name
+
+                        else:
+                            
+                            for ( old_value, new_value ) in [ next_term_pair.rstrip( '\n' ).split( '\t' ) for next_term_pair in MAP ]:
+                                
+                                self.harmonized_value[column][old_value] = new_value
 
         # Track all substitutions.
 
@@ -236,15 +264,21 @@ class mutation_transformer:
 
                                         if column in self.harmonized_value:
                                             
-                                            if old_value in self.harmonized_value[column]:
+                                            if old_value is not None and old_value.lower() in self.harmonized_value[column] and self.harmonized_value[column][old_value.lower()] != 'null':
                                                 
-                                                new_value = self.harmonized_value[column][old_value]
+                                                new_value = self.harmonized_value[column][old_value.lower()]
 
-                                                # Check target values for global cleanup: `self.delete_everywhere` takes precedence.
+                                            elif old_value is not None and old_value.lower() not in self.harmonized_value[column]:
+                                                
+                                                # Preserve values we haven't seen or mapped yet.
 
-                                                if re.sub( r'\s', r'', new_value.strip().lower() ) in self.delete_everywhere:
-                                                    
-                                                    new_value = ''
+                                                new_value = old_value
+
+                                            # Check target values for global cleanup: `self.delete_everywhere` takes precedence.
+
+                                            if re.sub( r'\s', r'', new_value.strip().lower() ) in self.delete_everywhere:
+                                                
+                                                new_value = ''
 
                                             if column not in self.all_subs_performed:
                                                 
