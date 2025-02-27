@@ -23,6 +23,10 @@ uberon_reference_dir = path.join( ontology_reference_root, 'UBERON' )
 
 uberon_obo_file = path.join( uberon_reference_dir, 'uberon_ext.obo' )
 
+icd_o_3_reference_dir = path.join( ontology_reference_root, 'ICD-O-3' )
+
+icd_o_3_name_file = path.join( icd_o_3_reference_dir, 'icd_o_3.codes_and_preferred_names.tsv' )
+
 do_reference_dir = path.join( ontology_reference_root, 'DO' )
 
 do_obo_file = path.join( do_reference_dir, 'doid-merged.obo' )
@@ -59,11 +63,35 @@ for uberon_id in uberon_terms:
 
         uberon_name_to_id[uberon_name] = uberon_id
 
+icd_o_3_name = dict()
+
+with open( icd_o_3_name_file ) as IN:
+    
+    header = next( IN )
+
+    seen = set()
+
+    for next_line in IN:
+        
+        ( code, name ) = next_line.rstrip( '\n' ).split( '\t' )
+
+        if code in seen:
+            
+            sys.exit( f"FATAL: Duplicate code listed in {icd_o_3_name_file}: '{code}'; something has gone wrong with upstream processing, please investigate. Aborting." )
+
+        icd_o_3_name[code] = name
+
+        seen.add( code )
+
 do_terms = load_obo_file( do_obo_file )
+
+icd_code_to_do_id = dict()
 
 do_id_to_name = dict()
 
-do_name_to_id = dict()
+do_id_to_ncit_code = dict()
+
+skip_do_map = set()
 
 for do_id in do_terms:
     
@@ -79,7 +107,43 @@ for do_id in do_terms:
 
         do_id_to_name[do_id] = do_name
 
-        do_name_to_id[do_name] = do_id
+        if 'xref' in do_terms[do_id]:
+            
+            for xref_code in sorted( do_terms[do_id]['xref'] ):
+                
+                # Check for NCIt xrefs.
+
+                match_result = re.search( r'^NCI:(.+)$', xref_code )
+
+                if match_result is not None:
+                    
+                    ncit_code = match_result.group(1)
+
+                    if do_id not in do_id_to_ncit_code:
+                        
+                        do_id_to_ncit_code[do_id] = set()
+
+                    do_id_to_ncit_code[do_id].add( ncit_code )
+
+                # Check for unambiguous ICD-O-3 xrefs.
+
+                match_result = re.search( r'^ICDO:(.+)$', xref_code )
+
+                if match_result is not None:
+                    
+                    icd_code = match_result.group(1)
+
+                    if icd_code in icd_code_to_do_id:
+                        
+                        if icd_code not in skip_do_map:
+                            
+                            print( f"WARNING: ICD-O-3 xref '{icd_code}' is associated with multiple DOIDs; will not auto-populate DO IDs for this code." )
+
+                            skip_do_map.add( icd_code )
+
+                    else:
+                        
+                        icd_code_to_do_id[icd_code] = do_id
 
 delete_everywhere = get_universal_value_deletion_patterns()
 
@@ -183,8 +247,6 @@ if 'mutation' in columns_to_concepts:
 
                     observed_values[concept_name].add( new_value )
 
-disease_value_to_icd_code = dict()
-
 for concept_name in sorted( observed_values ):
     
     old_map_file = path.join( harmonization_root, f"{concept_name}.tsv" )
@@ -223,22 +285,16 @@ for concept_name in sorted( observed_values ):
 
             elif concept_name == 'disease':
                 
-                ( value, do_id, do_name, icd_id, icd_name ) = next_line.rstrip( '\n' ).split( '\t' )
+                ( value, icd_o_3_code, icd_o_3_preferred_name, do_id, do_name, ncit_codes ) = next_line.rstrip( '\n' ).split( '\t' )
 
                 lc_value = value.lower()
 
                 target = dict()
 
-                # We'll use this later for transitive propagation of legacy map data.
-
-                if icd_id not in null_values:
-                    
-                    disease_value_to_icd_code[lc_value] = icd_id
-
+                target['icd_o_3_code'] = icd_o_3_code
+                target['icd_o_3_preferred_name'] = icd_o_3_preferred_name
                 target['do_id'] = do_id
                 target['do_name'] = do_name
-                target['icd_id'] = icd_id
-                target['icd_name'] = icd_name
 
                 if lc_value in old_map:
                     
@@ -252,13 +308,52 @@ for concept_name in sorted( observed_values ):
 
                 # Once a match is confirmed or deemed irrelevant, update term names from the current ontology data.
 
-                if do_id not in null_values:
+                if icd_o_3_code not in null_values:
                     
-                    if do_id not in do_id_to_name:
+                    if icd_o_3_code not in icd_o_3_name:
                         
-                        sys.exit( f"FATAL: DO term ID '{do_id}' not found in DO reference data. Please investigate." )
+                        print( f"WARNING: ICD-O-3 code '{icd_o_3_code}' not found in ICD-O-3 reference data. Leaving name as '{icd_o_3_preferred_name}' -- if this seems wrong, investigate.", file=sys.stderr )
 
-                    target['do_name'] = do_id_to_name[do_id]
+                    else:
+                        
+                        target['icd_o_3_preferred_name'] = icd_o_3_name[icd_o_3_code]
+
+                    # If we didn't have a DO annotation before, try to add one.
+
+                    if do_id in null_values and icd_o_3_code in icd_code_to_do_id and icd_o_3_code not in skip_do_map:
+                        
+                        do_id = icd_code_to_do_id[icd_o_3_code]
+
+                        target['do_id'] = do_id
+
+                        if do_id not in do_id_to_name:
+                            
+                            sys.exit( f"FATAL: DO term ID '{do_id}' not found in DO reference data. Please investigate." )
+
+                        target['do_name'] = do_id_to_name[do_id]
+
+                    # Ensure correct names.
+
+                    if do_id not in null_values:
+                        
+                        if do_id not in do_id_to_name:
+                            
+                            sys.exit( f"FATAL: DO term ID '{do_id}' not found in DO reference data. Please investigate." )
+
+                        target['do_name'] = do_id_to_name[do_id]
+
+                    else:
+                        
+                        target['do_name'] = do_id
+
+                else:
+                    
+                    # Everything should flow first from the ICD-O-3 code. If it isn't there, we have nothing.
+
+                    target['icd_o_3_code'] = icd_o_3_code
+                    target['icd_o_3_preferred_name'] = icd_o_3_code
+                    target['do_id'] = icd_o_3_code
+                    target['do_name'] = icd_o_3_code
 
                 old_map[lc_value] = target
 
@@ -309,10 +404,6 @@ for concept_name in sorted( observed_values ):
 
     output_file = path.join( output_dir, f"{concept_name}.tsv" )
 
-    # This won't be necessary after we switch the production environment to the new model, but for now we have to keep legacy (roll-up) terms from RS.primary_diagnosis_condition and Specimen.primary_disease_type.
-
-    printed_disease_values = set()
-
     with open( output_file, 'w' ) as OUT:
         
         if concept_name == 'anatomic_site':
@@ -325,7 +416,7 @@ for concept_name in sorted( observed_values ):
 
         elif concept_name == 'disease':
             
-            print( *[ 'unharmonized value', 'DO id', 'DO name', 'ICD-O-3 code', 'ICD-O-3 harmonized display name' ], sep='\t', file=OUT )
+            print( *[ 'unharmonized value', 'icd_o_3_code', 'icd_o_3_preferred_name', 'do_id', 'do_name', 'ncit_concept_codes' ], sep='\t', file=OUT )
 
         else:
             
@@ -355,28 +446,51 @@ for concept_name in sorted( observed_values ):
                         
                         target_dict = old_map[observed_value]
 
-                        if observed_value in disease_value_to_icd_code:
+                        ncit_codes = '__CDA_UNASSIGNED__'
+
+                        if target_dict['icd_o_3_code'] == '__CDA_UNASSIGNED__':
                             
-                            # Transitively propagate legacy maps to ICD codes.
-
-                            icd_code = disease_value_to_icd_code[observed_value]
-
-                            # Have we not yet mapped this observed_value directly to a DO term?
-
-                            if target_dict['do_id'] in null_values:
+                            if observed_value in icd_o_3_name:
                                 
-                                # Has this code itself been mapped to DO?
+                                icd_o_3_code = observed_value
 
-                                print( *[ observed_value, icd_code ], sep='\t' )
+                                icd_o_3_preferred_name = icd_o_3_name[icd_o_3_code]
 
-                                if icd_code in old_map:
+                                do_id = '__CDA_UNASSIGNED__'
+
+                                do_name = '__CDA_UNASSIGNED__'
+
+                                if icd_o_3_code in icd_code_to_do_id and icd_o_3_code not in skip_do_map:
                                     
-                                    target_dict['do_id'] = old_map[icd_code]['do_id']
-                                    target_dict['do_name'] = old_map[icd_code]['do_name']
+                                    do_id = icd_code_to_do_id[icd_o_3_code]
 
-                        print( *[ observed_value, target_dict['do_id'], target_dict['do_name'], target_dict['icd_id'], target_dict['icd_name'] ], sep='\t', file=OUT )
+                                    if do_id not in do_id_to_name:
+                                        
+                                        sys.exit( f"FATAL: DO term ID '{do_id}' not found in DO reference data. Please investigate." )
 
-                        printed_disease_values.add( observed_value )
+                                    do_name = do_id_to_name[do_id]
+
+                                    if do_id in do_id_to_ncit_code:
+                                        
+                                        ncit_codes = ';'.join( sorted( do_id_to_ncit_code[do_id] ) )
+
+                                target_dict['icd_o_3_code'] = icd_o_3_code
+
+                                target_dict['icd_o_3_preferred_name'] = icd_o_3_preferred_name
+
+                                target_dict['do_id'] = do_id
+
+                                target_dict['do_name'] = do_name
+
+                        elif target_dict['icd_o_3_code'] == 'null':
+                            
+                            ncit_codes = 'null'
+
+                        elif target_dict['do_id'] not in null_values and target_dict['do_id'] in do_id_to_ncit_code:
+                            
+                            ncit_codes = ';'.join( sorted( do_id_to_ncit_code[target_dict['do_id']] ) )
+
+                        print( *[ observed_value, target_dict['icd_o_3_code'], target_dict['icd_o_3_preferred_name'], target_dict['do_id'], target_dict['do_name'], ncit_codes ], sep='\t', file=OUT )
 
                         printed = True
 
@@ -406,9 +520,37 @@ for concept_name in sorted( observed_values ):
 
                 elif concept_name == 'disease':
                     
-                    print( *[ observed_value, target_value, target_value, target_value, target_value ], sep='\t', file=OUT )
+                    if observed_value in icd_o_3_name:
+                        
+                        icd_o_3_code = observed_value
 
-                    printed_disease_values.add( observed_value )
+                        icd_o_3_preferred_name = icd_o_3_name[icd_o_3_code]
+
+                        do_id = '__CDA_UNASSIGNED__'
+
+                        do_name = '__CDA_UNASSIGNED__'
+
+                        ncit_codes = '__CDA_UNASSIGNED__'
+
+                        if icd_o_3_code in icd_code_to_do_id and icd_o_3_code not in skip_do_map:
+                            
+                            do_id = icd_code_to_do_id[icd_o_3_code]
+
+                            if do_id not in do_id_to_name:
+                                
+                                sys.exit( f"FATAL: DO term ID '{do_id}' not found in DO reference data. Please investigate." )
+
+                            do_name = do_id_to_name[do_id]
+
+                            if do_id in do_id_to_ncit_code:
+                                
+                                ncit_codes = ';'.join( sorted( do_id_to_ncit_code[do_id] ) )
+
+                        print( *[ observed_value, icd_o_3_code, icd_o_3_preferred_name, do_id, do_name, ncit_codes ], sep='\t', file=OUT )
+
+                    else:
+                        
+                        print( *[ observed_value, target_value, target_value, target_value, target_value, target_value ], sep='\t', file=OUT )
 
                     printed = True
 

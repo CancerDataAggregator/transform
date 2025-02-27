@@ -6,6 +6,8 @@ uberon_obo_permanent_url="http://purl.obolibrary.org/obo/uberon/ext.obo"
 
 do_obo_url="https://raw.githubusercontent.com/DiseaseOntology/HumanDiseaseOntology/refs/heads/main/src/ontology/doid-merged.obo"
 
+icd_o_3_website_url="https://www.naaccr.org/icdo3/"
+
 # OUTPUT TARGETS
 
 ontology_metadata_output_root="./auxiliary_metadata/__ontology_reference"
@@ -64,4 +66,4 @@ mv $do_obo_file $new_obo_file
 echo ln -sf $new_obo_file_basename $do_obo_file
 ln -sf $new_obo_file_basename $do_obo_file
 
-
+echo "Please get the WHO IARC ICD-O-3.2 Excel Table Excel table (last seen at ${icd_o_3_website_url}) and export it to ${ontology_metadata_output_root}/ICD-O-3/icd_morphology.tsv before proceeding."
