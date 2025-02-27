@@ -101,11 +101,11 @@ with open( harmonization_field_map_file ) as IN:
 
             elif concept_map_name == 'disease':
                 
-                for ( old_value, do_id, do_name, icd_code, icd_name ) in [ next_term_tuple.rstrip( '\n' ).split( '\t' ) for next_term_tuple in MAP ]:
+                for ( old_value, icd_code, icd_name, do_id, do_name, ncit_codes ) in [ next_term_tuple.rstrip( '\n' ).split( '\t' ) for next_term_tuple in MAP ]:
                     
-                    if do_name != '__CDA_UNASSIGNED__':
+                    if icd_name != '__CDA_UNASSIGNED__':
                         
-                        harmonized_value[table][column][old_value] = do_name
+                        harmonized_value[table][column][old_value] = icd_name
 
             elif concept_map_name == 'species':
                 
@@ -119,7 +119,9 @@ with open( harmonization_field_map_file ) as IN:
                 
                 for ( old_value, new_value ) in [ next_term_pair.rstrip( '\n' ).split( '\t' ) for next_term_pair in MAP ]:
                     
-                    harmonized_value[table][column][old_value] = new_value
+                    if new_value != '__CDA_UNASSIGNED__':
+                        
+                        harmonized_value[table][column][old_value] = new_value
 
 # Track all substitutions.
 

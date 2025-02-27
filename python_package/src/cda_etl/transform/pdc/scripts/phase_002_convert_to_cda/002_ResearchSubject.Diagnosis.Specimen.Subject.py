@@ -4,7 +4,7 @@ import re, sys
 
 from os import makedirs, path
 
-from cda_etl.lib import load_tsv_as_dict, map_columns_one_to_one, map_columns_one_to_many, get_submitter_id_patterns_not_to_merge_across_projects
+from cda_etl.lib import get_submitter_id_patterns_not_to_merge_across_projects, get_universal_value_deletion_patterns, load_tsv_as_dict, map_columns_one_to_many, map_columns_one_to_one
 
 # PARAMETERS
 
@@ -148,6 +148,10 @@ for output_dir in [ output_root, merge_log_dir ]:
     if not path.exists( output_dir ):
         
         makedirs( output_dir )
+
+# Load value patterns that will always be nulled during harmonization.
+
+delete_everywhere = get_universal_value_deletion_patterns()
 
 # Identify in advance all mergeable Cases whose submitter_id exists in multiple projects.
 
@@ -381,8 +385,18 @@ with open( case_input_tsv ) as CASE_IN, open( researchsubject_output_tsv, 'w' ) 
 
                         print( *[ diagnosis_cda_id, 'PDC', 'Diagnosis.diagnosis_submitter_id', diagnosis[diagnosis_pdc_id]['diagnosis_submitter_id'] ], sep='\t', end='\n', file=DIAGNOSIS_IDENTIFIER )
 
+                        tumor_stage = diagnosis[diagnosis_pdc_id]['tumor_stage']
+
+                        if tumor_stage is None or tumor_stage == '' or re.sub( r'\s', r'', tumor_stage.strip().lower() ) in delete_everywhere:
+                            
+                            tumor_stage = ''
+
+                            if diagnosis[diagnosis_pdc_id]['ajcc_pathologic_stage'] is not None and diagnosis[diagnosis_pdc_id]['ajcc_pathologic_stage'] != '':
+                                
+                                tumor_stage = diagnosis[diagnosis_pdc_id]['ajcc_pathologic_stage']
+
                         print( *[ diagnosis_cda_id, diagnosis[diagnosis_pdc_id]['primary_diagnosis'], diagnosis[diagnosis_pdc_id]['age_at_diagnosis'], \
-                            diagnosis[diagnosis_pdc_id]['morphology'], diagnosis[diagnosis_pdc_id]['tumor_stage'], diagnosis[diagnosis_pdc_id]['tumor_grade'], \
+                            diagnosis[diagnosis_pdc_id]['morphology'], tumor_stage, diagnosis[diagnosis_pdc_id]['tumor_grade'], \
                             diagnosis[diagnosis_pdc_id]['method_of_diagnosis'] ], sep='\t', end='\n', file=DIAGNOSIS )
 
                         printed_diagnosis.add( diagnosis_cda_id )
