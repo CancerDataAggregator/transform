@@ -4,7 +4,7 @@ import re, sys
 
 from os import makedirs, path
 
-from cda_etl.lib import get_cda_project_ancestors, get_current_timestamp, get_submitter_id_patterns_not_to_merge_across_projects, load_tsv_as_dict, map_columns_one_to_one, map_columns_one_to_many
+from cda_etl.lib import get_cda_project_ancestors, get_current_timestamp, get_submitter_id_patterns_not_to_merge_across_projects, get_universal_value_deletion_patterns, load_tsv_as_dict, map_columns_one_to_many, map_columns_one_to_one
 
 # PARAMETERS
 
@@ -55,6 +55,10 @@ cda_observation_fields = [
 ]
 
 # EXECUTION
+
+# Load value patterns that will always be nulled during harmonization.
+
+delete_everywhere = get_universal_value_deletion_patterns()
 
 # Load CDA subject IDs for case_id values.
 
@@ -176,6 +180,15 @@ for subject_id in subject_has_diagnosis:
         morphology = diagnosis[diagnosis_id]['morphology']
         grade = diagnosis[diagnosis_id]['tumor_grade']
         stage = diagnosis[diagnosis_id]['tumor_stage']
+
+        if stage is None or stage == '' or re.sub( r'\s', r'', stage.strip().lower() ) in delete_everywhere:
+            
+            stage = ''
+
+            if diagnosis[diagnosis_id]['ajcc_pathologic_stage'] is not None and diagnosis[diagnosis_id]['ajcc_pathologic_stage'] != '':
+                
+                stage = diagnosis[diagnosis_id]['ajcc_pathologic_stage']
+
         observed_anatomic_site = diagnosis[diagnosis_id]['tissue_or_organ_of_origin']
         resection_anatomic_site = diagnosis[diagnosis_id]['site_of_resection_or_biopsy']
 

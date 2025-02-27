@@ -107,7 +107,9 @@ with open( harmonization_field_map_file ) as IN:
 
         column = row_dict['cda_column']
 
-        map_file = path.join( harmonization_map_dir, f"{row_dict['concept_map_name']}.tsv" )
+        concept_map_name = row_dict['concept_map_name']
+
+        map_file = path.join( harmonization_map_dir, f"{concept_map_name}.tsv" )
 
         if table not in harmonized_value:
             
@@ -119,9 +121,39 @@ with open( harmonization_field_map_file ) as IN:
 
         with open( map_file ) as MAP:
             
-            for ( old_value, new_value ) in [ next_term_pair.rstrip( '\n' ).split( '\t' ) for next_term_pair in MAP ]:
+            header_line = next( MAP ).rstrip( '\n' )
+
+            if concept_map_name == 'anatomic_site':
                 
-                harmonized_value[table][column][old_value] = new_value
+                for ( old_value, uberon_id, uberon_name ) in [ next_term_tuple.rstrip( '\n' ).split( '\t' ) for next_term_tuple in MAP ]:
+                    
+                    if uberon_name != '__CDA_UNASSIGNED__':
+                        
+                        harmonized_value[table][column][old_value] = uberon_name
+
+            elif concept_map_name == 'disease':
+                
+                for ( old_value, icd_code, icd_name, do_id, do_name, ncit_codes ) in [ next_term_tuple.rstrip( '\n' ).split( '\t' ) for next_term_tuple in MAP ]:
+                    
+                    if icd_name != '__CDA_UNASSIGNED__':
+                        
+                        harmonized_value[table][column][old_value] = icd_name
+
+            elif concept_map_name == 'species':
+                
+                for ( old_value, ncbi_tax_id, ncbi_tax_sci_name, cda_common_name ) in [ next_term_tuple.rstrip( '\n' ).split( '\t' ) for next_term_tuple in MAP ]:
+                    
+                    if cda_common_name != '__CDA_UNASSIGNED__':
+                        
+                        harmonized_value[table][column][old_value] = cda_common_name
+
+            else:
+                
+                for ( old_value, new_value ) in [ next_term_pair.rstrip( '\n' ).split( '\t' ) for next_term_pair in MAP ]:
+                    
+                    if new_value != '__CDA_UNASSIGNED__':
+                        
+                        harmonized_value[table][column][old_value] = new_value
 
 print( 'done.', file=sys.stderr )
 
@@ -199,23 +231,29 @@ for file_basename in sorted( listdir( cda_tsv_dir ) ):
 
                 if table in harmonized_value and column in harmonized_value[table]:
                     
+                    new_value = ''
+
+                    if old_value is not None and old_value.lower() in harmonized_value[table][column] and harmonized_value[table][column][old_value.lower()] != 'null':
+                        
+                        new_value = harmonized_value[table][column][old_value.lower()]
+
+                    elif old_value is not None and old_value.lower() not in harmonized_value[table][column]:
+                        
+                        # Preserve values we haven't seen or mapped yet.
+
+                        new_value = old_value
+
+                    # Check target values for global cleanup: `delete_everywhere` takes precedence.
+
+                    if re.sub( r'\s', r'', new_value.strip().lower() ) in delete_everywhere:
+                        
+                        new_value = ''
+
+                    output_row.append( new_value )
+
                     if column not in all_subs_performed[table]:
                         
                         all_subs_performed[table][column] = dict()
-
-                    new_value = ''
-
-                    if old_value is not None and old_value in harmonized_value[table][column]:
-                        
-                        new_value = harmonized_value[table][column][old_value]
-
-                        # Check target values for global cleanup: `delete_everywhere` takes precedence.
-
-                        if re.sub( r'\s', r'', new_value.strip().lower() ) in delete_everywhere:
-                            
-                            new_value = ''
-
-                    output_row.append( new_value )
 
                     if old_value not in all_subs_performed[table][column]:
                         

@@ -3134,7 +3134,14 @@ def get_universal_value_deletion_patterns( ):
         
         r'-',
         r'--',
+        r'999:unknown,tobecompletedlater',
         r'anonymized',
+        r'clinical',
+        r'genomics',
+        r'histopathology',
+        r'imageanalyses',
+        r'invalidvalues',
+        r'mixedhistology(pleasespecify)',
         r'n/a',
         r'notallowedtocollect',
         r'notapplicable',
@@ -3143,6 +3150,7 @@ def get_universal_value_deletion_patterns( ):
         r'notprovided',
         r'notreported',
         r'notreported/unknown',
+        r'notreportedtocds',
         r'notspecifiedindata',
         r'null',
         r'other',
@@ -3151,6 +3159,7 @@ def get_universal_value_deletion_patterns( ):
         r'undefined',
         r'unk',
         r'unknown',
+        r'unknown,tobecompletedlater',
         r'unknowntumorstatus',
         r'unspecified'
     }
