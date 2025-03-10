@@ -35,6 +35,10 @@ class_output_file = path.join( extraction_root, 'dicom_series.dicom_all.SOPClass
 
 size_output_file = path.join( extraction_root, 'dicom_series.dicom_all.instance_size.tsv' )
 
+# DRS URI for current_instance: f"drs://dg.4dfc:{current_instance['crdc_instance_uuid']}"
+
+crdc_instance_uuid_output_file = path.join( extraction_root, 'dicom_series.dicom_all.crdc_instance_uuid.tsv' )
+
 log_dir = path.join( 'auxiliary_metadata', '__aggregation_logs', 'values' )
 
 series_clash_log_file = path.join( log_dir, f"IDC_same_DICOM_series_clashes.all_fields.tsv" )
@@ -111,6 +115,8 @@ print( f"[{get_current_timestamp()}] Scanning {table_name} for SOPClassUID value
 series_classes = dict()
 
 series_sizes = dict()
+
+series_crdc_instance_uuids = dict()
 
 # Load DICOM instance metadata from dicom_all, process, and dump directly to our output TSV.
 
@@ -436,6 +442,22 @@ with gzip.open( input_file ) as IN, gzip.open( instance_output_file, 'wt' ) as O
             
             series_sizes[series_id][size_val] = series_sizes[series_id][size_val] + 1
 
+        crdc_instance_uuid = ''
+
+        if 'crdc_instance_uuid' in record and record['crdc_instance_uuid'] is not None and record['crdc_instance_uuid'] != '':
+            
+            crdc_instance_uuid = record['crdc_instance_uuid']
+
+        else:
+            
+            sys.exit( f"FATAL: SOPInstanceUID {record['SOPInstanceUID']} (line {line_count + 1} of {input_file}) has no crdc_instance_uuid; assumptions violated, cannot continue." )
+
+        if series_id not in series_crdc_instance_uuids:
+            
+            series_crdc_instance_uuids[series_id] = set()
+
+        series_crdc_instance_uuids[series_id].add( crdc_instance_uuid )
+
         line_count = line_count + 1
 
         if line_count % display_increment == 0:
@@ -583,5 +605,19 @@ with open( size_output_file, 'w' ) as OUT:
             print( *[ series_id, size_val, series_sizes[series_id][size_val] ], sep='\t', file=OUT )
 
 print( f"\n[{get_current_timestamp()}] ...done.", end='\n\n', file=sys.stderr )
+
+# Write crdc_instance_uuid values for each series.
+
+print( f"   [{get_current_timestamp()}] {crdc_instance_uuid_output_file}...", file=sys.stderr )
+
+with open( crdc_instance_uuid_output_file, 'w' ) as OUT:
+    
+    print( *[ 'crdc_series_uuid', 'crdc_instance_uuid' ], sep='\t', file=OUT )
+
+    for series_id in sorted( series_crdc_instance_uuids ):
+        
+        for instance_id in sorted( series_crdc_instance_uuids[series_id] ):
+            
+            print( *[ series_id, instance_id ], sep='\t', file=OUT )
 
 

@@ -256,7 +256,7 @@ print( 'done.', file=sys.stderr )
 
 # Make CDA observation records from sample records.
 
-print( f"[{get_current_timestamp()}] Loading vital_status, year_of_observation and resection_anatomic_site metadata from sample...", end='', file=sys.stderr )
+print( f"[{get_current_timestamp()}] Loading vital_status, year_of_observation, morphology and resection_anatomic_site metadata from sample...", end='', file=sys.stderr )
 
 sample = load_tsv_as_dict( sample_input_tsv )
 
@@ -264,7 +264,7 @@ case_sample = map_columns_one_to_many( sample_case_input_tsv, 'case_id', 'sample
 
 for subject_id in original_case_ids:
     
-    vital_to_year_to_site_to_grade = dict()
+    vital_to_year_to_site_to_grade_to_morphology = dict()
 
     for case_id in original_case_ids[subject_id]:
         
@@ -282,52 +282,60 @@ for subject_id in original_case_ids:
 
                 year_of_observation = re.sub( r'^([0-9]+)-.*$', r'\1', sample[sample_id]['date_of_sample_collection'] )
 
-                grade = sample[sample_id]['tumor_grade']
-
                 resection_anatomic_site = sample[sample_id]['sample_site']
 
-                if vital_status not in vital_to_year_to_site_to_grade:
-                    
-                    vital_to_year_to_site_to_grade[vital_status] = dict()
+                grade = sample[sample_id]['tumor_grade']
 
-                if year_of_observation not in vital_to_year_to_site_to_grade[vital_status]:
-                    
-                    vital_to_year_to_site_to_grade[vital_status][year_of_observation] = dict()
+                morphology = sample[sample_id]['specific_sample_pathology']
 
-                if resection_anatomic_site not in vital_to_year_to_site_to_grade[vital_status][year_of_observation]:
+                if vital_status not in vital_to_year_to_site_to_grade_to_morphology:
                     
-                    vital_to_year_to_site_to_grade[vital_status][year_of_observation][resection_anatomic_site] = set()
+                    vital_to_year_to_site_to_grade_to_morphology[vital_status] = dict()
 
-                vital_to_year_to_site_to_grade[vital_status][year_of_observation][resection_anatomic_site].add( grade )
+                if year_of_observation not in vital_to_year_to_site_to_grade_to_morphology[vital_status]:
+                    
+                    vital_to_year_to_site_to_grade_to_morphology[vital_status][year_of_observation] = dict()
+
+                if resection_anatomic_site not in vital_to_year_to_site_to_grade_to_morphology[vital_status][year_of_observation]:
+                    
+                    vital_to_year_to_site_to_grade_to_morphology[vital_status][year_of_observation][resection_anatomic_site] = dict()
+
+                if grade not in vital_to_year_to_site_to_grade_to_morphology[vital_status][year_of_observation][resection_anatomic_site]:
+                    
+                    vital_to_year_to_site_to_grade_to_morphology[vital_status][year_of_observation][resection_anatomic_site][grade] = set()
+
+                vital_to_year_to_site_to_grade_to_morphology[vital_status][year_of_observation][resection_anatomic_site][grade].add( morphology )
 
     i = 0
 
-    for vital_status in sorted( vital_to_year_to_site_to_grade ):
+    for vital_status in sorted( vital_to_year_to_site_to_grade_to_morphology ):
         
-        for year_of_observation in sorted( vital_to_year_to_site_to_grade[vital_status] ):
+        for year_of_observation in sorted( vital_to_year_to_site_to_grade_to_morphology[vital_status] ):
             
-            for resection_anatomic_site in sorted( vital_to_year_to_site_to_grade[vital_status][year_of_observation] ):
+            for resection_anatomic_site in sorted( vital_to_year_to_site_to_grade_to_morphology[vital_status][year_of_observation] ):
                 
-                for grade in sorted( vital_to_year_to_site_to_grade[vital_status][year_of_observation][resection_anatomic_site] ):
+                for grade in sorted( vital_to_year_to_site_to_grade_to_morphology[vital_status][year_of_observation][resection_anatomic_site] ):
                     
-                    observation_id = f"{upstream_data_source}.{subject_id}.vital_status_and_year_and_grade_and_resection_anatomic_site.{i}"
-
-                    cda_observation_records[observation_id] = {
+                    for morphology in sorted( vital_to_year_to_site_to_grade_to_morphology[vital_status][year_of_observation][resection_anatomic_site][grade] ):
                         
-                        'id': observation_id,
-                        'subject_id': subject_id,
-                        'vital_status': vital_status,
-                        'sex': sex[subject_id] if subject_id in sex else '',
-                        'year_of_observation': year_of_observation,
-                        'diagnosis': '',
-                        'morphology': '',
-                        'grade': grade,
-                        'stage': '',
-                        'observed_anatomic_site': '',
-                        'resection_anatomic_site': resection_anatomic_site
-                    }
+                        observation_id = f"{upstream_data_source}.{subject_id}.vital_status_and_year_and_grade_and_morphology_and_resection_anatomic_site.{i}"
 
-                    i = i + 1
+                        cda_observation_records[observation_id] = {
+                            
+                            'id': observation_id,
+                            'subject_id': subject_id,
+                            'vital_status': vital_status,
+                            'sex': sex[subject_id] if subject_id in sex else '',
+                            'year_of_observation': year_of_observation,
+                            'diagnosis': '',
+                            'morphology': morphology,
+                            'grade': grade,
+                            'stage': '',
+                            'observed_anatomic_site': '',
+                            'resection_anatomic_site': resection_anatomic_site
+                        }
+
+                        i = i + 1
 
 print( 'done.', file=sys.stderr )
 

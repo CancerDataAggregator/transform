@@ -79,22 +79,17 @@ if len( match_list ) > 0:
 # PARAMETERS
 
 # Don't scan CDA release-metadata files if they've been built out of sequence;
-# also skip dicom_series_instance.tsv.gz because everything we need is summarized
-# in dicom_series.tsv and its association tables; also skip upstream_identifiers.tsv
-# because it's not exposed to the user; also skip association tables that introduce no
-# new values.
+# also skip upstream_identifiers.tsv because it's not exposed to the user; also
+# skip association tables that introduce no new values.
 
 files_to_skip = {
     
     'column_metadata.tsv',
-    'dicom_series_describes_subject.tsv',
-    'dicom_series_in_project.tsv',
-    'dicom_series_instance.tsv.gz',
     'file_describes_subject.tsv',
     'file_in_project.tsv',
     'project_in_project.tsv',
-    'subject_in_project.tsv',
     'release_metadata.tsv',
+    'subject_in_project.tsv',
     'upstream_identifiers.tsv'
 }
 
@@ -106,16 +101,11 @@ files_to_skip = {
 # 
 # Save the (always unique: Sep 2024) FK reference for each of the listed association tables for later
 # alias resolution so we can document provenance.
-# 
-# Note that these will differ from `virtual_table` values on individual columns (e.g. dicom_series_anatomic_site.anatomic_site -> file, not dicom_series).
 
 association_tables = {
     
     'file_anatomic_site': 'file',
-    'dicom_series_anatomic_site': 'dicom_series',
-    'file_tumor_vs_normal': 'file',
-    'dicom_series_tumor_vs_normal': 'dicom_series',
-    'dicom_series_type': 'dicom_series'
+    'file_tumor_vs_normal': 'file'
 }
 
 # EXECUTION
@@ -142,11 +132,8 @@ row_count = dict()
 
 alias_to_data_source = {
     
-    'file': dict(),
-    'dicom_series': dict()
+    'file': dict()
 }
-
-dicom_series_instance_count = dict()
 
 # First pass: skip association tables and load maps between aliases in referenced tables and data sources.
 
@@ -176,7 +163,7 @@ for input_file_path in sorted( input_files ):
 
             data_source_column_to_source = dict()
 
-            # We can't count everything (e.g. file.checksum_value for 45M [virtual] files). Use get_column_metadata() to decide what and how to count.
+            # We don't want to count everything (like continuous numeric variables). Use get_column_metadata() to decide what and how to count.
 
             count_columns = list()
 
@@ -198,12 +185,11 @@ for input_file_path in sorted( input_files ):
                     
                     column_result = get_column_metadata( table_name, column_name )
 
-                    if ( table_name == 'dicom_series_type' and column_name == 'type' ) or \
-                       ( 'column_type' in column_result and column_result['column_type'] == 'categorical' and 'fetch_rows_returns' in column_result and column_result['fetch_rows_returns'] == True ):
+                    if 'column_type' in column_result and column_result['column_type'] == 'categorical' and 'fetch_rows_returns' in column_result and column_result['fetch_rows_returns'] == True:
                         
                         count_columns.append( column_name )
 
-                        if 'process_before_display' in column_result and ( column_result['process_before_display'] in { 'dicom_series_type', 'virtual_field', 'virtual_list' } ):
+                        if 'process_before_display' in column_result and column_result['process_before_display'] == 'virtual_list':
                             
                             count_column_as[column_name] = column_result['virtual_table']
 
@@ -231,7 +217,7 @@ for input_file_path in sorted( input_files ):
 
             if len( count_columns ) > len( count_column_as ):
                 
-                # We sometimes don't count anything (e.g. file_describes_subject, in which case both lengths above are zero) or don't count anything local (e.g. dicom_series, in which case the lengths above are equal), hence this check.
+                # We sometimes don't count anything (e.g. file_describes_subject, in which case both lengths above are zero) or don't count anything local (e.g. file_anatomic_site, in which case the lengths above are equal), hence this check.
 
                 affected_tables.add( table_name )
 
@@ -285,23 +271,6 @@ for input_file_path in sorted( input_files ):
                             column_null_count[virtual_table][data_source][column_name] = 0
                             column_distinct_values[virtual_table][data_source][column_name] = set()
 
-            # Keep all tracking structures on par with the number of (virtual) `file` rows being tracked despite no 'type' column being present in `dicom_series`: we'll adjust this info later after loading the relevant data from `dicom_series_type`.
-
-            if table_name == 'dicom_series':
-                
-                # Note (safe) assumption: `affected_tables` has exactly one element for 'dicom_series': 'file'.
-
-                for affected_table in affected_tables:
-                    
-                    for data_source in column_has_nulls[affected_table]:
-                        
-                        if 'type' not in column_null_count[affected_table][data_source]:
-                            
-                            column_null_count[affected_table][data_source]['type'] = 0
-                            column_has_nulls[affected_table][data_source]['type'] = True
-                            column_all_numbers[affected_table][data_source]['type'] = True
-                            column_distinct_values[affected_table][data_source]['type'] = set()
-
             # Scan {table_name} rows.
 
             for next_line in IN:
@@ -338,29 +307,13 @@ for input_file_path in sorted( input_files ):
                         
                         alias_to_data_source[table_name][current_alias].add( data_source )
 
-                # Keep track of the number of files this row represents.
-
-                current_dicom_series_instance_count = 1
-
-                if table_name == 'dicom_series':
-                    
-                    current_dicom_series_instance_count = int( record['instance_count'] )
-
-                    dicom_series_instance_count[current_alias] = current_dicom_series_instance_count
-
                 for data_source in current_data_sources:
                     
                     for affected_table in affected_tables:
                         
                         # Safe assumption (Sep 2024): affected_tables contains no association tables. If it did, this would overcount.
 
-                        row_count[affected_table][data_source] = row_count[affected_table][data_source] + current_dicom_series_instance_count
-
-                        # Keep all tracking structures on par with the number of (virtual) `file` rows being tracked despite no 'type' column being present in `dicom_series`: we'll adjust this info later after loading the relevant data from `dicom_series_type`.
-
-                        if table_name == 'dicom_series':
-                            
-                            column_null_count[affected_table][data_source]['type'] = column_null_count[affected_table][data_source]['type'] + current_dicom_series_instance_count
+                        row_count[affected_table][data_source] = row_count[affected_table][data_source] + 1
 
                 for column_name in count_columns:
                     
@@ -378,7 +331,7 @@ for input_file_path in sorted( input_files ):
                             
                             column_has_nulls[affected_table][data_source][column_name] = True
 
-                            column_null_count[affected_table][data_source][column_name] = column_null_count[affected_table][data_source][column_name] + current_dicom_series_instance_count
+                            column_null_count[affected_table][data_source][column_name] = column_null_count[affected_table][data_source][column_name] + 1
 
                         else:
                             
@@ -428,7 +381,7 @@ for input_file_path in sorted( input_files ):
 
             column_names = next( IN ).rstrip( '\n' ).split( '\t' )
 
-            # We can't count everything (e.g. file.checksum_value for 45M [virtual] files). Use get_column_metadata() to decide what and how to count.
+            # We don't want to count everything (like continuous numeric variables). Use get_column_metadata() to decide what and how to count.
 
             count_columns = list()
 
@@ -438,12 +391,11 @@ for input_file_path in sorted( input_files ):
                 
                 column_result = get_column_metadata( table_name, column_name )
 
-                if ( table_name == 'dicom_series_type' and column_name == 'type' ) or \
-                   ( 'column_type' in column_result and column_result['column_type'] == 'categorical' and 'fetch_rows_returns' in column_result and column_result['fetch_rows_returns'] == True ):
+                if 'column_type' in column_result and column_result['column_type'] == 'categorical' and 'fetch_rows_returns' in column_result and column_result['fetch_rows_returns'] == True:
                     
                     count_columns.append( column_name )
 
-                    if 'process_before_display' in column_result and ( column_result['process_before_display'] in { 'dicom_series_type', 'virtual_field', 'virtual_list' } ):
+                    if 'process_before_display' in column_result and column_result['process_before_display'] == 'virtual_list':
                         
                         count_column_as[column_name] = column_result['virtual_table']
 
@@ -480,8 +432,6 @@ for input_file_path in sorted( input_files ):
 
             non_null_ids = dict()
 
-            non_null_dicom_series_type_rows = dict()
-
             referenced_table = association_tables[table_name]
 
             for next_line in IN:
@@ -500,12 +450,6 @@ for input_file_path in sorted( input_files ):
                     
                     current_data_sources.add( data_source )
 
-                current_dicom_series_instance_count = 1
-
-                if alias_field_name == 'dicom_series_alias':
-                    
-                    current_dicom_series_instance_count = dicom_series_instance_count[current_alias]
-
                 for column_name in count_column_as:
                     
                     value = record[column_name]
@@ -516,31 +460,19 @@ for input_file_path in sorted( input_files ):
                         
                         for data_source in current_data_sources:
                             
-                            if table_name == 'dicom_series_type' and column_name == 'type':
+                            if affected_table not in non_null_ids:
                                 
-                                # We've got instance counts per value in this table. Add those.
+                                non_null_ids[affected_table] = dict()
 
-                                if data_source not in non_null_dicom_series_type_rows:
-                                    
-                                    non_null_dicom_series_type_rows[data_source] = 0
-
-                                non_null_dicom_series_type_rows[data_source] = non_null_dicom_series_type_rows[data_source] + int( record['instance_count'] )
-
-                            else:
+                            if data_source not in non_null_ids[affected_table]:
                                 
-                                if affected_table not in non_null_ids:
-                                    
-                                    non_null_ids[affected_table] = dict()
+                                non_null_ids[affected_table][data_source] = dict()
 
-                                if data_source not in non_null_ids[affected_table]:
-                                    
-                                    non_null_ids[affected_table][data_source] = dict()
+                            if column_name not in non_null_ids[affected_table][data_source]:
+                                
+                                non_null_ids[affected_table][data_source][column_name] = set()
 
-                                if column_name not in non_null_ids[affected_table][data_source]:
-                                    
-                                    non_null_ids[affected_table][data_source][column_name] = set()
-
-                                non_null_ids[affected_table][data_source][column_name].add( current_alias )
+                            non_null_ids[affected_table][data_source][column_name].add( current_alias )
 
                             column_distinct_values[affected_table][data_source][column_name].add( value )
 
@@ -562,51 +494,9 @@ for input_file_path in sorted( input_files ):
 
                 for data_source in row_count[affected_table]:
                     
-                    if table_name == 'dicom_series_type' and column_name == 'type' and data_source in non_null_dicom_series_type_rows:
-                        
-                        if column_null_count[affected_table][data_source][column_name] == -1:
-                            
-                            # We haven't seen this field prior to scanning this association table.
-
-                            # ...which should never happen.
-
-                            sys.exit( f"FATAL: column_null_count[{affected_table}][{data_source}][{column_name}] is -1; something has gone wrong." )
-
-                        else:
-                            
-                            # column_null_count[affected_table][data_source][column_name] already exists. By design, this total includes one (initial) null for every dicom_series_instance.
-
-                            previous_null_count = column_null_count[affected_table][data_source][column_name]
-
-                            total_rows = row_count[affected_table][data_source]
-
-                            previous_non_null_rows = total_rows - previous_null_count
-
-                            new_non_null_rows = previous_non_null_rows + non_null_dicom_series_type_rows[data_source]
-
-                            if new_non_null_rows > total_rows:
-                                
-                                # This is a hacky sanity check, but this code can be quite confusing, so it seems prudent to have this here just in case.
-                                # 
-                                # ...also, I've tripped it several times.
-
-                                sys.exit( f"FATAL: '{affected_table}.{column_name}' from {data_source} computed to have {new_non_null_rows} non-null rows of {total_rows} total: please fix. previous_null_count:{previous_null_count}" )
-
-                            new_null_count = total_rows - new_non_null_rows
-
-                            column_null_count[affected_table][data_source][column_name] = new_null_count
-
-                    elif affected_table in non_null_ids and data_source in non_null_ids[affected_table] and column_name in non_null_ids[affected_table][data_source]:
+                    if affected_table in non_null_ids and data_source in non_null_ids[affected_table] and column_name in non_null_ids[affected_table][data_source]:
                         
                         non_null_rows_to_add = len( non_null_ids[affected_table][data_source][column_name] )
-
-                        if re.search( r'^dicom_series', table_name ) is not None:
-                            
-                            non_null_rows_to_add = 0
-
-                            for series_alias in non_null_ids[affected_table][data_source][column_name]:
-                                
-                                non_null_rows_to_add = non_null_rows_to_add + dicom_series_instance_count[series_alias]
 
                         if column_null_count[affected_table][data_source][column_name] == -1:
                             

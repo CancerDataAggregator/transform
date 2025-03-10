@@ -20,6 +20,10 @@ series_input_tsv = path.join( tsv_input_root, 'dicom_series.tsv' )
 
 series_type_input_tsv = path.join( tsv_input_root, 'dicom_series.dicom_all.SOPClassUID.tsv' )
 
+# DRS URI for current_instance: f"drs://dg.4dfc:{current_instance['crdc_instance_uuid']}"
+
+series_crdc_instance_uuid_input_file = path.join( tsv_input_root, 'dicom_series.dicom_all.crdc_instance_uuid.tsv' )
+
 series_anatomy_input_tsv = path.join( tsv_input_root, 'dicom_series.dicom_all.anatomy_values_and_instance_counts.tsv' )
 
 series_tumor_vs_normal_input_tsv = path.join( tsv_input_root, 'dicom_series.dicom_all.tumor_vs_normal_values_and_instance_counts.tsv' )
@@ -62,42 +66,28 @@ upstream_identifiers_tsv = path.join( tsv_output_root, 'upstream_identifiers.tsv
 
 project_in_project_tsv = path.join( tsv_output_root, 'project_in_project.tsv' )
 
-dicom_series_output_tsv = path.join( tsv_output_root, 'dicom_series.tsv' )
+file_output_tsv = path.join( tsv_output_root, 'file.tsv' )
 
-dicom_series_instance_output_tsv = path.join( tsv_output_root, 'dicom_series_instance.tsv.gz' )
+file_anatomic_site_output_tsv = path.join( tsv_output_root, 'file_anatomic_site.tsv' )
 
-dicom_series_anatomic_site_output_tsv = path.join( tsv_output_root, 'dicom_series_anatomic_site.tsv' )
+file_tumor_vs_normal_output_tsv = path.join( tsv_output_root, 'file_tumor_vs_normal.tsv' )
 
-dicom_series_tumor_vs_normal_output_tsv = path.join( tsv_output_root, 'dicom_series_tumor_vs_normal.tsv' )
-
-dicom_series_in_project_output_tsv = path.join( tsv_output_root, 'dicom_series_in_project.tsv' )
-
-dicom_series_type_output_tsv = path.join( tsv_output_root, 'dicom_series_type.tsv' )
+file_in_project_output_tsv = path.join( tsv_output_root, 'file_in_project.tsv' )
 
 # Table header sequences.
 
-cda_dicom_series_fields = [
-    
-    'id',
-    'description',
-    'access',
-    'size',
-    'checksum_type',
-    'format',
-    'category',
-    'instance_count'
-]
-
-cda_dicom_series_instance_fields = [
+cda_file_fields = [
     
     'id',
     'crdc_id',
-    'dicom_series_id',
     'name',
+    'description',
     'drs_uri',
+    'access',
     'size',
-    'checksum_value',
-    'type'
+    'format',
+    'type',
+    'category'
 ]
 
 upstream_identifiers_fields = [
@@ -210,7 +200,6 @@ for series_id in dicom_series:
     cda_dicom_series_records[series_id]['description'] = dicom_series[series_id]['SeriesDescription']
     cda_dicom_series_records[series_id]['access'] = 'Open'
     cda_dicom_series_records[series_id]['size'] = dicom_series[series_id]['total_byte_size']
-    cda_dicom_series_records[series_id]['checksum_type'] = 'md5'
     cda_dicom_series_records[series_id]['format'] = 'DICOM'
 
     modality_code = dicom_series[series_id]['Modality']
@@ -272,9 +261,51 @@ cda_dicom_series_type = dict()
 
 warned_class_codes = set()
 
+keep_from_multi = [
+    
+    'CT Image Storage',
+    'MR Image Storage',
+    'Ultrasound Image Storage',
+    'Ultrasound Multi-frame Image Storage'
+]
+
 for series_id in dicom_series_type:
     
-    for class_code in dicom_series_type[series_id]:
+    # If we have multiple types for a series, we pick one as default based on the `keep_from_multi` array. If no allowable value is present for a multi-type series, break and investigate.
+
+    if len( dicom_series_type[series_id] ) > 1:
+        
+        found = set()
+
+        for class_code in dicom_series_type[series_id]:
+            
+            if class_code in class_code_map:
+                
+                class_value = class_code_map[class_code]
+
+                if class_value in keep_from_multi:
+                    
+                    found.add( class_value )
+
+        if len( found ) == 0:
+            
+            sys.exit( f"FATAL: DICOM series with crdc_series_uuid '{series_id}' has multiple SOPClassUID values, none of which decodes to an allowable default value. Assumptions violated, cannot continue. Please investigate." )
+
+        else:
+            
+            default_type = ''
+
+            for allowable_value in keep_from_multi:
+                
+                if default_type == '' and allowable_value in found:
+                    
+                    default_type = allowable_value
+
+            cda_dicom_series_type[series_id] = default_type
+
+    else:
+        
+        class_code = sorted( dicom_series_type[series_id] )[0]
         
         if class_code not in class_code_map and class_code not in warned_class_codes:
             
@@ -284,19 +315,17 @@ for series_id in dicom_series_type:
                 
                 newline_prefix = '\n'
 
-            print( f"{newline_prefix}\n   WARNING: Unknown SOPClassUID code '{class_code}' encountered for crdc_series_uuid '{series_id}'; saving no association record and suppressing future warnings for the same value.", file=sys.stderr )
+            print( f"{newline_prefix}\n   WARNING: Unknown SOPClassUID code '{class_code}' encountered for crdc_series_uuid '{series_id}'; saving no type value and suppressing future warnings for the same value.", file=sys.stderr )
 
             warned_class_codes.add( class_code )
+
+            cda_dicom_series_type[series_id] = ''
 
         elif class_code not in warned_class_codes:
             
             class_value = class_code_map[class_code]
 
-            if series_id not in cda_dicom_series_type:
-                
-                cda_dicom_series_type[series_id] = dict()
-
-            cda_dicom_series_type[series_id][class_value] = dicom_series_type[series_id][class_code]['number_of_matching_SOPInstanceUIDs']
+            cda_dicom_series_type[series_id] = class_value
 
 newline_prefix = ''
 
@@ -305,6 +334,26 @@ if len( warned_class_codes ) > 0:
     newline_prefix = '\n...'
 
 print( f"{newline_prefix}done. [{get_current_timestamp()}]", file=sys.stderr )
+
+print( f"[{get_current_timestamp()}] Loading crdc_instance_uuid values for DICOM series...", end='', file=sys.stderr )
+
+cda_dicom_series_drs_uris = dict()
+
+with open( series_crdc_instance_uuid_input_file ) as IN:
+    
+    header = next( IN )
+
+    for next_line in IN:
+        
+        [ series_id, instance_id ] = next_line.rstrip( '\n' ).split( '\t' )
+
+        if series_id not in cda_dicom_series_drs_uris:
+            
+            cda_dicom_series_drs_uris[series_id] = set()
+
+        cda_dicom_series_drs_uris[series_id].add( f"drs://dg.4dfc:{instance_id}" )
+
+print( f"done. [{get_current_timestamp()}]", file=sys.stderr )
 
 print( f"[{get_current_timestamp()}] Loading anatomic_site metadata for DICOM series from dicom_all and from cross-referenced sample metadata from other DCs...", end='', file=sys.stderr )
 
@@ -372,43 +421,65 @@ print( f"done. [{get_current_timestamp()}]", file=sys.stderr )
 
 print( f"[{get_current_timestamp()}] Writing output TSVs to {tsv_output_root}...", end='', file=sys.stderr )
 
-# Write the new CDA dicom_series records.
+# Write CDA file records based on loaded series data.
 
-with open( dicom_series_output_tsv, 'w' ) as OUT:
+with open( file_output_tsv, 'w' ) as OUT:
     
-    print( *cda_dicom_series_fields, sep='\t', file=OUT )
+    print( *cda_file_fields, sep='\t', file=OUT )
 
     for dicom_series_id in sorted( cda_dicom_series_records ):
         
-        output_row = list()
-
         dicom_series_record = cda_dicom_series_records[dicom_series_id]
 
-        for cda_dicom_series_field in cda_dicom_series_fields:
-            
-            output_row.append( dicom_series_record[cda_dicom_series_field] )
+        # cda_file_fields = [
+        #     
+        #     'id',
 
+        output_row = [ dicom_series_id ]
+
+        #     'crdc_id',
+
+        output_row.append( '' )
+
+        #     'name',
+
+        output_row.append( '' )
+
+        #     'description',
+
+        output_row.append( dicom_series_record['description'] )
+
+        #     'drs_uri',
+
+        output_row.append( ','.join( sorted( cda_dicom_series_drs_uris[dicom_series_id] ) ) )
+
+        #     'access',
+
+        output_row.append( dicom_series_record['access'] )
+
+        #     'size',
+
+        output_row.append( dicom_series_record['size'] )
+
+        #     'format',
+
+        output_row.append( dicom_series_record['format'] )
+
+        #     'type',
+
+        output_row.append( cda_dicom_series_type[dicom_series_id] )
+
+        #     'category'
+
+        output_row.append( dicom_series_record['category'] )
+        
         print( *output_row, sep='\t', file=OUT )
 
-# Write dicom_series->type.
+# Write the file<->project association.
 
-with open( dicom_series_type_output_tsv, 'w' ) as OUT:
+with open( file_in_project_output_tsv, 'w' ) as OUT:
     
-    print( *[ 'dicom_series_id', 'type', 'instance_count' ], sep='\t', file=OUT )
-
-    for dicom_series_id in sorted( cda_dicom_series_type ):
-        
-        for type_value in sorted( cda_dicom_series_type[dicom_series_id] ):
-            
-            instance_count = cda_dicom_series_type[dicom_series_id][type_value]
-
-            print( *[ dicom_series_id, type_value, instance_count ], sep='\t', file=OUT )
-
-# Write the dicom_series<->project association.
-
-with open( dicom_series_in_project_output_tsv, 'w' ) as OUT:
-    
-    print( *[ 'dicom_series_id', 'project_id' ], sep='\t', file=OUT )
+    print( *[ 'file_id', 'project_id' ], sep='\t', file=OUT )
 
     for dicom_series_id in sorted( cda_dicom_series_in_project ):
         
@@ -416,11 +487,11 @@ with open( dicom_series_in_project_output_tsv, 'w' ) as OUT:
             
             print( *[ dicom_series_id, project_id ], sep='\t', file=OUT )
 
-# Write dicom_series->anatomic_site.
+# Write file->anatomic_site.
 
-with open( dicom_series_anatomic_site_output_tsv, 'w' ) as OUT:
+with open( file_anatomic_site_output_tsv, 'w' ) as OUT:
     
-    print( *[ 'dicom_series_id', 'anatomic_site' ], sep='\t', file=OUT )
+    print( *[ 'file_id', 'anatomic_site' ], sep='\t', file=OUT )
 
     for dicom_series_id in sorted( dicom_series_anatomic_site ):
         
@@ -428,11 +499,11 @@ with open( dicom_series_anatomic_site_output_tsv, 'w' ) as OUT:
             
             print( *[ dicom_series_id, anatomic_site ], sep='\t', file=OUT )
 
-# Write dicom_series->tumor_vs_normal.
+# Write file->tumor_vs_normal.
 
-with open( dicom_series_tumor_vs_normal_output_tsv, 'w' ) as OUT:
+with open( file_tumor_vs_normal_output_tsv, 'w' ) as OUT:
     
-    print( *[ 'dicom_series_id', 'tumor_vs_normal' ], sep='\t', file=OUT )
+    print( *[ 'file_id', 'tumor_vs_normal' ], sep='\t', file=OUT )
 
     for dicom_series_id in sorted( dicom_series_tumor_vs_normal ):
         

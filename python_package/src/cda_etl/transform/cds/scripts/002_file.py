@@ -77,8 +77,6 @@ cda_file_fields = [
     'drs_uri',
     'access',
     'size',
-    'checksum_type',
-    'checksum_value',
     'format',
     'type',
     'category'
@@ -199,8 +197,6 @@ for file_uuid in file:
     # Will be filled in later from study.study_access:
     cda_file_records[file_id]['access'] = ''
     cda_file_records[file_id]['size'] = file[file_uuid]['file_size']
-    cda_file_records[file_id]['checksum_type'] = 'md5'
-    cda_file_records[file_id]['checksum_value'] = file[file_uuid]['md5sum']
     cda_file_records[file_id]['format'] = file[file_uuid]['file_type']
     # Will be filled in later from image.image_modality:
     cda_file_records[file_id]['type'] = ''

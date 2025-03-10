@@ -37,16 +37,12 @@ delete_everywhere = get_universal_value_deletion_patterns()
 
 delete_row_if_nulled = {
     
-    'dicom_series_anatomic_site',
-    'dicom_series_tumor_vs_normal',
     'file_anatomic_site',
     'file_tumor_vs_normal'
 }
 
 remove_possible_sorted_dupes = {
     
-    'dicom_series_anatomic_site',
-    'dicom_series_tumor_vs_normal',
     'file_anatomic_site',
     'file_tumor_vs_normal'
 }
@@ -72,8 +68,6 @@ delete_row_if_all_null_but = {
 exclude_tables = {
     
     'column_metadata',
-    'dicom_series_describes_subject',
-    'dicom_series_in_project',
     'file_describes_subject',
     'file_in_project',
     'project',

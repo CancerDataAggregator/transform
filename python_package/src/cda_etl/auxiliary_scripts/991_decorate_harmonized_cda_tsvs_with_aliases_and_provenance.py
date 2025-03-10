@@ -44,7 +44,6 @@ base_tables = {
     
     'project',
     'file',
-    'dicom_series',
     'subject',
     'observation',
     'treatment',
@@ -57,58 +56,6 @@ base_tables = {
 
 reference_tables = {
     
-    'dicom_series_instance': [
-        {
-            'referencing_field': 'dicom_series_alias',
-            'referenced_table': 'dicom_series',
-            'referenced_field': 'id_alias'
-        }
-    ],
-    'dicom_series_describes_subject': [
-        {
-            'referencing_field': 'dicom_series_alias',
-            'referenced_table': 'dicom_series',
-            'referenced_field': 'id_alias'
-        },
-        {
-            'referencing_field': 'subject_alias',
-            'referenced_table': 'subject',
-            'referenced_field': 'id_alias'
-        }
-    ],
-    'dicom_series_anatomic_site': [
-        {
-            'referencing_field': 'dicom_series_alias',
-            'referenced_table': 'dicom_series',
-            'referenced_field': 'id_alias'
-        }
-    ],
-    'dicom_series_tumor_vs_normal': [
-        {
-            'referencing_field': 'dicom_series_alias',
-            'referenced_table': 'dicom_series',
-            'referenced_field': 'id_alias'
-        }
-    ],
-    'dicom_series_type': [
-        {
-            'referencing_field': 'dicom_series_alias',
-            'referenced_table': 'dicom_series',
-            'referenced_field': 'id_alias'
-        }
-    ],
-    'dicom_series_in_project': [
-        {
-            'referencing_field': 'dicom_series_alias',
-            'referenced_table': 'dicom_series',
-            'referenced_field': 'id_alias'
-        },
-        {
-            'referencing_field': 'project_alias',
-            'referenced_table': 'project',
-            'referenced_field': 'id_alias'
-        }
-    ],
     'observation': [
         {
             'referencing_field': 'subject_alias',

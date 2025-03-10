@@ -90,8 +90,6 @@ cda_file_fields = [
     'drs_uri',
     'access',
     'size',
-    'checksum_type',
-    'checksum_value',
     'format',
     'type',
     'category'
@@ -153,8 +151,6 @@ for file_id in file:
     cda_file_records[file_id]['drs_uri'] = f"drs://dg.4dfc:{file_id}"
     cda_file_records[file_id]['access'] = file[file_id]['access']
     cda_file_records[file_id]['size'] = file[file_id]['file_size']
-    cda_file_records[file_id]['checksum_type'] = 'md5'
-    cda_file_records[file_id]['checksum_value'] = file[file_id]['md5sum']
     cda_file_records[file_id]['format'] = file[file_id]['data_format']
     cda_file_records[file_id]['type'] = file[file_id]['data_type']
     cda_file_records[file_id]['category'] = file[file_id]['data_category']

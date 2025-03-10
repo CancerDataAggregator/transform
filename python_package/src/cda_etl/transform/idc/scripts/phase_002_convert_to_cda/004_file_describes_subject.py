@@ -22,7 +22,7 @@ tsv_output_root = path.join( 'cda_tsvs', f"{upstream_data_source.lower()}_000_un
 
 upstream_identifiers_tsv = path.join( tsv_output_root, 'upstream_identifiers.tsv' )
 
-dicom_series_describes_subject_output_tsv = path.join( tsv_output_root, 'dicom_series_describes_subject.tsv' )
+file_describes_subject_output_tsv = path.join( tsv_output_root, 'file_describes_subject.tsv' )
 
 # EXECUTION
 
@@ -60,11 +60,11 @@ for series_id in series_case:
 
     cda_dicom_series_describes_subject[series_id].add( cda_subject_id )
 
-print( f"[{get_current_timestamp()}] Writing {dicom_series_describes_subject_output_tsv}...", end='', file=sys.stderr )
+print( f"[{get_current_timestamp()}] Writing {file_describes_subject_output_tsv}...", end='', file=sys.stderr )
 
-with open( dicom_series_describes_subject_output_tsv, 'w' ) as OUT:
+with open( file_describes_subject_output_tsv, 'w' ) as OUT:
     
-    print( *[ 'dicom_series_id', 'subject_id' ], sep='\t', file=OUT )
+    print( *[ 'file_id', 'subject_id' ], sep='\t', file=OUT )
 
     for series_id in sorted( cda_dicom_series_describes_subject ):
         

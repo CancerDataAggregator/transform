@@ -606,17 +606,7 @@ for file_basename in sorted( listdir( last_merged_cda_tsv_dir ) ):
 
 for file_basename in sorted( listdir( to_merge_cda_tsv_dir ) ):
     
-    if file_basename in { 'dicom_series.tsv', 'dicom_series_anatomic_site.tsv', 'dicom_series_instance.tsv.gz', 'dicom_series_tumor_vs_normal.tsv', 'dicom_series_type.tsv' }:
-        
-        # These tables are only created for IDC, and the ones listed above don't reference any data that might've been aggregated and thus need alias updates.
-
-        print( f"Copying {file_basename} (exists only in '{to_merge_cda_tsv_dir}')...", end='', file=sys.stderr )
-
-        copy( path.join( to_merge_cda_tsv_dir, file_basename ), path.join( tsv_output_dir, file_basename ) )
-
-        print( 'done.', file=sys.stderr )
-
-    elif file_basename not in completed_files and re.search( r'\.tsv$', file_basename ) is not None:
+    if file_basename not in completed_files and re.search( r'\.tsv$', file_basename ) is not None:
         
         table = re.sub( r'^(.*)\.tsv$', r'\1', file_basename )
 

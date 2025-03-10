@@ -1410,30 +1410,9 @@ def columns_to_count( data_source ):
 
         'cda': {
             
-            'dicom_series': [
-                
-                'access',
-                'checksum_type',
-                'format',
-                'category',
-                'instance_count'
-            ],
-            'dicom_series_anatomic_site': [
-                
-                'anatomic_site'
-            ],
-            'dicom_series_tumor_vs_normal': [
-                
-                'tumor_vs_normal'
-            ],
-            'dicom_series_type': [
-                
-                'type'
-            ],
             'file': [
                 
                 'access',
-                'checksum_type',
                 'format',
                 'type',
                 'category'
@@ -1877,18 +1856,6 @@ def get_column_metadata( table_name=None, column_name=None ):
                 'summary_display': True,
                 'fetch_rows_returns': True
             },
-            'checksum_type': {
-                
-                'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True
-            },
-            'checksum_value': {
-                
-                'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
-            },
             'format': {
                 
                 'column_type': 'categorical',
@@ -1948,182 +1915,6 @@ def get_column_metadata( table_name=None, column_name=None ):
                 'summary_display': True,
                 'fetch_rows_returns': False,
                 'process_before_display': 'data_source_count'
-            }
-        },
-        'dicom_series': {
-            
-            'id': {
-                
-                'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
-            },
-            'id_alias': {
-                
-                'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
-            },
-            'description': {
-                
-                'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True,
-                'process_before_display': 'virtual_field',
-                'virtual_table': 'file'
-            },
-            'access': {
-                
-                'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True,
-                'process_before_display': 'virtual_field',
-                'virtual_table': 'file'
-            },
-            'size': {
-                
-                'column_type': 'numeric',
-                'summary_display': True,
-                'fetch_rows_returns': False,
-                'process_before_display': 'dicom_series_size'
-            },
-            'checksum_type': {
-                
-                'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True,
-                'process_before_display': 'virtual_field',
-                'virtual_table': 'file'
-            },
-            'format': {
-                
-                'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True,
-                'process_before_display': 'virtual_field',
-                'virtual_table': 'file'
-            },
-            'category': {
-                
-                'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True,
-                'process_before_display': 'virtual_field',
-                'virtual_table': 'file'
-            },
-            'instance_count': {
-                
-                'column_type': 'numeric',
-                'summary_display': False,
-                'fetch_rows_returns': False,
-                'process_before_display': 'dicom_series_instance_count'
-            },
-            'data_at_cds': {
-                
-                'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
-                'process_before_display': 'dicom_series_data_source'
-            },
-            'data_at_gdc': {
-                
-                'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
-                'process_before_display': 'dicom_series_data_source'
-            },
-            'data_at_icdc': {
-                
-                'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
-                'process_before_display': 'dicom_series_data_source'
-            },
-            'data_at_idc': {
-                
-                'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
-                'process_before_display': 'dicom_series_data_source'
-            },
-            'data_at_pdc': {
-                
-                'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
-                'process_before_display': 'dicom_series_data_source'
-            },
-            'data_source_count': {
-                
-                'column_type': 'numeric',
-                'summary_display': True,
-                'fetch_rows_returns': False,
-                'process_before_display': 'dicom_series_data_source_count'
-            }
-        },
-        'dicom_series_instance': {
-            
-            'id': {
-                
-                'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True,
-                'process_before_display': 'virtual_field',
-                'virtual_table': 'file'
-            },
-            'crdc_id': {
-                
-                'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True,
-                'process_before_display': 'virtual_field',
-                'virtual_table': 'file'
-            },
-            'dicom_series_alias': {
-                
-                'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
-            },
-            'name': {
-                
-                'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True,
-                'process_before_display': 'virtual_field',
-                'virtual_table': 'file'
-            },
-            'drs_uri': {
-                
-                'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True,
-                'process_before_display': 'virtual_field',
-                'virtual_table': 'file'
-            },
-            'size': {
-                
-                'column_type': 'numeric',
-                'summary_display': False,
-                'fetch_rows_returns': True,
-                'process_before_display': 'virtual_field',
-                'virtual_table': 'file'
-            },
-            'checksum_value': {
-                
-                'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True,
-                'process_before_display': 'virtual_field',
-                'virtual_table': 'file'
-            },
-            'type': {
-                
-                'column_type': 'categorical',
-                'summary_display': False,
-                'fetch_rows_returns': True,
-                'process_before_display': 'virtual_field',
-                'virtual_table': 'file'
             }
         },
         'subject': {
@@ -2675,41 +2466,9 @@ def get_column_metadata( table_name=None, column_name=None ):
                 'fetch_rows_returns': False
             }
         },
-        'dicom_series_describes_subject': {
-            
-            'dicom_series_alias': {
-                
-                'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
-            },
-            'subject_alias': {
-                
-                'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
-            }
-        },
         'file_anatomic_site': {
             
             'file_alias': {
-                
-                'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
-            },
-            'anatomic_site': {
-                
-                'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True,
-                'process_before_display': 'virtual_list',
-                'virtual_table': 'file'
-            }
-        },
-        'dicom_series_anatomic_site': {
-            
-            'dicom_series_alias': {
                 
                 'column_type': 'unbounded',
                 'summary_display': False,
@@ -2741,41 +2500,9 @@ def get_column_metadata( table_name=None, column_name=None ):
                 'virtual_table': 'file'
             }
         },
-        'dicom_series_tumor_vs_normal': {
-            
-            'dicom_series_alias': {
-                
-                'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
-            },
-            'tumor_vs_normal': {
-                
-                'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True,
-                'process_before_display': 'virtual_list',
-                'virtual_table': 'file'
-            }
-        },
         'file_in_project': {
             
             'file_alias': {
-                
-                'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
-            },
-            'project_alias': {
-                
-                'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
-            }
-        },
-        'dicom_series_in_project': {
-            
-            'dicom_series_alias': {
                 
                 'column_type': 'unbounded',
                 'summary_display': False,
@@ -2816,30 +2543,6 @@ def get_column_metadata( table_name=None, column_name=None ):
                 'column_type': 'unbounded',
                 'summary_display': False,
                 'fetch_rows_returns': False
-            }
-        },
-        'dicom_series_type': {
-            
-            'dicom_series_alias': {
-                
-                'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
-            },
-            'type': {
-                
-                'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
-                'process_before_display': 'dicom_series_type',
-                'virtual_table': 'file'
-            },
-            'instance_count': {
-                
-                'column_type': 'numeric',
-                'summary_display': False,
-                'fetch_rows_returns': False,
-                'process_before_display': 'dicom_series_type_instance_count'
             }
         }
     }

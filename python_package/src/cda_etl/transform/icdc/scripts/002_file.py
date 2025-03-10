@@ -62,8 +62,6 @@ cda_file_fields = [
     'drs_uri',
     'access',
     'size',
-    'checksum_type',
-    'checksum_value',
     'format',
     'type',
     'category'
@@ -101,8 +99,6 @@ for file_uuid in file:
     cda_file_records[file_uuid]['drs_uri'] = f"drs://dg.4dfc:{file_uuid.lower()}"
     cda_file_records[file_uuid]['access'] = 'Open' # All ICDC data is open access.
     cda_file_records[file_uuid]['size'] = int( float( file[file_uuid]['file_size'] ) )
-    cda_file_records[file_uuid]['checksum_type'] = 'md5'
-    cda_file_records[file_uuid]['checksum_value'] = file[file_uuid]['md5sum']
     cda_file_records[file_uuid]['format'] = file[file_uuid]['file_format']
     cda_file_records[file_uuid]['type'] = ''
     cda_file_records[file_uuid]['category'] = file[file_uuid]['file_type']

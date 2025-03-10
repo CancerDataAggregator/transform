@@ -49,18 +49,12 @@ if len( match_list ) > 0:
     output_dir = match_list[0]
 
 # Don't scan CDA release-metadata files if they've been built out of sequence;
-# also skip dicom_[series_]instance.tsv.gz because everything we need is summarized
-# in dicom_series.tsv and its association tables; also skip upstream_identifiers.tsv
-# because it's not exposed to the user; also skip association tables that introduce no
-# new values.
+# also skip upstream_identifiers.tsv because it's not exposed to the user; also
+# skip association tables that introduce no new values.
 
 files_to_skip = {
     
     'column_metadata.tsv',
-    'dicom_instance.tsv.gz',
-    'dicom_series_describes_subject.tsv',
-    'dicom_series_in_project.tsv',
-    'dicom_series_instance.tsv.gz',
     'file_describes_subject.tsv',
     'file_in_project.tsv',
     'project_in_project.tsv',
