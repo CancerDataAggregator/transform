@@ -1,10 +1,11 @@
 #!/usr/bin/env python -u
 
+import re
 import sys
 
 from os import makedirs, path
 
-from cda_etl.lib import load_tsv_as_dict, map_columns_one_to_one, map_columns_one_to_many, load_qualified_id_association
+from cda_etl.lib import get_universal_value_deletion_patterns, load_qualified_id_association, load_tsv_as_dict, map_columns_one_to_many, map_columns_one_to_one
 
 # PARAMETERS
 
@@ -57,6 +58,8 @@ sample_participant = map_columns_one_to_many( sample_participant_input_tsv, 'sam
 # Note assumption: each participant is in exactly one study. True at time of writing (2024-06).
 
 participant_study = map_columns_one_to_one( participant_study_input_tsv, 'participant_uuid', 'study_uuid' )
+
+# As of March 2025, a study is no longer guaranteed to have a parent program. Adjust processing accordingly.
 
 study_program = map_columns_one_to_one( study_program_input_tsv, 'study_uuid', 'program_uuid' )
 
@@ -145,6 +148,12 @@ subject_output_column_names = [
     'cause_of_death'
 ]
 
+# Enumerate (case-insensitive, space-collapsed) values (as regular expressions) that
+# should be deleted wherever they are found in search metadata, to guide value
+# replacement decisions in the event of clashes.
+
+delete_everywhere = get_universal_value_deletion_patterns()
+
 # EXECUTION
 
 for output_dir in [ output_root, cds_aux_dir ]:
@@ -163,6 +172,16 @@ subject_researchsubject = dict()
 subject_participant_uuids = dict()
 subject_participant_ids = dict()
 
+# NEW MARCH 2025: some entities as identified by participant.participant_id have been
+# assigned multiple distinct participant.uuid values, causing our earlier code to create
+# ResearchSubject records with duplicate IDs. Diagnoses, samples, etc. assigned to the
+# respective uuids don't overlap at present, but we can no longer write the
+# ResearchSubject table online as we parse the participant file; we need to collect
+# (aggregate) ResearchSubject records as we go and print them later, as we do
+# for Subject records.
+
+researchsubject_records = dict()
+
 file_subject = dict()
 
 file_specimen = dict()
@@ -172,14 +191,13 @@ printed_sample = set()
 
 entity_studies_by_type = dict()
 
-with open( participant_input_tsv ) as PARTICIPANT_IN, open( researchsubject_output_tsv, 'w' ) as RS_OUT, open( researchsubject_identifier_output_tsv, 'w' ) as RS_IDENTIFIER, \
+with open( participant_input_tsv ) as PARTICIPANT_IN, open( researchsubject_identifier_output_tsv, 'w' ) as RS_IDENTIFIER, \
     open( researchsubject_diagnosis_output_tsv, 'w' ) as RS_DIAGNOSIS, open( researchsubject_specimen_output_tsv, 'w' ) as RS_SPECIMEN, \
     open( diagnosis_output_tsv, 'w' ) as DIAGNOSIS, open( diagnosis_identifier_output_tsv, 'w' ) as DIAGNOSIS_IDENTIFIER, \
     open( specimen_output_tsv, 'w' ) as SPECIMEN, open( specimen_identifier_output_tsv, 'w' ) as SPECIMEN_IDENTIFIER, open( warning_log, 'w' ) as WARN:
     
     input_column_names = next( PARTICIPANT_IN ).rstrip( '\n' ).split( '\t' )
 
-    print( *rs_output_column_names, sep='\t', file=RS_OUT )
     print( *[ 'researchsubject_id', 'system', 'field_name', 'value' ], sep='\t', file=RS_IDENTIFIER )
     print( *[ 'researchsubject_id', 'diagnosis_id' ], sep='\t', file=RS_DIAGNOSIS )
     print( *[ 'researchsubject_id', 'specimen_id' ], sep='\t', file=RS_SPECIMEN )
@@ -187,6 +205,10 @@ with open( participant_input_tsv ) as PARTICIPANT_IN, open( researchsubject_outp
     print( *[ 'diagnosis_id', 'system', 'field_name', 'value' ], sep='\t', file=DIAGNOSIS_IDENTIFIER )
     print( *[ 'id', 'associated_project', 'days_to_collection', 'primary_disease_type', 'anatomical_site', 'source_material_type', 'specimen_type', 'derived_from_specimen', 'derived_from_subject' ], sep='\t', file=SPECIMEN )
     print( *[ 'specimen_id', 'system', 'field_name', 'value' ], sep='\t', file=SPECIMEN_IDENTIFIER )
+
+    # Track participant_id values printed to RS_IDENTIFIER by ResearchSubject to avoid duplication.
+
+    printed_participant_id = dict()
 
     for line in [ next_line.rstrip( '\n' ) for next_line in PARTICIPANT_IN ]:
         
@@ -218,9 +240,13 @@ with open( participant_input_tsv ) as PARTICIPANT_IN, open( researchsubject_outp
 
         rs_id = f"{study[study_uuid]['phs_accession']}.{participant_id}"
 
-        # CDA Subject ID: Combination of CDS program acronym and participant_id.
+        # CDA Subject ID: Combination of CDS program acronym and participant_id. If there is no program (a new possibility as of March 2025), default to using the study uuid instead.
 
-        subject_id = f"{program[study_program[study_uuid]]['program_acronym']}.{participant_id}"
+        subject_id = f"STUDY_{study_uuid}.{participant_id}"
+
+        if study_uuid in study_program:
+            
+            subject_id = f"{program[study_program[study_uuid]]['program_acronym']}.{participant_id}"
 
         if subject_id not in subject_records:
             
@@ -306,7 +332,17 @@ with open( participant_input_tsv ) as PARTICIPANT_IN, open( researchsubject_outp
 
         print( *[ rs_id, 'CDS', 'participant.uuid', participant_uuid ], sep='\t', file=RS_IDENTIFIER )
 
-        print( *[ rs_id, 'CDS', 'participant.participant_id', participant_id ], sep='\t', file=RS_IDENTIFIER )
+        # Don't duplicate these.
+
+        if rs_id not in printed_participant_id or participant_id not in printed_participant_id[rs_id]:
+            
+            if rs_id not in printed_participant_id:
+                
+                printed_participant_id[rs_id] = set()
+
+            printed_participant_id[rs_id].add( participant_id )
+
+            print( *[ rs_id, 'CDS', 'participant.participant_id', participant_id ], sep='\t', file=RS_IDENTIFIER )
 
         # If there's a diagnosis record attached to this participant, connect it to this ResearchSubject record
         # and save its contents to their CDA analogues.
@@ -386,7 +422,49 @@ with open( participant_input_tsv ) as PARTICIPANT_IN, open( researchsubject_outp
                     sample_records[sample_uuid]['days_to_collection'] = ''
                     sample_records[sample_uuid]['primary_disease_type'] = ''
                     sample_records[sample_uuid]['anatomical_site'] = sample[sample_uuid]['sample_anatomic_site']
-                    sample_records[sample_uuid]['source_material_type'] = sample[sample_uuid]['sample_tumor_status']
+
+                    # Can we determine tumor/normal information for this sample?
+
+                    source_material_type_value = ''
+
+                    sample_tumor_status_value = sample[sample_uuid]['sample_tumor_status']
+
+                    sample_description_value = sample[sample_uuid]['sample_description']
+
+                    sample_type_value = sample[sample_uuid]['sample_type']
+
+                    if sample_tumor_status_value == '' or re.sub( r'\s', r'', sample_tumor_status_value.strip().lower() ) in delete_everywhere:
+                        
+                        # sample.sample_tumor_status, our usual default, is unusable. Can we infer something from sample.sample_description?
+
+                        if sample_description_value.strip().lower() in { 'normal_ffpe', 'primary_tumor' }:
+                            
+                            source_material_type_value = sample_description_value
+
+                        elif sample_type_value.strip().lower() in { 'blood derived normal', 'buccal cell normal', 'primary tumor', 'solid tissue normal', 'tumor' }:
+                            
+                            # How about sample.sample_type?
+
+                            source_material_type_value = sample_type_value
+
+                        else:
+                            
+                            # We couldn't use the auxiliary fields; preserve the (unhelpful) sample_tumor_status value for this (unharmonized) data pass.
+
+                            source_material_type_value = sample_tumor_status_value
+
+                    else:
+
+                        # sample.sample_tumor_status exists and is not (equivalent to) null.
+                        # 
+                        # Right now (2025-03-18) extant values are { 'Tumor', 'Normal' }, both of which
+                        # are handled in the harmonization layer. Any unexpected values will be passed through
+                        # unmodified, to be detected by that downstream harmonization machinery.
+
+                        source_material_type_value = sample_tumor_status_value
+
+                    sample_records[sample_uuid]['source_material_type'] = source_material_type_value
+
                     sample_records[sample_uuid]['specimen_type'] = 'sample'
                     sample_records[sample_uuid]['derived_from_specimen'] = 'initial specimen'
                     sample_records[sample_uuid]['derived_from_subject'] = subject_id
@@ -396,15 +474,11 @@ with open( participant_input_tsv ) as PARTICIPANT_IN, open( researchsubject_outp
                     sample_records[sample_uuid]['cda_ids'].add( sample_cda_id )
                     sample_records[sample_uuid]['associated_project'].add( study[study_uuid]['phs_accession'] )
 
-        # Write the main ResearchSubject record.
+        # Create or update the main ResearchSubject record.
 
-        output_record = dict()
+        primary_diagnosis_condition = ''
 
-        output_record['id'] = rs_id
-        output_record['member_of_research_project'] = study[study_uuid]['phs_accession']
-
-        output_record['primary_diagnosis_condition'] = ''
-        output_record['primary_diagnosis_site'] = ''
+        primary_diagnosis_site = ''
 
         if participant_uuid in participant_diagnosis:
             
@@ -412,31 +486,31 @@ with open( participant_input_tsv ) as PARTICIPANT_IN, open( researchsubject_outp
                 
                 if diagnosis[diagnosis_uuid]['disease_type'] is not None and diagnosis[diagnosis_uuid]['disease_type'] != '':
                     
-                    # if participant_id == 'C3L-00004':
-                    #     
-                    #     print( *[ f"'{study_name}'", f"'{diagnosis_uuid}'", f"'{diagnosis[diagnosis_uuid]['disease_type']}'" ], sep=' | ', file=sys.stderr )
-
                     primary_diagnosis_condition = diagnosis[diagnosis_uuid]['disease_type']
 
-                    if output_record['primary_diagnosis_condition'] != '' and output_record['primary_diagnosis_condition'] != primary_diagnosis_condition:
+                    if rs_id in researchsubject_records and researchsubject_records[rs_id]['primary_diagnosis_condition'] != '' and researchsubject_records[rs_id]['primary_diagnosis_condition'] != primary_diagnosis_condition:
                         
-                        print( f"WARNING: RS {rs_id} participant_id ({study_name}) {participant_id} diagnosis.disease_type value '{primary_diagnosis_condition}' differs from previously-recorded value '{output_record['primary_diagnosis_condition']}'; ignoring new value.", file=WARN )
+                        print( f"WARNING: RS {rs_id} participant_id ({study_name}) {participant_id} diagnosis.disease_type value '{primary_diagnosis_condition}' differs from previously-recorded value '{researchsubject_records[rs_id]['primary_diagnosis_condition']}'; ignoring new value.", file=WARN )
 
-                    else:
-                        
-                        output_record['primary_diagnosis_condition'] = primary_diagnosis_condition
+                        primary_diagnosis_condition = researchsubject_records[rs_id]['primary_diagnosis_condition']
 
                 if diagnosis[diagnosis_uuid]['primary_site'] is not None and diagnosis[diagnosis_uuid]['primary_site'] != '':
                     
                     primary_diagnosis_site = diagnosis[diagnosis_uuid]['primary_site']
 
-                    if output_record['primary_diagnosis_site'] != '' and output_record['primary_diagnosis_site'] != primary_diagnosis_site:
+                    if rs_id in researchsubject_records and researchsubject_records[rs_id]['primary_diagnosis_site'] != '' and researchsubject_records[rs_id]['primary_diagnosis_site'] != primary_diagnosis_site:
                         
-                        print( f"WARNING: RS {rs_id} participant_id ({study_name}) {participant_id} diagnosis.primary_site value '{primary_diagnosis_site}' differs from previously-recorded value '{output_record['primary_diagnosis_site']}'; overwriting with new value.", file=WARN )
+                        print( f"WARNING: RS {rs_id} participant_id ({study_name}) {participant_id} diagnosis.primary_site value '{primary_diagnosis_site}' differs from previously-recorded value '{researchsubject_records[rs_id]['primary_diagnosis_site']}'; overwriting with new value.", file=WARN )
 
-                    output_record['primary_diagnosis_site'] = primary_diagnosis_site
+                        primary_diagnosis_site = researchsubject_records[rs_id]['primary_diagnosis_site']
 
-        print( *[ output_record[column_name] for column_name in rs_output_column_names ], sep='\t', file=RS_OUT )
+        if rs_id not in researchsubject_records:
+            
+            researchsubject_records[rs_id] = dict()
+
+        researchsubject_records[rs_id]['member_of_research_project'] = study[study_uuid]['phs_accession']
+        researchsubject_records[rs_id]['primary_diagnosis_condition'] = primary_diagnosis_condition
+        researchsubject_records[rs_id]['primary_diagnosis_site'] = primary_diagnosis_site
 
         if len( sample_records ) > 0:
 
@@ -478,6 +552,18 @@ with open( participant_input_tsv ) as PARTICIPANT_IN, open( researchsubject_outp
                                 
                                 file_specimen[file_id].add( current_row['derived_from_specimen'] )
 
+# Print collected ResearchSubject records.
+
+with open( researchsubject_output_tsv, 'w' ) as RS_OUT:
+    
+    print( *rs_output_column_names, sep='\t', file=RS_OUT )
+
+    for rs_id in sorted( researchsubject_records ):
+        
+        current_row = researchsubject_records[rs_id]
+
+        print( *( [ rs_id ] + [ current_row[rs_field_name] for rs_field_name in rs_output_column_names[1:] ] ), sep='\t', file=RS_OUT )
+
 # Print list of select entities by type with study/program affiliations for inter-DC cross-mapping.
 
 with open( entity_ids_projects_and_types, 'w' ) as ENTITIES_BY_STUDY:
@@ -492,7 +578,13 @@ with open( entity_ids_projects_and_types, 'w' ) as ENTITIES_BY_STUDY:
                 
                 study_uuid = study_name_to_study_uuid[study_name]
 
-                program_acronym = program[study_program[study_uuid]]['program_acronym']
+                # If there is no program (a new possibility as of March 2025), default to a blank value.
+
+                program_acronym = ''
+
+                if study_uuid in study_program:
+                    
+                    program_acronym = program[study_program[study_uuid]]['program_acronym']
 
                 phs_accession = study[study_uuid]['phs_accession']
 

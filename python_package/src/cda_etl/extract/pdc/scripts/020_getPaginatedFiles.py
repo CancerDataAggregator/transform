@@ -42,7 +42,7 @@ scalar_file_fields = (
 
 api_query_json = {
     'query': '''    {
-        getPaginatedFiles( offset: 0, limit: 150000, acceptDUA: true ) {
+        getPaginatedFiles( offset: 0, limit: 1000000, acceptDUA: true ) {
             files {
                 ''' + '\n                '.join(scalar_file_fields) + '''
                 studies {

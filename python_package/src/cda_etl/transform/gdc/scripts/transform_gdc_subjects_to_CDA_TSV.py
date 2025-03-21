@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 
+import re
 import sys
 
 from os import makedirs, path
 
-from cda_etl.lib import map_columns_one_to_one, map_columns_one_to_many
+from cda_etl.lib import get_universal_value_deletion_patterns, map_columns_one_to_one, map_columns_one_to_many
 
 # ASSUMPTION: GDC entity uuids will never be duplicated across entity types. So e.g. a sample
 # with sample_id=X will never clash with some aliquot whose aliquot_id is also X.
@@ -166,6 +167,12 @@ diagnosis_has_treatment = dict()
 
 researchsubject_has_diagnosis = dict()
 diagnosis_of_researchsubject = dict()
+
+# Enumerate (case-insensitive, space-collapsed) values (as regular expressions) that
+# should be deleted wherever they are found in search metadata, to guide value
+# replacement decisions in the event of clashes.
+
+delete_everywhere = get_universal_value_deletion_patterns()
 
 # EXECUTION
 
@@ -346,7 +353,37 @@ with open( specimen_tsvs['sample'] ) as IN:
 
             specimen[sample_cda_id]['primary_disease_type'] = researchsubject[rs_id]['primary_diagnosis_condition']
             specimen[sample_cda_id]['anatomical_site'] = record['biospecimen_anatomic_site'] if record['biospecimen_anatomic_site'] != '' else None
-            specimen[sample_cda_id]['source_material_type'] = record['tissue_type'] if record['tissue_type'] != '' else None
+
+            tissue_type_value = record['tissue_type']
+            sample_type_value = record['sample_type']
+
+            source_material_type_value = ''
+
+            if tissue_type_value.strip().lower() in { '', 'peritumoral' } or re.sub( r'\s', r'', tissue_type_value.strip().lower() ) in delete_everywhere:
+                
+                # sample.tissue_type, our usual default, is unusable. Can we infer something from sample.sample_type?
+
+                if sample_type_value.strip().lower() in { 'normal adjacent tissue', 'primary tumor', 'solid tissue normal', 'tumor' }:
+                    
+                    source_material_type_value = sample_type_value
+
+                else:
+                    
+                    # We couldn't use sample_type; preserve the (unhelpful) tissue_type value for this (unharmonized) data pass.
+
+                    source_material_type_value = tissue_type_value
+
+            else:
+                
+                # sample.tissue_type exists and is not (equivalent to) null.
+                # 
+                # Right now (2025-03-18) extant values are { 'Tumor', 'Normal', 'Abnormal' }, all of which
+                # are handled in the harmonization layer. Any unexpected values will be passed through
+                # unmodified, to be detected by that downstream harmonization machinery.
+
+                source_material_type_value = tissue_type_value
+
+            specimen[sample_cda_id]['source_material_type'] = source_material_type_value
             specimen[sample_cda_id]['specimen_type'] = 'sample'
             specimen[sample_cda_id]['derived_from_specimen'] = 'initial specimen'
             specimen[sample_cda_id]['derived_from_subject'] = researchsubject_in_subject[rs_id]

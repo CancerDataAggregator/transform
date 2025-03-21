@@ -411,10 +411,10 @@ with open( case_input_tsv ) as CASE_IN, open( researchsubject_output_tsv, 'w' ) 
                         
                         sys.exit(f"FATAL: Sample {sample_id} not affiliated with any study; aborting.\n")
 
+                    sample_cda_id = f"{rs_id}.sample.{sample_submitter_id[sample_id]}"
+
                     if study_id in sample_study[sample_id]:
                         
-                        sample_cda_id = f"{rs_id}.sample.{sample_submitter_id[sample_id]}"
-
                         print( *[ rs_id, sample_cda_id ], sep='\t', end='\n', file=RS_SPECIMEN )
 
                         if sample_id not in sample_records:
@@ -432,7 +432,38 @@ with open( case_input_tsv ) as CASE_IN, open( researchsubject_output_tsv, 'w' ) 
 
                             sample_records[sample_id]['primary_disease_type'] = input_case_record['disease_type']
                             sample_records[sample_id]['anatomical_site'] = sample[sample_id]['biospecimen_anatomic_site']
-                            sample_records[sample_id]['source_material_type'] = sample[sample_id]['tissue_type']
+
+                            tissue_type_value = sample[sample_id]['tissue_type']
+                            sample_type_value = sample[sample_id]['sample_type']
+
+                            source_material_type_value = ''
+
+                            if tissue_type_value.strip().lower() in { '', 'peritumoral' } or re.sub( r'\s', r'', tissue_type_value.strip().lower() ) in delete_everywhere:
+                                
+                                # sample.tissue_type, our usual default, is unusable. Can we infer something from sample.sample_type?
+
+                                if sample_type_value.strip().lower() in { 'normal adjacent tissue', 'primary tumor', 'solid tissue normal', 'tumor' }:
+                                    
+                                    source_material_type_value = sample_type_value
+
+                                else:
+                                    
+                                    # We couldn't use sample_type; preserve the (unhelpful) tissue_type value for this (unharmonized) data pass.
+
+                                    source_material_type_value = tissue_type_value
+
+                            else:
+                                
+                                # sample.tissue_type exists and is not (equivalent to) null.
+                                # 
+                                # Right now (2025-03-18) extant values are { 'Tumor', 'Normal', 'Abnormal' }, all of which
+                                # are handled in the harmonization layer. Any unexpected values will be passed through
+                                # unmodified, to be detected by that downstream harmonization machinery.
+
+                                source_material_type_value = tissue_type_value
+
+                            sample_records[sample_id]['source_material_type'] = source_material_type_value
+
                             sample_records[sample_id]['specimen_type'] = 'sample'
                             sample_records[sample_id]['derived_from_specimen'] = 'initial specimen'
                             sample_records[sample_id]['derived_from_subject'] = subject_id
@@ -466,7 +497,38 @@ with open( case_input_tsv ) as CASE_IN, open( researchsubject_output_tsv, 'w' ) 
                                     aliquot_records[aliquot_id]['days_to_collection'] = ''
                                     aliquot_records[aliquot_id]['primary_disease_type'] = input_case_record['disease_type']
                                     aliquot_records[aliquot_id]['anatomical_site'] = ''
-                                    aliquot_records[aliquot_id]['source_material_type'] = ''
+
+                                    tissue_type_value = sample[sample_id]['tissue_type']
+                                    sample_type_value = sample[sample_id]['sample_type']
+
+                                    source_material_type_value = ''
+
+                                    if tissue_type_value.strip().lower() in { '', 'peritumoral' } or re.sub( r'\s', r'', tissue_type_value.strip().lower() ) in delete_everywhere:
+                                        
+                                        # sample.tissue_type, our usual default, is unusable. Can we infer something from sample.sample_type?
+
+                                        if sample_type_value.strip().lower() in { 'normal adjacent tissue', 'primary tumor', 'solid tissue normal', 'tumor' }:
+                                            
+                                            source_material_type_value = sample_type_value
+
+                                        else:
+                                            
+                                            # We couldn't use sample_type; preserve the (unhelpful) tissue_type value for this (unharmonized) data pass.
+
+                                            source_material_type_value = tissue_type_value
+
+                                    else:
+                                        
+                                        # sample.tissue_type exists and is not (equivalent to) null.
+                                        # 
+                                        # Right now (2025-03-18) extant values are { 'Tumor', 'Normal', 'Abnormal' }, all of which
+                                        # are handled in the harmonization layer. Any unexpected values will be passed through
+                                        # unmodified, to be detected by that downstream harmonization machinery.
+
+                                        source_material_type_value = tissue_type_value
+
+                                    aliquot_records[aliquot_id]['source_material_type'] = source_material_type_value
+
                                     aliquot_records[aliquot_id]['specimen_type'] = 'aliquot'
                                     aliquot_records[aliquot_id]['derived_from_specimen'] = sample_cda_id
                                     aliquot_records[aliquot_id]['derived_from_subject'] = subject_id
