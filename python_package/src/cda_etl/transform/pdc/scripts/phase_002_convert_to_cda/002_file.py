@@ -1,10 +1,11 @@
 #!/usr/bin/env python3 -u
 
+import re
 import sys
 
 from os import makedirs, path
 
-from cda_etl.lib import get_cda_project_ancestors, get_current_timestamp, load_tsv_as_dict, map_columns_one_to_one, map_columns_one_to_many
+from cda_etl.lib import get_cda_project_ancestors, get_current_timestamp, get_universal_value_deletion_patterns, load_tsv_as_dict, map_columns_one_to_one, map_columns_one_to_many
 
 # PARAMETERS
 
@@ -69,6 +70,12 @@ upstream_identifiers_fields = [
 ]
 
 debug = False
+
+# Enumerate (case-insensitive, space-collapsed) values (as regular expressions) that
+# should be deleted wherever they are found in search metadata, to guide value
+# replacement decisions in the event of clashes.
+
+delete_everywhere = get_universal_value_deletion_patterns()
 
 # EXECUTION
 
@@ -260,13 +267,45 @@ for file_id in file_describes_aliquot:
 
             file_anatomic_site[file_id].add( sample[ancestor_sample_id]['biospecimen_anatomic_site'] )
 
-        if sample[ancestor_sample_id]['tissue_type'] != '':
+        # Can we determine tumor/normal information for this sample?
+
+        tumor_normal_value = ''
+
+        tissue_type_value = sample[ancestor_sample_id]['tissue_type']
+
+        sample_type_value = sample[ancestor_sample_id]['sample_type']
+
+        if tissue_type_value == '' or tissue_type_value.strip().lower() == 'peritumoral' or re.sub( r'\s', r'', tissue_type_value.strip().lower() ) in delete_everywhere:
+            
+            # sample.tissue_type, our usual default, is unusable. Can we infer something from sample.sample_type?
+
+            if sample_type_value.strip().lower() in { 'normal adjacent tissue', 'primary tumor', 'solid tissue normal', 'tumor' }:
+                
+                tumor_normal_value = sample_type_value
+
+            else:
+                
+                # We couldn't use sample_type; preserve the (unhelpful) tissue_type value for this (unharmonized) data pass.
+
+                tumor_normal_value = tissue_type_value
+
+        else:
+            
+            # sample.tissue_type exists and is not (equivalent to) null.
+            # 
+            # Right now (2025-03-18) extant values are { 'Tumor', 'Normal', 'Abnormal' }, all of which
+            # are handled in the harmonization layer. Any unexpected values will be passed through
+            # unmodified, to be detected by that downstream harmonization machinery.
+
+            tumor_normal_value = tissue_type_value
+
+        if tumor_normal_value != '':
             
             if file_id not in file_tumor_vs_normal:
                 
                 file_tumor_vs_normal[file_id] = set()
 
-            file_tumor_vs_normal[file_id].add( sample[ancestor_sample_id]['tissue_type'] )
+            file_tumor_vs_normal[file_id].add( tumor_normal_value )
 
 if debug and len( warning_files ) > 0:
     

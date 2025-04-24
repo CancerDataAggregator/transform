@@ -39,6 +39,7 @@ safe_stoppers = {
     'fq',
     'fasta',
     'fa',
+    'gct',
     'gvcf',
     'hic',
     'html',

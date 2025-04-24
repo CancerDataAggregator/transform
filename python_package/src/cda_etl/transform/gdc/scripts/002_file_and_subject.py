@@ -656,13 +656,45 @@ for file_id in file_associated_with_entity:
 
                     file_anatomic_site[index_file_id].add( sample[ancestor_sample_id]['biospecimen_anatomic_site'] )
 
-        if sample[ancestor_sample_id]['tissue_type'] != '':
+        # Can we determine tumor/normal information for this sample?
+
+        tumor_normal_value = ''
+
+        tissue_type_value = sample[ancestor_sample_id]['tissue_type']
+
+        sample_type_value = sample[ancestor_sample_id]['sample_type']
+
+        if tissue_type_value == '' or tissue_type_value.strip().lower() == 'peritumoral' or re.sub( r'\s', r'', tissue_type_value.strip().lower() ) in delete_everywhere:
+            
+            # sample.tissue_type, our usual default, is unusable. Can we infer something from sample.sample_type?
+
+            if sample_type_value.strip().lower() in { 'normal adjacent tissue', 'primary tumor', 'solid tissue normal', 'tumor' }:
+                
+                tumor_normal_value = sample_type_value
+
+            else:
+                
+                # We couldn't use sample_type; preserve the (unhelpful) tissue_type value for this (unharmonized) data pass.
+
+                tumor_normal_value = tissue_type_value
+
+        else:
+            
+            # sample.tissue_type exists and is not (equivalent to) null.
+            # 
+            # Right now (2025-03-18) extant values are { 'Tumor', 'Normal', 'Abnormal' }, all of which
+            # are handled in the harmonization layer. Any unexpected values will be passed through
+            # unmodified, to be detected by that downstream harmonization machinery.
+
+            tumor_normal_value = tissue_type_value
+
+        if tumor_normal_value != '':
             
             if file_id not in file_tumor_vs_normal:
                 
                 file_tumor_vs_normal[file_id] = set()
 
-            file_tumor_vs_normal[file_id].add( sample[ancestor_sample_id]['tissue_type'] )
+            file_tumor_vs_normal[file_id].add( tumor_normal_value )
 
             if file_id in file_has_index_file:
                 
@@ -672,7 +704,7 @@ for file_id in file_associated_with_entity:
                         
                         file_tumor_vs_normal[index_file_id] = set()
 
-                    file_tumor_vs_normal[index_file_id].add( sample[ancestor_sample_id]['tissue_type'] )
+                    file_tumor_vs_normal[index_file_id].add( tumor_normal_value )
 
 if debug and len( warning_files ) > 0:
     

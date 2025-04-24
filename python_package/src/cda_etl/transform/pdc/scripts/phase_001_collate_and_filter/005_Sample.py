@@ -11,7 +11,7 @@ from cda_etl.lib import map_columns_one_to_one, map_columns_one_to_many
 
 input_root = 'extracted_data/pdc'
 
-input_dir = path.join( input_root, 'Case' )
+input_dir = path.join( input_root, 'CasesSamplesAliquots' )
 
 sample_input_tsv = path.join( input_dir, 'Sample.tsv' )
 

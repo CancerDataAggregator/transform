@@ -227,11 +227,11 @@ for file_basename in sorted( listdir( cda_tsv_dir ) ):
                     
                     new_value = ''
 
-                    if old_value is not None and old_value.lower() in harmonized_value[table][column] and harmonized_value[table][column][old_value.lower()] != 'null':
+                    if old_value is not None and old_value.strip().lower() in harmonized_value[table][column] and harmonized_value[table][column][old_value.strip().lower()] != 'null':
                         
-                        new_value = harmonized_value[table][column][old_value.lower()]
+                        new_value = harmonized_value[table][column][old_value.strip().lower()]
 
-                    elif old_value is not None and old_value.lower() not in harmonized_value[table][column]:
+                    elif old_value is not None and old_value.strip().lower() not in harmonized_value[table][column]:
                         
                         # Preserve values we haven't seen or mapped yet.
 

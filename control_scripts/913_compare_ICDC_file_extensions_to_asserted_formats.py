@@ -35,6 +35,7 @@ safe_stoppers = {
     'rtf',
     'tbi',
     'tif',
+    'tsv',
     'vcf',
     'xls',
     'xlsx'
@@ -46,7 +47,6 @@ safe_stoppers = {
     'cns',
     'crai',
     'cram',
-    'csv',
     'dict',
     'fq',
     'fasta',
@@ -63,7 +63,6 @@ safe_stoppers = {
     'nii',
     'ome',
     'out',
-    'pdf',
     'ped',
     'png',
     'rds',
@@ -75,11 +74,7 @@ safe_stoppers = {
     'tab',
     'table',
     'tar',
-    'tbi',
-    'tsv',
     'txt',
-    'vcf',
-    'xlsx'
 '''
 
 for file_name in file_table_column_map:

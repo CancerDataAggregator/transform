@@ -5,20 +5,17 @@ chmod 755 package_root/transform/idc/scripts/phase_002_convert_to_cda/*.py ./pac
 echo ./package_root/transform/idc/scripts/phase_002_convert_to_cda/001_program_and_collection.py
 ./package_root/transform/idc/scripts/phase_002_convert_to_cda/001_program_and_collection.py
 
-echo ./package_root/transform/idc/scripts/phase_002_convert_to_cda/002_dicom_series_instance.py 
-./package_root/transform/idc/scripts/phase_002_convert_to_cda/002_dicom_series_instance.py
+echo ./package_root/transform/idc/scripts/phase_002_convert_to_cda/002_file.py
+./package_root/transform/idc/scripts/phase_002_convert_to_cda/002_file.py
 
-echo ./package_root/transform/idc/scripts/phase_002_convert_to_cda/003_dicom_series.py
-./package_root/transform/idc/scripts/phase_002_convert_to_cda/003_dicom_series.py
+echo ./package_root/transform/idc/scripts/phase_002_convert_to_cda/003_subject.py
+./package_root/transform/idc/scripts/phase_002_convert_to_cda/003_subject.py
 
-echo ./package_root/transform/idc/scripts/phase_002_convert_to_cda/004_subject.py
-./package_root/transform/idc/scripts/phase_002_convert_to_cda/004_subject.py
+echo ./package_root/transform/idc/scripts/phase_002_convert_to_cda/004_file_describes_subject.py
+./package_root/transform/idc/scripts/phase_002_convert_to_cda/004_file_describes_subject.py
 
-echo ./package_root/transform/idc/scripts/phase_002_convert_to_cda/005_dicom_series_describes_subject.py
-./package_root/transform/idc/scripts/phase_002_convert_to_cda/005_dicom_series_describes_subject.py
-
-echo ./package_root/transform/idc/scripts/phase_002_convert_to_cda/006_observation.py
-./package_root/transform/idc/scripts/phase_002_convert_to_cda/006_observation.py
+echo ./package_root/transform/idc/scripts/phase_002_convert_to_cda/005_observation.py
+./package_root/transform/idc/scripts/phase_002_convert_to_cda/005_observation.py
 
 # Harmonize values according to (a) universal 'delete everywhere' maps (nullifying
 # values like 'other' and 'not reported') and (b) anything present

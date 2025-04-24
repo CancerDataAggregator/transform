@@ -27,7 +27,7 @@ case_id_to_follow_up_id_input_tsv = path.join( input_dir, 'Case.follow_ups.tsv' 
 
 case_id_to_treatment_id_input_tsv = path.join( input_dir, 'Case.treatments.tsv' )
 
-case_id_to_sample_id_input_tsv = path.join( input_dir, 'Case.samples.tsv' )
+case_id_to_sample_id_input_tsv = path.join( input_root, 'CasesSamplesAliquots', 'Case.samples.tsv' )
 
 biospecimen_input_tsv = path.join( input_root, 'Biospecimen', 'Biospecimen.tsv' )
 

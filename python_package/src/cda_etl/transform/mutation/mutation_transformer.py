@@ -292,11 +292,11 @@ class mutation_transformer:
 
                                         if column in self.harmonized_value:
                                             
-                                            if old_value is not None and old_value.lower() in self.harmonized_value[column] and self.harmonized_value[column][old_value.lower()] != 'null':
+                                            if old_value is not None and old_value.strip().lower() in self.harmonized_value[column] and self.harmonized_value[column][old_value.strip().lower()] != 'null':
                                                 
-                                                new_value = self.harmonized_value[column][old_value.lower()]
+                                                new_value = self.harmonized_value[column][old_value.strip().lower()]
 
-                                            elif old_value is not None and old_value.lower() not in self.harmonized_value[column]:
+                                            elif old_value is not None and old_value.strip().lower() not in self.harmonized_value[column]:
                                                 
                                                 # Preserve values we haven't seen or mapped yet.
 

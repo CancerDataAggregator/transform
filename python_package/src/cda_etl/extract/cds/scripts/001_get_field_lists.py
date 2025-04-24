@@ -31,6 +31,8 @@ for output_dir in [ field_list_dir ]:
 
 fields = dict()
 
+current_line = 1
+
 with gzip.open( input_file ) as IN:
     
     reader = jsonlines.Reader( IN )
@@ -55,7 +57,7 @@ with gzip.open( input_file ) as IN:
                 
                 prop_type = 'UNKNOWN_TYPE__ALL_VALUES_NULL'
 
-                if props[key] is not None:
+                if props[key] is not None and props[key] != '':
                     
                     if isinstance( props[key], str ):
                         
@@ -81,13 +83,15 @@ with gzip.open( input_file ) as IN:
                         
                         sys.exit( f"NO. {props[key]}" )
 
-                if key not in fields[record_type] or fields[record_type][key] == 'UNKNOWN_TYPE__ALL_VALUES_NULL':
-                    
-                    fields[record_type][key] = prop_type
+                    if key not in fields[record_type] or fields[record_type][key] == 'UNKNOWN_TYPE__ALL_VALUES_NULL':
+                        
+                        fields[record_type][key] = prop_type
 
-                elif fields[record_type][key] != prop_type:
-                    
-                    sys.exit( f"NOOOO. {fields[record_type][key]} != {prop_type}" )
+                    elif fields[record_type][key] != prop_type:
+                        
+                        sys.exit( f"[line {current_line}]: Eek! [record_type={record_type}; key={key}] ( fields[record_type][key] == {fields[record_type][key]} ) != ( prop_type == {prop_type} )" )
+
+        current_line = current_line + 1
 
 with open( output_file, 'w' ) as OUT:
     

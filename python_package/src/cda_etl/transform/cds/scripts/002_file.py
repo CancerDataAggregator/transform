@@ -351,13 +351,55 @@ for file_uuid in file_describes_sample:
 
             file_anatomic_site[file_id].add( sample[sample_uuid]['sample_anatomic_site'] )
 
-        if sample[sample_uuid]['sample_tumor_status'] != '':
+        # Can we determine tumor/normal information for this sample?
+
+        tumor_normal_value = ''
+
+        sample_tumor_status_value = sample[sample_uuid]['sample_tumor_status']
+
+        sample_description_value = sample[sample_uuid]['sample_description']
+
+        sample_type_value = sample[sample_uuid]['sample_type']
+
+        if sample_tumor_status_value == '' or re.sub( r'\s', r'', sample_tumor_status_value.strip().lower() ) in delete_everywhere:
+            
+            # sample.sample_tumor_status, our usual default, is unusable. Can we infer something from sample.sample_description?
+
+            if sample_description_value.strip().lower() in { 'normal_ffpe', 'primary_tumor' }:
+                
+                tumor_normal_value = sample_description_value
+
+            elif sample_type_value.strip().lower() in { 'blood derived normal', 'buccal cell normal', 'primary tumor', 'solid tissue normal', 'tumor' }:
+                
+                # How about sample.sample_type?
+
+                tumor_normal_value = sample_type_value
+
+            else:
+                
+                # We couldn't use the auxiliary fields; preserve the (unhelpful) sample_tumor_status value for this (unharmonized) data pass.
+
+                tumor_normal_value = sample_tumor_status_value
+
+        else:
+
+            # sample.sample_tumor_status exists and is not (equivalent to) null.
+            # 
+            # Right now (2025-03-18) extant values are { 'Tumor', 'Normal' }, both of which
+            # are handled in the harmonization layer. Any unexpected values will be passed through
+            # unmodified, to be detected by that downstream harmonization machinery.
+
+            tumor_normal_value = sample_tumor_status_value
+
+        # If we got anything other than an empty string, save it.
+
+        if tumor_normal_value != '':
             
             if file_id not in file_tumor_vs_normal:
                 
                 file_tumor_vs_normal[file_id] = set()
 
-            file_tumor_vs_normal[file_id].add( sample[sample_uuid]['sample_tumor_status'] )
+            file_tumor_vs_normal[file_id].add( tumor_normal_value )
 
 print( 'done.', file=sys.stderr )
 

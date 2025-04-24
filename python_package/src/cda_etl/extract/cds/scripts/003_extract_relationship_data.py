@@ -28,6 +28,13 @@ for target_dir in [ output_dir ]:
 
 relationship_table_name = {
     
+    'associated_with' : {
+        
+        'file' : {
+            
+            'file' : 'file_associated_with_file'
+        }
+    },
     'from_sample' : {
         
         'file' : {
@@ -44,6 +51,17 @@ relationship_table_name = {
         'image' : {
             
             'file' : 'image_of_file'
+        },
+        'proteomic' : {
+            
+            'file' : 'proteomic_of_file'
+        }
+    },
+    'of_image' : {
+        
+        'MultiplexMicroscopy' : {
+            
+            'image': 'MultiplexMicroscopy_of_image'
         }
     },
     'of_participant' : {
@@ -59,6 +77,10 @@ relationship_table_name = {
         'sample' : {
             
             'participant' : 'sample_from_participant'
+        },
+        'treatment' : {
+            
+            'participant' : 'treatment_of_participant'
         }
     },
     'of_program' : {

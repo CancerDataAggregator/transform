@@ -208,13 +208,17 @@ for participant_uuid in participant:
 
     for study_uuid in participant_study[participant_uuid]:
         
-        # This is meant to break obnoxiously if it generates a key errror.
+        # Sometimes studies aren't in programs, as of March 2025. Default to using the study ID as the max aggregation space; update if a parent program is detected.
 
-        program_uuid = study_program[study_uuid]
+        new_cda_subject_id = f"STUDY_{study_uuid}.{participant[participant_uuid]['participant_id']}"
 
-        # This too.
+        if study_uuid in study_program:
+            
+            program_uuid = study_program[study_uuid]
 
-        new_cda_subject_id = f"{program_acronym[cda_project_id[program_uuid]]}.{participant[participant_uuid]['participant_id']}"
+            # It is assumed (safely - March 2025) that all programs have non-null program_acronym values. This is meant to break with a KeyError if that assumption is ever violated.
+
+            new_cda_subject_id = f"{program_acronym[cda_project_id[program_uuid]]}.{participant[participant_uuid]['participant_id']}"
 
         if participant_uuid in cda_subject_id and cda_subject_id[participant_uuid] != new_cda_subject_id:
             
