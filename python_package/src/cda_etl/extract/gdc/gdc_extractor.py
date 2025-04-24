@@ -278,9 +278,43 @@ class GDC_extractor:
 
         else:
             
-            sys.stderr.write(str(result.content))
-            
-            sys.exit( f"FATAL: API call failed. Aborting.")
+            # Try twice more.
+
+            print( f"WARNING: call to API /{self.endpoint_url} endpoint with parameters {parameters} failed. Response content: " + str(json_result.content), file=sys.stderr )
+            print( 'Retrying after 15s (attempt 1 of 2)...', file=sys.stderr )
+
+            # Give the API a moment.
+
+            time.sleep( 15 )
+
+            result = requests.get( self.endpoint_url, params=parameters )
+
+            if result.ok:
+                
+                return result
+
+            else:
+                
+                # Try once more.
+
+                print( f"WARNING: call to API /{self.endpoint_url} endpoint with parameters {parameters} failed. Response content: " + str(json_result.content), file=sys.stderr )
+                print( 'Retrying after 60s (attempt 2 of 2)...', file=sys.stderr )
+
+                # Give the API a longer moment.
+
+                time.sleep( 60 )
+
+                result = requests.get( self.endpoint_url, params=parameters )
+
+                if result.ok:
+                    
+                    return result
+
+                else:
+                    
+                    # Give up.
+
+                    sys.exit( f"FATAL: call to API /{self.endpoint_url} endpoint with parameters {parameters} failed. Response content: " + str(json_result.content) )
 
     def __partition_field_list_into_chunks( self ):
         
@@ -417,6 +451,10 @@ class GDC_extractor:
                 yield result
 
             record_offset += page_size
+
+            ## Give the API a bit of a rest. It's been more fragile this year (April 2025).
+            #
+            #time.sleep( 10 )
 
     def get_endpoint_records( self ):
         
