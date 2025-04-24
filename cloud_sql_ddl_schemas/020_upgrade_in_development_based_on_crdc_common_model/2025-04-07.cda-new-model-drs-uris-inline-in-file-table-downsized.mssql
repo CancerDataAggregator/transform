@@ -1,0 +1,2727 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 14.17
+-- Dumped by pg_dump version 15.2
+
+-- Started on 2025-04-07 13:16:42 EDT
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 5 (class 2615 OID 2200)
+-- Name: public; Type: SCHEMA; Schema: -; Owner: -
+--
+
+CREATE SCHEMA public;
+
+
+--
+-- TOC entry 4192 (class 0 OID 0)
+-- Dependencies: 5
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON SCHEMA public IS 'standard public schema';
+
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 209 (class 1259 OID 16538)
+-- Name: column_metadata; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.column_metadata (
+    cda_table text NOT NULL,
+    cda_column text NOT NULL,
+    column_type text NOT NULL,
+    summary_display boolean NOT NULL,
+    fetch_rows_returns boolean NOT NULL,
+    process_before_display text,
+    virtual_table text
+);
+
+
+--
+-- TOC entry 4193 (class 0 OID 0)
+-- Dependencies: 209
+-- Name: TABLE column_metadata; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.column_metadata IS 'Information from this table is used by CDA service code (API endpoints, cdapython, GUI) to facilitate presentation and exploration of different kinds of data in type-appropriate ways: summarizing order statistics like median and range for numeric data; presenting toggle-able filter selectors for categorical data; etc.';
+
+
+--
+-- TOC entry 210 (class 1259 OID 16543)
+-- Name: file; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.file (
+    id text NOT NULL,
+    id_alias bigint NOT NULL,
+    crdc_id text,
+    name text,
+    description text,
+    drs_uri text,
+    access text,
+    size bigint,
+    format text,
+    type text,
+    category text,
+    data_at_cds boolean NOT NULL,
+    data_at_gdc boolean NOT NULL,
+    data_at_icdc boolean NOT NULL,
+    data_at_idc boolean NOT NULL,
+    data_at_pdc boolean NOT NULL,
+    data_source_count integer NOT NULL
+);
+
+
+--
+-- TOC entry 4194 (class 0 OID 0)
+-- Dependencies: 210
+-- Name: TABLE file; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.file IS 'One row in the file table describes one digital object for which a specific DRS URI has been created by CRDC, or one DICOM series.';
+
+
+--
+-- TOC entry 4195 (class 0 OID 0)
+-- Dependencies: 210
+-- Name: COLUMN file.id; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.file.id IS 'A unique identifier for this file minted by CDA. May change release-to-release. Contains no semantically reliable content with one exception: in the case of a DICOM series from IDC, this field will contain the crdc_series_uuid assigned by IDC to that DICOM series. Note that this crdc_series_uuid may change from one IDC release version to the next, according to IDC''s data processing and identification rules.';
+
+
+--
+-- TOC entry 4196 (class 0 OID 0)
+-- Dependencies: 210
+-- Name: COLUMN file.crdc_id; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.file.crdc_id IS 'A planned identifier issued and managed by CRDC.';
+
+
+--
+-- TOC entry 4197 (class 0 OID 0)
+-- Dependencies: 210
+-- Name: COLUMN file.name; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.file.name IS 'File name or label (may optionally include local path prefix; this will not generally be a URI). In the case of DICOM series from IDC, this will be null.';
+
+
+--
+-- TOC entry 4198 (class 0 OID 0)
+-- Dependencies: 210
+-- Name: COLUMN file.description; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.file.description IS 'Optional text describing this file.';
+
+
+--
+-- TOC entry 4199 (class 0 OID 0)
+-- Dependencies: 210
+-- Name: COLUMN file.drs_uri; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.file.drs_uri IS 'A resolvable DRS URI minted for this file and maintained by DCF; prefix is "drs://dg.4dfc:". In the case of a DICOM series from IDC, this will be a comma-separated list of all DICOM-instance-level DRS URIs belonging to that series.';
+
+
+--
+-- TOC entry 4200 (class 0 OID 0)
+-- Dependencies: 210
+-- Name: COLUMN file.access; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.file.access IS 'Denotes controlled vs open access.';
+
+
+--
+-- TOC entry 4201 (class 0 OID 0)
+-- Dependencies: 210
+-- Name: COLUMN file.size; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.file.size IS 'File size in bytes. In the case of a DICOM series from IDC, the value in this field will be the sum of the sizes of all DICOM instances belonging to the series.';
+
+
+--
+-- TOC entry 4202 (class 0 OID 0)
+-- Dependencies: 210
+-- Name: COLUMN file.format; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.file.format IS 'File format (like JPEG, PDF or CSV).';
+
+
+--
+-- TOC entry 4203 (class 0 OID 0)
+-- Dependencies: 210
+-- Name: COLUMN file.type; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.file.type IS 'File data type (like "CT image" or "miRNA expression quantification"). In the case of a DICOM series from IDC, this will be a decoded "SOPClassName" string corresponding to the "SOPClassUID" code assigned to DICOM instances belonging to the series.';
+
+
+--
+-- TOC entry 4204 (class 0 OID 0)
+-- Dependencies: 210
+-- Name: COLUMN file.category; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.file.category IS 'General category of file data. In the case of DICOM series from IDC, this will be decoded from the DICOM Modality code assigned to the series.';
+
+
+--
+-- TOC entry 211 (class 1259 OID 16548)
+-- Name: file_anatomic_site; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.file_anatomic_site (
+    file_alias bigint NOT NULL,
+    anatomic_site text NOT NULL
+);
+
+
+--
+-- TOC entry 212 (class 1259 OID 16553)
+-- Name: file_describes_subject; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.file_describes_subject (
+    file_alias bigint NOT NULL,
+    subject_alias bigint NOT NULL
+);
+
+
+--
+-- TOC entry 213 (class 1259 OID 16556)
+-- Name: file_in_project; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.file_in_project (
+    file_alias bigint NOT NULL,
+    project_alias bigint NOT NULL
+);
+
+
+--
+-- TOC entry 214 (class 1259 OID 16559)
+-- Name: file_tumor_vs_normal; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.file_tumor_vs_normal (
+    file_alias bigint NOT NULL,
+    tumor_vs_normal text NOT NULL
+);
+
+
+--
+-- TOC entry 215 (class 1259 OID 16564)
+-- Name: mutation; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.mutation (
+    id_alias bigint NOT NULL,
+    subject_alias bigint NOT NULL,
+    hugo_symbol text,
+    entrez_gene_id text,
+    hotspot boolean,
+    ncbi_build text,
+    chromosome text,
+    variant_type text,
+    reference_allele text,
+    tumor_seq_allele1 text,
+    tumor_seq_allele2 text,
+    dbsnp_rs text,
+    mutation_status text,
+    transcript_id text,
+    gene text,
+    one_consequence text,
+    hgnc_id text,
+    primary_site text,
+    case_barcode text,
+    case_id text,
+    sample_barcode_tumor text,
+    tumor_submitter_uuid text,
+    sample_barcode_normal text,
+    normal_submitter_uuid text,
+    aliquot_barcode_tumor text,
+    tumor_aliquot_uuid text,
+    aliquot_barcode_normal text,
+    matched_norm_aliquot_uuid text,
+    data_at_cds boolean NOT NULL,
+    data_at_gdc boolean NOT NULL,
+    data_at_icdc boolean NOT NULL,
+    data_at_idc boolean NOT NULL,
+    data_at_pdc boolean NOT NULL,
+    data_source_count integer NOT NULL
+);
+
+
+--
+-- TOC entry 4205 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: TABLE mutation; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.mutation IS 'Each row in the mutation table characterizes one masked somatic mutation (as compared to the hg38 human reference genome) from one tumor from one human subject.';
+
+
+--
+-- TOC entry 4206 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: COLUMN mutation.hugo_symbol; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.mutation.hugo_symbol IS 'Alphanumeric identifier of the gene containing this mutation, assigned by the HUGO Gene Nomenclature Committee (HGNC).';
+
+
+--
+-- TOC entry 4207 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: COLUMN mutation.entrez_gene_id; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.mutation.entrez_gene_id IS 'Identifier of the gene containing this mutation, assigned by the NIH Entrez Molecular Sequence Database System.';
+
+
+--
+-- TOC entry 4208 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: COLUMN mutation.hotspot; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.mutation.hotspot IS 'Is this gene or region more prone to mutations than other genes or regions?';
+
+
+--
+-- TOC entry 4209 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: COLUMN mutation.ncbi_build; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.mutation.ncbi_build IS 'Build name of the human reference genome (maintained by the NIH Genome Reference Consortium) used to contextualize this mutation.';
+
+
+--
+-- TOC entry 4210 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: COLUMN mutation.chromosome; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.mutation.chromosome IS 'Chromosome on which this mutation is located.';
+
+
+--
+-- TOC entry 4211 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: COLUMN mutation.variant_type; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.mutation.variant_type IS 'Type of this mutation: SNP (single-nucleotide polymorphism: mutation is at one isolated nucleotide which differs from the reference genome); DNP, TNP and ONP (di-, tri- and oligonucleotide polymorphisms, indicating two, three, or four-or-more consecutive mutant nucleotides, respectively); INS (insertion of one or more nucleotides not found in reference); DEL (deletion of one or more nucleotides present in reference).';
+
+
+--
+-- TOC entry 4212 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: COLUMN mutation.reference_allele; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.mutation.reference_allele IS 'The forward-strand sequence of the allele at this position in the reference genome.';
+
+
+--
+-- TOC entry 4213 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: COLUMN mutation.tumor_seq_allele1; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.mutation.tumor_seq_allele1 IS 'The sequence of allele 1 at this position in the tumor genome.';
+
+
+--
+-- TOC entry 4214 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: COLUMN mutation.tumor_seq_allele2; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.mutation.tumor_seq_allele2 IS 'The sequence of allele 2 at this position in the tumor genome.';
+
+
+--
+-- TOC entry 4215 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: COLUMN mutation.dbsnp_rs; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.mutation.dbsnp_rs IS 'The reference SNP ID number assigned to this mutation by the NIH Single Nucleotide Polymorphism Database (dbSNP).';
+
+
+--
+-- TOC entry 4216 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: COLUMN mutation.mutation_status; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.mutation.mutation_status IS 'Status of this mutation: somatic or germline.';
+
+
+--
+-- TOC entry 4217 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: COLUMN mutation.transcript_id; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.mutation.transcript_id IS 'Identifier of a transcript or regulatory sequence containing this mutation, assigned by the EBI Ensembl genome database project.';
+
+
+--
+-- TOC entry 4218 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: COLUMN mutation.gene; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.mutation.gene IS 'Identifier of the gene containing this mutation, assigned as an accession by the EBI Ensembl genome database project.';
+
+
+--
+-- TOC entry 4219 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: COLUMN mutation.one_consequence; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.mutation.one_consequence IS 'Transcriptional machinery affected by this mutation, e.g. "stop_gained" or "5_prime_UTR_variant" or "synonymous_variant" or "intron_variant".';
+
+
+--
+-- TOC entry 4220 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: COLUMN mutation.hgnc_id; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.mutation.hgnc_id IS 'The string "HGNC:" followed by the integer identifier of the gene containing this mutation, assigned by the HUGO Gene Nomenclature Committee (HGNC).';
+
+
+--
+-- TOC entry 4221 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: COLUMN mutation.primary_site; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.mutation.primary_site IS 'Anatomical site of the cancer under investigation, classified according to the Uber-anatomy ontology (UBERON).';
+
+
+--
+-- TOC entry 4222 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: COLUMN mutation.case_barcode; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.mutation.case_barcode IS 'An identifier assigned internally by the originating research project to this mutation''s subject.';
+
+
+--
+-- TOC entry 4223 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: COLUMN mutation.case_id; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.mutation.case_id IS 'The UUID of the GDC case record for to this mutation''s subject.';
+
+
+--
+-- TOC entry 4224 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: COLUMN mutation.sample_barcode_tumor; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.mutation.sample_barcode_tumor IS 'An identifier assigned internally by the originating research project to a tumor tissue biopsy sample related to this mutation.';
+
+
+--
+-- TOC entry 4225 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: COLUMN mutation.tumor_submitter_uuid; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.mutation.tumor_submitter_uuid IS 'The UUID of a GDC sample record for a tumor tissue biopsy sample related to this mutation.';
+
+
+--
+-- TOC entry 4226 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: COLUMN mutation.sample_barcode_normal; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.mutation.sample_barcode_normal IS 'An identifier assigned internally by the originating research project to a normal tissue biopsy sample related to this mutation.';
+
+
+--
+-- TOC entry 4227 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: COLUMN mutation.normal_submitter_uuid; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.mutation.normal_submitter_uuid IS 'The UUID of a GDC sample record for a normal tissue biopsy sample related to this mutation.';
+
+
+--
+-- TOC entry 4228 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: COLUMN mutation.aliquot_barcode_tumor; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.mutation.aliquot_barcode_tumor IS 'An identifier assigned internally by the originating research project to an aliquot derived from a tumor tissue biopsy sample related to this mutation.';
+
+
+--
+-- TOC entry 4229 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: COLUMN mutation.tumor_aliquot_uuid; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.mutation.tumor_aliquot_uuid IS 'The UUID of a GDC aliquot record derived from a tumor tissue biopsy sample related to this mutation.';
+
+
+--
+-- TOC entry 4230 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: COLUMN mutation.aliquot_barcode_normal; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.mutation.aliquot_barcode_normal IS 'An identifier assigned internally by the originating research project to an aliquot derived from a normal tissue biopsy sample related to this mutation.';
+
+
+--
+-- TOC entry 4231 (class 0 OID 0)
+-- Dependencies: 215
+-- Name: COLUMN mutation.matched_norm_aliquot_uuid; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.mutation.matched_norm_aliquot_uuid IS 'The UUID of a GDC aliquot record derived from a normal tissue biopsy sample related to this mutation.';
+
+
+--
+-- TOC entry 216 (class 1259 OID 16569)
+-- Name: observation; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.observation (
+    id_alias bigint NOT NULL,
+    subject_alias bigint NOT NULL,
+    vital_status text,
+    sex text,
+    year_of_observation integer,
+    diagnosis text,
+    morphology text,
+    grade text,
+    stage text,
+    observed_anatomic_site text,
+    resection_anatomic_site text,
+    data_at_cds boolean NOT NULL,
+    data_at_gdc boolean NOT NULL,
+    data_at_icdc boolean NOT NULL,
+    data_at_idc boolean NOT NULL,
+    data_at_pdc boolean NOT NULL,
+    data_source_count integer NOT NULL
+);
+
+
+--
+-- TOC entry 4232 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: TABLE observation; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.observation IS 'One row in the observation table describes an interrelated set of measurements made about a subject at a specific time, although the time itself is not always available. The clinical context is not defined, and any one observation may describe diagnosis, treatment, research-specific data and/or general patient care.';
+
+
+--
+-- TOC entry 4233 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: COLUMN observation.vital_status; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.observation.vital_status IS 'Vital status (at present, values are restricted to "alive" or "dead") of the subject.';
+
+
+--
+-- TOC entry 4234 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: COLUMN observation.sex; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.observation.sex IS 'Sex of the subject.';
+
+
+--
+-- TOC entry 4235 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: COLUMN observation.year_of_observation; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.observation.year_of_observation IS 'The year this observation was made. Values may be masked or transformed by upstream data managers to protect personally identifiable information.';
+
+
+--
+-- TOC entry 4236 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: COLUMN observation.diagnosis; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.observation.diagnosis IS 'A disease with which this subject was diagnosed, classified according to the World Health Organization''s ICD-O-3 coding system.';
+
+
+--
+-- TOC entry 4237 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: COLUMN observation.morphology; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.observation.morphology IS 'A clinical characterization for this subject of tumor morphology, classified according to the World Health Organization''s ICD-O-3 coding system.';
+
+
+--
+-- TOC entry 4238 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: COLUMN observation.grade; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.observation.grade IS 'A clinical characterization for this subject of how well-differentiated a tumor is from surrounding tissue.';
+
+
+--
+-- TOC entry 4239 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: COLUMN observation.stage; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.observation.stage IS 'An estimate for this subject of the extent to which a cancer has grown and spread, classified according to the American Joint Committee on Cancer (AJCC)''s Tumor, lymph Node, and Metastasis (TNM) cancer staging system.';
+
+
+--
+-- TOC entry 4240 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: COLUMN observation.observed_anatomic_site; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.observation.observed_anatomic_site IS 'Anatomic site observed, classified according to the Uber-anatomy ontology (UBERON).';
+
+
+--
+-- TOC entry 4241 (class 0 OID 0)
+-- Dependencies: 216
+-- Name: COLUMN observation.resection_anatomic_site; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.observation.resection_anatomic_site IS 'Anatomic site from which material was sampled or removed, classified according to the Uber-anatomy ontology (UBERON).';
+
+
+--
+-- TOC entry 217 (class 1259 OID 16574)
+-- Name: project; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.project (
+    id text NOT NULL,
+    id_alias bigint NOT NULL,
+    crdc_id text,
+    type text NOT NULL,
+    name text NOT NULL,
+    short_name text NOT NULL,
+    data_at_cds boolean NOT NULL,
+    data_at_gdc boolean NOT NULL,
+    data_at_icdc boolean NOT NULL,
+    data_at_idc boolean NOT NULL,
+    data_at_pdc boolean NOT NULL,
+    data_source_count integer NOT NULL
+);
+
+
+--
+-- TOC entry 4242 (class 0 OID 0)
+-- Dependencies: 217
+-- Name: TABLE project; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.project IS 'One row in the project table describes one set files or subjects as delineated by upstream data managers. The word ''project'' as used by CDA doesn''t imply any place in a particular research hierarchy -- it can refer to a CRDC program, project, or study; or to a dataset identified by a dbGaP study accession; or to a collection of DICOM image series at IDC. Related projects can be fully nested one within another, or their contents can partially overlap.';
+
+
+--
+-- TOC entry 4243 (class 0 OID 0)
+-- Dependencies: 217
+-- Name: COLUMN project.id; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.project.id IS 'A unique identifier for this project minted by CDA. May change release-to-release. Contains no semantically reliable content.';
+
+
+--
+-- TOC entry 4244 (class 0 OID 0)
+-- Dependencies: 217
+-- Name: COLUMN project.crdc_id; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.project.crdc_id IS 'A planned identifier issued and managed by CRDC.';
+
+
+--
+-- TOC entry 4245 (class 0 OID 0)
+-- Dependencies: 217
+-- Name: COLUMN project.type; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.project.type IS 'Project type: one of [ ''collection'', ''dbgap_study'', ''program'', ''project'', ''study'' ].';
+
+
+--
+-- TOC entry 4246 (class 0 OID 0)
+-- Dependencies: 217
+-- Name: COLUMN project.name; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.project.name IS 'Full project name.';
+
+
+--
+-- TOC entry 4247 (class 0 OID 0)
+-- Dependencies: 217
+-- Name: COLUMN project.short_name; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.project.short_name IS 'Short project name.';
+
+
+--
+-- TOC entry 218 (class 1259 OID 16579)
+-- Name: project_in_project; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.project_in_project (
+    child_project_alias bigint NOT NULL,
+    parent_project_alias bigint NOT NULL
+);
+
+
+--
+-- TOC entry 219 (class 1259 OID 16582)
+-- Name: release_metadata; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.release_metadata (
+    cda_table text NOT NULL,
+    cda_column text NOT NULL,
+    data_source text NOT NULL,
+    data_source_version text NOT NULL,
+    data_source_extraction_date date NOT NULL,
+    data_source_row_count integer NOT NULL,
+    data_source_unique_value_count integer NOT NULL,
+    data_source_null_count integer NOT NULL
+);
+
+
+--
+-- TOC entry 4248 (class 0 OID 0)
+-- Dependencies: 219
+-- Name: TABLE release_metadata; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.release_metadata IS 'Information from this table is used by the API and cdapython to facilitate summary-style answers to questions from users about CDA data (questions that don''t necessarily involve all the data in each row, as well as questions whose answers require data to be aggregated across multiple rows) in ways more useful than just presenting denormalized clusters of values exactly as they''re stored in the DB.';
+
+
+--
+-- TOC entry 220 (class 1259 OID 16587)
+-- Name: subject; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.subject (
+    id text NOT NULL,
+    id_alias bigint NOT NULL,
+    crdc_id text,
+    species text,
+    year_of_birth integer,
+    year_of_death integer,
+    cause_of_death text,
+    race text,
+    ethnicity text,
+    data_at_cds boolean NOT NULL,
+    data_at_gdc boolean NOT NULL,
+    data_at_icdc boolean NOT NULL,
+    data_at_idc boolean NOT NULL,
+    data_at_pdc boolean NOT NULL,
+    data_source_count integer NOT NULL
+);
+
+
+--
+-- TOC entry 4249 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: TABLE subject; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.subject IS 'One row in the subject table characterizes one individual participating in one or more projects. Each subject is described by a single row, regardless of the number of projects they participated in.';
+
+
+--
+-- TOC entry 4250 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: COLUMN subject.id; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.subject.id IS 'A unique identifier for this subject minted by CDA. May change release-to-release. Contains no semantically reliable content. (Project codes and acronyms appearing as substrings in subject IDs will, when present, accurately indicate a project that the subject participates in, but coverage isn''t complete, level of project varies arbitrarily, and subject-in-project characterization is generally neither complete nor representative.)';
+
+
+--
+-- TOC entry 4251 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: COLUMN subject.crdc_id; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.subject.crdc_id IS 'A planned identifier issued and managed by CRDC.';
+
+
+--
+-- TOC entry 4252 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: COLUMN subject.species; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.subject.species IS 'Binomial (genus-species) or trinomial (genus-species-strain) scientific name of this subject''s species.';
+
+
+--
+-- TOC entry 4253 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: COLUMN subject.year_of_birth; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.subject.year_of_birth IS 'The year this subject was born. Values may be masked or transformed by upstream data managers to protect personally identifiable information.';
+
+
+--
+-- TOC entry 4254 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: COLUMN subject.year_of_death; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.subject.year_of_death IS 'The year this subject died. Values may be masked or transformed by upstream data managers to protect personally identifiable information.';
+
+
+--
+-- TOC entry 4255 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: COLUMN subject.cause_of_death; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.subject.cause_of_death IS 'The clinical cause of this subject''s death.';
+
+
+--
+-- TOC entry 4256 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: COLUMN subject.race; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.subject.race IS 'This subject''s self-identified race.';
+
+
+--
+-- TOC entry 4257 (class 0 OID 0)
+-- Dependencies: 220
+-- Name: COLUMN subject.ethnicity; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.subject.ethnicity IS 'This subject''s self-identified ethnicity.';
+
+
+--
+-- TOC entry 221 (class 1259 OID 16592)
+-- Name: subject_in_project; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.subject_in_project (
+    subject_alias bigint NOT NULL,
+    project_alias bigint NOT NULL
+);
+
+
+--
+-- TOC entry 222 (class 1259 OID 16595)
+-- Name: treatment; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.treatment (
+    id_alias bigint NOT NULL,
+    subject_alias bigint NOT NULL,
+    anatomic_site text,
+    type text,
+    therapeutic_agent text,
+    data_at_cds boolean NOT NULL,
+    data_at_gdc boolean NOT NULL,
+    data_at_icdc boolean NOT NULL,
+    data_at_idc boolean NOT NULL,
+    data_at_pdc boolean NOT NULL,
+    data_source_count integer NOT NULL
+);
+
+
+--
+-- TOC entry 4258 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: TABLE treatment; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.treatment IS 'One row in the treatment table describes a set of interrelated descriptors for a specific medical procedure performed as part of a subject''s clinical care. Each row describes a treatment protocol, so one row does not necessarily correspond to a single visit or time point. Multiple rows referring to the same subject indicate multiple distinct treatments.';
+
+
+--
+-- TOC entry 4259 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: COLUMN treatment.anatomic_site; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.treatment.anatomic_site IS 'Anatomic site targeted by this treatment, classified according to the Uber-anatomy ontology (UBERON).';
+
+
+--
+-- TOC entry 4260 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: COLUMN treatment.type; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.treatment.type IS 'Type of treatment performed.';
+
+
+--
+-- TOC entry 4261 (class 0 OID 0)
+-- Dependencies: 222
+-- Name: COLUMN treatment.therapeutic_agent; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.treatment.therapeutic_agent IS 'A substance (medication) administered as part of this treatment.';
+
+
+--
+-- TOC entry 223 (class 1259 OID 16600)
+-- Name: upstream_identifiers; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.upstream_identifiers (
+    cda_table text NOT NULL,
+    id_alias bigint NOT NULL,
+    data_source text NOT NULL,
+    data_source_id_field_name text NOT NULL,
+    data_source_id_value text NOT NULL
+);
+
+
+--
+-- TOC entry 4262 (class 0 OID 0)
+-- Dependencies: 223
+-- Name: TABLE upstream_identifiers; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON TABLE public.upstream_identifiers IS 'Information in this table is exposed to users as row-attachments to data returned in response to (e.g.) `provenance=True` requests.';
+
+
+--
+-- TOC entry 3855 (class 2606 OID 782522)
+-- Name: file file_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file
+    ADD CONSTRAINT file_pkey PRIMARY KEY (id_alias);
+
+
+--
+-- TOC entry 3907 (class 2606 OID 782524)
+-- Name: mutation mutation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.mutation
+    ADD CONSTRAINT mutation_pkey PRIMARY KEY (id_alias);
+
+
+--
+-- TOC entry 3944 (class 2606 OID 782526)
+-- Name: observation observation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.observation
+    ADD CONSTRAINT observation_pkey PRIMARY KEY (id_alias);
+
+
+--
+-- TOC entry 3968 (class 2606 OID 782528)
+-- Name: project project_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.project
+    ADD CONSTRAINT project_pkey PRIMARY KEY (id_alias);
+
+
+--
+-- TOC entry 4002 (class 2606 OID 782530)
+-- Name: subject subject_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subject
+    ADD CONSTRAINT subject_pkey PRIMARY KEY (id_alias);
+
+
+--
+-- TOC entry 4020 (class 2606 OID 782532)
+-- Name: treatment treatment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.treatment
+    ADD CONSTRAINT treatment_pkey PRIMARY KEY (id_alias);
+
+
+--
+-- TOC entry 3822 (class 1259 OID 782319)
+-- Name: column_metadata_cda_column_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX column_metadata_cda_column_coalesce_upper_index ON public.column_metadata USING btree (COALESCE(upper(cda_column), ''::text));
+
+
+--
+-- TOC entry 3823 (class 1259 OID 782320)
+-- Name: column_metadata_cda_column_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX column_metadata_cda_column_index ON public.column_metadata USING btree (cda_column);
+
+
+--
+-- TOC entry 3824 (class 1259 OID 782321)
+-- Name: column_metadata_cda_table_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX column_metadata_cda_table_coalesce_upper_index ON public.column_metadata USING btree (COALESCE(upper(cda_table), ''::text));
+
+
+--
+-- TOC entry 3825 (class 1259 OID 782322)
+-- Name: column_metadata_cda_table_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX column_metadata_cda_table_index ON public.column_metadata USING btree (cda_table);
+
+
+--
+-- TOC entry 3826 (class 1259 OID 782323)
+-- Name: column_metadata_column_type_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX column_metadata_column_type_coalesce_upper_index ON public.column_metadata USING btree (COALESCE(upper(column_type), ''::text));
+
+
+--
+-- TOC entry 3827 (class 1259 OID 782324)
+-- Name: column_metadata_column_type_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX column_metadata_column_type_index ON public.column_metadata USING btree (column_type);
+
+
+--
+-- TOC entry 3828 (class 1259 OID 782325)
+-- Name: column_metadata_fetch_rows_returns_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX column_metadata_fetch_rows_returns_index ON public.column_metadata USING btree (fetch_rows_returns);
+
+
+--
+-- TOC entry 3829 (class 1259 OID 782326)
+-- Name: column_metadata_process_before_display_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX column_metadata_process_before_display_coalesce_upper_index ON public.column_metadata USING btree (COALESCE(upper(process_before_display), ''::text));
+
+
+--
+-- TOC entry 3830 (class 1259 OID 782327)
+-- Name: column_metadata_process_before_display_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX column_metadata_process_before_display_index ON public.column_metadata USING btree (process_before_display);
+
+
+--
+-- TOC entry 3831 (class 1259 OID 782328)
+-- Name: column_metadata_summary_display_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX column_metadata_summary_display_index ON public.column_metadata USING btree (summary_display);
+
+
+--
+-- TOC entry 3832 (class 1259 OID 782329)
+-- Name: column_metadata_virtual_table_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX column_metadata_virtual_table_coalesce_upper_index ON public.column_metadata USING btree (COALESCE(upper(virtual_table), ''::text));
+
+
+--
+-- TOC entry 3833 (class 1259 OID 782330)
+-- Name: column_metadata_virtual_table_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX column_metadata_virtual_table_index ON public.column_metadata USING btree (virtual_table);
+
+
+--
+-- TOC entry 3834 (class 1259 OID 782331)
+-- Name: file_access_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_access_coalesce_upper_index ON public.file USING btree (COALESCE(upper(access), ''::text));
+
+
+--
+-- TOC entry 3835 (class 1259 OID 782332)
+-- Name: file_access_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_access_index ON public.file USING btree (access);
+
+
+--
+-- TOC entry 3859 (class 1259 OID 782355)
+-- Name: file_anatomic_site_anatomic_site_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_anatomic_site_anatomic_site_coalesce_upper_index ON public.file_anatomic_site USING btree (COALESCE(upper(anatomic_site), ''::text));
+
+
+--
+-- TOC entry 3860 (class 1259 OID 782356)
+-- Name: file_anatomic_site_anatomic_site_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_anatomic_site_anatomic_site_index ON public.file_anatomic_site USING btree (anatomic_site);
+
+
+--
+-- TOC entry 3861 (class 1259 OID 782357)
+-- Name: file_anatomic_site_file_alias_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_anatomic_site_file_alias_index ON public.file_anatomic_site USING btree (file_alias);
+
+
+--
+-- TOC entry 3836 (class 1259 OID 782333)
+-- Name: file_category_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_category_coalesce_upper_index ON public.file USING btree (COALESCE(upper(category), ''::text));
+
+
+--
+-- TOC entry 3837 (class 1259 OID 782334)
+-- Name: file_category_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_category_index ON public.file USING btree (category);
+
+
+--
+-- TOC entry 3838 (class 1259 OID 782335)
+-- Name: file_crdc_id_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_crdc_id_coalesce_upper_index ON public.file USING btree (COALESCE(upper(crdc_id), ''::text));
+
+
+--
+-- TOC entry 3839 (class 1259 OID 782336)
+-- Name: file_crdc_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_crdc_id_index ON public.file USING btree (crdc_id);
+
+
+--
+-- TOC entry 3840 (class 1259 OID 782337)
+-- Name: file_data_at_cds_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_data_at_cds_index ON public.file USING btree (data_at_cds);
+
+
+--
+-- TOC entry 3841 (class 1259 OID 782338)
+-- Name: file_data_at_gdc_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_data_at_gdc_index ON public.file USING btree (data_at_gdc);
+
+
+--
+-- TOC entry 3842 (class 1259 OID 782339)
+-- Name: file_data_at_icdc_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_data_at_icdc_index ON public.file USING btree (data_at_icdc);
+
+
+--
+-- TOC entry 3843 (class 1259 OID 782340)
+-- Name: file_data_at_idc_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_data_at_idc_index ON public.file USING btree (data_at_idc);
+
+
+--
+-- TOC entry 3844 (class 1259 OID 782341)
+-- Name: file_data_at_pdc_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_data_at_pdc_index ON public.file USING btree (data_at_pdc);
+
+
+--
+-- TOC entry 3845 (class 1259 OID 782342)
+-- Name: file_data_source_count_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_data_source_count_index ON public.file USING btree (data_source_count);
+
+
+--
+-- TOC entry 3862 (class 1259 OID 782358)
+-- Name: file_describes_subject_file_alias_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_describes_subject_file_alias_index ON public.file_describes_subject USING btree (file_alias);
+
+
+--
+-- TOC entry 3863 (class 1259 OID 782359)
+-- Name: file_describes_subject_subject_alias_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_describes_subject_subject_alias_index ON public.file_describes_subject USING btree (subject_alias);
+
+
+--
+-- TOC entry 3846 (class 1259 OID 782343)
+-- Name: file_description_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_description_coalesce_upper_index ON public.file USING btree (COALESCE(upper(description), ''::text));
+
+
+--
+-- TOC entry 3847 (class 1259 OID 782345)
+-- Name: file_description_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_description_index ON public.file USING btree (description);
+
+
+--
+-- TOC entry 3848 (class 1259 OID 782346)
+-- Name: file_format_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_format_coalesce_upper_index ON public.file USING btree (COALESCE(upper(format), ''::text));
+
+
+--
+-- TOC entry 3849 (class 1259 OID 782347)
+-- Name: file_format_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_format_index ON public.file USING btree (format);
+
+
+--
+-- TOC entry 3850 (class 1259 OID 782348)
+-- Name: file_id_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_id_coalesce_upper_index ON public.file USING btree (COALESCE(upper(id), ''::text));
+
+
+--
+-- TOC entry 3851 (class 1259 OID 782349)
+-- Name: file_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_id_index ON public.file USING btree (id);
+
+
+--
+-- TOC entry 3864 (class 1259 OID 782360)
+-- Name: file_in_project_file_alias_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_in_project_file_alias_index ON public.file_in_project USING btree (file_alias);
+
+
+--
+-- TOC entry 3865 (class 1259 OID 782361)
+-- Name: file_in_project_project_alias_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_in_project_project_alias_index ON public.file_in_project USING btree (project_alias);
+
+
+--
+-- TOC entry 3852 (class 1259 OID 782350)
+-- Name: file_name_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_name_coalesce_upper_index ON public.file USING btree (COALESCE(upper(name), ''::text));
+
+
+--
+-- TOC entry 3853 (class 1259 OID 782351)
+-- Name: file_name_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_name_index ON public.file USING btree (name);
+
+
+--
+-- TOC entry 3856 (class 1259 OID 782352)
+-- Name: file_size_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_size_index ON public.file USING btree (size);
+
+
+--
+-- TOC entry 3866 (class 1259 OID 782362)
+-- Name: file_tumor_vs_normal_file_alias_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_tumor_vs_normal_file_alias_index ON public.file_tumor_vs_normal USING btree (file_alias);
+
+
+--
+-- TOC entry 3867 (class 1259 OID 782363)
+-- Name: file_tumor_vs_normal_tumor_vs_normal_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_tumor_vs_normal_tumor_vs_normal_coalesce_upper_index ON public.file_tumor_vs_normal USING btree (COALESCE(upper(tumor_vs_normal), ''::text));
+
+
+--
+-- TOC entry 3868 (class 1259 OID 782364)
+-- Name: file_tumor_vs_normal_tumor_vs_normal_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_tumor_vs_normal_tumor_vs_normal_index ON public.file_tumor_vs_normal USING btree (tumor_vs_normal);
+
+
+--
+-- TOC entry 3857 (class 1259 OID 782353)
+-- Name: file_type_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_type_coalesce_upper_index ON public.file USING btree (COALESCE(upper(type), ''::text));
+
+
+--
+-- TOC entry 3858 (class 1259 OID 782354)
+-- Name: file_type_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX file_type_index ON public.file USING btree (type);
+
+
+--
+-- TOC entry 3869 (class 1259 OID 782365)
+-- Name: mutation_aliquot_barcode_normal_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_aliquot_barcode_normal_coalesce_upper_index ON public.mutation USING btree (COALESCE(upper(aliquot_barcode_normal), ''::text));
+
+
+--
+-- TOC entry 3870 (class 1259 OID 782366)
+-- Name: mutation_aliquot_barcode_normal_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_aliquot_barcode_normal_index ON public.mutation USING btree (aliquot_barcode_normal);
+
+
+--
+-- TOC entry 3871 (class 1259 OID 782367)
+-- Name: mutation_aliquot_barcode_tumor_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_aliquot_barcode_tumor_coalesce_upper_index ON public.mutation USING btree (COALESCE(upper(aliquot_barcode_tumor), ''::text));
+
+
+--
+-- TOC entry 3872 (class 1259 OID 782368)
+-- Name: mutation_aliquot_barcode_tumor_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_aliquot_barcode_tumor_index ON public.mutation USING btree (aliquot_barcode_tumor);
+
+
+--
+-- TOC entry 3873 (class 1259 OID 782369)
+-- Name: mutation_case_barcode_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_case_barcode_coalesce_upper_index ON public.mutation USING btree (COALESCE(upper(case_barcode), ''::text));
+
+
+--
+-- TOC entry 3874 (class 1259 OID 782370)
+-- Name: mutation_case_barcode_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_case_barcode_index ON public.mutation USING btree (case_barcode);
+
+
+--
+-- TOC entry 3875 (class 1259 OID 782371)
+-- Name: mutation_case_id_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_case_id_coalesce_upper_index ON public.mutation USING btree (COALESCE(upper(case_id), ''::text));
+
+
+--
+-- TOC entry 3876 (class 1259 OID 782372)
+-- Name: mutation_case_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_case_id_index ON public.mutation USING btree (case_id);
+
+
+--
+-- TOC entry 3877 (class 1259 OID 782373)
+-- Name: mutation_chromosome_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_chromosome_coalesce_upper_index ON public.mutation USING btree (COALESCE(upper(chromosome), ''::text));
+
+
+--
+-- TOC entry 3878 (class 1259 OID 782374)
+-- Name: mutation_chromosome_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_chromosome_index ON public.mutation USING btree (chromosome);
+
+
+--
+-- TOC entry 3879 (class 1259 OID 782375)
+-- Name: mutation_data_at_cds_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_data_at_cds_index ON public.mutation USING btree (data_at_cds);
+
+
+--
+-- TOC entry 3880 (class 1259 OID 782376)
+-- Name: mutation_data_at_gdc_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_data_at_gdc_index ON public.mutation USING btree (data_at_gdc);
+
+
+--
+-- TOC entry 3881 (class 1259 OID 782377)
+-- Name: mutation_data_at_icdc_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_data_at_icdc_index ON public.mutation USING btree (data_at_icdc);
+
+
+--
+-- TOC entry 3882 (class 1259 OID 782378)
+-- Name: mutation_data_at_idc_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_data_at_idc_index ON public.mutation USING btree (data_at_idc);
+
+
+--
+-- TOC entry 3883 (class 1259 OID 782379)
+-- Name: mutation_data_at_pdc_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_data_at_pdc_index ON public.mutation USING btree (data_at_pdc);
+
+
+--
+-- TOC entry 3884 (class 1259 OID 782380)
+-- Name: mutation_data_source_count_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_data_source_count_index ON public.mutation USING btree (data_source_count);
+
+
+--
+-- TOC entry 3885 (class 1259 OID 782381)
+-- Name: mutation_dbsnp_rs_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_dbsnp_rs_coalesce_upper_index ON public.mutation USING btree (COALESCE(upper(dbsnp_rs), ''::text));
+
+
+--
+-- TOC entry 3886 (class 1259 OID 782382)
+-- Name: mutation_dbsnp_rs_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_dbsnp_rs_index ON public.mutation USING btree (dbsnp_rs);
+
+
+--
+-- TOC entry 3887 (class 1259 OID 782383)
+-- Name: mutation_entrez_gene_id_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_entrez_gene_id_coalesce_upper_index ON public.mutation USING btree (COALESCE(upper(entrez_gene_id), ''::text));
+
+
+--
+-- TOC entry 3888 (class 1259 OID 782384)
+-- Name: mutation_entrez_gene_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_entrez_gene_id_index ON public.mutation USING btree (entrez_gene_id);
+
+
+--
+-- TOC entry 3889 (class 1259 OID 782385)
+-- Name: mutation_gene_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_gene_coalesce_upper_index ON public.mutation USING btree (COALESCE(upper(gene), ''::text));
+
+
+--
+-- TOC entry 3890 (class 1259 OID 782386)
+-- Name: mutation_gene_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_gene_index ON public.mutation USING btree (gene);
+
+
+--
+-- TOC entry 3891 (class 1259 OID 782387)
+-- Name: mutation_hgnc_id_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_hgnc_id_coalesce_upper_index ON public.mutation USING btree (COALESCE(upper(hgnc_id), ''::text));
+
+
+--
+-- TOC entry 3892 (class 1259 OID 782388)
+-- Name: mutation_hgnc_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_hgnc_id_index ON public.mutation USING btree (hgnc_id);
+
+
+--
+-- TOC entry 3893 (class 1259 OID 782389)
+-- Name: mutation_hotspot_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_hotspot_index ON public.mutation USING btree (hotspot);
+
+
+--
+-- TOC entry 3894 (class 1259 OID 782390)
+-- Name: mutation_hugo_symbol_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_hugo_symbol_coalesce_upper_index ON public.mutation USING btree (COALESCE(upper(hugo_symbol), ''::text));
+
+
+--
+-- TOC entry 3895 (class 1259 OID 782391)
+-- Name: mutation_hugo_symbol_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_hugo_symbol_index ON public.mutation USING btree (hugo_symbol);
+
+
+--
+-- TOC entry 3896 (class 1259 OID 782392)
+-- Name: mutation_matched_norm_aliquot_uuid_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_matched_norm_aliquot_uuid_coalesce_upper_index ON public.mutation USING btree (COALESCE(upper(matched_norm_aliquot_uuid), ''::text));
+
+
+--
+-- TOC entry 3897 (class 1259 OID 782393)
+-- Name: mutation_matched_norm_aliquot_uuid_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_matched_norm_aliquot_uuid_index ON public.mutation USING btree (matched_norm_aliquot_uuid);
+
+
+--
+-- TOC entry 3898 (class 1259 OID 782394)
+-- Name: mutation_mutation_status_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_mutation_status_coalesce_upper_index ON public.mutation USING btree (COALESCE(upper(mutation_status), ''::text));
+
+
+--
+-- TOC entry 3899 (class 1259 OID 782395)
+-- Name: mutation_mutation_status_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_mutation_status_index ON public.mutation USING btree (mutation_status);
+
+
+--
+-- TOC entry 3900 (class 1259 OID 782396)
+-- Name: mutation_ncbi_build_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_ncbi_build_coalesce_upper_index ON public.mutation USING btree (COALESCE(upper(ncbi_build), ''::text));
+
+
+--
+-- TOC entry 3901 (class 1259 OID 782397)
+-- Name: mutation_ncbi_build_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_ncbi_build_index ON public.mutation USING btree (ncbi_build);
+
+
+--
+-- TOC entry 3902 (class 1259 OID 782398)
+-- Name: mutation_normal_submitter_uuid_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_normal_submitter_uuid_coalesce_upper_index ON public.mutation USING btree (COALESCE(upper(normal_submitter_uuid), ''::text));
+
+
+--
+-- TOC entry 3903 (class 1259 OID 782399)
+-- Name: mutation_normal_submitter_uuid_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_normal_submitter_uuid_index ON public.mutation USING btree (normal_submitter_uuid);
+
+
+--
+-- TOC entry 3904 (class 1259 OID 782400)
+-- Name: mutation_one_consequence_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_one_consequence_coalesce_upper_index ON public.mutation USING btree (COALESCE(upper(one_consequence), ''::text));
+
+
+--
+-- TOC entry 3905 (class 1259 OID 782401)
+-- Name: mutation_one_consequence_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_one_consequence_index ON public.mutation USING btree (one_consequence);
+
+
+--
+-- TOC entry 3908 (class 1259 OID 782402)
+-- Name: mutation_primary_site_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_primary_site_coalesce_upper_index ON public.mutation USING btree (COALESCE(upper(primary_site), ''::text));
+
+
+--
+-- TOC entry 3909 (class 1259 OID 782403)
+-- Name: mutation_primary_site_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_primary_site_index ON public.mutation USING btree (primary_site);
+
+
+--
+-- TOC entry 3910 (class 1259 OID 782404)
+-- Name: mutation_reference_allele_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_reference_allele_coalesce_upper_index ON public.mutation USING btree (COALESCE(upper(reference_allele), ''::text));
+
+
+--
+-- TOC entry 3911 (class 1259 OID 782405)
+-- Name: mutation_reference_allele_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_reference_allele_index ON public.mutation USING btree (reference_allele);
+
+
+--
+-- TOC entry 3912 (class 1259 OID 782406)
+-- Name: mutation_sample_barcode_normal_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_sample_barcode_normal_coalesce_upper_index ON public.mutation USING btree (COALESCE(upper(sample_barcode_normal), ''::text));
+
+
+--
+-- TOC entry 3913 (class 1259 OID 782407)
+-- Name: mutation_sample_barcode_normal_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_sample_barcode_normal_index ON public.mutation USING btree (sample_barcode_normal);
+
+
+--
+-- TOC entry 3914 (class 1259 OID 782408)
+-- Name: mutation_sample_barcode_tumor_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_sample_barcode_tumor_coalesce_upper_index ON public.mutation USING btree (COALESCE(upper(sample_barcode_tumor), ''::text));
+
+
+--
+-- TOC entry 3915 (class 1259 OID 782409)
+-- Name: mutation_sample_barcode_tumor_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_sample_barcode_tumor_index ON public.mutation USING btree (sample_barcode_tumor);
+
+
+--
+-- TOC entry 3916 (class 1259 OID 782410)
+-- Name: mutation_subject_alias_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_subject_alias_index ON public.mutation USING btree (subject_alias);
+
+
+--
+-- TOC entry 3917 (class 1259 OID 782411)
+-- Name: mutation_transcript_id_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_transcript_id_coalesce_upper_index ON public.mutation USING btree (COALESCE(upper(transcript_id), ''::text));
+
+
+--
+-- TOC entry 3918 (class 1259 OID 782412)
+-- Name: mutation_transcript_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_transcript_id_index ON public.mutation USING btree (transcript_id);
+
+
+--
+-- TOC entry 3919 (class 1259 OID 782413)
+-- Name: mutation_tumor_aliquot_uuid_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_tumor_aliquot_uuid_coalesce_upper_index ON public.mutation USING btree (COALESCE(upper(tumor_aliquot_uuid), ''::text));
+
+
+--
+-- TOC entry 3920 (class 1259 OID 782414)
+-- Name: mutation_tumor_aliquot_uuid_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_tumor_aliquot_uuid_index ON public.mutation USING btree (tumor_aliquot_uuid);
+
+
+--
+-- TOC entry 3921 (class 1259 OID 782415)
+-- Name: mutation_tumor_seq_allele1_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_tumor_seq_allele1_coalesce_upper_index ON public.mutation USING btree (COALESCE(upper(tumor_seq_allele1), ''::text));
+
+
+--
+-- TOC entry 3922 (class 1259 OID 782416)
+-- Name: mutation_tumor_seq_allele1_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_tumor_seq_allele1_index ON public.mutation USING btree (tumor_seq_allele1);
+
+
+--
+-- TOC entry 3923 (class 1259 OID 782417)
+-- Name: mutation_tumor_seq_allele2_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_tumor_seq_allele2_coalesce_upper_index ON public.mutation USING btree (COALESCE(upper(tumor_seq_allele2), ''::text));
+
+
+--
+-- TOC entry 3924 (class 1259 OID 782418)
+-- Name: mutation_tumor_seq_allele2_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_tumor_seq_allele2_index ON public.mutation USING btree (tumor_seq_allele2);
+
+
+--
+-- TOC entry 3925 (class 1259 OID 782419)
+-- Name: mutation_tumor_submitter_uuid_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_tumor_submitter_uuid_coalesce_upper_index ON public.mutation USING btree (COALESCE(upper(tumor_submitter_uuid), ''::text));
+
+
+--
+-- TOC entry 3926 (class 1259 OID 782420)
+-- Name: mutation_tumor_submitter_uuid_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_tumor_submitter_uuid_index ON public.mutation USING btree (tumor_submitter_uuid);
+
+
+--
+-- TOC entry 3927 (class 1259 OID 782421)
+-- Name: mutation_variant_type_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_variant_type_coalesce_upper_index ON public.mutation USING btree (COALESCE(upper(variant_type), ''::text));
+
+
+--
+-- TOC entry 3928 (class 1259 OID 782422)
+-- Name: mutation_variant_type_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX mutation_variant_type_index ON public.mutation USING btree (variant_type);
+
+
+--
+-- TOC entry 3929 (class 1259 OID 782423)
+-- Name: observation_data_at_cds_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX observation_data_at_cds_index ON public.observation USING btree (data_at_cds);
+
+
+--
+-- TOC entry 3930 (class 1259 OID 782424)
+-- Name: observation_data_at_gdc_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX observation_data_at_gdc_index ON public.observation USING btree (data_at_gdc);
+
+
+--
+-- TOC entry 3931 (class 1259 OID 782425)
+-- Name: observation_data_at_icdc_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX observation_data_at_icdc_index ON public.observation USING btree (data_at_icdc);
+
+
+--
+-- TOC entry 3932 (class 1259 OID 782426)
+-- Name: observation_data_at_idc_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX observation_data_at_idc_index ON public.observation USING btree (data_at_idc);
+
+
+--
+-- TOC entry 3933 (class 1259 OID 782427)
+-- Name: observation_data_at_pdc_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX observation_data_at_pdc_index ON public.observation USING btree (data_at_pdc);
+
+
+--
+-- TOC entry 3934 (class 1259 OID 782428)
+-- Name: observation_data_source_count_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX observation_data_source_count_index ON public.observation USING btree (data_source_count);
+
+
+--
+-- TOC entry 3935 (class 1259 OID 782429)
+-- Name: observation_diagnosis_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX observation_diagnosis_coalesce_upper_index ON public.observation USING btree (COALESCE(upper(diagnosis), ''::text));
+
+
+--
+-- TOC entry 3936 (class 1259 OID 782430)
+-- Name: observation_diagnosis_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX observation_diagnosis_index ON public.observation USING btree (diagnosis);
+
+
+--
+-- TOC entry 3937 (class 1259 OID 782431)
+-- Name: observation_grade_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX observation_grade_coalesce_upper_index ON public.observation USING btree (COALESCE(upper(grade), ''::text));
+
+
+--
+-- TOC entry 3938 (class 1259 OID 782432)
+-- Name: observation_grade_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX observation_grade_index ON public.observation USING btree (grade);
+
+
+--
+-- TOC entry 3939 (class 1259 OID 782433)
+-- Name: observation_morphology_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX observation_morphology_coalesce_upper_index ON public.observation USING btree (COALESCE(upper(morphology), ''::text));
+
+
+--
+-- TOC entry 3940 (class 1259 OID 782434)
+-- Name: observation_morphology_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX observation_morphology_index ON public.observation USING btree (morphology);
+
+
+--
+-- TOC entry 3941 (class 1259 OID 782435)
+-- Name: observation_observed_anatomic_site_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX observation_observed_anatomic_site_coalesce_upper_index ON public.observation USING btree (COALESCE(upper(observed_anatomic_site), ''::text));
+
+
+--
+-- TOC entry 3942 (class 1259 OID 782436)
+-- Name: observation_observed_anatomic_site_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX observation_observed_anatomic_site_index ON public.observation USING btree (observed_anatomic_site);
+
+
+--
+-- TOC entry 3945 (class 1259 OID 782437)
+-- Name: observation_resection_anatomic_site_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX observation_resection_anatomic_site_coalesce_upper_index ON public.observation USING btree (COALESCE(upper(resection_anatomic_site), ''::text));
+
+
+--
+-- TOC entry 3946 (class 1259 OID 782438)
+-- Name: observation_resection_anatomic_site_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX observation_resection_anatomic_site_index ON public.observation USING btree (resection_anatomic_site);
+
+
+--
+-- TOC entry 3947 (class 1259 OID 782439)
+-- Name: observation_sex_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX observation_sex_coalesce_upper_index ON public.observation USING btree (COALESCE(upper(sex), ''::text));
+
+
+--
+-- TOC entry 3948 (class 1259 OID 782440)
+-- Name: observation_sex_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX observation_sex_index ON public.observation USING btree (sex);
+
+
+--
+-- TOC entry 3949 (class 1259 OID 782441)
+-- Name: observation_stage_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX observation_stage_coalesce_upper_index ON public.observation USING btree (COALESCE(upper(stage), ''::text));
+
+
+--
+-- TOC entry 3950 (class 1259 OID 782442)
+-- Name: observation_stage_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX observation_stage_index ON public.observation USING btree (stage);
+
+
+--
+-- TOC entry 3951 (class 1259 OID 782443)
+-- Name: observation_subject_alias_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX observation_subject_alias_index ON public.observation USING btree (subject_alias);
+
+
+--
+-- TOC entry 3952 (class 1259 OID 782444)
+-- Name: observation_vital_status_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX observation_vital_status_coalesce_upper_index ON public.observation USING btree (COALESCE(upper(vital_status), ''::text));
+
+
+--
+-- TOC entry 3953 (class 1259 OID 782445)
+-- Name: observation_vital_status_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX observation_vital_status_index ON public.observation USING btree (vital_status);
+
+
+--
+-- TOC entry 3954 (class 1259 OID 782446)
+-- Name: observation_year_of_observation_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX observation_year_of_observation_index ON public.observation USING btree (year_of_observation);
+
+
+--
+-- TOC entry 3955 (class 1259 OID 782447)
+-- Name: project_crdc_id_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX project_crdc_id_coalesce_upper_index ON public.project USING btree (COALESCE(upper(crdc_id), ''::text));
+
+
+--
+-- TOC entry 3956 (class 1259 OID 782448)
+-- Name: project_crdc_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX project_crdc_id_index ON public.project USING btree (crdc_id);
+
+
+--
+-- TOC entry 3957 (class 1259 OID 782449)
+-- Name: project_data_at_cds_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX project_data_at_cds_index ON public.project USING btree (data_at_cds);
+
+
+--
+-- TOC entry 3958 (class 1259 OID 782450)
+-- Name: project_data_at_gdc_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX project_data_at_gdc_index ON public.project USING btree (data_at_gdc);
+
+
+--
+-- TOC entry 3959 (class 1259 OID 782451)
+-- Name: project_data_at_icdc_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX project_data_at_icdc_index ON public.project USING btree (data_at_icdc);
+
+
+--
+-- TOC entry 3960 (class 1259 OID 782452)
+-- Name: project_data_at_idc_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX project_data_at_idc_index ON public.project USING btree (data_at_idc);
+
+
+--
+-- TOC entry 3961 (class 1259 OID 782453)
+-- Name: project_data_at_pdc_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX project_data_at_pdc_index ON public.project USING btree (data_at_pdc);
+
+
+--
+-- TOC entry 3962 (class 1259 OID 782454)
+-- Name: project_data_source_count_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX project_data_source_count_index ON public.project USING btree (data_source_count);
+
+
+--
+-- TOC entry 3963 (class 1259 OID 782455)
+-- Name: project_id_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX project_id_coalesce_upper_index ON public.project USING btree (COALESCE(upper(id), ''::text));
+
+
+--
+-- TOC entry 3964 (class 1259 OID 782456)
+-- Name: project_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX project_id_index ON public.project USING btree (id);
+
+
+--
+-- TOC entry 3973 (class 1259 OID 782463)
+-- Name: project_in_project_child_project_alias_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX project_in_project_child_project_alias_index ON public.project_in_project USING btree (child_project_alias);
+
+
+--
+-- TOC entry 3974 (class 1259 OID 782464)
+-- Name: project_in_project_parent_project_alias_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX project_in_project_parent_project_alias_index ON public.project_in_project USING btree (parent_project_alias);
+
+
+--
+-- TOC entry 3965 (class 1259 OID 782457)
+-- Name: project_name_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX project_name_coalesce_upper_index ON public.project USING btree (COALESCE(upper(name), ''::text));
+
+
+--
+-- TOC entry 3966 (class 1259 OID 782458)
+-- Name: project_name_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX project_name_index ON public.project USING btree (name);
+
+
+--
+-- TOC entry 3969 (class 1259 OID 782459)
+-- Name: project_short_name_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX project_short_name_coalesce_upper_index ON public.project USING btree (COALESCE(upper(short_name), ''::text));
+
+
+--
+-- TOC entry 3970 (class 1259 OID 782460)
+-- Name: project_short_name_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX project_short_name_index ON public.project USING btree (short_name);
+
+
+--
+-- TOC entry 3971 (class 1259 OID 782461)
+-- Name: project_type_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX project_type_coalesce_upper_index ON public.project USING btree (COALESCE(upper(type), ''::text));
+
+
+--
+-- TOC entry 3972 (class 1259 OID 782462)
+-- Name: project_type_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX project_type_index ON public.project USING btree (type);
+
+
+--
+-- TOC entry 3975 (class 1259 OID 782465)
+-- Name: release_metadata_cda_column_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX release_metadata_cda_column_coalesce_upper_index ON public.release_metadata USING btree (COALESCE(upper(cda_column), ''::text));
+
+
+--
+-- TOC entry 3976 (class 1259 OID 782466)
+-- Name: release_metadata_cda_column_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX release_metadata_cda_column_index ON public.release_metadata USING btree (cda_column);
+
+
+--
+-- TOC entry 3977 (class 1259 OID 782467)
+-- Name: release_metadata_cda_table_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX release_metadata_cda_table_coalesce_upper_index ON public.release_metadata USING btree (COALESCE(upper(cda_table), ''::text));
+
+
+--
+-- TOC entry 3978 (class 1259 OID 782468)
+-- Name: release_metadata_cda_table_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX release_metadata_cda_table_index ON public.release_metadata USING btree (cda_table);
+
+
+--
+-- TOC entry 3979 (class 1259 OID 782469)
+-- Name: release_metadata_data_source_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX release_metadata_data_source_coalesce_upper_index ON public.release_metadata USING btree (COALESCE(upper(data_source), ''::text));
+
+
+--
+-- TOC entry 3980 (class 1259 OID 782470)
+-- Name: release_metadata_data_source_extraction_date_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX release_metadata_data_source_extraction_date_index ON public.release_metadata USING btree (data_source_extraction_date);
+
+
+--
+-- TOC entry 3981 (class 1259 OID 782471)
+-- Name: release_metadata_data_source_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX release_metadata_data_source_index ON public.release_metadata USING btree (data_source);
+
+
+--
+-- TOC entry 3982 (class 1259 OID 782472)
+-- Name: release_metadata_data_source_null_count_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX release_metadata_data_source_null_count_index ON public.release_metadata USING btree (data_source_null_count);
+
+
+--
+-- TOC entry 3983 (class 1259 OID 782473)
+-- Name: release_metadata_data_source_row_count_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX release_metadata_data_source_row_count_index ON public.release_metadata USING btree (data_source_row_count);
+
+
+--
+-- TOC entry 3984 (class 1259 OID 782474)
+-- Name: release_metadata_data_source_unique_value_count_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX release_metadata_data_source_unique_value_count_index ON public.release_metadata USING btree (data_source_unique_value_count);
+
+
+--
+-- TOC entry 3985 (class 1259 OID 782475)
+-- Name: release_metadata_data_source_version_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX release_metadata_data_source_version_coalesce_upper_index ON public.release_metadata USING btree (COALESCE(upper(data_source_version), ''::text));
+
+
+--
+-- TOC entry 3986 (class 1259 OID 782476)
+-- Name: release_metadata_data_source_version_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX release_metadata_data_source_version_index ON public.release_metadata USING btree (data_source_version);
+
+
+--
+-- TOC entry 3987 (class 1259 OID 782477)
+-- Name: subject_cause_of_death_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX subject_cause_of_death_coalesce_upper_index ON public.subject USING btree (COALESCE(upper(cause_of_death), ''::text));
+
+
+--
+-- TOC entry 3988 (class 1259 OID 782478)
+-- Name: subject_cause_of_death_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX subject_cause_of_death_index ON public.subject USING btree (cause_of_death);
+
+
+--
+-- TOC entry 3989 (class 1259 OID 782479)
+-- Name: subject_crdc_id_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX subject_crdc_id_coalesce_upper_index ON public.subject USING btree (COALESCE(upper(crdc_id), ''::text));
+
+
+--
+-- TOC entry 3990 (class 1259 OID 782480)
+-- Name: subject_crdc_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX subject_crdc_id_index ON public.subject USING btree (crdc_id);
+
+
+--
+-- TOC entry 3991 (class 1259 OID 782481)
+-- Name: subject_data_at_cds_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX subject_data_at_cds_index ON public.subject USING btree (data_at_cds);
+
+
+--
+-- TOC entry 3992 (class 1259 OID 782482)
+-- Name: subject_data_at_gdc_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX subject_data_at_gdc_index ON public.subject USING btree (data_at_gdc);
+
+
+--
+-- TOC entry 3993 (class 1259 OID 782483)
+-- Name: subject_data_at_icdc_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX subject_data_at_icdc_index ON public.subject USING btree (data_at_icdc);
+
+
+--
+-- TOC entry 3994 (class 1259 OID 782484)
+-- Name: subject_data_at_idc_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX subject_data_at_idc_index ON public.subject USING btree (data_at_idc);
+
+
+--
+-- TOC entry 3995 (class 1259 OID 782485)
+-- Name: subject_data_at_pdc_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX subject_data_at_pdc_index ON public.subject USING btree (data_at_pdc);
+
+
+--
+-- TOC entry 3996 (class 1259 OID 782486)
+-- Name: subject_data_source_count_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX subject_data_source_count_index ON public.subject USING btree (data_source_count);
+
+
+--
+-- TOC entry 3997 (class 1259 OID 782487)
+-- Name: subject_ethnicity_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX subject_ethnicity_coalesce_upper_index ON public.subject USING btree (COALESCE(upper(ethnicity), ''::text));
+
+
+--
+-- TOC entry 3998 (class 1259 OID 782488)
+-- Name: subject_ethnicity_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX subject_ethnicity_index ON public.subject USING btree (ethnicity);
+
+
+--
+-- TOC entry 3999 (class 1259 OID 782489)
+-- Name: subject_id_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX subject_id_coalesce_upper_index ON public.subject USING btree (COALESCE(upper(id), ''::text));
+
+
+--
+-- TOC entry 4000 (class 1259 OID 782490)
+-- Name: subject_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX subject_id_index ON public.subject USING btree (id);
+
+
+--
+-- TOC entry 4009 (class 1259 OID 782497)
+-- Name: subject_in_project_project_alias_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX subject_in_project_project_alias_index ON public.subject_in_project USING btree (project_alias);
+
+
+--
+-- TOC entry 4010 (class 1259 OID 782498)
+-- Name: subject_in_project_subject_alias_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX subject_in_project_subject_alias_index ON public.subject_in_project USING btree (subject_alias);
+
+
+--
+-- TOC entry 4003 (class 1259 OID 782491)
+-- Name: subject_race_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX subject_race_coalesce_upper_index ON public.subject USING btree (COALESCE(upper(race), ''::text));
+
+
+--
+-- TOC entry 4004 (class 1259 OID 782492)
+-- Name: subject_race_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX subject_race_index ON public.subject USING btree (race);
+
+
+--
+-- TOC entry 4005 (class 1259 OID 782493)
+-- Name: subject_species_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX subject_species_coalesce_upper_index ON public.subject USING btree (COALESCE(upper(species), ''::text));
+
+
+--
+-- TOC entry 4006 (class 1259 OID 782494)
+-- Name: subject_species_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX subject_species_index ON public.subject USING btree (species);
+
+
+--
+-- TOC entry 4007 (class 1259 OID 782495)
+-- Name: subject_year_of_birth_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX subject_year_of_birth_index ON public.subject USING btree (year_of_birth);
+
+
+--
+-- TOC entry 4008 (class 1259 OID 782496)
+-- Name: subject_year_of_death_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX subject_year_of_death_index ON public.subject USING btree (year_of_death);
+
+
+--
+-- TOC entry 4011 (class 1259 OID 782499)
+-- Name: treatment_anatomic_site_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX treatment_anatomic_site_coalesce_upper_index ON public.treatment USING btree (COALESCE(upper(anatomic_site), ''::text));
+
+
+--
+-- TOC entry 4012 (class 1259 OID 782500)
+-- Name: treatment_anatomic_site_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX treatment_anatomic_site_index ON public.treatment USING btree (anatomic_site);
+
+
+--
+-- TOC entry 4013 (class 1259 OID 782501)
+-- Name: treatment_data_at_cds_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX treatment_data_at_cds_index ON public.treatment USING btree (data_at_cds);
+
+
+--
+-- TOC entry 4014 (class 1259 OID 782502)
+-- Name: treatment_data_at_gdc_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX treatment_data_at_gdc_index ON public.treatment USING btree (data_at_gdc);
+
+
+--
+-- TOC entry 4015 (class 1259 OID 782503)
+-- Name: treatment_data_at_icdc_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX treatment_data_at_icdc_index ON public.treatment USING btree (data_at_icdc);
+
+
+--
+-- TOC entry 4016 (class 1259 OID 782504)
+-- Name: treatment_data_at_idc_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX treatment_data_at_idc_index ON public.treatment USING btree (data_at_idc);
+
+
+--
+-- TOC entry 4017 (class 1259 OID 782505)
+-- Name: treatment_data_at_pdc_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX treatment_data_at_pdc_index ON public.treatment USING btree (data_at_pdc);
+
+
+--
+-- TOC entry 4018 (class 1259 OID 782506)
+-- Name: treatment_data_source_count_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX treatment_data_source_count_index ON public.treatment USING btree (data_source_count);
+
+
+--
+-- TOC entry 4021 (class 1259 OID 782507)
+-- Name: treatment_subject_alias_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX treatment_subject_alias_index ON public.treatment USING btree (subject_alias);
+
+
+--
+-- TOC entry 4022 (class 1259 OID 782508)
+-- Name: treatment_therapeutic_agent_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX treatment_therapeutic_agent_coalesce_upper_index ON public.treatment USING btree (COALESCE(upper(therapeutic_agent), ''::text));
+
+
+--
+-- TOC entry 4023 (class 1259 OID 782509)
+-- Name: treatment_therapeutic_agent_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX treatment_therapeutic_agent_index ON public.treatment USING btree (therapeutic_agent);
+
+
+--
+-- TOC entry 4024 (class 1259 OID 782510)
+-- Name: treatment_type_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX treatment_type_coalesce_upper_index ON public.treatment USING btree (COALESCE(upper(type), ''::text));
+
+
+--
+-- TOC entry 4025 (class 1259 OID 782511)
+-- Name: treatment_type_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX treatment_type_index ON public.treatment USING btree (type);
+
+
+--
+-- TOC entry 4026 (class 1259 OID 782512)
+-- Name: upstream_identifiers_cda_table_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX upstream_identifiers_cda_table_coalesce_upper_index ON public.upstream_identifiers USING btree (COALESCE(upper(cda_table), ''::text));
+
+
+--
+-- TOC entry 4027 (class 1259 OID 782513)
+-- Name: upstream_identifiers_cda_table_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX upstream_identifiers_cda_table_index ON public.upstream_identifiers USING btree (cda_table);
+
+
+--
+-- TOC entry 4028 (class 1259 OID 782514)
+-- Name: upstream_identifiers_data_source_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX upstream_identifiers_data_source_coalesce_upper_index ON public.upstream_identifiers USING btree (COALESCE(upper(data_source), ''::text));
+
+
+--
+-- TOC entry 4029 (class 1259 OID 782515)
+-- Name: upstream_identifiers_data_source_id_field_name_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX upstream_identifiers_data_source_id_field_name_index ON public.upstream_identifiers USING btree (data_source_id_field_name);
+
+
+--
+-- TOC entry 4030 (class 1259 OID 782516)
+-- Name: upstream_identifiers_data_source_id_value_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX upstream_identifiers_data_source_id_value_coalesce_upper_index ON public.upstream_identifiers USING btree (COALESCE(upper(data_source_id_value), ''::text));
+
+
+--
+-- TOC entry 4031 (class 1259 OID 782517)
+-- Name: upstream_identifiers_data_source_id_value_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX upstream_identifiers_data_source_id_value_index ON public.upstream_identifiers USING btree (data_source_id_value);
+
+
+--
+-- TOC entry 4032 (class 1259 OID 782518)
+-- Name: upstream_identifiers_data_source_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX upstream_identifiers_data_source_index ON public.upstream_identifiers USING btree (data_source);
+
+
+--
+-- TOC entry 4033 (class 1259 OID 782519)
+-- Name: upstream_identifiers_id_alias_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX upstream_identifiers_id_alias_index ON public.upstream_identifiers USING btree (id_alias);
+
+
+--
+-- TOC entry 4034 (class 1259 OID 782520)
+-- Name: upstream_ids_data_source_id_field_name_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX upstream_ids_data_source_id_field_name_coalesce_upper_index ON public.upstream_identifiers USING btree (COALESCE(upper(data_source_id_field_name), ''::text));
+
+
+--
+-- TOC entry 4035 (class 2606 OID 782533)
+-- Name: file_anatomic_site file_anatomic_site_file_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file_anatomic_site
+    ADD CONSTRAINT file_anatomic_site_file_alias_fkey FOREIGN KEY (file_alias) REFERENCES public.file(id_alias);
+
+
+--
+-- TOC entry 4036 (class 2606 OID 782538)
+-- Name: file_describes_subject file_describes_subject_file_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file_describes_subject
+    ADD CONSTRAINT file_describes_subject_file_alias_fkey FOREIGN KEY (file_alias) REFERENCES public.file(id_alias);
+
+
+--
+-- TOC entry 4037 (class 2606 OID 782543)
+-- Name: file_describes_subject file_describes_subject_subject_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file_describes_subject
+    ADD CONSTRAINT file_describes_subject_subject_alias_fkey FOREIGN KEY (subject_alias) REFERENCES public.subject(id_alias);
+
+
+--
+-- TOC entry 4038 (class 2606 OID 782553)
+-- Name: file_in_project file_in_project_file_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file_in_project
+    ADD CONSTRAINT file_in_project_file_alias_fkey FOREIGN KEY (file_alias) REFERENCES public.file(id_alias);
+
+
+--
+-- TOC entry 4039 (class 2606 OID 782548)
+-- Name: file_in_project file_in_project_project_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file_in_project
+    ADD CONSTRAINT file_in_project_project_alias_fkey FOREIGN KEY (project_alias) REFERENCES public.project(id_alias);
+
+
+--
+-- TOC entry 4040 (class 2606 OID 782558)
+-- Name: file_tumor_vs_normal file_tumor_vs_normal_file_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.file_tumor_vs_normal
+    ADD CONSTRAINT file_tumor_vs_normal_file_alias_fkey FOREIGN KEY (file_alias) REFERENCES public.file(id_alias);
+
+
+--
+-- TOC entry 4041 (class 2606 OID 782563)
+-- Name: mutation mutation_subject_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.mutation
+    ADD CONSTRAINT mutation_subject_alias_fkey FOREIGN KEY (subject_alias) REFERENCES public.subject(id_alias);
+
+
+--
+-- TOC entry 4042 (class 2606 OID 782568)
+-- Name: observation observation_subject_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.observation
+    ADD CONSTRAINT observation_subject_alias_fkey FOREIGN KEY (subject_alias) REFERENCES public.subject(id_alias);
+
+
+--
+-- TOC entry 4043 (class 2606 OID 782573)
+-- Name: project_in_project project_in_project_child_project_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.project_in_project
+    ADD CONSTRAINT project_in_project_child_project_alias_fkey FOREIGN KEY (child_project_alias) REFERENCES public.project(id_alias);
+
+
+--
+-- TOC entry 4044 (class 2606 OID 782578)
+-- Name: project_in_project project_in_project_parent_project_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.project_in_project
+    ADD CONSTRAINT project_in_project_parent_project_alias_fkey FOREIGN KEY (parent_project_alias) REFERENCES public.project(id_alias);
+
+
+--
+-- TOC entry 4045 (class 2606 OID 782588)
+-- Name: subject_in_project subject_in_project_project_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subject_in_project
+    ADD CONSTRAINT subject_in_project_project_alias_fkey FOREIGN KEY (project_alias) REFERENCES public.project(id_alias);
+
+
+--
+-- TOC entry 4046 (class 2606 OID 782583)
+-- Name: subject_in_project subject_in_project_subject_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.subject_in_project
+    ADD CONSTRAINT subject_in_project_subject_alias_fkey FOREIGN KEY (subject_alias) REFERENCES public.subject(id_alias);
+
+
+--
+-- TOC entry 4047 (class 2606 OID 782593)
+-- Name: treatment treatment_subject_alias_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.treatment
+    ADD CONSTRAINT treatment_subject_alias_fkey FOREIGN KEY (subject_alias) REFERENCES public.subject(id_alias);
+
+
+-- Completed on 2025-04-07 13:16:44 EDT
+
+--
+-- PostgreSQL database dump complete
+--
+
