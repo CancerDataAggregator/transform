@@ -26,8 +26,8 @@ column_metadata_fields = [
     'cda_table',
     'cda_column',
     'column_type',
-    'summary_display',
-    'fetch_rows_returns',
+    'summary_returns',
+    'data_returns',
     'process_before_display',
     'virtual_table'
 ]
@@ -68,7 +68,7 @@ with open( output_file, 'w' ) as OUT:
                 
                 virtual_table = current_record['virtual_table']
 
-            print( *[ table_name, column_name, current_record['column_type'], current_record['summary_display'], current_record['fetch_rows_returns'], process_before_display, virtual_table ], sep='\t', file=OUT )
+            print( *[ table_name, column_name, current_record['column_type'], current_record['summary_returns'], current_record['data_returns'], process_before_display, virtual_table ], sep='\t', file=OUT )
 
 # Transform all input TSVs to SQL and make the pre- and postprocessing scripts to manage index destruction/reconstruction.
 

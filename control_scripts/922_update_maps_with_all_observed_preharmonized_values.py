@@ -53,7 +53,7 @@ for uberon_id in uberon_terms:
 
     if len( uberon_names ) != 1:
         
-        sys.exit( f"FATAL: UBERON term '{uberon_id}' has {len( uberon_names )} distinct values for 'name' -- please handle." )
+            sys.exit( f"FATAL: UBERON term '{uberon_id}' has {len( uberon_names )} distinct values for 'name' -- please handle." )
 
     else:
         
