@@ -84,8 +84,6 @@ replace_with = dict()
 
 map_targets = dict()
 
-create_new_aliases = False
-
 for table in sorted( merge_map ):
     
     if table not in replace_with:
@@ -116,8 +114,6 @@ for table in sorted( merge_map ):
 
             elif record[with_column] != record[to_column]:
                 
-                create_new_aliases = True
-
                 sys.exit( f"FATAL: Map file {map_file} has different values between columns '{with_column}' and '{to_column}'; this is unexpected, please write code to handle this situation. Aborting." )
 
             else:
@@ -139,8 +135,6 @@ for table in sorted( merge_map ):
 # other fields subject to value-based data merging rules (generally, first
 # non-null value wins, although please do explicitly check the current
 # rules if it matters).
-
-provenance_cache = dict()
 
 for table in sorted( merge_map ):
     
@@ -167,14 +161,6 @@ for table in sorted( merge_map ):
         header = next( IN ).rstrip( '\n' )
 
     column_names = header.split( '\t' )
-
-    provenance_cache[table] = dict()
-
-    for column_name in column_names:
-        
-        if column_name == 'data_source_count' or re.search( r'^data_at_', column_name ) is not None:
-            
-            provenance_cache[table][column_name] = dict()
 
     processed_records_to_merge = set()
 
@@ -205,10 +191,6 @@ for table in sorted( merge_map ):
                 for column_name in column_names:
                     
                     output_row.append( last_merged_record[column_name] )
-
-                    if column_name in provenance_cache[table]:
-                        
-                        provenance_cache[table][column_name][last_merged_alias] = last_merged_record[column_name]
 
             else:
                 
@@ -356,10 +338,6 @@ for table in sorted( merge_map ):
                     
                     output_row.append( output_record[column_name] )
 
-                    if column_name in provenance_cache[table]:
-                        
-                        provenance_cache[table][column_name][last_merged_alias] = output_record[column_name]
-
             print( *output_row, sep='\t', file=OUT )
 
         # Next, process the rows from `to_merge_dataset_name`, skipping any already merged into existing records.
@@ -383,10 +361,6 @@ for table in sorted( merge_map ):
                 for column_name in column_names:
                     
                     output_row.append( to_merge_record[column_name] )
-
-                    if column_name in provenance_cache[table]:
-                        
-                        provenance_cache[table][column_name][to_merge_alias] = to_merge_record[column_name]
 
                 print( *output_row, sep='\t', file=OUT )
 
@@ -426,7 +400,7 @@ for file_basename in sorted( listdir( last_merged_cda_tsv_dir ) ):
 
             output_file = path.join( tsv_output_dir, file_basename )
 
-            # First, copy the last_merged data to the destination, updating provenance data if needed.
+            # First, copy the last_merged data to the destination, updating as needed.
 
             requires_update = False
 
@@ -472,53 +446,29 @@ for file_basename in sorted( listdir( last_merged_cda_tsv_dir ) ):
 
                         # Main row data.
 
-                        output_alias = ''
-
                         for column_name in column_names:
                             
-                            # ASSUMPTION: All the data_* fields are at the end of each row.
-
-                            if re.search( r'^data_at_', column_name ) is None and column_name != 'data_source_count':
+                            if column_name not in update_with:
                                 
-                                if column_name not in update_with:
-                                    
-                                    output_row.append( record[column_name] )
+                                output_row.append( record[column_name] )
 
-                                else:
-                                    
-                                    aliased_table = update_with[column_name]
-
-                                    current_alias_value = record[column_name]
-
-                                    if current_alias_value in replace_with[aliased_table]:
-                                        
-                                        current_alias_value = replace_with[aliased_table][current_alias_value]
-
-                                    # ASSUMPTION: Rows with data_at_* columns will have at most ONE foreign key of
-                                    # the form <table>_alias; if there are two or more, this will fail spectacularly.
-
-                                    output_alias = current_alias_value
-
-                                    output_row.append( current_alias_value )
-
-                        # Provenance metadata.
-
-                        for column_name in column_names:
-                            
-                            # ASSUMPTION: All the data_* fields are at the end of each row.
-
-                            if re.search( r'^data_at_', column_name ) is not None or column_name == 'data_source_count':
+                            else:
                                 
-                                # ASSUMPTION: Rows with data_at_* columns will have at most ONE foreign key of
-                                # the form <table>_alias; if there are two or more, this will fail spectacularly.
+                                aliased_table = update_with[column_name]
 
-                                output_row.append( provenance_cache[aliased_table][column_name][output_alias] )
+                                current_alias_value = record[column_name]
+
+                                if current_alias_value in replace_with[aliased_table]:
+                                    
+                                    current_alias_value = replace_with[aliased_table][current_alias_value]
+
+                                output_row.append( current_alias_value )
 
                         print( *output_row, sep='\t', file=OUT )
 
             if file_basename in listdir( to_merge_cda_tsv_dir ):
                 
-                # This file also exists in the to_merge dataset. Bring that data on over, updating aliases and provenance as needed.
+                # This file also exists in the to_merge dataset. Bring that data on over, updating aliases as needed.
 
                 to_merge_file = path.join( to_merge_cda_tsv_dir, file_basename )
 
@@ -546,47 +496,23 @@ for file_basename in sorted( listdir( last_merged_cda_tsv_dir ) ):
 
                             # Main row data.
 
-                            output_alias = ''
-
                             for column_name in column_names:
                                 
-                                # ASSUMPTION: All the data_* fields are at the end of each row.
-
-                                if re.search( r'^data_at_', column_name ) is None and column_name != 'data_source_count':
+                                if column_name not in update_with:
                                     
-                                    if column_name not in update_with:
-                                        
-                                        output_row.append( record[column_name] )
+                                    output_row.append( record[column_name] )
 
-                                    else:
-                                        
-                                        aliased_table = update_with[column_name]
-
-                                        current_alias_value = record[column_name]
-
-                                        if current_alias_value in replace_with[aliased_table]:
-                                            
-                                            current_alias_value = replace_with[aliased_table][current_alias_value]
-
-                                        # ASSUMPTION: Rows with data_at_* columns will have at most ONE foreign key of
-                                        # the form <table>_alias; if there are two or more, this will fail spectacularly.
-
-                                        output_alias = current_alias_value
-
-                                        output_row.append( current_alias_value )
-
-                            # Provenance metadata.
-
-                            for column_name in column_names:
-                                
-                                # ASSUMPTION: All the data_* fields are at the end of each row.
-
-                                if re.search( r'^data_at_', column_name ) is not None or column_name == 'data_source_count':
+                                else:
                                     
-                                    # ASSUMPTION: Rows with data_at_* columns will have at most ONE foreign key of
-                                    # the form <table>_alias; if there are two or more, this will fail spectacularly.
+                                    aliased_table = update_with[column_name]
 
-                                    output_row.append( provenance_cache[aliased_table][column_name][output_alias] )
+                                    current_alias_value = record[column_name]
+
+                                    if current_alias_value in replace_with[aliased_table]:
+                                        
+                                        current_alias_value = replace_with[aliased_table][current_alias_value]
+
+                                    output_row.append( current_alias_value )
 
                             print( *output_row, sep='\t', file=OUT )
 
@@ -618,7 +544,7 @@ for file_basename in sorted( listdir( to_merge_cda_tsv_dir ) ):
 
             output_file = path.join( tsv_output_dir, file_basename )
 
-            # Copy to the destination, updating provenance data if needed.
+            # Copy to the destination, updating as needed.
 
             requires_update = False
 
@@ -664,47 +590,23 @@ for file_basename in sorted( listdir( to_merge_cda_tsv_dir ) ):
 
                         # Main row data.
 
-                        output_alias = ''
-
                         for column_name in column_names:
                             
-                            # ASSUMPTION: All the data_* fields are at the end of each row.
-
-                            if re.search( r'^data_at_', column_name ) is None and column_name != 'data_source_count':
+                            if column_name not in update_with:
                                 
-                                if column_name not in update_with:
-                                    
-                                    output_row.append( record[column_name] )
+                                output_row.append( record[column_name] )
 
-                                else:
-                                    
-                                    aliased_table = update_with[column_name]
-
-                                    current_alias_value = record[column_name]
-
-                                    if current_alias_value in replace_with[aliased_table]:
-                                        
-                                        current_alias_value = replace_with[aliased_table][current_alias_value]
-
-                                    # ASSUMPTION: Rows with data_at_* columns will have at most ONE foreign key of
-                                    # the form <table>_alias; if there are two or more, this will fail spectacularly.
-
-                                    output_alias = current_alias_value
-
-                                    output_row.append( current_alias_value )
-
-                        # Provenance metadata.
-
-                        for column_name in column_names:
-                            
-                            # ASSUMPTION: All the data_* fields are at the end of each row.
-
-                            if re.search( r'^data_at_', column_name ) is not None or column_name == 'data_source_count':
+                            else:
                                 
-                                # ASSUMPTION: Rows with data_at_* columns will have at most ONE foreign key of
-                                # the form <table>_alias; if there are two or more, this will fail spectacularly.
+                                aliased_table = update_with[column_name]
 
-                                output_row.append( provenance_cache[aliased_table][column_name][output_alias] )
+                                current_alias_value = record[column_name]
+
+                                if current_alias_value in replace_with[aliased_table]:
+                                    
+                                    current_alias_value = replace_with[aliased_table][current_alias_value]
+
+                                output_row.append( current_alias_value )
 
                         print( *output_row, sep='\t', file=OUT )
 

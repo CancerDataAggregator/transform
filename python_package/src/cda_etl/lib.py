@@ -1634,44 +1634,44 @@ def get_column_metadata( table_name=None, column_name=None ):
             'cda_table': {
                 
                 'column_type': 'categorical',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             },
             'cda_column': {
                 
                 'column_type': 'categorical',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             },
             'column_type': {
                 
                 'column_type': 'categorical',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             },
-            'summary_display': {
+            'summary_returns': {
                 
                 'column_type': 'categorical',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             },
-            'fetch_rows_returns': {
+            'data_returns': {
                 
                 'column_type': 'categorical',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             },
             'process_before_display': {
                 
                 'column_type': 'categorical',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             },
             'virtual_table': {
                 
                 'column_type': 'categorical',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             }
         },
         'release_metadata': {
@@ -1679,50 +1679,50 @@ def get_column_metadata( table_name=None, column_name=None ):
             'cda_table': {
                 
                 'column_type': 'categorical',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             },
             'cda_column': {
                 
                 'column_type': 'categorical',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             },
             'data_source': {
                 
                 'column_type': 'categorical',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             },
             'data_source_version': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             },
             'data_source_extraction_date': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             },
             'data_source_row_count': {
                 
                 'column_type': 'numeric',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             },
             'data_source_unique_value_count': {
                 
                 'column_type': 'numeric',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             },
             'data_source_null_count': {
                 
                 'column_type': 'numeric',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             }
         },
         'project': {
@@ -1730,79 +1730,79 @@ def get_column_metadata( table_name=None, column_name=None ):
             'id': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'id_alias': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             },
             'crdc_id': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'type': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'name': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'short_name': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'data_at_cds': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': False,
                 'process_before_display': 'data_source'
             },
             'data_at_gdc': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_at_icdc': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_at_idc': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_at_pdc': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_source_count': {
                 
                 'column_type': 'numeric',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source_count'
             }
         },
@@ -1811,109 +1811,109 @@ def get_column_metadata( table_name=None, column_name=None ):
             'id': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'id_alias': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             },
             'crdc_id': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'name': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'description': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'drs_uri': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'access': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'size': {
                 
                 'column_type': 'numeric',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'format': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'type': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'category': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'data_at_cds': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_at_gdc': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_at_icdc': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_at_idc': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_at_pdc': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_source_count': {
                 
                 'column_type': 'numeric',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source_count'
             }
         },
@@ -1922,97 +1922,97 @@ def get_column_metadata( table_name=None, column_name=None ):
             'id': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'id_alias': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             },
             'crdc_id': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'species': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'year_of_birth': {
                 
                 'column_type': 'numeric',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'year_of_death': {
                 
                 'column_type': 'numeric',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'cause_of_death': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'race': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'ethnicity': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'data_at_cds': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_at_gdc': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_at_icdc': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_at_idc': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_at_pdc': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_source_count': {
                 
                 'column_type': 'numeric',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source_count'
             }
         },
@@ -2021,109 +2021,109 @@ def get_column_metadata( table_name=None, column_name=None ):
             'id_alias': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'subject_alias': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             },
             'vital_status': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'sex': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'year_of_observation': {
                 
                 'column_type': 'numeric',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'diagnosis': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'morphology': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'grade': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'stage': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'observed_anatomic_site': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'resection_anatomic_site': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'data_at_cds': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_at_gdc': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_at_icdc': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_at_idc': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_at_pdc': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_source_count': {
                 
                 'column_type': 'numeric',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source_count'
             }
         },
@@ -2132,73 +2132,73 @@ def get_column_metadata( table_name=None, column_name=None ):
             'id_alias': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'subject_alias': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             },
             'anatomic_site': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'type': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'therapeutic_agent': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'data_at_cds': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_at_gdc': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_at_icdc': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_at_idc': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_at_pdc': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_source_count': {
                 
                 'column_type': 'numeric',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source_count'
             }
         },
@@ -2207,211 +2207,211 @@ def get_column_metadata( table_name=None, column_name=None ):
             'id_alias': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'subject_alias': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             },
             'hugo_symbol': {
                 
                 'column_type': 'categorical',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'entrez_gene_id': {
                 
                 'column_type': 'categorical',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'hotspot': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'ncbi_build': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'chromosome': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'variant_type': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'reference_allele': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'tumor_seq_allele1': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'tumor_seq_allele2': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'dbsnp_rs': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'mutation_status': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'transcript_id': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'gene': {
                 
                 'column_type': 'categorical',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'one_consequence': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'hgnc_id': {
                 
                 'column_type': 'categorical',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'primary_site': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True
+                'summary_returns': True,
+                'data_returns': True
             },
             'case_barcode': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'case_id': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'sample_barcode_tumor': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'tumor_submitter_uuid': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'sample_barcode_normal': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'normal_submitter_uuid': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'aliquot_barcode_tumor': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'tumor_aliquot_uuid': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'aliquot_barcode_normal': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'matched_norm_aliquot_uuid': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': True
+                'summary_returns': False,
+                'data_returns': True
             },
             'data_at_cds': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_at_gdc': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_at_icdc': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_at_idc': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_at_pdc': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_source_count': {
                 
                 'column_type': 'numeric',
-                'summary_display': True,
-                'fetch_rows_returns': False,
+                'summary_returns': True,
+                'data_returns': True,
                 'process_before_display': 'data_source_count'
             }
         },
@@ -2420,34 +2420,34 @@ def get_column_metadata( table_name=None, column_name=None ):
             'cda_table': {
                 
                 'column_type': 'categorical',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             },
             'id_alias': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             },
             'data_source': {
                 
                 'column_type': 'categorical',
-                'summary_display': False,
-                'fetch_rows_returns': False,
+                'summary_returns': False,
+                'data_returns': False,
                 'process_before_display': 'upstream_identifier_metadata'
             },
             'data_source_id_field_name': {
                 
                 'column_type': 'categorical',
-                'summary_display': False,
-                'fetch_rows_returns': False,
+                'summary_returns': False,
+                'data_returns': False,
                 'process_before_display': 'upstream_identifier_metadata'
             },
             'data_source_id_value': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False,
+                'summary_returns': False,
+                'data_returns': False,
                 'process_before_display': 'upstream_identifier_metadata'
             }
         },
@@ -2456,14 +2456,14 @@ def get_column_metadata( table_name=None, column_name=None ):
             'file_alias': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             },
             'subject_alias': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             }
         },
         'file_anatomic_site': {
@@ -2471,15 +2471,14 @@ def get_column_metadata( table_name=None, column_name=None ):
             'file_alias': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             },
             'anatomic_site': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True,
-                'process_before_display': 'virtual_list',
+                'summary_returns': True,
+                'data_returns': True,
                 'virtual_table': 'file'
             }
         },
@@ -2488,15 +2487,14 @@ def get_column_metadata( table_name=None, column_name=None ):
             'file_alias': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             },
             'tumor_vs_normal': {
                 
                 'column_type': 'categorical',
-                'summary_display': True,
-                'fetch_rows_returns': True,
-                'process_before_display': 'virtual_list',
+                'summary_returns': True,
+                'data_returns': True,
                 'virtual_table': 'file'
             }
         },
@@ -2505,14 +2503,14 @@ def get_column_metadata( table_name=None, column_name=None ):
             'file_alias': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             },
             'project_alias': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             }
         },
         'project_in_project': {
@@ -2520,14 +2518,14 @@ def get_column_metadata( table_name=None, column_name=None ):
             'child_project_alias': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             },
             'parent_project_alias': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             }
         },
         'subject_in_project': {
@@ -2535,14 +2533,14 @@ def get_column_metadata( table_name=None, column_name=None ):
             'subject_alias': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             },
             'project_alias': {
                 
                 'column_type': 'unbounded',
-                'summary_display': False,
-                'fetch_rows_returns': False
+                'summary_returns': False,
+                'data_returns': False
             }
         }
     }
@@ -2887,17 +2885,21 @@ def load_obo_file( input_file ):
                 
                 if len( current_term ) > 0:
                     
-                    obo_data[current_term['id']] = dict()
+                    # Ignore terms without names. At time of writing there are two of these, both intra-third-party-ontology aliases.
 
-                    for property_name in current_term:
+                    if 'name' in current_term:
                         
-                        if property_name != 'id':
+                        obo_data[current_term['id']] = dict()
+
+                        for property_name in current_term:
                             
-                            obo_data[current_term['id']][property_name] = current_term[property_name]
+                            if property_name != 'id':
+                                
+                                obo_data[current_term['id']][property_name] = current_term[property_name]
 
-                current_term = dict()
+                    current_term = dict()
 
-                in_term = False
+                    in_term = False
 
             elif line == r'[Term]':
                 

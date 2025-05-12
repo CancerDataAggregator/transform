@@ -185,11 +185,11 @@ for input_file_path in sorted( input_files ):
                     
                     column_result = get_column_metadata( table_name, column_name )
 
-                    if 'column_type' in column_result and column_result['column_type'] == 'categorical' and 'fetch_rows_returns' in column_result and column_result['fetch_rows_returns'] == True:
+                    if 'column_type' in column_result and column_result['column_type'] == 'categorical' and 'data_returns' in column_result and column_result['data_returns'] == True and ( 'process_before_display' not in column_result or column_result['process_before_display'] not in [ 'data_source', 'data_source_count' ] ):
                         
                         count_columns.append( column_name )
 
-                        if 'process_before_display' in column_result and column_result['process_before_display'] == 'virtual_list':
+                        if 'virtual_table' in column_result:
                             
                             count_column_as[column_name] = column_result['virtual_table']
 
@@ -391,11 +391,11 @@ for input_file_path in sorted( input_files ):
                 
                 column_result = get_column_metadata( table_name, column_name )
 
-                if 'column_type' in column_result and column_result['column_type'] == 'categorical' and 'fetch_rows_returns' in column_result and column_result['fetch_rows_returns'] == True:
+                if 'column_type' in column_result and column_result['column_type'] == 'categorical' and 'data_returns' in column_result and column_result['data_returns'] == True and ( 'process_before_display' not in column_result or column_result['process_before_display'] not in [ 'data_source', 'data_source_count' ] ):
                     
                     count_columns.append( column_name )
 
-                    if 'process_before_display' in column_result and column_result['process_before_display'] == 'virtual_list':
+                    if 'virtual_table' in column_result:
                         
                         count_column_as[column_name] = column_result['virtual_table']
 
