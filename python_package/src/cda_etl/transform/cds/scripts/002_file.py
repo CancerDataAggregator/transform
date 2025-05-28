@@ -64,7 +64,7 @@ aux_output_root = path.join( 'auxiliary_metadata', '__aggregation_logs' )
 
 aux_value_output_dir = path.join( aux_output_root, 'values' )
 
-file_genomic_info_data_clash_log = path.join( aux_value_output_dir, f"{upstream_data_source}_same_file_genmomic_info_clashes.library_strategy.tsv" )
+file_genomic_info_data_clash_log = path.join( aux_value_output_dir, f"{upstream_data_source}_same_file_genomic_info_clashes.library_strategy.tsv" )
 
 # Table header sequences.
 

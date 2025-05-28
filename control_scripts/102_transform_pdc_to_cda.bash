@@ -17,6 +17,9 @@ echo ./package_root/transform/pdc/scripts/phase_002_convert_to_cda/004_file_desc
 echo ./package_root/transform/pdc/scripts/phase_002_convert_to_cda/005_observation.py
 ./package_root/transform/pdc/scripts/phase_002_convert_to_cda/005_observation.py
 
+echo ./package_root/transform/pdc/scripts/phase_002_convert_to_cda/006_treatment.py
+./package_root/transform/pdc/scripts/phase_002_convert_to_cda/006_treatment.py
+
 # Harmonize values according to (a) universal 'delete everywhere' maps (nullifying
 # values like 'other' and 'not reported') and (b) anything present
 # in ./harmonization_maps/ and indexed in 000_cda_column_targets.tsv in that directory.

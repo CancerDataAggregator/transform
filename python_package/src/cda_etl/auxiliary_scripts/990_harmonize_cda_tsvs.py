@@ -62,6 +62,11 @@ delete_row_if_all_null_but = {
         
         'id',
         'subject_id'
+    },
+    'treatment': {
+        
+        'id',
+        'subject_id'
     }
 }
 
