@@ -20,7 +20,7 @@ study_primary_sites_input_tsv = path.join( input_dir, 'Study.primary_sites.tsv' 
 
 study_catalog_input_tsv = path.join( input_root, 'StudyCatalog', 'Study.tsv' )
 
-experimental_metadata_tsv = path.join( input_root, 'ExperimentalMetadata', 'ExperimentalMetadata.tsv' )
+experimental_metadata_to_study_run_metadata_tsv = path.join( input_root, 'ExperimentalMetadata', 'ExperimentalMetadata.study_run_metadata.tsv' )
 
 uistudy_tsv = path.join( input_root, 'UIStudy', 'UIStudy.tsv' )
 
@@ -247,7 +247,7 @@ with open( study_primary_site_output_tsv, 'w' ) as OUT:
 
 # Load the Study->instrument association.
 
-study_id_to_instrument = map_columns_one_to_many( experimental_metadata_tsv, 'study_id', 'instrument' )
+study_id_to_instrument = map_columns_one_to_many( experimental_metadata_to_study_run_metadata_tsv, 'study_id', 'instrument' )
 
 # Write the Study->instrument association.
 

@@ -6,7 +6,7 @@ import sys
 
 from os import makedirs, path, rename
 
-from cda_etl.lib import get_unique_values_from_tsv_column, sort_file_with_header
+from cda_etl.lib import get_unique_values_from_tsv_column, map_columns_one_to_many, sort_file_with_header
 
 # PARAMETERS
 
@@ -42,7 +42,15 @@ experimentalMetadata_json_output_file = f"{json_out_dir}/experimentalMetadata.js
 scalar_experimental_metadata_fields = (
     'experiment_type',
     'analytical_fraction',
-    'instrument',
+    # Asking for 'instrument' results in a 'bad request' error, new as of May 2025.
+    # 
+    # Solution: adjusted our code to use the 'protocol->instrument' field in embedded
+    # StudyRunMetadata records instead of trying to get this information at the top level.
+    # 
+    # Update: StudyRunMetadata->protocol is sometimes null [at least when retrieved from
+    # the experimentalMetadata() endpoint], so we had to supplement it with instrument data
+    # cached from upstream pulls from the fileMetadata() endpoint to get complete coverage.
+    #'instrument',
     'study_id',
     'study_submitter_id',
     'pdc_study_id'
@@ -109,6 +117,11 @@ scalar_file_fields = (
     'pdc_study_id'
 )
 
+
+# May 2025: We need to cache this data as it was extracted from the fileMetadata() endpoint, because it has vanished from the existing data accessible via the experimentalMetadata() endpoint (for some but not all studies) as of this month.
+
+cached_instruments_by_study_run_metadata_id = map_columns_one_to_many( path.join( output_root, 'FileMetadata', 'FileMetadata.tsv' ), 'study_run_metadata_id', 'instrument' )
+
 # May 2024: This is the only way to query experimentalMetadata() that doesn't lead to immediately pathological errors. The other two advertised filters (pdc_study_id and study_id) do not work.
 
 study_submitter_ids = get_unique_values_from_tsv_column( f"{output_root}/Study/Study.tsv", 'study_submitter_id' )
@@ -167,6 +180,10 @@ output_tsv_filenames = [
 
 output_tsvs = dict( zip( output_tsv_keywords, [ open(file_name, 'w') for file_name in output_tsv_filenames ] ) )
 
+# May 2025: This information is now sometimes no longer available from this endpoint; log each time we need to load it from FileMetadata results as a consequence of this new incompleteness.
+
+used_cached_instrument_data = set()
+
 with open(experimentalMetadata_json_output_file, 'w') as JSON:
     
     # Table headers.
@@ -204,6 +221,7 @@ with open(experimentalMetadata_json_output_file, 'w') as JSON:
                         }
                         protocol {
                             protocol_id
+                            instrument
                         }
                         aliquot_run_metadata {
                             ''' + '\n                            '.join(scalar_aliquot_run_metadata_fields) + '''
@@ -212,6 +230,7 @@ with open(experimentalMetadata_json_output_file, 'w') as JSON:
                             }
                             protocol {
                                 protocol_id
+                                instrument
                             }
                             study {
                                 study_id
@@ -229,6 +248,11 @@ with open(experimentalMetadata_json_output_file, 'w') as JSON:
         # of that Study's StudyRunMetadata records. Don't record repeats.
 
         seen_SRM_IDs = set()
+
+        # Track instruments by StudyRunMetadata object, since this information is no
+        # longer accessible at the top (ExperimentalMetadata) level.
+
+        instruments_by_SRM_ID = dict()
 
         # Send the experimentalMetadata() query to the API server.
 
@@ -277,14 +301,10 @@ with open(experimentalMetadata_json_output_file, 'w') as JSON:
                 
                 for study_run_metadata in experimental_metadata['study_run_metadata']:
                     
-                    # The experimentalMetadata() query associates ALL study_run_metadata records from a
-                    # given Study with EACH returned ExperimentalMetadata record. This is strange, but
-                    # we will nevertheless record the association output as received.
-
-                    print( *[experimental_metadata['study_id'], experimental_metadata['instrument'], study_run_metadata['study_run_metadata_id']], sep='\t', end='\n', file=output_tsvs['EXP_SRM'] )
-
                     if study_run_metadata['study_run_metadata_id'] not in seen_SRM_IDs:
                         
+                        # Update SRM metadata (and do it just once per observed record).
+
                         seen_SRM_IDs.add(study_run_metadata['study_run_metadata_id'])
 
                         study_run_metadata_row = list()
@@ -309,7 +329,21 @@ with open(experimentalMetadata_json_output_file, 'w') as JSON:
 
                         if study_run_metadata['protocol'] is not None:
                             
-                            print( *[study_run_metadata['study_run_metadata_id'], study_run_metadata['protocol']['protocol_id']], sep='\t', end='\n', file=output_tsvs['SRM_PROTOCOL'] )
+                            # This will be an array of dicts, one per protocol.
+
+                            for protocol in study_run_metadata['protocol']:
+                                
+                                print( *[study_run_metadata['study_run_metadata_id'], protocol['protocol_id']], sep='\t', end='\n', file=output_tsvs['SRM_PROTOCOL'] )
+
+                                if 'instrument' in protocol and protocol['instrument'] is not None and protocol['instrument'] != '':
+                                    
+                                    # Save the 'instrument' field, to be included in the ExperimentalMetadata->StudyRunMetadata output map.
+
+                                    if study_run_metadata['study_run_metadata_id'] not in instruments_by_SRM_ID:
+                                        
+                                        instruments_by_SRM_ID[ study_run_metadata['study_run_metadata_id'] ] = set()
+
+                                    instruments_by_SRM_ID[ study_run_metadata['study_run_metadata_id'] ].add( protocol['instrument'] )
 
                         if study_run_metadata['aliquot_run_metadata'] is not None and len(study_run_metadata['aliquot_run_metadata']) > 0:
                             
@@ -345,7 +379,11 @@ with open(experimentalMetadata_json_output_file, 'w') as JSON:
 
                                 if aliquot_run_metadata['protocol'] is not None:
                                     
-                                    print( *[aliquot_run_metadata['aliquot_run_metadata_id'], aliquot_run_metadata['protocol']['protocol_id']], sep='\t', end='\n', file=output_tsvs['ARM_PROTOCOL'] )
+                                    # This should be an array of dicts, one per protocol (although it is always null at time of writing, May 2025).
+
+                                    for protocol in aliquot_run_metadata['protocol']:
+                                        
+                                        print( *[aliquot_run_metadata['aliquot_run_metadata_id'], protocol['protocol_id']], sep='\t', end='\n', file=output_tsvs['ARM_PROTOCOL'] )
 
                                 if aliquot_run_metadata['study'] is not None:
                                     
@@ -370,6 +408,36 @@ with open(experimentalMetadata_json_output_file, 'w') as JSON:
                                         file_row.append('')
 
                                 print( *file_row, sep='\t', end='\n', file=output_tsvs['SRM_FILES'] )
+
+                    # The experimentalMetadata() query associates ALL study_run_metadata records from a
+                    # given Study with EACH returned ExperimentalMetadata record. This seems strange, but
+                    # we will nevertheless record the association output as received.
+
+                    if ( study_run_metadata['study_run_metadata_id'] not in instruments_by_SRM_ID or len( instruments_by_SRM_ID[study_run_metadata['study_run_metadata_id']] ) == 0 ) and study_run_metadata['study_run_metadata_id'] not in cached_instruments_by_study_run_metadata_id:
+                        
+                        sys.exit( f"FATAL: StudyRunMetadata ID {study_run_metadata['study_run_metadata_id']} is associated with no protocols with non-null 'instrument' records; this is unexpected and possibly pathological, please handle." )
+
+                    elif ( study_run_metadata['study_run_metadata_id'] not in instruments_by_SRM_ID or len( instruments_by_SRM_ID[study_run_metadata['study_run_metadata_id']] ) == 0 ):
+                        
+                        for instrument in sorted( cached_instruments_by_study_run_metadata_id[study_run_metadata['study_run_metadata_id']] ):
+                            
+                            used_cached_instrument_data.add( experimental_metadata['study_id'] )
+
+                            print( *[experimental_metadata['study_id'], instrument, study_run_metadata['study_run_metadata_id']], sep='\t', end='\n', file=output_tsvs['EXP_SRM'] )
+
+                    else:
+                        
+                        for instrument in sorted( instruments_by_SRM_ID[study_run_metadata['study_run_metadata_id']] ):
+                            
+                           print( *[experimental_metadata['study_id'], instrument, study_run_metadata['study_run_metadata_id']], sep='\t', end='\n', file=output_tsvs['EXP_SRM'] )
+
+if len( used_cached_instrument_data ) > 0:
+    
+    print( 'FYI: Loaded cached instrument metadata from FileMetadata results for the following studies:', file=sys.stderr )
+
+    for study_id in sorted( used_cached_instrument_data ):
+        
+        print( f"    {study_id}", file=sys.stderr )
 
 # Sort the rows in the TSV output files.
 
