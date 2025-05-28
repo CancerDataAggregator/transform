@@ -80,16 +80,22 @@ if len( match_list ) > 0:
 
 # Don't scan CDA release-metadata files if they've been built out of sequence;
 # also skip upstream_identifiers.tsv because it's not exposed to the user; also
-# skip association tables that introduce no new values.
+# skip association tables that introduce no new values; also skip info-redundant
+# *_nulls.tsv tables built only to speed up complex queries.
 
 files_to_skip = {
     
     'column_metadata.tsv',
+    'file_anatomic_site_nulls.tsv',
     'file_describes_subject.tsv',
     'file_in_project.tsv',
+    'file_tumor_vs_normal_nulls.tsv',
+    'mutation_nulls.tsv',
+    'observation_nulls.tsv',
     'project_in_project.tsv',
     'release_metadata.tsv',
     'subject_in_project.tsv',
+    'treatment_nulls.tsv',
     'upstream_identifiers.tsv'
 }
 

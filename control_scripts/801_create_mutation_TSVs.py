@@ -74,6 +74,6 @@ mtx = mutation_transformer(
     substitution_log_dir = substitution_log_dir
 )
 
-mtx.make_mutation_TSV()
+mtx.make_mutation_TSVs()
 
 

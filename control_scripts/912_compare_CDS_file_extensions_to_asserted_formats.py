@@ -21,7 +21,7 @@ global_extension_count = dict()
 
 # Stop whenever we encounter any one of these strings (irrespective of case) when
 # tokenizing filenames by splitting on '.' and walking backwards to construct
-# maximal useful extension sequences. Validated by hand 2024-12-04.
+# maximal useful extension sequences. Validated by hand 2025-03-19.
 
 safe_stoppers = {
     
@@ -85,6 +85,8 @@ for file_name in file_table_column_map:
         if ( ( re.search( r'^tiff?$', file_extension, re.IGNORECASE ) is not None or re.search( r'^tiff?\.', file_extension, re.IGNORECASE ) is not None ) and suffix_component.lower() != 'ome' ) \
             or re.search( r'_fastqc$', suffix_component, re.IGNORECASE ) is not None \
             or re.search( r'_msisensor$', suffix_component, re.IGNORECASE ) is not None \
+            or re.search( r'_filtered_feature_bc_matrix$', suffix_component, re.IGNORECASE ) is not None \
+            or re.search( r'_filtered_gene_bc_matrices_', suffix_component, re.IGNORECASE ) is not None \
             or re.search( r'^[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}$', suffix_component ) is not None:
             
             break

@@ -34,10 +34,6 @@ column_metadata_fields = [
 
 # EXECUTION
 
-if not path.isdir( tsv_dir ):
-    
-    makedirs( tsv_dir )
-
 # Make column_metadata.tsv.
 
 column_metadata = get_column_metadata()

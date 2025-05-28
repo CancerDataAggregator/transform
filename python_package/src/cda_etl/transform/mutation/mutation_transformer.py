@@ -35,13 +35,16 @@ class mutation_transformer:
             'PDC'
         ]
 
+        self.provenance_columns = [ f"data_at_{data_source.lower()}" for data_source in sorted( self.cda_data_sources ) ]
+        self.provenance_columns.append( 'data_source_count' )
+
         self.input_dir = path.join( 'extracted_data', 'mutation' )
         self.merged_cda_dir = path.join( 'cda_tsvs', 'last_merge' )
 
         self.cda_table_files = {
             
             'mutation' : path.join( self.merged_cda_dir, 'mutation.tsv.gz' ),
-            'subject' : path.join( self.merged_cda_dir, 'subject.tsv' ),
+            'mutation_nulls' : path.join( self.merged_cda_dir, 'mutation_nulls.tsv' ),
             'subject_in_project': path.join( self.merged_cda_dir, 'subject_in_project.tsv' ),
             'upstream_identifiers': path.join( self.merged_cda_dir, 'upstream_identifiers.tsv' )
         }
@@ -53,8 +56,6 @@ class mutation_transformer:
         harmonization_map_index = path.join( harmonization_map_dir, '000_cda_column_targets.tsv' )
 
         self.delete_everywhere = get_universal_value_deletion_patterns()
-
-        ### EXAMINE OUTPUTS: remove_possible_unsorted_dupes = True
 
         # Load harmonization value maps by column.
 
@@ -124,7 +125,7 @@ class mutation_transformer:
 
         self.display_increment = 500000
 
-    def make_mutation_TSV( self ):
+    def make_mutation_TSVs( self ):
         
         cda_subject_alias_to_project_alias = map_columns_one_to_many( self.cda_table_files['subject_in_project'], 'subject_alias', 'project_alias' )
 
@@ -178,39 +179,12 @@ class mutation_transformer:
                             
                             sys.exit( f"FATAL: GDC project_id {project_id} and case_submitter_id {case_submitter_id} mapped to multiple CDA subjects, including aliases {subject_alias} and {gdc_project_id_and_case_submitter_id_to_cda_subject_alias[project_id][case_submitter_id]}; assumptions violated, cannot continue. Aborting." )
 
-        # Load provenance for target subjects.
-
-        subject_provenance = dict()
-
-        provenance_column_set = set()
-
-        with open( self.cda_table_files['subject'] ) as IN:
-            
-            column_names = next( IN ).rstrip( '\n' ).split( '\t' )
-
-            for next_line in IN:
-                
-                record = dict( zip( column_names, next_line.rstrip( '\n' ).split( '\t' ) ) )
-
-                subject_alias = record['id_alias']
-
-                subject_provenance[subject_alias] = dict()
-
-                for column in column_names:
-                    
-                    if column == 'data_source_count' or re.search( r'^data_at_', column ) is not None:
-                        
-                        if column != 'data_source_count':
-                            
-                            provenance_column_set.add( column )
-
-                        subject_provenance[subject_alias][column] = record[column]
-
-        provenance_columns = sorted( provenance_column_set ) + [ 'data_source_count' ]
+        # Keep track, columnwise, of always-null mutation fields by subject.
+        mutation_nulls = dict()
 
         with gzip.open( self.cda_table_files['mutation'], 'wt' ) as OUT:
             
-            mutation_output_columns = [ 'id_alias', 'subject_alias' ] + self.columns_to_keep + provenance_columns
+            mutation_output_columns = [ 'id_alias', 'subject_alias' ] + self.columns_to_keep + self.provenance_columns
 
             print( *mutation_output_columns, sep='\t', file=OUT )
 
@@ -264,6 +238,10 @@ class mutation_transformer:
 
                                 cda_subject_alias = gdc_project_id_and_case_submitter_id_to_cda_subject_alias[project_short_name][case_barcode]
 
+                                # Keep track, columnwise, of always-null mutation fields by subject.
+                                if cda_subject_alias not in mutation_nulls:
+                                    mutation_nulls[cda_subject_alias] = { column_to_keep : True for column_to_keep in self.columns_to_keep }
+
                                 result_row = [ cda_mutation_alias, cda_subject_alias ]
 
                                 for column in self.columns_to_keep:
@@ -277,16 +255,6 @@ class mutation_transformer:
                                             old_value = ''
 
                                         new_value = ''
-
-                                        # Nitpick about capitalization for boolean literals in postgresql INSERTs (while refusing to capitalize "Boolean")
-
-                                        if str( old_value ) == 'False':
-                                            
-                                            new_value = 'false'
-
-                                        elif str( old_value ) == 'True':
-                                            
-                                            new_value = 'true'
 
                                         # Harmonize values as directed by the contents of the `harmonization_map_index` file (cf. __init__() definition above).
 
@@ -356,15 +324,32 @@ class mutation_transformer:
 
                                         result_row.append( new_value )
 
+                                        # Keep track, columnwise, of always-null mutation fields by subject.
+                                        if new_value != '':
+                                            mutation_nulls[cda_subject_alias][column] = False
+
                                     else:
                                         
                                         # `column` didn't appear at all in the loaded record.
 
                                         result_row.append( '' )
 
-                                for provenance_column in provenance_columns:
+                                for provenance_column in self.provenance_columns:
                                     
-                                    result_row.append( subject_provenance[cda_subject_alias][provenance_column] )
+                                    # This data only ever comes from GDC and we do not at time of writing (2025-04)
+                                    # expect this to change. If it does, this will need rewriting.
+
+                                    if provenance_column == 'data_at_gdc':
+                                        
+                                        result_row.append( True )
+
+                                    elif provenance_column == 'data_source_count':
+                                        
+                                        result_row.append( 1 )
+
+                                    else:
+                                        
+                                        result_row.append( False )
 
                                 # Did we delete everything of possible use?
 
@@ -409,6 +394,29 @@ class mutation_transformer:
                             print( f"   ...processed {line_count} lines...", file=sys.stderr )
 
                 print( f"done. Processed {line_count} lines; skipped {skipped_null} due to missing records; skipped {skipped_nulled} due to harmonization deleting all row data; and skipped {skipped_unfound} due to unmatched case barcodes.", end='\n\n', file=sys.stderr )
+
+        # Write the 'mutation_nulls' table.
+
+        print( 'Writing mutation_nulls table...', end='', file=sys.stderr )
+
+        with open( self.cda_table_files['mutation_nulls'], 'w' ) as OUT:
+            
+            print( *( [ 'subject_alias' ] + [ f"{column_to_keep}_null" for column_to_keep in self.columns_to_keep ] ), sep='\t', file=OUT )
+
+            # Note assumption: every subject is in at least one project. If this is ever not true, we'll end up
+            # missing rows for projectless subjects in the 'mutation_nulls' table.
+
+            for subject_alias in sorted( cda_subject_alias_to_project_alias ):
+                
+                if subject_alias not in mutation_nulls:
+                    
+                    print( *( [ subject_alias ] + ( [ True ] * len( self.columns_to_keep ) ) ), sep='\t', file=OUT )
+
+                else:
+                    
+                    print( *( [ subject_alias ] + [ mutation_nulls[subject_alias][column_to_keep] for column_to_keep in self.columns_to_keep ] ), sep='\t', file=OUT )
+
+        print( 'done.', end='\n\n', file=sys.stderr )
 
         # Remove any duplicate rows created by value harmonization.
 

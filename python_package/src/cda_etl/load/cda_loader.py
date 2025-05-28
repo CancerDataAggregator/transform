@@ -2,6 +2,8 @@ import gzip
 import re
 import sys
 
+from cda_etl.lib import get_unique_values_from_tsv_column
+
 from os import listdir, makedirs, path
 
 class CDA_loader:
@@ -36,6 +38,85 @@ class CDA_loader:
             if not path.isdir( target_dir ):
                 
                 makedirs( target_dir )
+
+    def make_null_TSV( self, input_dir, input_table ):
+        
+        input_tsv = path.join( input_dir, f"{input_table}.tsv" )
+
+        output_tsv = path.join( input_dir, f"{input_table}_nulls.tsv" )
+
+        print( f"Making {output_tsv}...", end='', file=sys.stderr )
+
+        try:
+            
+            with open( input_tsv ) as IN:
+                
+                colnames = next( IN ).rstrip( '\n' ).split( '\t' )
+
+                foreign_table = ''
+
+                columns_to_keep = list()
+
+                for colname in colnames:
+                    
+                    if foreign_table == '' and re.search( r'^.+_alias$', colname ) is None:
+                        sys.exit( f"Cannot find foreign table from which '{input_table}' is derived; aborting. Observed columns:\n\n{colnames}\n\n" )
+
+                    elif foreign_table == '' and colname != 'id_alias':
+                        foreign_table = re.search( r'^(.+)_alias$', colname ).group(1)
+
+                    elif foreign_table != '' and colname != 'data_source_count' and re.search( r'^data_at_.+$', colname ) is None:
+                        columns_to_keep.append( colname )
+
+                foreign_alias_column_name = f"{foreign_table}_alias"
+
+                foreign_table_aliases = get_unique_values_from_tsv_column( path.join( input_dir, f"{foreign_table}_in_project.tsv" ), foreign_alias_column_name )
+
+                null_data = dict()
+
+                for next_line in IN:
+                    
+                    record = dict( zip( colnames, next_line.rstrip( '\n' ).split( '\t' ) ) )
+
+                    foreign_alias = record[foreign_alias_column_name]
+
+                    if foreign_alias not in null_data:
+                        null_data[foreign_alias] = dict( zip( columns_to_keep, [ True ] * len( columns_to_keep ) ) )
+
+                    for colname in columns_to_keep:
+                        if record[colname] is not None and record[colname] != '':
+                            null_data[foreign_alias][colname] = False
+
+        except Exception as e:
+            sys.exit( e )
+
+        with open( output_tsv, 'w' ) as OUT:
+            
+            if input_table in { 'file_anatomic_site', 'file_tumor_vs_normal' }:
+                
+                # Just list one column of file_alias values whose files have none of the specified tags.
+                print( 'file_alias', file=OUT )
+
+                for file_alias in foreign_table_aliases:
+                    if file_alias not in null_data:
+                        print( file_alias, file=OUT )
+
+            else:
+                
+                print( *( [ foreign_alias_column_name ] + [ f"{column_to_keep}_null" for column_to_keep in columns_to_keep ] ), sep='\t', file=OUT )
+
+                for foreign_alias in foreign_table_aliases:
+                    
+                    if foreign_alias not in null_data:
+                        
+                        # We never saw this `foreign_alias`. It has no records in `input_table`.
+                        print( *( [ foreign_alias ] + ( [ True ] * len( columns_to_keep ) ) ), sep='\t', file=OUT )
+
+                    else:
+                        
+                        print( *( [ foreign_alias ] + [ null_data[foreign_alias][column_to_keep] for column_to_keep in columns_to_keep ] ), sep='\t', file=OUT )
+
+        print( 'done.', file=sys.stderr )
 
     def transform_dir_to_SQL( self, input_dir ):
         
