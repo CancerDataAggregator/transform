@@ -9,13 +9,13 @@ from cda_etl.lib import get_idc_extraction_fields
 
 # ARGUMENT
 
-# An IDC version string (e.g. 'v20') is required.
+# An IDC version string (e.g. 'v21') is required.
 # 
 # If the length of the argument list to this script is zero, fail.
 
 if len( sys.argv ) != 2:
     
-    sys.exit( f"\n   [{len( sys.argv )}] Usage: {sys.argv[0]} <IDC version string, e.g. v20>\n" )
+    sys.exit( f"\n   [{len( sys.argv )}] Usage: {sys.argv[0]} <IDC version string, e.g. v21>\n" )
 
 version_string = sys.argv[1]
 
@@ -28,11 +28,11 @@ version_string = sys.argv[1]
 # compression ratio depends on the order in which data is scanned during
 # zip-style compression, and row order differs).
 
-bq_project_name = 'broad-cda-dev'
+bq_project_name = YOUR_PROJECT_NAME
 
-intermediate_bucket = 'gdc-bq-sample-bucket'
+intermediate_bucket = YOUR_TEMP_BUCKET
 
-target_table_path = f"{bq_project_name}.github_testing.idc_patient_testing"
+target_table_path = YOUR_TARGET_TABLE
 
 service_account_key_file = 'GCS-service-account-key.json'
 
@@ -42,31 +42,27 @@ if not path.isfile( service_account_key_file ):
 
 target_field_lists = get_idc_extraction_fields()
 
-for field_dict in target_field_lists:
+for source_table_name in target_field_lists:
     
-    # To be clear(ish), there's only ever one table name per dict.
+    print( '==================================================================================================', file=sys.stderr )
 
-    for source_table_name in field_dict:
+    print( f"Extracting {source_table_name} from IDC {version_string}...", file=sys.stderr )
+
+    extractor = IDC_extractor(
         
-        print( '==================================================================================================', file=sys.stderr )
+        gsa_key = service_account_key_file,
+        source_version = version_string,
+        source_table = source_table_name,
+        dest_table = target_table_path,
+        dest_bucket = intermediate_bucket,
+        dest_bucket_filename = f"{source_table_name}-*.jsonl.gz",
+        output_filename = f"{source_table_name}.jsonl.gz"
+    )
 
-        print( f"Extracting {source_table_name} from IDC {version_string}...", file=sys.stderr )
+    extractor.query_idc_to_table( fields_to_pull=target_field_lists[source_table_name] )
 
-        extractor = IDC_extractor(
-            
-            gsa_key = service_account_key_file,
-            source_version = version_string,
-            source_table = source_table_name,
-            dest_table = target_table_path,
-            dest_bucket = intermediate_bucket,
-            dest_bucket_filename = f"{source_table_name}-*.jsonl.gz",
-            output_filename = f"{source_table_name}.jsonl.gz"
-        )
+    extractor.extract_table_to_bucket()
 
-        extractor.query_idc_to_table( fields_to_pull=field_dict[source_table_name] )
-
-        extractor.extract_table_to_bucket()
-
-        extractor.download_bucket_data()
+    extractor.download_bucket_data()
 
 

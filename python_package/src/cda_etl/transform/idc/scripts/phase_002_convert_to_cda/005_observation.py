@@ -22,6 +22,14 @@ original_collections_metadata_input_tsv = path.join( tsv_input_root, 'original_c
 
 tcga_clinical_input_tsv = path.join( tsv_input_root, 'tcga_clinical_rel9.tsv' )
 
+# ICD-O-3 Topography (anatomy) codes.
+
+icd_o_3_dir = path.join( 'auxiliary_metadata', '__ontology_reference', 'ICD-O-3' )
+
+icd_topography_map_tsv = path.join( icd_o_3_dir, 'icd_topography.tsv' )
+
+icd_topography_map = map_columns_one_to_one( icd_topography_map_tsv, 'icd_o_3_code', 'icd_o_3_preferred_name' )
+
 # CDA TSVs.
 
 tsv_output_root = path.join( 'cda_tsvs', f"{upstream_data_source.lower()}_000_unharmonized" )
@@ -105,32 +113,70 @@ case = load_tsv_as_dict( idc_case_input_tsv )
 
 collection_cancer_type_string = map_columns_one_to_one( original_collections_metadata_input_tsv, 'collection_id', 'CancerTypes' )
 
-collection_tumor_location = map_columns_one_to_one( dicom_series_input_tsv, 'collection_id', 'collection_tumorLocation' )
+current_cda_observation_id_index = 0
 
-for subject_id in original_idc_case_ids:
+with open( dicom_series_input_tsv ) as IN:
     
-    for idc_case_id in original_idc_case_ids[subject_id]:
+    # crdc_series_uuid	SeriesDescription	Modality	PatientID	idc_case_id	PatientSpeciesDescription	PatientBirthDate	PatientSex	EthnicGroup	StudyDate	BodyPartExamined	collection_id	collection_tumorLocation	instance_count	total_byte_size
+
+    column_names = next( IN ).rstrip( '\n' ).split( '\t' )
+
+    for next_line in IN:
         
-        cda_observation_records[f"{upstream_data_source}.{subject_id}.{idc_case_id}.sex_and_anatomy_obs"] = {
+        current_series_record = dict( zip( column_names, next_line.rstrip( '\n' ).split( '\t' ) ) )
+
+        idc_case_id = current_series_record['idc_case_id']
+
+        subject_id = idc_case_id_to_cda_subject_id[idc_case_id]
+
+        year_of_observation = ''
+
+        if current_series_record['StudyDate'] is not None and current_series_record['StudyDate'] != '':
             
-            'id': f"{upstream_data_source}.{subject_id}.{idc_case_id}.sex_and_anatomy_obs",
-            'subject_id': subject_id,
-            'vital_status': '',
-            'sex': case[idc_case_id]['PatientSex'] if case[idc_case_id]['PatientSex'] is not None else '',
-            'year_of_observation': '',
-            'diagnosis': collection_cancer_type_string[case[idc_case_id]['collection_id']],
-            'morphology': '',
-            'grade': '',
-            'stage': '',
-            'observed_anatomic_site': collection_tumor_location[case[idc_case_id]['collection_id']],
-            'resection_anatomic_site': ''
-        }
+            year_of_observation = re.sub( r'^(\d+)-\d+-\d+$', r'\1', current_series_record['StudyDate'] )
+
+            if re.search( r'^\d\d\d\d$', year_of_observation ) is None:
+                
+                sys.exit( f"FATAL: Could not parse year from idc_case_id '{idc_case_id}' StudyDate value '{current_series_record['StudyDate']}'; aborting.")
+
+        observed_anatomic_sites = set()
+
+        if current_series_record['collection_tumorLocation'] is not None and current_series_record['collection_tumorLocation'] != '':
+            
+            observed_anatomic_sites.add( current_series_record['collection_tumorLocation'] )
+
+        if current_series_record['BodyPartExamined'] is not None and current_series_record['BodyPartExamined'] != '':
+            
+            observed_anatomic_sites.add( current_series_record['BodyPartExamined'] )
+
+        if len( observed_anatomic_sites ) == 0:
+            
+            observed_anatomic_sites.add( '' )
+
+        for observed_anatomic_site in observed_anatomic_sites:
+            
+            cda_observation_records[f"{upstream_data_source}.{subject_id}.{idc_case_id}.sex_year_diag_anat_obs.{current_cda_observation_id_index}"] = {
+                
+                'id': f"{upstream_data_source}.{subject_id}.{idc_case_id}.sex_year_diag_anat_obs.{current_cda_observation_id_index}",
+                'subject_id': subject_id,
+                'vital_status': '',
+                'sex': current_series_record['PatientSex'] if current_series_record['PatientSex'] is not None else '',
+                'year_of_observation': year_of_observation,
+                'diagnosis': collection_cancer_type_string[current_series_record['collection_id']],
+                'morphology': '',
+                'grade': '',
+                'stage': '',
+                'observed_anatomic_site': observed_anatomic_site,
+                'resection_anatomic_site': ''
+            }
+
+            current_cda_observation_id_index = current_cda_observation_id_index + 1
 
 print( 'done.', file=sys.stderr )
 
 print( f"[{get_current_timestamp()}] Loading observation metadata from tcga_clinical_rel9...", end='', file=sys.stderr )
 
-# Confirmed: exactly one row per submitter_case_id at time of writing (Sep 2024).
+# Confirmed: exactly one row per submitter_case_id at time of writing (Jun 2025).
 
 tcga_clinical = load_tsv_as_dict( tcga_clinical_input_tsv )
 
@@ -154,6 +200,20 @@ for subject_id in original_idc_case_ids:
                 
                 stage_value = tcga_record['clinical_stage']
 
+            observed_anatomic_site_value = ''
+
+            if tcga_record['icd_o_3_site'] is not None and tcga_record['icd_o_3_site'] != '':
+                
+                if tcga_record['icd_o_3_site'] not in icd_topography_map:
+                    
+                    sys.exit( f"FATAL: ICD-O-3 Topography code '{tcga_record['icd_o_3_site']}' not found in code map; please handle." )
+
+                observed_anatomic_site_value = icd_topography_map[tcga_record['icd_o_3_site']]
+
+            elif tcga_record['tumor_tissue_site'] is not None and tcga_record['tumor_tissue_site'] != '':
+                
+                observed_anatomic_site_value = tcga_record['tumor_tissue_site']
+
             cda_observation_records[f"{upstream_data_source}.{subject_id}.{idc_case_id}.tcga_clinical_obs"] = {
                 
                 'id': f"{upstream_data_source}.{subject_id}.{idc_case_id}.tcga_clinical_obs",
@@ -165,7 +225,7 @@ for subject_id in original_idc_case_ids:
                 'morphology': tcga_record['icd_o_3_histology'] if tcga_record['icd_o_3_histology'] is not None else '',
                 'grade': tcga_record['neoplasm_histologic_grade'] if tcga_record['neoplasm_histologic_grade'] is not None else '',
                 'stage': stage_value,
-                'observed_anatomic_site': '',
+                'observed_anatomic_site': observed_anatomic_site_value,
                 'resection_anatomic_site': ''
             }
 

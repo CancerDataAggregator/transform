@@ -1368,6 +1368,8 @@ def columns_to_count( data_source ):
                 'PatientSpeciesDescription',
                 'PatientSex',
                 'EthnicGroup',
+                'StudyDate',
+                'BodyPartExamined',
                 'collection_id',
                 'collection_tumorLocation'
             ],
@@ -1388,6 +1390,7 @@ def columns_to_count( data_source ):
                 
                 'race',
                 'gender',
+                'age_at_diagnosis',
                 'vital_status',
                 'year_of_diagnosis',
                 'disease_code',
@@ -2642,91 +2645,88 @@ def get_dbgap_study_metadata( dbgap_study_id ):
 
 def get_idc_extraction_fields( ):
     
-    target_field_lists_by_table = [
+    target_field_lists_by_table = {
         
-        {
-            'auxiliary_metadata': [
-                
-                'idc_case_id',
-                'submitter_case_id'
-            ]
-        },
-        {
-            'original_collections_metadata': [
-                
-                'Program',
-                'collection_id',
-                'collection_name',
-                'CancerTypes'
-            ]
-        },
-        {
-            'tcga_biospecimen_rel9': [
-                
-                'sample_barcode',
-                'case_barcode',
-                'days_to_collection',
-                'sample_type_name',
-                'case_gdc_id',
-                'sample_gdc_id',
-                'program_name',
-                'project_short_name'
-            ]
-        },
-        {
-            'tcga_clinical_rel9': [
-                
-                'case_barcode',
-                'race',
-                'gender',
-                'days_to_birth',
-                'vital_status',
-                'year_of_diagnosis',
-                'disease_code',
-                'icd_o_3_histology',
-                'neoplasm_histologic_grade',
-                'clinical_stage',
-                'pathologic_stage',
-                'histological_type',
-                'days_to_death',
-                'case_gdc_id',
-                'anatomic_neoplasm_subdivision',
-                'ethnicity',
-                'icd_10',
-                'icd_o_3_site',
-                'person_neoplasm_cancer_status',
-                'tumor_tissue_site',
-                'tumor_type'
-            ]
-        },
-        {
-            'dicom_all': [
-                
-                'SOPInstanceUID',
-                'gcs_url',
-                'SOPClassUID',
-                'crdc_instance_uuid',
-                'instance_size',
-                'instance_hash',
-                'Modality',
-                'PatientSpeciesDescription',
-                'PatientBirthDate',
-                'PatientSex',
-                'EthnicGroup',
-                'crdc_series_uuid',
-                'SeriesDescription',
-                'collection_id',
-                'PatientID',
-                'idc_case_id',
-                'collection_tumorLocation',
-                'AnatomicRegionSequence',
-                'SpecimenDescriptionSequence',
-                'SegmentSequence',
-                'RTROIObservationsSequence',
-                'SharedFunctionalGroupsSequence'
-            ]
-        }
-    ]
+        'auxiliary_metadata': [
+            
+            'idc_case_id',
+            'submitter_case_id'
+        ],
+        'original_collections_metadata': [
+            
+            'Program',
+            'collection_id',
+            'collection_name',
+            'CancerTypes'
+        ],
+        'tcga_biospecimen_rel9': [
+            
+            'sample_barcode',
+            'case_barcode',
+            'days_to_collection',
+            'sample_type_name',
+            'case_gdc_id',
+            'sample_gdc_id',
+            'program_name',
+            'project_short_name'
+        ],
+        'tcga_clinical_rel9': [
+            
+            'case_barcode',
+            'race',
+            'gender',
+            'age_at_diagnosis',
+            'days_to_birth',
+            'days_to_death',
+            'days_to_initial_pathologic_diagnosis',
+            'days_to_last_followup',
+            'days_to_last_known_alive',
+            'days_to_submitted_specimen_dx',
+            'vital_status',
+            'year_of_diagnosis',
+            'disease_code',
+            'icd_o_3_histology',
+            'neoplasm_histologic_grade',
+            'clinical_stage',
+            'pathologic_stage',
+            'histological_type',
+            'case_gdc_id',
+            'anatomic_neoplasm_subdivision',
+            'ethnicity',
+            'icd_10',
+            'icd_o_3_site',
+            'person_neoplasm_cancer_status',
+            'tumor_tissue_site',
+            'tumor_type'
+        ],
+        'dicom_all': [
+            
+            'SOPInstanceUID',
+            'gcs_url',
+            'SOPClassUID',
+            'crdc_instance_uuid',
+            'instance_size',
+            'instance_hash',
+            'Modality',
+            'PatientSpeciesDescription',
+            'PatientBirthDate',
+            'PatientSex',
+            'EthnicGroup',
+            'crdc_series_uuid',
+            'SeriesDescription',
+            'StudyDate',
+            'collection_id',
+            'PatientID',
+            'idc_case_id',
+            'collection_tumorLocation',
+            'BodyPartExamined',
+            'AnatomicRegionSequence',
+            'SpecimenDescriptionSequence',
+            'SegmentSequence',
+            'RTROIObservationsSequence',
+            'SharedFunctionalGroupsSequence'
+        ]
+    }
 
     return target_field_lists_by_table
 

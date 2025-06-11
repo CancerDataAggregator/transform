@@ -7,7 +7,7 @@ import sys
 
 from os import path, makedirs
 
-from cda_etl.lib import get_current_timestamp
+from cda_etl.lib import get_current_timestamp, get_idc_extraction_fields
 
 # PARAMETERS
 
@@ -54,6 +54,8 @@ series_metadata_fields = [
     'PatientBirthDate',
     'PatientSex',
     'EthnicGroup',
+    'StudyDate',
+    'BodyPartExamined',
     'collection_id',
     'collection_tumorLocation'
 ]
@@ -68,6 +70,25 @@ instance_metadata_fields = [
     'instance_hash',
     'SOPClassUID'
 ]
+
+sequence_fields = [
+    
+    'AnatomicRegionSequence',
+    'SpecimenDescriptionSequence',
+    'SegmentSequence',
+    'RTROIObservationsSequence',
+    'SharedFunctionalGroupsSequence'
+]
+
+# Make sure we use everything we extract.
+
+toplevel_extraction_fields = get_idc_extraction_fields()[table_name]
+
+for field_name in toplevel_extraction_fields:
+    
+    if field_name not in series_metadata_fields and field_name not in instance_metadata_fields and field_name not in sequence_fields:
+        
+        print( f"[{get_current_timestamp()}] WARNING: Scalar field '{field_name}' extracted from {table_name} but unused downstream.", file=sys.stderr )
 
 # EXECUTION
 
@@ -95,6 +116,8 @@ print( f"[{get_current_timestamp()}] Scanning {table_name} for anatomy and tumor
 
 series_anatomy_instance_counts_by_value = {
     
+    'BodyPartExamined': dict(),
+    'collection_tumorLocation': dict(),
     'AnatomicRegionSequence.CodeMeaning': dict(),
     'SpecimenDescriptionSequence.PrimaryAnatomicStructureSequence.CodeMeaning': dict(),
     'RTROIObservationsSequence.AnatomicRegionSequence.CodeMeaning': dict(),
@@ -252,6 +275,44 @@ with gzip.open( input_file ) as IN, gzip.open( instance_output_file, 'wt' ) as O
         # Load anatomy annotations and aggregate by series.
         ########################################################################
 
+        # dicom_all.BodyPartExamined
+
+        bpe_value = series[series_id]['BodyPartExamined']
+
+        if bpe_value != '':
+            
+            if series_id not in series_anatomy_instance_counts_by_value['BodyPartExamined']:
+                
+                series_anatomy_instance_counts_by_value['BodyPartExamined'][series_id] = dict()
+
+            if bpe_value not in series_anatomy_instance_counts_by_value['BodyPartExamined'][series_id]:
+                
+                series_anatomy_instance_counts_by_value['BodyPartExamined'][series_id][bpe_value] = 1
+
+            else:
+                
+                series_anatomy_instance_counts_by_value['BodyPartExamined'][series_id][bpe_value] = series_anatomy_instance_counts_by_value['BodyPartExamined'][series_id][bpe_value] + 1
+
+        # dicom_all.collection_tumorLocation
+
+        ctl_value = series[series_id]['collection_tumorLocation']
+
+        if ctl_value != '':
+            
+            if series_id not in series_anatomy_instance_counts_by_value['collection_tumorLocation']:
+                
+                series_anatomy_instance_counts_by_value['collection_tumorLocation'][series_id] = dict()
+
+            if ctl_value not in series_anatomy_instance_counts_by_value['collection_tumorLocation'][series_id]:
+                
+                series_anatomy_instance_counts_by_value['collection_tumorLocation'][series_id][ctl_value] = 1
+
+            else:
+                
+                series_anatomy_instance_counts_by_value['collection_tumorLocation'][series_id][ctl_value] = series_anatomy_instance_counts_by_value['collection_tumorLocation'][series_id][ctl_value] + 1
+
+        # dicom_all.AnatomicRegionSequence.CodeMeaning
+        # 
         # The observed length of this array is always either 0 or 1 at time of writing (September 2024). We cover the fully general array structure anyway. Why not?
 
         if 'AnatomicRegionSequence' in record and record['AnatomicRegionSequence'] is not None and len( record['AnatomicRegionSequence'] ) > 0:
@@ -274,6 +335,8 @@ with gzip.open( input_file ) as IN, gzip.open( instance_output_file, 'wt' ) as O
                         
                         series_anatomy_instance_counts_by_value['AnatomicRegionSequence.CodeMeaning'][series_id][ars_value] = series_anatomy_instance_counts_by_value['AnatomicRegionSequence.CodeMeaning'][series_id][ars_value] + 1
 
+        # dicom_all.SpecimenDescriptionSequence.PrimaryAnatomicStructureSequence.CodeMeaning
+        # 
         # The observed length of this array is always either 0 or 1 at time of writing (September 2024). We cover the fully general array structure anyway. Why not?
 
         if 'SpecimenDescriptionSequence' in record and record['SpecimenDescriptionSequence'] is not None and len( record['SpecimenDescriptionSequence'] ) > 0:
@@ -300,6 +363,8 @@ with gzip.open( input_file ) as IN, gzip.open( instance_output_file, 'wt' ) as O
                                 
                                 series_anatomy_instance_counts_by_value['SpecimenDescriptionSequence.PrimaryAnatomicStructureSequence.CodeMeaning'][series_id][sds_value] = series_anatomy_instance_counts_by_value['SpecimenDescriptionSequence.PrimaryAnatomicStructureSequence.CodeMeaning'][series_id][sds_value] + 1
 
+        # dicom_all.RTROIObservationsSequence.AnatomicRegionSequence.CodeMeaning
+        # 
         # At time of writing (September 2024), this array is nonzero for 4,627 (of about 45M) instance records; its length distribution looks like { 1: 1906, 2: 467, 3: 295, 4: 619, 5: 634, >5: 706, >10: 413, >20: 362, >50: 0 }.
 
         if 'RTROIObservationsSequence' in record and record['RTROIObservationsSequence'] is not None and len( record['RTROIObservationsSequence'] ) > 0:
@@ -325,6 +390,8 @@ with gzip.open( input_file ) as IN, gzip.open( instance_output_file, 'wt' ) as O
                             else:
                                 
                                 series_anatomy_instance_counts_by_value['RTROIObservationsSequence.AnatomicRegionSequence.CodeMeaning'][series_id][rtroi_value] = series_anatomy_instance_counts_by_value['RTROIObservationsSequence.AnatomicRegionSequence.CodeMeaning'][series_id][rtroi_value] + 1
+
+        # dicom_all.SharedFunctionalGroupsSequence.FrameAnatomySequence.AnatomicRegionSequence.CodeMeaning
 
         if 'SharedFunctionalGroupsSequence' in record and record['SharedFunctionalGroupsSequence'] is not None and len( record['SharedFunctionalGroupsSequence'] ) > 0:
             
@@ -358,6 +425,8 @@ with gzip.open( input_file ) as IN, gzip.open( instance_output_file, 'wt' ) as O
         # Load tumor_vs_normal annotations and aggregate by series.
         ########################################################################
 
+        # dicom_all.SpecimenDescriptionSequence.PrimaryAnatomicStructureSequence.PrimaryAnatomicStructureModifierSequence.CodeMeaning
+        # 
         # The observed length of this array is always either 0 or 1 at time of writing (September 2024). We cover the fully general array structure anyway. Why not?
 
         if 'SpecimenDescriptionSequence' in record and record['SpecimenDescriptionSequence'] is not None and len( record['SpecimenDescriptionSequence'] ) > 0:

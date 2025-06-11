@@ -5,6 +5,8 @@ import jsonlines
 
 from os import path, makedirs
 
+from cda_etl.lib import get_idc_extraction_fields
+
 # PARAMETERS
 
 extraction_root = path.join( 'extracted_data', 'idc' )
@@ -15,11 +17,7 @@ table_name = 'auxiliary_metadata'
 
 input_file = path.join( jsonl_input_dir, f"{table_name}.jsonl.gz" )
 
-toplevel_extraction_fields = [
-    
-    'idc_case_id',
-    'submitter_case_id'
-]
+toplevel_extraction_fields = get_idc_extraction_fields()[table_name]
 
 output_dir = extraction_root
 

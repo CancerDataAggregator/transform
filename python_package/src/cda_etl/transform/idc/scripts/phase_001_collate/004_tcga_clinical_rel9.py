@@ -5,6 +5,8 @@ import jsonlines
 
 from os import path, makedirs
 
+from cda_etl.lib import get_idc_extraction_fields
+
 # PARAMETERS
 
 extraction_root = path.join( 'extracted_data', 'idc' )
@@ -15,30 +17,7 @@ table_name = 'tcga_clinical_rel9'
 
 input_file = path.join( jsonl_input_dir, f"{table_name}.jsonl.gz" )
 
-toplevel_extraction_fields = [
-    
-    'case_barcode',
-    'race',
-    'gender',
-    'days_to_birth',
-    'vital_status',
-    'year_of_diagnosis',
-    'disease_code',
-    'icd_o_3_histology',
-    'neoplasm_histologic_grade',
-    'clinical_stage',
-    'pathologic_stage',
-    'histological_type',
-    'days_to_death',
-    'case_gdc_id',
-    'anatomic_neoplasm_subdivision',
-    'ethnicity',
-    'icd_10',
-    'icd_o_3_site',
-    'person_neoplasm_cancer_status',
-    'tumor_tissue_site',
-    'tumor_type'
-]
+toplevel_extraction_fields = get_idc_extraction_fields()[table_name]
 
 output_dir = extraction_root
 
