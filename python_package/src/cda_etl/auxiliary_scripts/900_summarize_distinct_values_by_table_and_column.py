@@ -49,21 +49,30 @@ if len( match_list ) > 0:
     output_dir = match_list[0]
 
 # Don't scan CDA release-metadata files if they've been built out of sequence;
-# also skip upstream_identifiers.tsv because it's not exposed to the user; also
-# skip association tables that introduce no new values; also skip dicom_instance.tsv.gz
-# and dicom_series.dicom_all.crdc_instance_uuid.tsv because there is zero reason
-# to scan them and they're massive.
+# also skip external_reference.tsv and upstream_identifiers.tsv because they're not
+# exposed to the user via search or direct fetch; also skip association tables
+# that introduce no new values; also skip dicom_instance.tsv.gz and
+# dicom_series.dicom_all.crdc_instance_uuid.tsv because there is zero reason
+# to scan them and they're massive; also skip info-redundant *_nulls.tsv tables
+# built only to speed up complex queries.
 
 files_to_skip = {
     
     'column_metadata.tsv',
     'dicom_instance.tsv.gz',
     'dicom_series.dicom_all.crdc_instance_uuid.tsv',
+    'external_reference.tsv',
+    'file_anatomic_site_nulls.tsv',
     'file_describes_subject.tsv',
     'file_in_project.tsv',
+    'file_tumor_vs_normal_nulls.tsv',
+    'mutation_nulls.tsv',
+    'observation_nulls.tsv',
     'project_in_project.tsv',
+    'subject_external_reference.tsv',
     'subject_in_project.tsv',
     'release_metadata.tsv',
+    'treatment_nulls.tsv',
     'upstream_identifiers.tsv'
 }
 

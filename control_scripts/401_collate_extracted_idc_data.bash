@@ -29,7 +29,13 @@ echo ./package_root/auxiliary_scripts/400_resolve_sample_crossrefs_for_IDC_DICOM
 icd_o_3_refdoc_url="https://iris.who.int/bitstream/handle/10665/96612/9789241548496_eng.pdf"
 
 echo
+echo
+echo '\/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/'
+echo
 echo "Please get the WHO ICD-O-3 reference publication (last seen at ${icd_o_3_refdoc_url}, p. 33ff) and export the Topography codes as a 2-column map (column headers: 'icd_o_3_code', 'icd_o_3_preferred_name') to ${ontology_metadata_output_root}/ICD-O-3/icd_topography.tsv before proceeding."
+echo
+echo '/\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\ /\'
+echo
 echo
 echo
 

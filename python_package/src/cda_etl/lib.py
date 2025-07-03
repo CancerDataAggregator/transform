@@ -56,6 +56,7 @@ def columns_to_count( data_source ):
                 'selected_normal_targeted_sequencing',
                 'selected_normal_wgs',
                 'selected_normal_wxs',
+                'source_center',
                 'state',
                 # Fields below this line were added at the request of DSS.
                 'aliquot_quantity',
@@ -63,6 +64,7 @@ def columns_to_count( data_source ):
             ],
             'analysis': [
                 
+                'analysis_type',
                 'state',
                 'workflow_type'
             ],
@@ -89,6 +91,7 @@ def columns_to_count( data_source ):
                 'data_category',
                 'data_format',
                 'data_type',
+                'error_type',
                 'state'
             ],
             'case': [
@@ -108,9 +111,15 @@ def columns_to_count( data_source ):
                 
                 'age_is_obfuscated',
                 'cause_of_death',
+                'cause_of_death_source',
+                'country_of_birth',
                 'country_of_residence_at_enrollment',
+                'education_level',
                 'ethnicity',
                 'gender',
+                'marital_status',
+                'population_group',
+                'premature_at_birth',
                 'race',
                 'state',
                 'vital_status',
@@ -119,6 +128,7 @@ def columns_to_count( data_source ):
             ],
             'diagnosis': [
                 
+                'adrenal_hormone',
                 'ajcc_clinical_m',
                 'ajcc_clinical_n',
                 'ajcc_clinical_stage',
@@ -127,43 +137,63 @@ def columns_to_count( data_source ):
                 'ajcc_pathologic_n',
                 'ajcc_pathologic_stage',
                 'ajcc_pathologic_t',
+                'ajcc_serum_tumor_markers',
                 'ajcc_staging_system_edition',
                 'ann_arbor_b_symptoms',
+                'ann_arbor_b_symptoms_described',
                 'ann_arbor_clinical_stage',
                 'ann_arbor_extranodal_involvement',
                 'ann_arbor_pathologic_stage',
                 'best_overall_response',
                 'burkitt_lymphoma_clinical_variant',
+                'calgb_risk_group',
+                'cancer_detection_method',
+                'child_pugh_classification',
+                'clark_level',
                 'classification_of_tumor',
                 'cog_neuroblastoma_risk_group',
                 'cog_renal_stage',
                 'cog_rhabdomyosarcoma_risk_group',
+                'contiguous_organ_invaded',
+                'diagnosis_is_primary_disease',
+                'double_expressor_lymphoma',
+                'double_hit_lymphoma',
                 'eln_risk_classification',
                 'enneking_msts_grade',
                 'enneking_msts_metastasis',
                 'enneking_msts_tumor_site',
                 'esophageal_columnar_dysplasia_degree',
                 'esophageal_columnar_metaplasia_present',
+                'fab_morphology_code',
                 'figo_stage',
                 'figo_staging_edition_year',
+                'first_symptom_longest_duration',
+                'first_symptom_prior_to_diagnosis',
                 'gastric_esophageal_junction_involvement',
                 'goblet_cells_columnar_mucosa_present',
                 'icd_10_code',
                 'igcccg_stage',
                 'inpc_grade',
+                'inpc_histologic_group',
                 'inss_stage',
                 'international_prognostic_index',
                 'irs_group',
                 'iss_stage',
                 'last_known_disease_status',
                 'laterality',
+                'margins_involved_site',
                 'masaoka_stage',
+                'max_tumor_bulk_site',
+                'medulloblastoma_molecular_classification',
+                'melanoma_known_primary',
                 'metastasis_at_diagnosis',
                 'method_of_diagnosis',
+                'micropapillary_features',
                 'mitosis_karyorrhexis_index',
                 'morphology',
                 'ovarian_specimen_status',
                 'ovarian_surface_involvement',
+                'papillary_renal_cell_type',
                 'peritoneal_fluid_cytological_status',
                 'pregnant_at_diagnosis',
                 'primary_diagnosis',
@@ -175,12 +205,18 @@ def columns_to_count( data_source ):
                 'satellite_nodule_present',
                 'secondary_gleason_grade',
                 'site_of_resection_or_biopsy',
+                'sites_of_involvement',
                 'state',
+                'supratentorial_localization',
                 'synchronous_malignancy',
                 'tissue_or_organ_of_origin',
+                'tumor_burden',
                 'tumor_confined_to_organ_of_origin',
                 'tumor_focality',
                 'tumor_grade',
+                'tumor_of_origin',
+                'ulceration_indicator',
+                'weiss_assessment_findings',
                 'who_cns_grade',
                 'wilms_tumor_histologic_subtype',
                 'year_of_diagnosis',
@@ -204,7 +240,6 @@ def columns_to_count( data_source ):
                 'tumor_grade_category',
                 'tumor_regression_grade',
                 'tumor_stage',
-                'tumor_stage',
                 'uicc_clinical_m',
                 'uicc_clinical_n',
                 'uicc_clinical_stage',
@@ -226,10 +261,21 @@ def columns_to_count( data_source ):
                 
                 'alcohol_days_per_week',
                 'alcohol_drinks_per_day',
+                'alcohol_frequency',
                 'alcohol_history',
                 'alcohol_intensity',
+                'alcohol_type',
+                'asbestos_exposure',
+                'asbestos_exposure_type',
+                'chemical_exposure_type',
+                'coal_dust_exposure',
+                'environmental_tobacco_smoke_exposure',
+                'exposure_source',
                 'exposure_type',
+                'occupation_type',
                 'parent_with_radiation_exposure',
+                'radon_exposure',
+                'respirable_crystalline_silica_exposure',
                 'secondhand_smoke_as_child',
                 'state',
                 'tobacco_smoking_onset_year',
@@ -243,21 +289,30 @@ def columns_to_count( data_source ):
                 'relationship_gender',
                 'relationship_primary_diagnosis',
                 'relationship_type',
+                'relative_deceased',
+                'relative_smoker',
                 'relative_with_cancer_history',
+                'relatives_with_cancer_history_count',
                 'state'
             ],
             'file': [
                 
                 'access',
                 'channel',
+                'contamination',
+                'contamination_error',
                 'data_category',
                 'data_format',
                 'data_type',
                 'error_type',
                 'experimental_strategy',
+                'genome_doubling',
                 'msi_status',
                 'platform',
+                'stain_type',
                 'state',
+                'tumor_ploidy',
+                'tumor_purity',
                 'type',
                 'wgs_coverage',
                 # Fields below this line were added at the request of DSS.
@@ -273,50 +328,95 @@ def columns_to_count( data_source ):
                 'adverse_event_grade',
                 'aids_risk_factors',
                 'barretts_esophagus_goblet_cells_present',
+                'cause_of_response',
                 'cdc_hiv_risk_factors',
+                'comorbidities',
                 'comorbidity',
+                'comorbidity_method_of_diagnosis',
                 'diabetes_treatment_type',
                 'disease_response',
                 'ecog_performance_status',
+                'evidence_of_progression_type',
                 'evidence_of_recurrence_type',
+                'eye_color',
                 'haart_treatment_indicator',
+                'hepatitis_sustained_virological_response',
+                'histologic_progression',
+                'history_of_tumor',
+                'history_of_tumor_type',
+                'hormonal_contraceptive_type',
                 'hormonal_contraceptive_use',
+                'hormone_replacement_therapy_type',
+                'hpv_positive_type',
+                'hysterectomy_margins_involved',
                 'hysterectomy_type',
+                'imaging_anatomic_site',
+                'imaging_findings',
                 'imaging_result',
                 'imaging_type',
                 'immunosuppressive_treatment_type',
                 'karnofsky_performance_status',
                 'menopause_status',
                 'pancreatitis_onset_year',
+                'peritoneal_washing_results',
                 'pregnancy_outcome',
                 'procedures_performed',
                 'progression_or_recurrence',
                 'progression_or_recurrence_anatomic_site',
                 'progression_or_recurrence_type',
+                'reflux_treatment_type',
                 'risk_factor',
+                'risk_factor_method_of_diagnosis',
                 'risk_factor_treatment',
-                'state'
+                'risk_factors',
+                'scan_tracer_used',
+                'state',
+                'timepoint_category',
+                'treatment_emergent_adverse_event',
+                'undescended_testis_corrected',
+                'undescended_testis_corrected_laterality',
+                'undescended_testis_corrected_method',
+                'undescended_testis_history',
+                'undescended_testis_history_laterality',
+                'viral_hepatitis_serologies'
             ],
             'molecular_test': [
                 
                 'aa_change',
+                'aneuploidy',
                 'antigen',
                 'biospecimen_type',
+                'chromosomal_translocation',
+                'chromosome_arm',
                 'chromosome',
                 'clonality',
                 'cytoband',
+                'exon',
                 'gene_symbol',
                 'histone_family',
+                'histone_variant',
+                'hpv_strain',
+                'intron',
                 'laboratory_test',
+                'locus',
                 'mismatch_repair_mutation',
                 'molecular_analysis_method',
+                'molecular_consequence',
+                'mutation_codon',
+                'pathogenicity',
                 'ploidy',
+                'second_exon',
                 'second_gene_symbol',
                 'specialized_molecular_test',
+                'staining_intensity_scale',
                 'state',
+                'test_analyte_type',
                 'test_result',
                 'test_units',
-                'variant_type'
+                'timepoint_category',
+                'variant_origin',
+                'variant_type',
+                'zygosity'
             ],
             'pathology_detail': [
                 
@@ -324,18 +424,60 @@ def columns_to_count( data_source ):
                 'anaplasia_present',
                 'anaplasia_present_type',
                 'bone_marrow_malignant_cells',
+                'breslow_thickness',
+                'columnar_mucosa_present',
                 'consistent_pathology_review',
+                'dysplasia_degree',
+                'dysplasia_type',
+                'epithelioid_cell_percent_range',
+                'extracapsular_extension',
+                'extracapsular_extension_present',
+                'extranodal_extension',
+                'extrascleral_extension',
+                'extrascleral_extension_present',
+                'extrathyroid_extension',
+                'histologic_progression_type',
+                'intratubular_germ_cell_neoplasia_present',
                 'largest_extrapelvic_peritoneal_focus',
+                'lymph_node_dissection_method',
+                'lymph_node_dissection_site',
                 'lymph_node_involved_site',
                 'lymph_node_involvement',
+                'lymph_nodes_positive',
+                'lymph_nodes_removed',
+                'lymph_nodes_tested',
                 'lymphatic_invasion_present',
+                'margin_status',
+                'measurement_type',
+                'measurement_unit',
+                'metaplasia_present',
+                'micrometastasis_present',
                 'morphologic_architectural_pattern',
                 'necrosis_present',
+                'non_nodal_regional_disease',
+                'non_nodal_tumor_deposits',
                 'perineural_invasion_present',
                 'peripancreatic_lymph_nodes_positive',
+                'peripancreatic_lymph_nodes_tested',
+                'prcc_type',
+                'residual_tumor',
+                'residual_tumor_measurement',
+                'rhabdoid_present',
+                'sarcomatoid_present',
+                'size_extraocular_nodule',
+                'spindle_cell_percent_range',
                 'state',
+                'timepoint_category',
+                'transglottic_extension',
+                'tumor_burden',
+                'tumor_depth_descriptor',
+                'tumor_infiltrating_lymphocytes',
+                'tumor_infiltrating_macrophages',
+                'tumor_level_prostate',
+                'tumor_shape',
                 'vascular_invasion_present',
                 'vascular_invasion_type'
+                'zone_of_origin_prostate',
             ],
             'portion': [
                 
@@ -371,6 +513,7 @@ def columns_to_count( data_source ):
             ],
             'read_group': [
                 
+                'adapter_name',
                 'base_caller_name',
                 'chipseq_antibody',
                 'chipseq_target',
@@ -384,6 +527,7 @@ def columns_to_count( data_source ):
                 'library_strand',
                 'library_strategy',
                 'platform',
+                'sequencing_center',
                 'single_cell_library',
                 'spike_ins_fasta',
                 'state',
@@ -448,13 +592,29 @@ def columns_to_count( data_source ):
             'treatment': [
                 
                 'chemo_concurrent_to_radiation',
+                'clinical_trial_indicator',
+                'embolic_agent',
                 'initial_disease_status',
+                'margin_status',
+                'margins_involved_site',
                 'number_of_cycles',
+                'prescribed_dose_units',
+                'pretreatment',
+                'protocol_identifier',
+                'radiosensitizing_agent',
                 'reason_treatment_ended',
+                'reason_treatment_not_given',
                 'regimen_or_line_of_therapy',
+                'residual_disease',
+                'route_of_administration',
                 'state',
                 'therapeutic_agents',
+                'timepoint_category',
                 'treatment_anatomic_site',
+                'treatment_anatomic_sites',
+                'treatment_dose_units',
+                'treatment_effect',
+                'treatment_effect_indicator',
                 'treatment_frequency',
                 'treatment_intent_type',
                 'treatment_or_therapy',
@@ -944,33 +1104,38 @@ def columns_to_count( data_source ):
             'diagnosis': [
                 
                 'disease_type',
-                'vital_status',
+                'incidence_type',
+                'last_known_disease_status',
+                'morphology',
                 'primary_diagnosis',
                 'primary_site',
+                'progression_or_recurrence',
+                'site_of_resection_or_biopsy',
+                'tissue_or_organ_of_origin',
                 'tumor_grade',
                 'tumor_stage_clinical_m',
                 'tumor_stage_clinical_n',
                 'tumor_stage_clinical_t',
-                'morphology',
-                'incidence_type',
-                'progression_or_recurrence',
-                'last_known_disease_status'
+                'vital_status'
             ],
             'file': [
                 
-                'file_type',
+                'experimental_strategy_and_data_subtypes',
                 'file_description',
-                'experimental_strategy_and_data_subtypes'
+                'file_mapping_level',
+                'file_type'
             ],
             'genomic_info': [
                 
-                'reference_genome_assembly',
-                'library_strategy',
-                'library_layout',
-                'library_source',
-                'library_selection',
-                'platform',
                 'instrument_model',
+                'library_layout',
+                'library_selection',
+                'library_source',
+                'library_source_material',
+                'library_source_molecule',
+                'library_strategy',
+                'platform',
+                'reference_genome_assembly',
                 'sequence_alignment_software'
             ],
             'image': [
@@ -982,7 +1147,7 @@ def columns_to_count( data_source ):
                 'imaging_equipment_manufacturer',
                 'imaging_equipment_model',
                 'imaging_protocol',
-                'imaging_sofware',
+                'imaging_software',
                 'immersion',
                 'lens_numerical_aperture',
                 'license',
@@ -997,17 +1162,19 @@ def columns_to_count( data_source ):
             ],
             'participant': [
                 
-                'race',
+                'ethnicity',
                 'gender',
-                'ethnicity'
+                'race',
+                'sex'
             ],
             'program': [
                 
-                'program_name',
+                'institution',
                 'program_acronym',
-                'program_short_description',
-                'program_full_description',
                 'program_external_url',
+                'program_full_description',
+                'program_name',
+                'program_short_description',
                 'program_sort_order'
             ],
             'sample': [
@@ -1018,40 +1185,41 @@ def columns_to_count( data_source ):
             ],
             'study': [
                 
-                'study_name',
-                'study_acronym',
-                'study_description',
-                'short_description',
-                'study_external_url',
-                'phs_accession',
+                'adult_or_childhood_study',
                 'bioproject_accession',
-                'index_date',
+                'cds_primary_bucket',
                 'cds_requestor',
+                'cds_secondary_bucket',
+                'cds_tertiary_bucket',
+                'clinical_trial_arm',
+                'clinical_trial_identifier',
+                'clinical_trial_system',
+                'data_access_level',
+                'data_types',
+                'file_types',
+                'file_types_and_format',
                 'funding_agency',
                 'funding_source_program_name',
                 'grant_id',
-                'clinical_trial_system',
-                'clinical_trial_identifier',
-                'clinical_trial_arm',
+                'index_date',
                 'organism_species',
-                'adult_or_childhood_study',
-                'data_types',
-                'file_types',
-                'data_access_level',
-                'cds_primary_bucket',
-                'cds_secondary_bucket',
-                'cds_tertiary_bucket',
-                'study_data_types',
-                'file_types_and_format',
-                'size_of_data_being_uploaded_unit',
+                'phs_accession',
+                'role_or_affiliation',
+                'short_description',
                 'size_of_data_being_uploaded_original_unit',
-                'study_access'
+                'size_of_data_being_uploaded_unit',
+                'study_access',
+                'study_acronym',
+                'study_data_types',
+                'study_description',
+                'study_external_url',
+                'study_name'
             ],
             'treatment': [
                 
-                'treatment_type',
+                'therapeutic_agents',
                 'treatment_outcome',
-                'therapeutic_agents'
+                'treatment_type'
             ]
         },
 
@@ -1224,9 +1392,10 @@ def columns_to_count( data_source ):
             ],
             'prior_surgery/prior_surgery': [
                 
-                'procedure',
                 'anatomical_site_of_surgery',
+                'procedure',
                 'residual_disease',
+                'surgical_finding',
                 'therapeutic_indicator'
             ],
             'prior_therapy/prior_therapy': [
@@ -1574,6 +1743,8 @@ def deduplicate_and_sort_unsorted_file_with_header( file_path, gzipped=False, ig
 
         alias_index = None
 
+        numeric_sort = False
+
         if 'id' in column_names:
             
             alias_index = column_names.index( 'id' )
@@ -1581,6 +1752,8 @@ def deduplicate_and_sort_unsorted_file_with_header( file_path, gzipped=False, ig
         elif 'id_alias' in column_names:
             
             alias_index = column_names.index( 'id_alias' )
+
+            numeric_sort = True
 
         else:
             
@@ -1600,9 +1773,17 @@ def deduplicate_and_sort_unsorted_file_with_header( file_path, gzipped=False, ig
 
             record_data.add( record_string )
 
-        for next_line in sorted( output_lines ):
+        if not numeric_sort:
             
-            print( next_line, file=OUT )
+            for next_line in sorted( output_lines ):
+                
+                print( next_line, file=OUT )
+
+        else:
+            
+            for next_line in sorted( output_lines, key=lambda line_with_alias : int( line_with_alias.split( '\t' )[0] ) ):
+                
+                print( next_line, file=OUT )
 
     IN.close()
 
@@ -2418,6 +2599,71 @@ def get_column_metadata( table_name=None, column_name=None ):
                 'process_before_display': 'data_source_count'
             }
         },
+        'external_reference': {
+            
+            'id_alias': {
+                
+                'column_type': 'unbounded',
+                'summary_returns': False,
+                'data_returns': False
+            },
+            'type': {
+                
+                'column_type': 'categorical',
+                'summary_returns': False,
+                'data_returns': False,
+                'process_before_display': 'external_reference_metadata'
+            },
+            'name': {
+                
+                'column_type': 'unbounded',
+                'summary_returns': False,
+                'data_returns': False,
+                'process_before_display': 'external_reference_metadata'
+            },
+            'short_name': {
+                
+                'column_type': 'unbounded',
+                'summary_returns': False,
+                'data_returns': False,
+                'process_before_display': 'external_reference_metadata'
+            },
+            'last_updated': {
+                
+                'column_type': 'unbounded',
+                'summary_returns': False,
+                'data_returns': False,
+                'process_before_display': 'external_reference_metadata'
+            },
+            'uri': {
+                
+                'column_type': 'unbounded',
+                'summary_returns': False,
+                'data_returns': False,
+                'process_before_display': 'external_reference_metadata'
+            },
+            'description': {
+                
+                'column_type': 'unbounded',
+                'summary_returns': False,
+                'data_returns': False,
+                'process_before_display': 'external_reference_metadata'
+            },
+            'source_short_name': {
+                
+                'column_type': 'unbounded',
+                'summary_returns': False,
+                'data_returns': False,
+                'process_before_display': 'external_reference_metadata'
+            },
+            'source_url': {
+                
+                'column_type': 'unbounded',
+                'summary_returns': False,
+                'data_returns': False,
+                'process_before_display': 'external_reference_metadata'
+            }
+        },
         'upstream_identifiers': {
             
             'cda_table': {
@@ -2540,6 +2786,21 @@ def get_column_metadata( table_name=None, column_name=None ):
                 'data_returns': False
             },
             'project_alias': {
+                
+                'column_type': 'unbounded',
+                'summary_returns': False,
+                'data_returns': False
+            }
+        },
+        'subject_external_reference': {
+            
+            'subject_alias': {
+                
+                'column_type': 'unbounded',
+                'summary_returns': False,
+                'data_returns': False
+            },
+            'external_reference_alias': {
                 
                 'column_type': 'unbounded',
                 'summary_returns': False,

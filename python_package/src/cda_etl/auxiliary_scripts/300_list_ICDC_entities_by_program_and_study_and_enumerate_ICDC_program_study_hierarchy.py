@@ -1,6 +1,5 @@
 #!/usr/bin/env python -u
 
-
 from cda_etl.lib import load_tsv_as_dict, map_columns_one_to_one, map_columns_one_to_many
 
 from os import path, makedirs

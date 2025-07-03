@@ -8,7 +8,7 @@ if [[ $# -eq 0 ]]
 then
     script_name=$(basename "$0")
     echo
-    echo "   ERROR: Usage: $script_name <CDA version name, e.g. \"February 2025\">"
+    echo "   ERROR: Usage: $script_name <CDA version name, e.g. \"June 2025\">"
     echo
     exit 0
 fi

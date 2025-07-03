@@ -44,6 +44,7 @@ class mutation_transformer:
         self.cda_table_files = {
             
             'mutation' : path.join( self.merged_cda_dir, 'mutation.tsv.gz' ),
+            'mutation_unharmonized' : path.join( self.merged_cda_dir, 'mutation_unharmonized.tsv.gz' ),
             'mutation_nulls' : path.join( self.merged_cda_dir, 'mutation_nulls.tsv' ),
             'subject_in_project': path.join( self.merged_cda_dir, 'subject_in_project.tsv' ),
             'upstream_identifiers': path.join( self.merged_cda_dir, 'upstream_identifiers.tsv' )
@@ -117,7 +118,7 @@ class mutation_transformer:
                                 
                                 self.harmonized_value[column][old_value] = new_value
 
-        # Track all substitutions.
+        # Count occurrences of all value substitutions.
 
         self.all_subs_performed = dict()
 
@@ -182,11 +183,18 @@ class mutation_transformer:
         # Keep track, columnwise, of always-null mutation fields by subject.
         mutation_nulls = dict()
 
-        with gzip.open( self.cda_table_files['mutation'], 'wt' ) as OUT:
+        # Write harmonized mutation data as we go, and also make a TSV with unharmonized
+        # values to expose in response to CDA user provenance requests.
+
+        with gzip.open( self.cda_table_files['mutation'], 'wt' ) as OUT, gzip.open( self.cda_table_files['mutation_unharmonized'], 'wt' ) as UNH:
             
             mutation_output_columns = [ 'id_alias', 'subject_alias' ] + self.columns_to_keep + self.provenance_columns
 
             print( *mutation_output_columns, sep='\t', file=OUT )
+
+            unharmonized_mutation_output_columns = [ 'id_alias', 'subject_alias' ] + [ f"{column}_unharmonized" for column in self.columns_to_keep ] + self.provenance_columns
+
+            print( *unharmonized_mutation_output_columns, sep='\t', file=UNH )
 
             current_mutation_alias = 0
 
@@ -243,6 +251,7 @@ class mutation_transformer:
                                     mutation_nulls[cda_subject_alias] = { column_to_keep : True for column_to_keep in self.columns_to_keep }
 
                                 result_row = [ cda_mutation_alias, cda_subject_alias ]
+                                unharmonized_result_row = [ cda_mutation_alias, cda_subject_alias ]
 
                                 for column in self.columns_to_keep:
                                     
@@ -323,6 +332,7 @@ class mutation_transformer:
                                             new_value = old_value
 
                                         result_row.append( new_value )
+                                        unharmonized_result_row.append( old_value )
 
                                         # Keep track, columnwise, of always-null mutation fields by subject.
                                         if new_value != '':
@@ -333,6 +343,7 @@ class mutation_transformer:
                                         # `column` didn't appear at all in the loaded record.
 
                                         result_row.append( '' )
+                                        unharmonized_result_row.append( '' )
 
                                 for provenance_column in self.provenance_columns:
                                     
@@ -342,14 +353,17 @@ class mutation_transformer:
                                     if provenance_column == 'data_at_gdc':
                                         
                                         result_row.append( True )
+                                        unharmonized_result_row.append( True )
 
                                     elif provenance_column == 'data_source_count':
                                         
                                         result_row.append( 1 )
+                                        unharmonized_result_row.append( 1 )
 
                                     else:
                                         
                                         result_row.append( False )
+                                        unharmonized_result_row.append( False )
 
                                 # Did we delete everything of possible use?
 
@@ -370,6 +384,7 @@ class mutation_transformer:
                                 if not values_all_null:
                                     
                                     print( *result_row, sep='\t', file=OUT )
+                                    print( *unharmonized_result_row, sep='\t', file=UNH )
 
                                 else:
                                     
