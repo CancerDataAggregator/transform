@@ -54,7 +54,8 @@ if len( match_list ) > 0:
 # that introduce no new values; also skip dicom_instance.tsv.gz and
 # dicom_series.dicom_all.crdc_instance_uuid.tsv because there is zero reason
 # to scan them and they're massive; also skip info-redundant *_nulls.tsv tables
-# built only to speed up complex queries.
+# built only to speed up complex queries; also skip harmonization value
+# before-and-after maps because they add no information to this particular process.
 
 files_to_skip = {
     
@@ -62,16 +63,22 @@ files_to_skip = {
     'dicom_instance.tsv.gz',
     'dicom_series.dicom_all.crdc_instance_uuid.tsv',
     'external_reference.tsv',
+    'file_anatomic_site_harmonization_value_map.tsv',
     'file_anatomic_site_nulls.tsv',
     'file_describes_subject.tsv',
+    'file_harmonization_value_map.tsv',
     'file_in_project.tsv',
+    'file_tumor_vs_normal_harmonization_value_map.tsv',
     'file_tumor_vs_normal_nulls.tsv',
     'mutation_nulls.tsv',
+    'observation_harmonization_value_map.tsv',
     'observation_nulls.tsv',
     'project_in_project.tsv',
     'subject_external_reference.tsv',
+    'subject_harmonization_value_map.tsv',
     'subject_in_project.tsv',
     'release_metadata.tsv',
+    'treatment_harmonization_value_map.tsv',
     'treatment_nulls.tsv',
     'upstream_identifiers.tsv'
 }
