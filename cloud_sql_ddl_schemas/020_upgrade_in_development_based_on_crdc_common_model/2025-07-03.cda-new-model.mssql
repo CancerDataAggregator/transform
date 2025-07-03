@@ -5,7 +5,7 @@
 -- Dumped from database version 14.18
 -- Dumped by pg_dump version 17.0
 
--- Started on 2025-07-03 12:57:11 EDT
+-- Started on 2025-07-03 16:05:10 EDT
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -1070,9 +1070,9 @@ CREATE TABLE public.treatment_nulls (
 CREATE TABLE public.upstream_identifiers (
     cda_table text NOT NULL,
     id_alias bigint NOT NULL,
-    data_source text NOT NULL,
-    data_source_id_field_name text NOT NULL,
-    data_source_id_value text NOT NULL
+    upstream_source text NOT NULL,
+    upstream_field text NOT NULL,
+    upstream_id text NOT NULL
 );
 
 
@@ -1088,28 +1088,28 @@ COMMENT ON TABLE public.upstream_identifiers IS 'Each row in the upstream_identi
 --
 -- TOC entry 4368 (class 0 OID 0)
 -- Dependencies: 223
--- Name: COLUMN upstream_identifiers.data_source; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN upstream_identifiers.upstream_source; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.upstream_identifiers.data_source IS 'The upstream data source from which this identifier was extracted by CDA.';
+COMMENT ON COLUMN public.upstream_identifiers.upstream_source IS 'The upstream data source from which this identifier was extracted by CDA.';
 
 
 --
 -- TOC entry 4369 (class 0 OID 0)
 -- Dependencies: 223
--- Name: COLUMN upstream_identifiers.data_source_id_field_name; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN upstream_identifiers.upstream_field; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.upstream_identifiers.data_source_id_field_name IS 'What this identifier is called by the specified upstream data source, like for example "case.submitter_id" or "participant.uuid" or "dicom_all.PatientID".';
+COMMENT ON COLUMN public.upstream_identifiers.upstream_field IS 'What this identifier is called by the specified upstream data source, like for example "case.submitter_id" or "participant.uuid" or "dicom_all.PatientID".';
 
 
 --
 -- TOC entry 4370 (class 0 OID 0)
 -- Dependencies: 223
--- Name: COLUMN upstream_identifiers.data_source_id_value; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN upstream_identifiers.upstream_id; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.upstream_identifiers.data_source_id_value IS 'One identifier, exactly as published by the specified upstream data source.';
+COMMENT ON COLUMN public.upstream_identifiers.upstream_id IS 'One identifier, exactly as published by the specified upstream data source.';
 
 
 --
@@ -3213,47 +3213,7 @@ CREATE INDEX upstream_identifiers_cda_table_index ON public.upstream_identifiers
 
 
 --
--- TOC entry 4056 (class 1259 OID 2063890)
--- Name: upstream_identifiers_data_source_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX upstream_identifiers_data_source_coalesce_upper_index ON public.upstream_identifiers USING btree (COALESCE(upper(data_source), ''::text));
-
-
---
--- TOC entry 4057 (class 1259 OID 2063891)
--- Name: upstream_identifiers_data_source_id_field_name_index; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX upstream_identifiers_data_source_id_field_name_index ON public.upstream_identifiers USING btree (data_source_id_field_name);
-
-
---
--- TOC entry 4058 (class 1259 OID 2063892)
--- Name: upstream_identifiers_data_source_id_value_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX upstream_identifiers_data_source_id_value_coalesce_upper_index ON public.upstream_identifiers USING btree (COALESCE(upper(data_source_id_value), ''::text));
-
-
---
--- TOC entry 4059 (class 1259 OID 2063893)
--- Name: upstream_identifiers_data_source_id_value_index; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX upstream_identifiers_data_source_id_value_index ON public.upstream_identifiers USING btree (data_source_id_value);
-
-
---
--- TOC entry 4060 (class 1259 OID 2063894)
--- Name: upstream_identifiers_data_source_index; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX upstream_identifiers_data_source_index ON public.upstream_identifiers USING btree (data_source);
-
-
---
--- TOC entry 4061 (class 1259 OID 2063895)
+-- TOC entry 4056 (class 1259 OID 2063895)
 -- Name: upstream_identifiers_id_alias_index; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -3261,11 +3221,51 @@ CREATE INDEX upstream_identifiers_id_alias_index ON public.upstream_identifiers 
 
 
 --
--- TOC entry 4062 (class 1259 OID 2063896)
--- Name: upstream_ids_data_source_id_field_name_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+-- TOC entry 4057 (class 1259 OID 2063896)
+-- Name: upstream_identifiers_upstream_field_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX upstream_ids_data_source_id_field_name_coalesce_upper_index ON public.upstream_identifiers USING btree (COALESCE(upper(data_source_id_field_name), ''::text));
+CREATE INDEX upstream_identifiers_upstream_field_coalesce_upper_index ON public.upstream_identifiers USING btree (COALESCE(upper(upstream_field), ''::text));
+
+
+--
+-- TOC entry 4058 (class 1259 OID 2063891)
+-- Name: upstream_identifiers_upstream_field_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX upstream_identifiers_upstream_field_index ON public.upstream_identifiers USING btree (upstream_field);
+
+
+--
+-- TOC entry 4059 (class 1259 OID 2063892)
+-- Name: upstream_identifiers_upstream_id_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX upstream_identifiers_upstream_id_coalesce_upper_index ON public.upstream_identifiers USING btree (COALESCE(upper(upstream_id), ''::text));
+
+
+--
+-- TOC entry 4060 (class 1259 OID 2063893)
+-- Name: upstream_identifiers_upstream_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX upstream_identifiers_upstream_id_index ON public.upstream_identifiers USING btree (upstream_id);
+
+
+--
+-- TOC entry 4061 (class 1259 OID 2063890)
+-- Name: upstream_identifiers_upstream_source_coalesce_upper_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX upstream_identifiers_upstream_source_coalesce_upper_index ON public.upstream_identifiers USING btree (COALESCE(upper(upstream_source), ''::text));
+
+
+--
+-- TOC entry 4062 (class 1259 OID 2063894)
+-- Name: upstream_identifiers_upstream_source_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX upstream_identifiers_upstream_source_index ON public.upstream_identifiers USING btree (upstream_source);
 
 
 --
@@ -3448,7 +3448,7 @@ ALTER TABLE ONLY public.treatment
     ADD CONSTRAINT treatment_subject_alias_fkey FOREIGN KEY (subject_alias) REFERENCES public.subject(id_alias);
 
 
--- Completed on 2025-07-03 12:57:13 EDT
+-- Completed on 2025-07-03 16:05:12 EDT
 
 --
 -- PostgreSQL database dump complete
