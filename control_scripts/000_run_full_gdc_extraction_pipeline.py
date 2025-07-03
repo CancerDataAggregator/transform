@@ -10,4 +10,6 @@ for endpoint in endpoint_list:
 
     extractor.extract()
 
+print( "\nDon't forget to ensure that a harmonization_maps/ directory is in place before running the next script." )
+
 

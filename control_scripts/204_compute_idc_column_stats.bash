@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# An IDC version string (e.g. 'v20') is required by the processor scripts.
+# An IDC version string (e.g. 'v21') is required by the processor scripts.
 # 
 # If the length of the argument list to this script is zero, fail.
 
@@ -8,7 +8,7 @@ if [[ $# -eq 0 ]]
 then
     script_name=$(basename "$0")
     echo
-    echo "   ERROR: Usage: $script_name <IDC version string, e.g. v20>"
+    echo "   ERROR: Usage: $script_name <IDC version string, e.g. v21>"
     echo
     exit 0
 fi
