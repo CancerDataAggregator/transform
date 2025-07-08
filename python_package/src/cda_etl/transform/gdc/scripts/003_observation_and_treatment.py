@@ -84,7 +84,7 @@ print( f"[{get_current_timestamp()}] Loading CDA subject IDs...", end='', file=s
 
 # Load CDA subject IDs for all case_ids.
 
-cda_subject_id = map_columns_one_to_one( upstream_identifiers_tsv, 'data_source_id_value', 'id', where_field='data_source_id_field_name', where_value='case.case_id' )
+cda_subject_id = map_columns_one_to_one( upstream_identifiers_tsv, 'upstream_id', 'id', where_field='upstream_field', where_value='case.case_id' )
 
 print( 'done.', file=sys.stderr )
 

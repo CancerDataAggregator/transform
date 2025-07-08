@@ -201,10 +201,10 @@ for subject_list_basename in sorted( listdir( submitter_id_output_dir ) ):
                 record = dict( zip( column_names, next_line.rstrip( '\n' ).split( '\t' ) ) )
                 if record['cda_table'] == 'subject' \
                     and record['id_alias'] in potential_subject_aliases \
-                    and record['data_source'] == 'PDC' \
-                    and record['data_source_id_field_name'] == 'Case.case_id' \
-                    and record['data_source_id_value'] in target_case_ids:
-                        matched_target_case_ids.add( record['data_source_id_value'] )
+                    and record['upstream_source'] == 'PDC' \
+                    and record['upstream_field'] == 'Case.case_id' \
+                    and record['upstream_id'] in target_case_ids:
+                        matched_target_case_ids.add( record['upstream_id'] )
                         matching_subject_aliases.add( record['id_alias'] )
         print( f"matched {len(matched_target_case_ids)} of those", end='', file=sys.stderr )
         # Report any unmatched target IDs.
@@ -256,10 +256,10 @@ for subject_list_basename in sorted( listdir( submitter_id_output_dir ) ):
                         record = dict( zip( column_names, next_line.rstrip( '\n' ).split( '\t' ) ) )
                         if record['cda_table'] == 'subject' \
                             and record['id_alias'] in potential_subject_aliases \
-                            and record['data_source'] == 'GDC' \
-                            and record['data_source_id_field_name'] == 'case.submitter_id' \
-                            and record['data_source_id_value'] in target_submitter_ids:
-                                submitter_id = record['data_source_id_value']
+                            and record['upstream_source'] == 'GDC' \
+                            and record['upstream_field'] == 'case.submitter_id' \
+                            and record['upstream_id'] in target_submitter_ids:
+                                submitter_id = record['upstream_id']
                                 if submitter_id not in matching_subject_aliases:
                                     matching_subject_aliases[submitter_id] = set()
                                 matching_subject_aliases[submitter_id].add( record['id_alias'] )

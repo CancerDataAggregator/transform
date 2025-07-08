@@ -2678,26 +2678,23 @@ def get_column_metadata( table_name=None, column_name=None ):
                 'summary_returns': False,
                 'data_returns': False
             },
-            'data_source': {
+            'upstream_source': {
                 
                 'column_type': 'categorical',
                 'summary_returns': False,
-                'data_returns': False,
-                'process_before_display': 'upstream_identifier_metadata'
+                'data_returns': True
             },
-            'data_source_id_field_name': {
+            'upstream_field': {
                 
                 'column_type': 'categorical',
                 'summary_returns': False,
-                'data_returns': False,
-                'process_before_display': 'upstream_identifier_metadata'
+                'data_returns': True
             },
-            'data_source_id_value': {
+            'upstream_id': {
                 
                 'column_type': 'unbounded',
                 'summary_returns': False,
-                'data_returns': False,
-                'process_before_display': 'upstream_identifier_metadata'
+                'data_returns': True
             }
         },
         'file_describes_subject': {

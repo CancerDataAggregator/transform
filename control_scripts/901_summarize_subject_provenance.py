@@ -40,14 +40,14 @@ with open( identifiers_input_tsv ) as IN, open( subject_provenance_output_tsv, '
     
     header = next( IN )
 
-    print( *[ 'cda_subject_id', 'data_source', 'data_source_id_field_name', 'data_source_id_value' ], sep='\t', file=OUT )
+    print( *[ 'cda_subject_id', 'upstream_source', 'upstream_field', 'upstream_id' ], sep='\t', file=OUT )
 
     for next_line in IN:
         
-        [ table, id_alias, data_source, data_source_id_field_name, data_source_id_value ] = next_line.rstrip( '\n' ).split( '\t' )
+        [ table, id_alias, upstream_source, upstream_field, upstream_id ] = next_line.rstrip( '\n' ).split( '\t' )
 
         if table == 'subject':
             
-            print( *[ alias_to_id[id_alias], data_source, data_source_id_field_name, data_source_id_value ], sep='\t', file=OUT )
+            print( *[ alias_to_id[id_alias], upstream_source, upstream_field, upstream_id ], sep='\t', file=OUT )
 
 

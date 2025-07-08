@@ -94,9 +94,9 @@ upstream_identifiers_fields = [
     
     'cda_table',
     'id',
-    'data_source',
-    'data_source_id_field_name',
-    'data_source_id_value'
+    'upstream_source',
+    'upstream_field',
+    'upstream_id'
 ]
 
 # Caches for loaded/processed data.

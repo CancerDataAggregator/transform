@@ -78,9 +78,9 @@ upstream_identifiers_fields = [
     
     'cda_table',
     'id',
-    'data_source',
-    'data_source_id_field_name',
-    'data_source_id_value'
+    'upstream_source',
+    'upstream_field',
+    'upstream_id'
 ]
 
 # Enumerate (case-insensitive, space-collapsed) values (as regular expressions) that
@@ -507,9 +507,9 @@ with open( subject_in_project_output_tsv, 'w' ) as OUT:
 #     
 #     'cda_table',
 #     'id',
-#     'data_source',
-#     'data_source_id_field_name',
-#     'data_source_id_value'
+#     'upstream_source',
+#     'upstream_field',
+#     'upstream_id'
 # ]
 
 # upstream_identifiers['subject'][new_cda_subject_id][upstream_data_source]['case.dbGaP_subject_id'].add( case[case_id]['dbGaP_subject_id'] )

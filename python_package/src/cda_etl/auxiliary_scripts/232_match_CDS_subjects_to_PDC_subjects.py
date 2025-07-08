@@ -46,10 +46,10 @@ output_file = path.join( agg_subject_dir, 'CDS_CDA_subjects_linked_to_PDC_CDA_su
 
 # Load connecting information between PDC subject identifiers and studies.
 
-# cda_table	id_alias	data_source	data_source_id_field_name	data_source_id_value
+# cda_table	id_alias	upstream_source	upstream_field	upstream_id
 # subject	44580	PDC	Case.case_id	c3d87659-d18b-4f58-8ff1-e4780d5e5a74
 
-pdc_case_id_to_cda_subject_alias = map_columns_one_to_one( pdc_upstream_identifiers_tsv, 'data_source_id_value', 'id_alias', where_field='data_source_id_field_name', where_value='Case.case_id' )
+pdc_case_id_to_cda_subject_alias = map_columns_one_to_one( pdc_upstream_identifiers_tsv, 'upstream_id', 'id_alias', where_field='upstream_field', where_value='Case.case_id' )
 
 pdc_subject_alias_to_subject_id = map_columns_one_to_one( pdc_subject_tsv, 'id_alias', 'id' )
 
@@ -89,10 +89,10 @@ with open( pdc_entity_project_map ) as IN:
 
 # Load connecting information between CDS subject identifiers and studies.
 
-# cda_table	id_alias	data_source	data_source_id_field_name	data_source_id_value
+# cda_table	id_alias	upstream_source	upstream_field	upstream_id
 # subject	48470	CDS	participant.uuid	dd1a5308-2a5f-5c73-9984-c374b5111c5e
 
-cds_participant_uuid_to_cda_subject_alias = map_columns_one_to_one( cds_upstream_identifiers_tsv, 'data_source_id_value', 'id_alias', where_field='data_source_id_field_name', where_value='participant.uuid' )
+cds_participant_uuid_to_cda_subject_alias = map_columns_one_to_one( cds_upstream_identifiers_tsv, 'upstream_id', 'id_alias', where_field='upstream_field', where_value='participant.uuid' )
 
 cds_subject_alias_to_subject_id = map_columns_one_to_one( cds_subject_tsv, 'id_alias', 'id' )
 

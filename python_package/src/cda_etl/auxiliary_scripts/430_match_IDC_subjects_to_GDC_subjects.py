@@ -46,10 +46,10 @@ output_file = path.join( agg_subject_dir, 'IDC_CDA_subjects_linked_to_GDC_CDA_su
 
 # Load connecting information between GDC subject identifiers and projects.
 
-# cda_table	id_alias	data_source	data_source_id_field_name	data_source_id_value
+# cda_table	id_alias	upstream_source	upstream_field	upstream_id
 # subject	10	GDC	case.case_id	d70772f7-b776-44ef-8dc4-b379b2b9154a
 
-gdc_case_id_to_cda_subject_alias = map_columns_one_to_one( gdc_upstream_identifiers_tsv, 'data_source_id_value', 'id_alias', where_field='data_source_id_field_name', where_value='case.case_id' )
+gdc_case_id_to_cda_subject_alias = map_columns_one_to_one( gdc_upstream_identifiers_tsv, 'upstream_id', 'id_alias', where_field='upstream_field', where_value='case.case_id' )
 
 gdc_subject_alias_to_subject_id = map_columns_one_to_one( gdc_subject_tsv, 'id_alias', 'id' )
 
@@ -89,10 +89,10 @@ with open( gdc_entity_project_map ) as IN:
 
 # Load connecting information between IDC subject identifiers and studies.
 
-# cda_table	id_alias	data_source	data_source_id_field_name	data_source_id_value
+# cda_table	id_alias	upstream_source	upstream_field	upstream_id
 # subject	94939	IDC	dicom_all.idc_case_id	0b59317b-621a-459e-995f-f8c7c5a6faf8
 
-idc_case_id_to_cda_subject_alias = map_columns_one_to_one( idc_upstream_identifiers_tsv, 'data_source_id_value', 'id_alias', where_field='data_source_id_field_name', where_value='dicom_all.idc_case_id' )
+idc_case_id_to_cda_subject_alias = map_columns_one_to_one( idc_upstream_identifiers_tsv, 'upstream_id', 'id_alias', where_field='upstream_field', where_value='dicom_all.idc_case_id' )
 
 idc_subject_alias_to_subject_id = map_columns_one_to_one( idc_subject_tsv, 'id_alias', 'id' )
 

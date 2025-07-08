@@ -111,9 +111,9 @@ upstream_identifiers_fields = [
     
     'cda_table',
     'id',
-    'data_source',
-    'data_source_id_field_name',
-    'data_source_id_value'
+    'upstream_source',
+    'upstream_field',
+    'upstream_id'
 ]
 
 debug = False
@@ -818,9 +818,9 @@ with open( file_tumor_vs_normal_output_tsv, 'w' ) as OUT:
 #     
 #     'cda_table',
 #     'id',
-#     'data_source',
-#     'data_source_id_field_name',
-#     'data_source_id_value'
+#     'upstream_source',
+#     'upstream_field',
+#     'upstream_id'
 # ]
 
 # upstream_identifiers[cda_table][new_cda_id][upstream_data_source]['case.submitter_id'].add( upstream_submitter_id )
