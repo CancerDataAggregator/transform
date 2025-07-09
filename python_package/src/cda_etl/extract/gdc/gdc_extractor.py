@@ -198,11 +198,11 @@ class GDC_extractor:
             # Compute self.fields_to_use and self.groups_to_expand using the config
             # data for this endpoint along with live results from its _mapping url.
 
-            json_result = requests.get(self.mapping_url)
+            json_result = requests.get( self.mapping_url )
 
             if not json_result.ok:
                 
-                sys.exit(f"FATAL: call to API /{self.endpoint}/_mapping endpoint failed. Response content: " + str(json_result.content))
+                sys.exit( f"FATAL: call to API /{self.endpoint}/_mapping endpoint failed. Response content: " + str( json_result.content ) )
 
             result = json_result.json()
 
@@ -218,7 +218,7 @@ class GDC_extractor:
 
                 for prefix in self.prefixes_to_filter:
                     
-                    if re.search(f'^{prefix}\.', field_name) is not None:
+                    if re.search( r'^' + prefix + r'\.', field_name ) is not None:
                         
                         skip_current = True
 
@@ -232,25 +232,25 @@ class GDC_extractor:
                         
                         # I know this looks like a bug. It isn't. I promise.
 
-                        expand_group_re = re.sub(r'\.', r'\.', expand_group)
+                        expand_group_re = re.sub( r'\.', r'\.', expand_group )
 
-                        if re.search(f'^{expand_group_re}\.', field_name) is not None:
+                        if re.search( r'^' + expand_group_re + r'\.', field_name ) is not None:
                             
                             skip_current = True
 
                 if not skip_current:
                     
-                    self.fields_to_use.add(field_name)
+                    self.fields_to_use.add( field_name )
 
             with open( self.expand_group_file, 'w' ) as OUT:
                 
                 if len( self.groups_to_expand ) > 0:
                     
-                    print(*sorted( self.groups_to_expand ), sep='\n', file=OUT)
+                    print( *sorted( self.groups_to_expand ), sep='\n', file=OUT )
 
             with open( self.field_list_file, 'w' ) as OUT:
                 
-                print(*sorted(self.fields_to_use), sep='\n', file=OUT)
+                print( *sorted( self.fields_to_use ), sep='\n', file=OUT )
 
         else:
             
@@ -258,13 +258,13 @@ class GDC_extractor:
 
             self.fields_to_use = list()
 
-            with open(self.field_list_file) as IN:
+            with open( self.field_list_file ) as IN:
                 
                 self.fields_to_use = [ line.rstrip() for line in IN ]
 
             self.groups_to_expand = list()
 
-            with open(self.expand_group_file) as IN:
+            with open( self.expand_group_file ) as IN:
                 
                 self.groups_to_expand = [ line.rstrip() for line in IN ]
 
@@ -274,50 +274,64 @@ class GDC_extractor:
         Make a single GET call to the REST API at `url` with a query string built from `parameters`.
         """
 
-        result = requests.get( self.endpoint_url, params=parameters )
+        result = requests.Response()
+
+        try:
+            result = requests.get( self.endpoint_url, params=parameters )
+        except Exception as e:
+            try:
+                print( f"WARNING: call to API /{self.endpoint_url} endpoint with parameters {parameters} generated an error: {e}", file=sys.stderr )
+                print( 'Retrying after 15s...', file=sys.stderr )
+                time.sleep( 15 )
+                result = requests.get( self.endpoint_url, params=parameters )
+            except Exception as e_2:
+                try:
+                    print( f"WARNING: call to API /{self.endpoint_url} endpoint with parameters {parameters} generated an error: {e_2}", file=sys.stderr )
+                    print( 'Retrying after 30s...', file=sys.stderr )
+                    time.sleep( 30 )
+                    result = requests.get( self.endpoint_url, params=parameters )
+                except Exception as e_3:
+                    sys.exit( f"Unrecoverable error. Final error message: {e_3}" )
 
         if result.ok:
-            
             return result
 
         else:
-            
-            # Try twice more.
-
             print( f"WARNING: call to API /{self.endpoint_url} endpoint with parameters {parameters} failed. Response content: " + str( result.content ), file=sys.stderr )
-            print( 'Retrying after 15s (attempt 1 of 2)...', file=sys.stderr )
-
-            # Give the API a moment.
-
-            time.sleep( 15 )
-
-            result = requests.get( self.endpoint_url, params=parameters )
+            print( 'Retrying after 15s...', file=sys.stderr )
+            try:
+                time.sleep( 15 )
+                result = requests.get( self.endpoint_url, params=parameters )
+            except Exception as e_2:
+                try:
+                    print( f"WARNING: call to API /{self.endpoint_url} endpoint with parameters {parameters} generated an error: {e_2}", file=sys.stderr )
+                    print( 'Retrying after 30s...', file=sys.stderr )
+                    time.sleep( 30 )
+                    result = requests.get( self.endpoint_url, params=parameters )
+                except Exception as e_3:
+                    sys.exit( f"Unrecoverable error. Final error message: {e_3}" )
 
             if result.ok:
-                
                 return result
 
             else:
-                
-                # Try once more.
-
                 print( f"WARNING: call to API /{self.endpoint_url} endpoint with parameters {parameters} failed. Response content: " + str( result.content ), file=sys.stderr )
-                print( 'Retrying after 60s (attempt 2 of 2)...', file=sys.stderr )
-
-                # Give the API a longer moment.
-
-                time.sleep( 60 )
-
-                result = requests.get( self.endpoint_url, params=parameters )
+                print( 'Retrying after 30s...', file=sys.stderr )
+                try:
+                    time.sleep( 30 )
+                    result = requests.get( self.endpoint_url, params=parameters )
+                except Exception as e_2:
+                        print( f"WARNING: call to API /{self.endpoint_url} endpoint with parameters {parameters} generated an error: {e_2}", file=sys.stderr )
+                        print( 'Retrying after 60s...', file=sys.stderr )
+                        time.sleep( 60 )
+                        result = requests.get( self.endpoint_url, params=parameters )
+                    except Exception as e_3:
+                        sys.exit( f"Unrecoverable error. Final error message: {e_3}" )
 
                 if result.ok:
-                    
                     return result
-
                 else:
-                    
                     # Give up.
-
                     sys.exit( f"FATAL: call to API /{self.endpoint_url} endpoint with parameters {parameters} failed. Response content: " + str( result.content ) )
 
     def __partition_field_list_into_chunks( self ):
@@ -395,12 +409,13 @@ class GDC_extractor:
 
         field_chunks = self.__partition_field_list_into_chunks()
 
-        # Track the current page number. This'll be populated from API result data before it's used; these
-        # are just seed values so the loop invariant for the first iteration of the while loop is true.
+        # Track the current page number. This'll be populated from API result data after it's used once;
+        # these are seed values so the loop invariant for the first iteration of the while loop is true and
+        # so we can print a "Pulling page 1" message for the first page at the right time.
 
-        page_number = 0
+        page_number = 1
 
-        total_pages = 1000
+        total_pages = 10000
 
         # Keep track of how many records we've completed so we can tell the API where to begin each successive page.
 
@@ -408,7 +423,9 @@ class GDC_extractor:
 
         while page_number < total_pages:
 
-            record_chunks = defaultdict(list)
+            record_chunks = defaultdict( list )
+
+            print( f"Pulling page {page_number} / {total_pages}...", file=sys.stderr )
 
             for field_chunk in field_chunks:
                 
@@ -441,8 +458,6 @@ class GDC_extractor:
                 page_number = resultJSON["data"]["pagination"]["page"]
 
                 total_pages = resultJSON["data"]["pagination"]["pages"]
-
-            sys.stderr.write(f"Pulling page {page_number} / {total_pages}...")
 
             # Merge chunks of the same record.
 
@@ -492,7 +507,7 @@ class GDC_extractor:
 
             output_tsv = self.base_table_tsv
 
-            fields_to_include = { field for field in self.fields_to_use if re.search(r'\.', field) is None }
+            fields_to_include = { field for field in self.fields_to_use if re.search( r'\.', field ) is None }
 
             # We'll explicitly make the id field the first output column, then append the rest.
 
@@ -678,7 +693,7 @@ class GDC_extractor:
 
         for field_name in result["fields"]:
             
-            if re.search(r'\.', field_name) is not None:
+            if re.search( r'\.', field_name ) is not None:
                 
                 # Whatever this is, it has sub-objects. Did we say we wanted it filtered out?
 
@@ -686,7 +701,7 @@ class GDC_extractor:
 
                 for prefix in self.substructures_to_filter:
                     
-                    if re.search(f'^{prefix}\.', field_name) is not None:
+                    if re.search( r'^' + prefix + r'\.', field_name ) is not None:
                         
                         skip_current = True
 
