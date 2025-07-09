@@ -321,6 +321,7 @@ class GDC_extractor:
                     time.sleep( 30 )
                     result = requests.get( self.endpoint_url, params=parameters )
                 except Exception as e_2:
+                    try:
                         print( f"WARNING: call to API /{self.endpoint_url} endpoint with parameters {parameters} generated an error: {e_2}", file=sys.stderr )
                         print( 'Retrying after 60s...', file=sys.stderr )
                         time.sleep( 60 )
@@ -413,7 +414,7 @@ class GDC_extractor:
         # these are seed values so the loop invariant for the first iteration of the while loop is true and
         # so we can print a "Pulling page 1" message for the first page at the right time.
 
-        page_number = 1
+        page_number = 0
 
         total_pages = 10000
 
@@ -425,7 +426,11 @@ class GDC_extractor:
 
             record_chunks = defaultdict( list )
 
-            print( f"Pulling page {page_number} / {total_pages}...", file=sys.stderr )
+            print_page_number = page_number + 1
+            print_total_pages = total_pages
+            if print_total_pages == 10000:
+                print_total_pages = '(unknown)'
+            print( f"Pulling page {print_page_number} / {print_total_pages}...", end='', file=sys.stderr )
 
             for field_chunk in field_chunks:
                 
@@ -493,11 +498,11 @@ class GDC_extractor:
                         
                         elapsed_time = time.time() - start_time
 
-                        sys.stderr.write(f"done. Wrote {record_count} '{self.endpoint_singular}' records in {elapsed_time:.1f}s.\n")
+                        sys.stderr.write( f"done. Wrote {record_count} '{self.endpoint_singular}' records in {elapsed_time:.1f}s.\n" )
 
             elapsed_time = time.time() - start_time
 
-            sys.stderr.write(f"\nEndpoint pull complete. Wrote {record_count} '{self.endpoint_singular}' records in {elapsed_time:.1f}s.\n")
+            sys.stderr.write( f"\nEndpoint pull complete. Wrote {record_count} '{self.endpoint_singular}' records in {elapsed_time:.1f}s.\n" )
 
     def make_base_table( self ):
         
