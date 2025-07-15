@@ -284,7 +284,7 @@ for case_id in case_in_project:
 
     for submitter_id_pattern in submitter_id_patterns_not_to_merge_across_projects:
         
-        if re.search( submitter_id_pattern, case_submitter_id ) is not None:
+        if re.search( submitter_id_pattern, case_submitter_id, re.IGNORECASE ) is not None:
             
             submitter_id_passed = False
 

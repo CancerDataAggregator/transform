@@ -4,7 +4,7 @@ import re, sys
 
 from os import makedirs, path
 
-from cda_etl.lib import get_cda_project_ancestors, get_current_timestamp, get_submitter_id_patterns_not_to_merge_across_projects, get_tcga_study_name, get_universal_value_deletion_patterns, load_tsv_as_dict, map_columns_one_to_one, map_columns_one_to_many
+from cda_etl.lib import get_cda_project_ancestors, get_current_timestamp, get_tcga_study_name, get_universal_value_deletion_patterns, load_tsv_as_dict, map_columns_one_to_one, map_columns_one_to_many
 
 # PARAMETERS
 
@@ -36,6 +36,8 @@ tsv_output_root = path.join( 'cda_tsvs', f"{upstream_data_source.lower()}_000_un
 
 upstream_identifiers_tsv = path.join( tsv_output_root, 'upstream_identifiers.tsv' )
 
+subject_tsv = path.join( tsv_output_root, 'subject.tsv' )
+
 observation_output_tsv = path.join( tsv_output_root, 'observation.tsv' )
 
 # ETL metadata.
@@ -57,6 +59,7 @@ cda_observation_fields = [
     'vital_status',
     'sex',
     'year_of_observation',
+    'age_at_observation',
     'diagnosis',
     'morphology',
     'grade',
@@ -115,6 +118,8 @@ collection_cancer_type_string = map_columns_one_to_one( original_collections_met
 
 current_cda_observation_id_index = 0
 
+subject = load_tsv_as_dict( subject_tsv )
+
 with open( dicom_series_input_tsv ) as IN:
     
     # crdc_series_uuid	SeriesDescription	Modality	PatientID	idc_case_id	PatientSpeciesDescription	PatientBirthDate	PatientSex	EthnicGroup	StudyDate	BodyPartExamined	collection_id	collection_tumorLocation	instance_count	total_byte_size
@@ -128,6 +133,9 @@ with open( dicom_series_input_tsv ) as IN:
         idc_case_id = current_series_record['idc_case_id']
 
         subject_id = idc_case_id_to_cda_subject_id[idc_case_id]
+
+        year_of_birth = subject[subject_id]['year_of_birth']
+        year_of_death = subject[subject_id]['year_of_death']
 
         year_of_observation = ''
 
@@ -153,6 +161,11 @@ with open( dicom_series_input_tsv ) as IN:
             
             observed_anatomic_sites.add( '' )
 
+        age_at_observation = ''
+        if year_of_birth != '' and year_of_birth.isdigit() and year_of_observation != '' and year_of_observation.isdigit():
+            if year_of_death == '' or ( int( year_of_death ) >= int( year_of_observation ) ):
+                age_at_observation = str( int( year_of_observation ) - int( year_of_birth ) )
+
         for observed_anatomic_site in observed_anatomic_sites:
             
             cda_observation_records[f"{upstream_data_source}.{subject_id}.{idc_case_id}.sex_year_diag_anat_obs.{current_cda_observation_id_index}"] = {
@@ -162,6 +175,7 @@ with open( dicom_series_input_tsv ) as IN:
                 'vital_status': '',
                 'sex': current_series_record['PatientSex'] if current_series_record['PatientSex'] is not None else '',
                 'year_of_observation': year_of_observation,
+                'age_at_observation': age_at_observation,
                 'diagnosis': collection_cancer_type_string[current_series_record['collection_id']],
                 'morphology': '',
                 'grade': '',
@@ -182,6 +196,9 @@ tcga_clinical = load_tsv_as_dict( tcga_clinical_input_tsv )
 
 for subject_id in original_idc_case_ids:
     
+    year_of_birth = subject[subject_id]['year_of_birth']
+    year_of_death = subject[subject_id]['year_of_death']
+
     for idc_case_id in original_idc_case_ids[subject_id]:
         
         submitter_case_id = case[idc_case_id]['submitter_case_id']
@@ -214,13 +231,23 @@ for subject_id in original_idc_case_ids:
                 
                 observed_anatomic_site_value = tcga_record['tumor_tissue_site']
 
+            year_of_observation = ''
+            if tcga_record['year_of_diagnosis'] is not None:
+                year_of_observation = tcga_record['year_of_diagnosis']
+
+            age_at_observation = ''
+            if year_of_birth != '' and year_of_birth.isdigit() and year_of_observation != '' and year_of_observation.isdigit():
+                if year_of_death == '' or ( int( year_of_death ) >= int( year_of_observation ) ):
+                    age_at_observation = str( int( year_of_observation ) - int( year_of_birth ) )
+
             cda_observation_records[f"{upstream_data_source}.{subject_id}.{idc_case_id}.tcga_clinical_obs"] = {
                 
                 'id': f"{upstream_data_source}.{subject_id}.{idc_case_id}.tcga_clinical_obs",
                 'subject_id': subject_id,
                 'vital_status': tcga_record['vital_status'] if tcga_record['vital_status'] is not None else '',
                 'sex': tcga_record['gender'] if tcga_record['gender'] is not None else '',
-                'year_of_observation': tcga_record['year_of_diagnosis'] if tcga_record['year_of_diagnosis'] is not None else '',
+                'year_of_observation': year_of_observation,
+                'age_at_observation': age_at_observation,
                 'diagnosis': get_tcga_study_name( tcga_record['disease_code'] ) if tcga_record['disease_code'] is not None else '',
                 'morphology': tcga_record['icd_o_3_histology'] if tcga_record['icd_o_3_histology'] is not None else '',
                 'grade': tcga_record['neoplasm_histologic_grade'] if tcga_record['neoplasm_histologic_grade'] is not None else '',

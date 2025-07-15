@@ -1616,6 +1616,7 @@ def columns_to_count( data_source ):
                 'vital_status',
                 'sex',
                 'year_of_observation',
+                'age_at_observation',
                 'diagnosis',
                 'morphology',
                 'grade',
@@ -2227,6 +2228,12 @@ def get_column_metadata( table_name=None, column_name=None ):
                 'data_returns': True
             },
             'year_of_observation': {
+                
+                'column_type': 'numeric',
+                'summary_returns': True,
+                'data_returns': True
+            },
+            'age_at_observation': {
                 
                 'column_type': 'numeric',
                 'summary_returns': True,
@@ -3004,7 +3011,8 @@ def get_submitter_id_patterns_not_to_merge_across_projects( ):
         
         r'^[Rr][Ee][Ff]$',
         r'^P?[0-9]+$',
-        r'[Pp]ooled [Ss]ample'
+        r'[Pp]ooled [Ss]ample',
+        r'taiwanese ir'
     ]
 
 def get_tcga_study_name( study_abbreviation ):

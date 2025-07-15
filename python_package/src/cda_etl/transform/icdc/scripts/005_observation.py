@@ -4,7 +4,7 @@ import re, sys
 
 from os import makedirs, path
 
-from cda_etl.lib import get_cda_project_ancestors, get_current_timestamp, get_submitter_id_patterns_not_to_merge_across_projects, get_universal_value_deletion_patterns, load_tsv_as_dict, map_columns_one_to_one, map_columns_one_to_many
+from cda_etl.lib import get_cda_project_ancestors, get_current_timestamp, get_universal_value_deletion_patterns, load_tsv_as_dict, map_columns_one_to_one, map_columns_one_to_many
 
 # PARAMETERS
 
@@ -36,6 +36,8 @@ tsv_output_root = path.join( 'cda_tsvs', f"{upstream_data_source.lower()}_000_un
 
 upstream_identifiers_tsv = path.join( tsv_output_root, 'upstream_identifiers.tsv' )
 
+subject_tsv = path.join( tsv_output_root, 'subject.tsv' )
+
 observation_output_tsv = path.join( tsv_output_root, 'observation.tsv' )
 
 # ETL metadata.
@@ -59,6 +61,7 @@ cda_observation_fields = [
     'vital_status',
     'sex',
     'year_of_observation',
+    'age_at_observation',
     'diagnosis',
     'morphology',
     'grade',
@@ -207,8 +210,13 @@ with open( vital_signs_input_tsv ) as IN:
 
 cda_observation_records = dict()
 
+subject = load_tsv_as_dict( subject_tsv )
+
 for subject_id in original_case_ids:
     
+    year_of_birth = subject[subject_id]['year_of_birth']
+    year_of_death = subject[subject_id]['year_of_death']
+
     vital_status_to_year_of_obs = dict()
 
     for case_id in original_case_ids[subject_id]:
@@ -235,6 +243,11 @@ for subject_id in original_case_ids:
             
             observation_id = f"{upstream_data_source}.{subject_id}.vital_status_and_year.{i}"
 
+            age_at_observation = ''
+            if year_of_birth != '' and year_of_birth.isdigit() and year_of_observation != '' and year_of_observation.isdigit():
+                if year_of_death == '' or ( int( year_of_death ) >= int( year_of_observation ) ):
+                    age_at_observation = str( int( year_of_observation ) - int( year_of_birth ) )
+
             cda_observation_records[observation_id] = {
                 
                 'id': observation_id,
@@ -242,6 +255,7 @@ for subject_id in original_case_ids:
                 'vital_status': vital_status,
                 'sex': sex[subject_id] if subject_id in sex else '',
                 'year_of_observation': year_of_observation,
+                'age_at_observation': age_at_observation,
                 'diagnosis': '',
                 'morphology': '',
                 'grade': '',
@@ -264,6 +278,9 @@ case_sample = map_columns_one_to_many( sample_case_input_tsv, 'case_id', 'sample
 
 for subject_id in original_case_ids:
     
+    year_of_birth = subject[subject_id]['year_of_birth']
+    year_of_death = subject[subject_id]['year_of_death']
+
     vital_to_year_to_site_to_grade_to_morphology = dict()
 
     for case_id in original_case_ids[subject_id]:
@@ -320,6 +337,11 @@ for subject_id in original_case_ids:
                         
                         observation_id = f"{upstream_data_source}.{subject_id}.vital_status_and_year_and_grade_and_morphology_and_resection_anatomic_site.{i}"
 
+                        age_at_observation = ''
+                        if year_of_birth != '' and year_of_birth.isdigit() and year_of_observation != '' and year_of_observation.isdigit():
+                            if year_of_death == '' or ( int( year_of_death ) >= int( year_of_observation ) ):
+                                age_at_observation = str( int( year_of_observation ) - int( year_of_birth ) )
+
                         cda_observation_records[observation_id] = {
                             
                             'id': observation_id,
@@ -327,6 +349,7 @@ for subject_id in original_case_ids:
                             'vital_status': vital_status,
                             'sex': sex[subject_id] if subject_id in sex else '',
                             'year_of_observation': year_of_observation,
+                            'age_at_observation': age_at_observation,
                             'diagnosis': '',
                             'morphology': morphology,
                             'grade': grade,
@@ -349,6 +372,9 @@ case_diagnosis = map_columns_one_to_many( diagnosis_case_input_tsv, 'case_id', '
 
 for subject_id in original_case_ids:
     
+    year_of_birth = subject[subject_id]['year_of_birth']
+    year_of_death = subject[subject_id]['year_of_death']
+
     year_to_diag_to_morph_to_grade_to_stage_to_site= dict()
 
     for case_id in original_case_ids[subject_id]:
@@ -407,6 +433,11 @@ for subject_id in original_case_ids:
                             
                             observation_id = f"{upstream_data_source}.{subject_id}.diagnosis.{i}"
 
+                            age_at_observation = ''
+                            if year_of_birth != '' and year_of_birth.isdigit() and year_of_observation != '' and year_of_observation.isdigit():
+                                if year_of_death == '' or ( int( year_of_death ) >= int( year_of_observation ) ):
+                                    age_at_observation = str( int( year_of_observation ) - int( year_of_birth ) )
+
                             cda_observation_records[observation_id] = {
                                 
                                 'id': observation_id,
@@ -414,6 +445,7 @@ for subject_id in original_case_ids:
                                 'vital_status': '',
                                 'sex': sex[subject_id] if subject_id in sex else '',
                                 'year_of_observation': year_of_observation,
+                                'age_at_observation': age_at_observation,
                                 'diagnosis': diagnosis_term,
                                 'morphology': morphology,
                                 'grade': grade,

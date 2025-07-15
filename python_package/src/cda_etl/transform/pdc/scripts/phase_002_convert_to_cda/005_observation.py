@@ -4,7 +4,7 @@ import re, sys
 
 from os import makedirs, path
 
-from cda_etl.lib import get_cda_project_ancestors, get_current_timestamp, get_submitter_id_patterns_not_to_merge_across_projects, get_universal_value_deletion_patterns, load_tsv_as_dict, map_columns_one_to_many, map_columns_one_to_one
+from cda_etl.lib import get_cda_project_ancestors, get_current_timestamp, get_universal_value_deletion_patterns, load_tsv_as_dict, map_columns_one_to_many, map_columns_one_to_one
 
 # PARAMETERS
 
@@ -31,6 +31,8 @@ tsv_output_root = path.join( 'cda_tsvs', f"{upstream_data_source.lower()}_000_un
 
 upstream_identifiers_tsv = path.join( tsv_output_root, 'upstream_identifiers.tsv' )
 
+subject_tsv = path.join( tsv_output_root, 'subject.tsv' )
+
 observation_output_tsv = path.join( tsv_output_root, 'observation.tsv' )
 
 # Table header sequences.
@@ -46,6 +48,7 @@ cda_observation_fields = [
     'vital_status',
     'sex',
     'year_of_observation',
+    'age_at_observation',
     'diagnosis',
     'morphology',
     'grade',
@@ -140,6 +143,7 @@ for subject_id in subject_has_demographic:
                     'vital_status': vital_status,
                     'sex': sex,
                     'year_of_observation': '',
+                    'age_at_observation': '',
                     'diagnosis': '',
                     'morphology': '',
                     'grade': '',
@@ -171,11 +175,20 @@ for case_id in case_has_diagnosis:
         
         subject_has_diagnosis[cda_subject_id].add( diagnosis_id )
 
+subject = load_tsv_as_dict( subject_tsv )
+
 for subject_id in subject_has_diagnosis:
     
+    year_of_birth = subject[subject_id]['year_of_birth']
+    year_of_death = subject[subject_id]['year_of_death']
+
     for diagnosis_id in subject_has_diagnosis[subject_id]:
         
         year_of_observation = diagnosis[diagnosis_id]['year_of_diagnosis']
+        age_at_observation = ''
+        if year_of_birth != '' and year_of_birth.isdigit() and year_of_observation != '' and year_of_observation.isdigit():
+            if year_of_death == '' or ( int( year_of_death ) >= int( year_of_observation ) ):
+                age_at_observation = str( int( year_of_observation ) - int( year_of_birth ) )
         p_diagnosis = diagnosis[diagnosis_id]['primary_diagnosis']
         morphology = diagnosis[diagnosis_id]['morphology']
         grade = diagnosis[diagnosis_id]['tumor_grade']
@@ -194,7 +207,7 @@ for subject_id in subject_has_diagnosis:
 
         # Are all fields empty? If not, save as an observation record for this subject_id.
 
-        if year_of_observation != '' or diagnosis != '' or morphology != '' or grade != '' or stage != '' or observed_anatomic_site != '' or resection_anatomic_site != '':
+        if year_of_observation != '' or age_at_observation != '' or diagnosis != '' or morphology != '' or grade != '' or stage != '' or observed_anatomic_site != '' or resection_anatomic_site != '':
             
             # (Safe) assumption: no diagnosis_id corresponds to multiple subjects, so
             # we will not have seen this diagnosis_id before.
@@ -206,6 +219,7 @@ for subject_id in subject_has_diagnosis:
                 'vital_status': '',
                 'sex': '',
                 'year_of_observation': year_of_observation,
+                'age_at_observation': age_at_observation,
                 'diagnosis': p_diagnosis,
                 'morphology': morphology,
                 'grade': grade,
