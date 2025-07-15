@@ -28,6 +28,8 @@ echo ./package_root/auxiliary_scripts/400_resolve_sample_crossrefs_for_IDC_DICOM
 
 icd_o_3_refdoc_url="https://iris.who.int/bitstream/handle/10665/96612/9789241548496_eng.pdf"
 
+ontology_metadata_output_root=auxiliary_metadata/__ontology_reference
+
 echo
 echo
 echo '\/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/ \/'
