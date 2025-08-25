@@ -9,7 +9,6 @@ from os import path, makedirs
 # ARGUMENT
 
 if len( sys.argv ) != 2:
-    
     sys.exit( f"\n   Usage: {sys.argv[0]} <a gzipped Neo4j JSONL dump file>\n" )
 
 dump_file = sys.argv[1]
@@ -19,9 +18,7 @@ dump_file = sys.argv[1]
 output_dir = path.join( 'extracted_data', 'cds' )
 
 for target_dir in [ output_dir ]:
-    
     if not path.exists( target_dir ):
-        
         makedirs( target_dir )
 
 # output_table_name = relationship_table_name[relationship_type][source_entity_type][dest_entity_type]
@@ -29,76 +26,65 @@ for target_dir in [ output_dir ]:
 relationship_table_name = {
     
     'associated_with' : {
-        
         'file' : {
-            
             'file' : 'file_associated_with_file'
         }
     },
     'from_sample' : {
-        
+        'diagnosis' : {
+            'sample' : 'diagnosis_from_sample'
+        },
+        'pdx' : {
+            'sample' : 'pdx_from_sample'
+        },
         'file' : {
-            
             'sample' : 'file_from_sample'
         }
     },
     'of_file' : {
-        
         'genomic_info' : {
-            
             'file' : 'genomic_info_of_file'
         },
         'image' : {
-            
             'file' : 'image_of_file'
         },
         'proteomic' : {
-            
             'file' : 'proteomic_of_file'
         }
     },
     'of_image' : {
-        
         'MultiplexMicroscopy' : {
-            
             'image': 'MultiplexMicroscopy_of_image'
         }
     },
     'of_participant' : {
-        
         'diagnosis' : {
-            
             'participant' : 'diagnosis_of_participant'
         },
         'file' : {
-            
             'participant' : 'file_of_participant'
         },
         'sample' : {
-            
             'participant' : 'sample_from_participant'
         },
         'treatment' : {
-            
             'participant' : 'treatment_of_participant'
         }
     },
     'of_program' : {
-        
         'study' : {
-            
             'program' : 'study_in_program'
         }
     },
     'of_study' : {
-        
         'file' : {
-            
             'study' : 'file_from_study'
         },
         'participant' : {
-            
             'study' : 'participant_in_study'
+        },
+        'pdx' : {
+            'study' : 'pdx_in_study'
         }
     }
 }

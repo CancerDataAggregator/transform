@@ -1,5 +1,7 @@
 #!/usr/bin/env python -u
 
+import sys
+
 from cda_etl.lib import load_tsv_as_dict, map_columns_one_to_one, map_columns_one_to_many
 
 from os import path, makedirs
@@ -136,41 +138,15 @@ with open( entity_output_file, 'w' ) as OUT:
         
         diagnosis_id = diagnosis[diagnosis_uuid]['diagnosis_id']
 
-        participant_uuid = diagnosis_of_participant[diagnosis_uuid]
+        # As of July 2025, not every diagnosis is associated with a participant.
 
-        for study_uuid in sorted( participant_in_study[participant_uuid] ):
+        if diagnosis_uuid not in diagnosis_of_participant:
             
-            # As of March 2025, not all CDS studies have to be in programs.
+            print( f"    WARNING: Skipping diagnosis record '{diagnosis_uuid}' -- not linked to any participant.", file=sys.stderr )
 
-            program_uuid = ''
-
-            program_acronym = ''
-
-            program_name = ''
-
-            if study_uuid in study_in_program:
-                
-                program_uuid = study_in_program[study_uuid]
-
-                program_acronym = program[program_uuid]['program_acronym']
-
-                program_name = program[program_uuid]['program_name']
-
-            study_phs_accession = study[study_uuid]['phs_accession']
-
-            study_acronym = study[study_uuid]['study_acronym']
-
-            study_name = study[study_uuid]['study_name']
-
-            print( *[ program_uuid, program_acronym, program_name, study_uuid, study_phs_accession, study_acronym, study_name, diagnosis_id, diagnosis_uuid, 'diagnosis' ], sep='\t', file=OUT )
-
-    for sample_uuid in sorted( sample ):
-        
-        sample_id = sample[sample_uuid]['sample_id']
-
-        for participant_uuid in sorted( sample_from_participant[sample_uuid] ):
+        else:
             
-            participant_id = participant[participant_uuid]['participant_id']
+            participant_uuid = diagnosis_of_participant[diagnosis_uuid]
 
             for study_uuid in sorted( participant_in_study[participant_uuid] ):
                 
@@ -196,6 +172,48 @@ with open( entity_output_file, 'w' ) as OUT:
 
                 study_name = study[study_uuid]['study_name']
 
-                print( *[ program_uuid, program_acronym, program_name, study_uuid, study_phs_accession, study_acronym, study_name, sample_id, sample_uuid, 'sample' ], sep='\t', file=OUT )
+                print( *[ program_uuid, program_acronym, program_name, study_uuid, study_phs_accession, study_acronym, study_name, diagnosis_id, diagnosis_uuid, 'diagnosis' ], sep='\t', file=OUT )
+
+    for sample_uuid in sorted( sample ):
+        
+        sample_id = sample[sample_uuid]['sample_id']
+
+        # As of July 2025, not every sample is associated with a participant.
+
+        if sample_uuid not in sample_from_participant:
+            
+            print( f"    WARNING: Skipping sample record '{sample_uuid}' -- not linked to any participant.", file=sys.stderr )
+
+        else:
+            
+            for participant_uuid in sorted( sample_from_participant[sample_uuid] ):
+                
+                participant_id = participant[participant_uuid]['participant_id']
+
+                for study_uuid in sorted( participant_in_study[participant_uuid] ):
+                    
+                    # As of March 2025, not all CDS studies have to be in programs.
+
+                    program_uuid = ''
+
+                    program_acronym = ''
+
+                    program_name = ''
+
+                    if study_uuid in study_in_program:
+                        
+                        program_uuid = study_in_program[study_uuid]
+
+                        program_acronym = program[program_uuid]['program_acronym']
+
+                        program_name = program[program_uuid]['program_name']
+
+                    study_phs_accession = study[study_uuid]['phs_accession']
+
+                    study_acronym = study[study_uuid]['study_acronym']
+
+                    study_name = study[study_uuid]['study_name']
+
+                    print( *[ program_uuid, program_acronym, program_name, study_uuid, study_phs_accession, study_acronym, study_name, sample_id, sample_uuid, 'sample' ], sep='\t', file=OUT )
 
 
