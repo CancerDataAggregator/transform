@@ -89,7 +89,11 @@ with gzip.open( input_file ) as IN:
 
                     elif fields[record_type][key] != prop_type:
                         
-                        sys.exit( f"[line {current_line}]: Eek! [record_type={record_type}; key={key}] ( fields[record_type][key] == {fields[record_type][key]} ) != ( prop_type == {prop_type} )" )
+                        # New 2025-08-25: Some sample.sample_anatomic_site values are coming in as e.g. "Cervix"; others as "[]" (always an empty array). The following sets up a parse hack in a subsequent extraction script to treat the latter as empty strings. Ech.
+                        if key == 'sample_anatomic_site':
+                            fields[record_type][key] = 'string'
+                        else:
+                            sys.exit( f"[line {current_line}]: Eek! [record_type={record_type}; key={key}] ( fields[record_type][key] == {fields[record_type][key]} ) != ( prop_type == {prop_type} )" )
 
         current_line = current_line + 1
 

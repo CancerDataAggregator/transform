@@ -84,7 +84,8 @@ with gzip.open( dump_file ) as IN:
                     
                     if field_value_type[entity_type][field_name] == 'string':
                         
-                        output_record.append( json.dumps( props[field_name] ).strip( '"' ) )
+                        # New 2025-08-25: Some sample.sample_anatomic_site values are coming in as e.g. "Cervix"; others as "[]" (always an empty array). The following includes a hack to treat the latter as empty strings. Ech.
+                        output_record.append( json.dumps( props[field_name] ).strip( '"' ).strip( '[' ).strip( ']' ) )
 
                     elif field_value_type[entity_type][field_name] == 'array':
                         
