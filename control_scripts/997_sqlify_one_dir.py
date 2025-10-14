@@ -70,6 +70,6 @@ with open( output_file, 'w' ) as OUT:
 
 loader = CDA_loader()
 
-loader.transform_dir_to_SQL( tsv_dir )
+loader.transform_dir_to_SQL_dump_file( tsv_dir )
 
 

@@ -10,22 +10,13 @@ class CDA_loader:
     
     def __init__( self ):
         
-        # Enumerated (and ordered: this will determine column order for all X_data_source tables) list of data sources for which we expect entity identifiers to exist. These are lowercase largely because postgresql is a pain about capital letters in column names.
-
-        self.expected_data_sources = [
-            
-            'gdc',
-            'pdc',
-            'idc',
-            'cds',
-            'icdc'
-        ]
-
-        # Maximum number of file ID/alias pairs to cache in memory before each pass building the file_subject and file_specimen alias link tables.
-
-        self.merged_tsv_dir = path.join( 'cda_tsvs', 'last_merge' )
-
         self.sql_output_dir = 'SQL_data'
+
+        # DDL schema file (extracted from previous populated DB instance) that will
+        # serve as a basis for constructing and indexing the new instance we're going
+        # to build using the SQL dump file this module generates.
+
+        self.ddl_schema_file = path.join( 'ddl_schema', 'cda_database_ddl_schema.sql' )
 
         # List of indexes and constraints currently applied to the RDBMS. This file
         # will need to be replaced once the cloud environment is understood, as will
@@ -371,6 +362,64 @@ class CDA_loader:
             print( end='\n\n', file=POST_CMD )
 
         print( 'done.', file=sys.stderr )
+
+        print( '...done transforming CDA TSVs to SQL.', file=sys.stderr )
+
+    def transform_dir_to_SQL_dump_file( self, input_dir ):
+        
+        output_dump_file = path.join( self.sql_output_dir, 'cda_release.sql.gz' )
+
+        print( f"Transforming CDA TSVs to SQL dump file at {output_dump_file}...", file=sys.stderr )
+
+        # Create tables and add column definitions as comments; then load row data; then
+        # build indexes and constraints.
+
+        with gzip.open( output_dump_file, 'wt' ) as OUT, open( self.ddl_schema_file ) as SCHEMA:
+            
+            # Cache the schema DDL directives starting at the first instance of a
+            # primary key assignment, so we can load in table data via COPY before
+            # assigning constraints and building indexes and thus avoid update overhead
+            # incurred by declaring these structures too soon.
+            final_segment_head_reached = False
+            dump_file_final_segment = ''
+            previous_line = None
+            for next_line in SCHEMA:
+                if final_segment_head_reached:
+                    dump_file_final_segment = dump_file_final_segment + next_line
+                elif re.search( r'Type:\s+CONSTRAINT', next_line ) is not None:
+                    if previous_line is None:
+                        sys.exit( f"FATAL: This condition should never occur; please debug immediately. (previous_line == None)" )
+                    else:
+                        dump_file_final_segment = previous_line
+                        final_segment_head_reached = True
+                        dump_file_final_segment = dump_file_final_segment + next_line
+                # The psql processing flow doesn't seem to understand the transaction_timeout parameter for SET.
+                elif previous_line is not None and re.search( r'SET\s+transaction_timeout', previous_line ) is None:
+                    print( previous_line, end='', file=OUT )
+                previous_line = next_line
+
+            # Populate all tables using COPY blocks.
+            for input_file_basename in sorted( listdir( input_dir ) ):
+                if re.search( r'\.tsv(\.gz)?$', input_file_basename ) is not None:
+                    input_file = path.join( input_dir, input_file_basename )
+                    target_table = re.sub( r'\.tsv(\.gz)?$', '', input_file_basename )
+                    # Transcode TSV rows into the body of a prepared SQL COPY statement,
+                    # to populate the postgres table corresponding to the TSV being scanned.
+                    print( f"      ...{input_file_basename} -> {target_table}...", file=sys.stderr )
+                    IN = open( input_file )
+                    if re.search( r'\.tsv\.gz$', input_file ) is not None:
+                        IN.close()
+                        IN = gzip.open( input_file, 'rt' )
+                    colnames = next( IN ).rstrip( '\n' ).split( '\t' )
+                    # COPY diagnosis (id, primary_diagnosis, age_at_diagnosis, morphology, stage, grade, method_of_diagnosis) FROM stdin;
+                    print( f"COPY public.{target_table} (" + ', '.join( colnames ) + ') FROM stdin;', end='\n', file=OUT )
+                    for next_line in IN:
+                        record = dict( zip( colnames, [ value for value in next_line.rstrip( '\n' ).split( '\t' ) ] ) )
+                        print( '\t'.join( [ r'\N' if len( record[colname] ) == 0 else record[colname] for colname in colnames ] ), end='\n', file=OUT )
+                    print( r'\.', end='\n\n', file=OUT )
+
+            # Now paste in the constraint and index construction commands.
+            print( dump_file_final_segment, end='', file=OUT )
 
         print( '...done transforming CDA TSVs to SQL.', file=sys.stderr )
 
