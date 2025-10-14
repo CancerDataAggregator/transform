@@ -235,8 +235,12 @@ for subject_id in original_idc_case_ids:
             if tcga_record['year_of_diagnosis'] is not None:
                 year_of_observation = tcga_record['year_of_diagnosis']
 
+            vital_status = ''
+            if tcga_record['vital_status'] is not None:
+                vital_status = tcga_record['vital_status']
+
             age_at_observation = ''
-            if year_of_birth != '' and year_of_birth.isdigit() and year_of_observation != '' and year_of_observation.isdigit():
+            if vital_status.lower() != 'dead' and year_of_birth != '' and year_of_birth.isdigit() and year_of_observation != '' and year_of_observation.isdigit():
                 if year_of_death == '' or ( int( year_of_death ) >= int( year_of_observation ) ):
                     age_at_observation = str( int( year_of_observation ) - int( year_of_birth ) )
 
@@ -244,7 +248,7 @@ for subject_id in original_idc_case_ids:
                 
                 'id': f"{upstream_data_source}.{subject_id}.{idc_case_id}.tcga_clinical_obs",
                 'subject_id': subject_id,
-                'vital_status': tcga_record['vital_status'] if tcga_record['vital_status'] is not None else '',
+                'vital_status': vital_status,
                 'sex': tcga_record['gender'] if tcga_record['gender'] is not None else '',
                 'year_of_observation': year_of_observation,
                 'age_at_observation': age_at_observation,

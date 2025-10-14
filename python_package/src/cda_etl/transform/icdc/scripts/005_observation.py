@@ -338,7 +338,7 @@ for subject_id in original_case_ids:
                         observation_id = f"{upstream_data_source}.{subject_id}.vital_status_and_year_and_grade_and_morphology_and_resection_anatomic_site.{i}"
 
                         age_at_observation = ''
-                        if year_of_birth != '' and year_of_birth.isdigit() and year_of_observation != '' and year_of_observation.isdigit():
+                        if vital_status.lower() != 'dead' and year_of_birth != '' and year_of_birth.isdigit() and year_of_observation != '' and year_of_observation.isdigit():
                             if year_of_death == '' or ( int( year_of_death ) >= int( year_of_observation ) ):
                                 age_at_observation = str( int( year_of_observation ) - int( year_of_birth ) )
 
