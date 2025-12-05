@@ -28,7 +28,7 @@ class mutation_transformer:
             makedirs( self.substitution_log_dir )
 
         self.cda_data_sources = [
-            'CDS',
+            'GC',
             'GDC',
             'ICDC',
             'IDC',
@@ -264,6 +264,10 @@ class mutation_transformer:
                                             old_value = ''
 
                                         new_value = ''
+
+                                        # Convert numbers to strings to facilitate pattern matching.
+                                        if not isinstance( old_value, str ) and not isinstance( old_value, bool ):
+                                            old_value = str( old_value )
 
                                         # Harmonize values as directed by the contents of the `harmonization_map_index` file (cf. __init__() definition above).
 

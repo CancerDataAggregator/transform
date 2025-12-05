@@ -30,7 +30,7 @@ debug=False
 
 new_suffix_column_names = [
     
-    'data_at_cds',
+    'data_at_gc',
     'data_at_gdc',
     'data_at_icdc',
     'data_at_idc',

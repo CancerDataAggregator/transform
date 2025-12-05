@@ -64,16 +64,16 @@ fields_to_filter = {
 
 prefixes_to_filter = {
     
-    'annotations',
-    'diagnoses\.annotations',
-    'files',
-    'project',
-    'samples\.annotations',
-    'samples\.portions\.analytes\.aliquots\.annotations',
-    'samples\.portions\.analytes\.annotations',
-    'samples\.portions\.annotations',
-    'samples\.portions\.slides\.annotations',
-    'summary'
+    r'annotations',
+    r'diagnoses\.annotations',
+    r'files',
+    r'project',
+    r'samples\.annotations',
+    r'samples\.portions\.analytes\.aliquots\.annotations',
+    r'samples\.portions\.analytes\.annotations',
+    r'samples\.portions\.annotations',
+    r'samples\.portions\.slides\.annotations',
+    r'summary'
 }
 
 # Fields we want to keep. These will be filtered because of matches
@@ -104,16 +104,16 @@ substructures_to_filter = {
     # We grab IDs from these and build relevant association tables. No
     # non-ID substructure is queried or stored.
 
-    'annotations',
-    'diagnoses\.annotations',
-    'files',
-    'project',
-    'samples\.annotations',
-    'samples\.portions\.analytes\.aliquots\.annotations',
-    'samples\.portions\.analytes\.annotations',
-    'samples\.portions\.annotations',
-    'samples\.portions\.slides\.annotations',
-    'summary'
+    r'annotations',
+    r'diagnoses\.annotations',
+    r'files',
+    r'project',
+    r'samples\.annotations',
+    r'samples\.portions\.analytes\.aliquots\.annotations',
+    r'samples\.portions\.analytes\.annotations',
+    r'samples\.portions\.annotations',
+    r'samples\.portions\.slides\.annotations',
+    r'summary'
 }
 
 # Substructures containing statistical summaries, not sub-entity records.

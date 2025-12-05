@@ -34,11 +34,11 @@ fields_to_filter = set()
 
 prefixes_to_filter = {
     
-    'analysis\.input_files',
-    'annotations',
-    'cases',
-    'downstream_analyses\.output_files',
-    'metadata_files'
+    r'analysis\.input_files',
+    r'annotations',
+    r'cases',
+    r'downstream_analyses\.output_files',
+    r'metadata_files'
 }
 
 # Fields we want to keep. These will be filtered because of matches
@@ -65,12 +65,12 @@ substructures_to_filter = {
     # We grab IDs from these and build relevant association tables. No
     # non-ID substructure is queried or stored.
 
-    'analysis\.input_files',
-    'annotations',
-    'associated_entities',
-    'cases',
-    'downstream_analyses\.output_files',
-    'metadata_files',
+    r'analysis\.input_files',
+    r'annotations',
+    r'associated_entities',
+    r'cases',
+    r'downstream_analyses\.output_files',
+    r'metadata_files',
 
     # I know this makes 'downstream_analyses\.output_files' above redundant,
     # but I'm putting it here anyway to document: we skip downstream_analyses

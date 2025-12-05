@@ -51,16 +51,16 @@ echo ./package_root/auxiliary_scripts/421_draft_IDC_PDC_project_links_using_subm
 ./package_root/auxiliary_scripts/421_draft_IDC_PDC_project_links_using_submitter_IDs.py $idc_entity_list $pdc_entity_list $output_file
 
 ################################################################################
-# ...then draft links from IDC projects to CDS projects based on entities of
+# ...then draft links from IDC projects to GC projects based on entities of
 # corresponding types sharing a submitter ID.
 ################################################################################
 
-cds_entity_list=./auxiliary_metadata/__CDS_supplemental_metadata/CDS_entities_by_program_and_study.tsv
+gc_entity_list=./auxiliary_metadata/__GC_supplemental_metadata/GC_entities_by_program_and_study.tsv
 
-output_file="${output_dir}/naive_IDC_CDS_project_id_map.tsv"
+output_file="${output_dir}/naive_IDC_GC_project_id_map.tsv"
 
-echo ./package_root/auxiliary_scripts/422_draft_IDC_CDS_project_links_using_submitter_IDs.py $idc_entity_list $cds_entity_list $output_file
-./package_root/auxiliary_scripts/422_draft_IDC_CDS_project_links_using_submitter_IDs.py $idc_entity_list $cds_entity_list $output_file
+echo ./package_root/auxiliary_scripts/422_draft_IDC_GC_project_links_using_submitter_IDs.py $idc_entity_list $gc_entity_list $output_file
+./package_root/auxiliary_scripts/422_draft_IDC_GC_project_links_using_submitter_IDs.py $idc_entity_list $gc_entity_list $output_file
 
 ################################################################################
 # ...then draft links from IDC projects to ICDC projects based on entities of

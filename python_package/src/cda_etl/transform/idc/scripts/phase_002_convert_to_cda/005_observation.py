@@ -244,11 +244,33 @@ for subject_id in original_idc_case_ids:
                 if year_of_death == '' or ( int( year_of_death ) >= int( year_of_observation ) ):
                     age_at_observation = str( int( year_of_observation ) - int( year_of_birth ) )
 
+            # Apart from `sex`, `vital_status` observations do not represent data acquired simultaneously with
+            # the other `observation` columns in these records: do not imply association in CDA rows.
+            # Split into groups not known to be mutually uncorrelated, as `vital_status` is with nearly everything.
+
+            if vital_status != '':
+                
+                cda_observation_records[f"{upstream_data_source}.{subject_id}.{idc_case_id}.tcga_clinical_obs.vs"] = {
+                    
+                    'id': f"{upstream_data_source}.{subject_id}.{idc_case_id}.tcga_clinical_obs.vs",
+                    'subject_id': subject_id,
+                    'vital_status': vital_status,
+                    'sex': tcga_record['gender'] if tcga_record['gender'] is not None else '',
+                    'year_of_observation': '',
+                    'age_at_observation': '',
+                    'diagnosis': '',
+                    'morphology': '',
+                    'grade': '',
+                    'stage': '',
+                    'observed_anatomic_site': '',
+                    'resection_anatomic_site': ''
+                }
+
             cda_observation_records[f"{upstream_data_source}.{subject_id}.{idc_case_id}.tcga_clinical_obs"] = {
                 
                 'id': f"{upstream_data_source}.{subject_id}.{idc_case_id}.tcga_clinical_obs",
                 'subject_id': subject_id,
-                'vital_status': vital_status,
+                'vital_status': '',
                 'sex': tcga_record['gender'] if tcga_record['gender'] is not None else '',
                 'year_of_observation': year_of_observation,
                 'age_at_observation': age_at_observation,

@@ -416,7 +416,7 @@ class GDC_extractor:
 
         page_number = 0
 
-        total_pages = 10000
+        total_pages = 1000007
 
         # Keep track of how many records we've completed so we can tell the API where to begin each successive page.
 
@@ -428,7 +428,7 @@ class GDC_extractor:
 
             print_page_number = page_number + 1
             print_total_pages = total_pages
-            if print_total_pages == 10000:
+            if print_total_pages == 1000007:
                 print_total_pages = '(unknown)'
             print( f"Pulling page {print_page_number} / {print_total_pages}...", end='', file=sys.stderr )
 

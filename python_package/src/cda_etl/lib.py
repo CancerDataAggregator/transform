@@ -1099,7 +1099,7 @@ def columns_to_count( data_source ):
 
         # end enumerable_columns['pdc']
 
-        'cds': {
+        'gc': {
             
             'diagnosis': [
                 
@@ -1110,6 +1110,7 @@ def columns_to_count( data_source ):
                 'primary_diagnosis',
                 'primary_site',
                 'progression_or_recurrence',
+                'progression_or_recurrence_concept_code',
                 'site_of_resection_or_biopsy',
                 'tissue_or_organ_of_origin',
                 'tumor_grade',
@@ -1121,20 +1122,30 @@ def columns_to_count( data_source ):
             'file': [
                 
                 'experimental_strategy_and_data_subtypes',
+                'experimental_strategy_and_data_subtypes_concept_code',
                 'file_description',
                 'file_mapping_level',
-                'file_type'
+                'file_mapping_level_concept_code',
+                'file_type',
+                'file_type_concept_code',
+                'is_supplementary_file'
             ],
             'genomic_info': [
                 
                 'instrument_model',
                 'library_layout',
+                'library_layout_concept_code',
                 'library_selection',
+                'library_selection_concept_code',
                 'library_source',
                 'library_source_material',
+                'library_source_material_concept_code',
                 'library_source_molecule',
+                'library_source_molecule_concept_code',
                 'library_strategy',
+                'library_strategy_concept_code',
                 'platform',
+                'platform_concept_code',
                 'reference_genome_assembly',
                 'sequence_alignment_software'
             ],
@@ -1160,12 +1171,33 @@ def columns_to_count( data_source ):
                 'tumor_tissue_type',
                 'working_distance'
             ],
+            'MultiplexMicroscopy': [
+                
+                'embedding_medium',
+                'imaging_assay_type',
+                'immersion',
+                'pyramid',
+                'staining_method',
+                'tissue_fixative',
+                'tumor_tissue_type'
+            ],
             'participant': [
                 
                 'ethnicity',
+                'ethnicity_concept_code',
                 'gender',
                 'race',
-                'sex'
+                'race_concept_code',
+                'sex',
+                'sex_concept_code'
+            ],
+            'pdx': [
+                
+                'implantation_site',
+                'implantation_type',
+                'implantation_type_concept_code',
+                'mouse_strain',
+                'sample_type_for_implantation'
             ],
             'program': [
                 
@@ -1175,17 +1207,26 @@ def columns_to_count( data_source ):
                 'program_full_description',
                 'program_name',
                 'program_short_description',
+                'program_short_name',
                 'program_sort_order'
+            ],
+            'proteomic': [
+                
+                'analytical_fractions',
+                'instrument_make',
+                'proteomic_instrument_model'
             ],
             'sample': [
                 
                 'sample_type',
                 'sample_tumor_status',
+                'sample_tumor_status_concept_code',
                 'sample_anatomic_site'
             ],
             'study': [
                 
                 'adult_or_childhood_study',
+                'adult_or_childhood_study_concept_code',
                 'bioproject_accession',
                 'cds_primary_bucket',
                 'cds_requestor',
@@ -1203,17 +1244,22 @@ def columns_to_count( data_source ):
                 'grant_id',
                 'index_date',
                 'organism_species',
+                'organism_species_concept_code',
                 'phs_accession',
                 'role_or_affiliation',
+                'role_or_affiliation_concept_code',
                 'short_description',
                 'size_of_data_being_uploaded_original_unit',
                 'size_of_data_being_uploaded_unit',
                 'study_access',
                 'study_acronym',
                 'study_data_types',
+                'study_data_types_concept_code',
                 'study_description',
                 'study_external_url',
-                'study_name'
+                'study_name',
+                'title',
+                'title_concept_code'
             ],
             'treatment': [
                 
@@ -1223,7 +1269,7 @@ def columns_to_count( data_source ):
             ]
         },
 
-        # end enumerable_columns['cds']
+        # end enumerable_columns['gc']
 
         'icdc': {
             
@@ -1948,7 +1994,7 @@ def get_column_metadata( table_name=None, column_name=None ):
                 'summary_returns': False,
                 'data_returns': True
             },
-            'data_at_cds': {
+            'data_at_gc': {
                 
                 'column_type': 'categorical',
                 'summary_returns': True,
@@ -2059,7 +2105,7 @@ def get_column_metadata( table_name=None, column_name=None ):
                 'summary_returns': True,
                 'data_returns': True
             },
-            'data_at_cds': {
+            'data_at_gc': {
                 
                 'column_type': 'categorical',
                 'summary_returns': True,
@@ -2158,7 +2204,7 @@ def get_column_metadata( table_name=None, column_name=None ):
                 'summary_returns': True,
                 'data_returns': True
             },
-            'data_at_cds': {
+            'data_at_gc': {
                 
                 'column_type': 'categorical',
                 'summary_returns': True,
@@ -2275,7 +2321,7 @@ def get_column_metadata( table_name=None, column_name=None ):
                 'summary_returns': True,
                 'data_returns': True
             },
-            'data_at_cds': {
+            'data_at_gc': {
                 
                 'column_type': 'categorical',
                 'summary_returns': True,
@@ -2350,7 +2396,7 @@ def get_column_metadata( table_name=None, column_name=None ):
                 'summary_returns': True,
                 'data_returns': True
             },
-            'data_at_cds': {
+            'data_at_gc': {
                 
                 'column_type': 'categorical',
                 'summary_returns': True,
@@ -2563,7 +2609,7 @@ def get_column_metadata( table_name=None, column_name=None ):
                 'summary_returns': False,
                 'data_returns': True
             },
-            'data_at_cds': {
+            'data_at_gc': {
                 
                 'column_type': 'categorical',
                 'summary_returns': True,

@@ -27,7 +27,7 @@ harmonization_field_map_file = path.join( harmonization_map_dir, '000_cda_column
 
 # Enumerate (case-insensitive, space-collapsed) values (as regular expressions) that
 # should be deleted wherever they are found, except for tables listed
-# in `exclude_tables` (some CDS submitter IDs, for example, are "Not Applicable",
+# in `exclude_tables` (some GC submitter IDs, for example, are "Not Applicable",
 # hence the need to exclude certain files from value alteration).
 delete_everywhere = get_universal_value_deletion_patterns()
 

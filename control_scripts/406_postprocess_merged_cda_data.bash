@@ -33,13 +33,13 @@ pdc_extraction_date_string=`cat ${pdc_extraction_date_file}`
 
 pdc_version_string=`cat ${pdc_extraction_root}/__version_metadata/uiDataVersionSoftwareVersion.json | grep data_release | grep -v data_release_version | sed -E 's/^ +"data_release": "(.*)",?$/Data Release \1/' | sed -E 's/"//g'`
 
-cds_extraction_date_file=./extracted_data/cds_initial_database_dump/cds_extraction_date.txt
+gc_extraction_date_file=./extracted_data/gc_initial_database_dump/gc_extraction_date.txt
 
-cds_extraction_date_string=`cat $cds_extraction_date_file`
+gc_extraction_date_string=`cat $gc_extraction_date_file`
 
-cds_version_file=./extracted_data/cds_initial_database_dump/cds_version.txt
+gc_version_file=./extracted_data/gc_initial_database_dump/gc_version.txt
 
-cds_version_string=`cat $cds_version_file`
+gc_version_string=`cat $gc_version_file`
 
 icdc_extraction_root="./extracted_data/icdc"
 
@@ -61,14 +61,14 @@ idc_version_string=`cat $idc_version_file`
 
 input_root=./cda_tsvs/last_merge
 
-summary_output_dir=./auxiliary_metadata/__column_value_statistics/merged_CDA_data/GDC_${gdc_extraction_date_string}_plus_PDC_${pdc_extraction_date_string}_plus_CDS_${cds_extraction_date_string}_plus_ICDC_${icdc_extraction_date_string}_plus_IDC_${idc_extraction_date_string}/dataset_summaries
+summary_output_dir=./auxiliary_metadata/__column_value_statistics/merged_CDA_data/GDC_${gdc_extraction_date_string}_plus_PDC_${pdc_extraction_date_string}_plus_GC_${gc_extraction_date_string}_plus_ICDC_${icdc_extraction_date_string}_plus_IDC_${idc_extraction_date_string}/dataset_summaries
 
-summary_file="${summary_output_dir}/GDC_plus_PDC_plus_CDS_plus_ICDC_plus_IDC.converted_to_CDA.harmonized.merged.counts_by_upstream_data_source.tsv"
+summary_file="${summary_output_dir}/GDC_plus_PDC_plus_GC_plus_ICDC_plus_IDC.converted_to_CDA.harmonized.merged.counts_by_upstream_data_source.tsv"
 
 current_date=$(date '+%Y-%m-%d')
 
-echo ./package_root/auxiliary_scripts/901_summarize_distinct_values_by_table_and_column.source_aware.py $input_root $summary_file "${cda_version_string}" $current_date print_CDA_rows gdc $gdc_extraction_date_string "${gdc_version_string}" pdc $pdc_extraction_date_string "${pdc_version_string}" cds $cds_extraction_date_string "${cds_version_string}" icdc $icdc_extraction_date_string "${icdc_version_string}" idc $idc_extraction_date_string "${idc_version_string}"
-./package_root/auxiliary_scripts/901_summarize_distinct_values_by_table_and_column.source_aware.py $input_root $summary_file "${cda_version_string}" $current_date print_CDA_rows gdc $gdc_extraction_date_string "${gdc_version_string}" pdc $pdc_extraction_date_string "${pdc_version_string}" cds $cds_extraction_date_string "${cds_version_string}" icdc $icdc_extraction_date_string "${icdc_version_string}" idc $idc_extraction_date_string "${idc_version_string}"
+echo ./package_root/auxiliary_scripts/901_summarize_distinct_values_by_table_and_column.source_aware.py $input_root $summary_file "${cda_version_string}" $current_date print_CDA_rows gdc $gdc_extraction_date_string "${gdc_version_string}" pdc $pdc_extraction_date_string "${pdc_version_string}" gc $gc_extraction_date_string "${gc_version_string}" icdc $icdc_extraction_date_string "${icdc_version_string}" idc $idc_extraction_date_string "${idc_version_string}"
+./package_root/auxiliary_scripts/901_summarize_distinct_values_by_table_and_column.source_aware.py $input_root $summary_file "${cda_version_string}" $current_date print_CDA_rows gdc $gdc_extraction_date_string "${gdc_version_string}" pdc $pdc_extraction_date_string "${pdc_version_string}" gc $gc_extraction_date_string "${gc_version_string}" icdc $icdc_extraction_date_string "${icdc_version_string}" idc $idc_extraction_date_string "${idc_version_string}"
 
 # Add a release_metadata table to $input_root by combining a curated set of CDA
 # column types ('categorical', 'numeric', null) from lib.py with the profiling

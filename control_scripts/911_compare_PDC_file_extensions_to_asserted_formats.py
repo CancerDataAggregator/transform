@@ -21,7 +21,7 @@ global_extension_count = dict()
 
 # Stop whenever we encounter any one of these strings (irrespective of case) when
 # tokenizing filenames by splitting on '.' and walking backwards to construct
-# maximal useful extension sequences. Validated by hand 2025-05-20.
+# maximal useful extension sequences. Validated by hand 2025-10-21.
 
 safe_stoppers = {
     

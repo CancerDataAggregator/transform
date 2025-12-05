@@ -17,6 +17,10 @@ column_concept_map_file = path.join( harmonization_root, '000_cda_column_targets
 
 output_dir = path.join( harmonization_root, 'zz01_maps_updated_with_all_observed_values' )
 
+slim_dir = path.join( harmonization_root, '001_slims' )
+
+new_slim_dir = path.join( harmonization_root, 'zz02_slims_updated_with_all_observed_values' )
+
 ontology_reference_root = path.join( 'auxiliary_metadata', '__ontology_reference' )
 
 uberon_reference_dir = path.join( ontology_reference_root, 'UBERON' )
@@ -31,13 +35,15 @@ do_reference_dir = path.join( ontology_reference_root, 'DO' )
 
 do_obo_file = path.join( do_reference_dir, 'doid-merged.obo' )
 
+slim_log_dir = path.join( 'auxiliary_metadata', '__harmonization_logs', '__slim_terms_used' )
+
 null_values = [ '__CDA_UNASSIGNED__', 'null' ]
 
 # EXECUTION
 
-if not path.exists( output_dir ):
-    
-    makedirs( output_dir )
+for target_subdir in [ output_dir, slim_dir, new_slim_dir, slim_log_dir ]:
+    if not path.exists( target_subdir ):
+        makedirs( target_subdir )
 
 # Load ontology reference data.
 
@@ -203,6 +209,9 @@ for cda_tsv_sub in sorted( listdir( cda_tsv_root ) ):
 
                                         new_value = new_value.strip().lower()
 
+                                        if new_value == 'primary_diagnosis':
+                                            print( "FOR THE LOVE OF ALL THAT IS BEAUTIFUL AND GOOD, NOT AGAIN!", file=sys.stderr )
+
                                         if concept_name not in observed_values:
                                             
                                             observed_values[concept_name] = set()
@@ -249,6 +258,25 @@ if 'mutation' in columns_to_concepts:
 
 for concept_name in sorted( observed_values ):
     
+    slim_map_file = path.join( slim_dir, f"{concept_name}_slim.tsv" )
+    slim_map = dict()
+    target_concept_field = ''
+
+    if path.exists( slim_map_file ):
+        with open( slim_map_file ) as IN:
+            ( concept_field_to_match, slim_column_header ) = next( IN ).rstrip( '\n' ).split( '\t' )
+            target_concept_field = concept_field_to_match
+            for next_line in IN:
+                ( concept_value, slim_value ) = next_line.rstrip( '\n' ).split( '\t' )
+                if slim_value != '':
+                    if concept_value not in slim_map:
+                        slim_map[concept_value] = set()
+                    slim_map[concept_value].add( slim_value )
+
+    concept_values_seen = set()
+    slims_used = dict()
+    concept_display_name = dict()
+
     old_map_file = path.join( harmonization_root, f"{concept_name}.tsv" )
 
     old_map = dict()
@@ -357,6 +385,18 @@ for concept_name in sorted( observed_values ):
 
                 old_map[lc_value] = target
 
+                # If we're slimming this concept, record the current (harmonized) term as seen; if there are slim values for this term, log the map to those.
+
+                if target_concept_field != '' and target_concept_field in target:
+                    current_concept_value = target[target_concept_field]
+                    concept_values_seen.add( current_concept_value )
+                    if current_concept_value in slim_map:
+                        concept_display_name[current_concept_value] = target['icd_o_3_preferred_name']
+                        if current_concept_value not in slims_used:
+                            slims_used[current_concept_value] = set()
+                        for slim_value in sorted( slim_map[current_concept_value] ):
+                            slims_used[current_concept_value].add( slim_value )
+
             elif concept_name == 'anatomic_site':
                 
                 ( value, uberon_id, uberon_name ) = next_line.rstrip( '\n' ).split( '\t' )
@@ -401,6 +441,33 @@ for concept_name in sorted( observed_values ):
                     print( f"YARRRGH! ({value}:{target}) does not match loaded map data ({lc_value}:{old_map[lc_value]})!!!", file=sys.stderr )
 
                 old_map[lc_value] = target
+
+    # If we're slimming this concept, update the slim map with new (harmonized) input values seen.
+
+    if target_concept_field != '':
+        new_slim_map_file = path.join( new_slim_dir, f"{concept_name}_slim.tsv" )
+
+        with open( new_slim_map_file, 'w' ) as OUT:
+            print( *[ target_concept_field, f"slim_{concept_name}_term" ], sep='\t', file=OUT )
+
+            for concept_value in sorted( concept_values_seen | slim_map.keys() ):
+                if concept_value in slim_map:
+                    for target_value in slim_map[concept_value]:
+                        print( *[ concept_value, target_value ], sep='\t', file=OUT )
+                else:
+                    print( *[ concept_value, '' ], sep='\t', file=OUT )
+
+    if len( slims_used ) > 0:
+        
+        slim_log_file = path.join( slim_log_dir, f"current_CDA_release.{concept_name}.slims_used.tsv" )
+
+        with open( slim_log_file, 'w' ) as OUT:
+            
+            if concept_name == 'disease':
+                print( *[ target_concept_field, 'icd_o_3_preferred_name', f"slim_{concept_name}_term" ], sep='\t', file=OUT )
+                for concept_value in sorted( slims_used ):
+                    for slim_value in sorted( slims_used[concept_value] ):
+                        print( *[ concept_value, concept_display_name[concept_value], slim_value ], sep='\t', file=OUT )
 
     output_file = path.join( output_dir, f"{concept_name}.tsv" )
 

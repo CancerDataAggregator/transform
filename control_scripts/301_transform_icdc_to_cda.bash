@@ -35,7 +35,7 @@ echo ./package_root/auxiliary_scripts/990_harmonize_cda_tsvs.py $input_root $out
 
 # Compute aliases; replace ids with aliases wherever needed; create and populate data_at_* and data_source_count columns
 
-last_merge_dir=./cda_tsvs/merged_gdc_pdc_and_cds_002_decorated_harmonized
+last_merge_dir=./cda_tsvs/merged_gdc_pdc_and_gc_002_decorated_harmonized
 
 input_root=./cda_tsvs/icdc_001_harmonized
 

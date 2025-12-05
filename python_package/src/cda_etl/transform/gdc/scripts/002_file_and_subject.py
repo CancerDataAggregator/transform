@@ -326,7 +326,7 @@ for file_id in file_in_case:
             
             for index_file_id in file_has_index_file[file_id]:
                 
-                if index_file_id not in cda_file_in_project:
+                if index_file_id not in cda_file_describes_subject:
                     
                     cda_file_describes_subject[index_file_id] = set()
 

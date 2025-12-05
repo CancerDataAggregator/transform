@@ -72,7 +72,7 @@ with open( observation_tsv ) as IN, open( temp_output_tsv, 'w' ) as OUT:
                     updates['vital_status'][subject_id[subject_alias]][record['vital_status']].add( local_vital_status )
                     record['vital_status'] = local_vital_status
 
-            # If year_of_birth is non-null and we have no affirative reason to believe the subject has yet died,
+            # If year_of_birth is non-null and we have no affirmative reason to believe the subject has yet died,
             if year_of_birth[subject_alias] != '' and ( \
                     ( year_of_death[subject_alias] == '' and record['vital_status'].lower() != 'dead' ) or \
                     ( year_of_death[subject_alias] != '' and int( year_of_death[subject_alias] ) > int( year_of_observation ) ) or \

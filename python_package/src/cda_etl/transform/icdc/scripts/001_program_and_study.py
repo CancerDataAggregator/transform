@@ -6,7 +6,7 @@ import sys
 from os import makedirs, path
 from time import sleep
 
-from cda_etl.lib import get_dbgap_study_metadata, load_tsv_as_dict, map_columns_one_to_one
+from cda_etl.lib import load_tsv_as_dict, map_columns_one_to_one
 
 # PARAMETERS
 
@@ -102,7 +102,7 @@ for program_name in program:
 
     upstream_identifiers[cda_id]['program.program_name'] = program_name
 
-# Load data for studies and process dbGaP references.
+# Load data for studies.
 
 study = load_tsv_as_dict( study_input_tsv )
 
