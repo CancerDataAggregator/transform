@@ -5,6 +5,12 @@
 
 number_of_field_list_chunks = 1
 
+# Number of partitions into which we need to split data groups we're
+# requesting by name via the API's 'expand' parameter. Too many groups
+# in one query string makes the server vomit.
+
+number_of_expand_group_chunks = 1
+
 # Number of results we want the API to return per page of output.
 
 result_page_size = 500

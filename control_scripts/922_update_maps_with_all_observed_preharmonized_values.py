@@ -268,10 +268,9 @@ for concept_name in sorted( observed_values ):
             target_concept_field = concept_field_to_match
             for next_line in IN:
                 ( concept_value, slim_value ) = next_line.rstrip( '\n' ).split( '\t' )
-                if slim_value != '':
-                    if concept_value not in slim_map:
-                        slim_map[concept_value] = set()
-                    slim_map[concept_value].add( slim_value )
+                if concept_value not in slim_map:
+                    slim_map[concept_value] = set()
+                slim_map[concept_value].add( slim_value )
 
     concept_values_seen = set()
     slims_used = dict()
@@ -389,13 +388,14 @@ for concept_name in sorted( observed_values ):
 
                 if target_concept_field != '' and target_concept_field in target:
                     current_concept_value = target[target_concept_field]
-                    concept_values_seen.add( current_concept_value )
-                    if current_concept_value in slim_map:
-                        concept_display_name[current_concept_value] = target['icd_o_3_preferred_name']
-                        if current_concept_value not in slims_used:
-                            slims_used[current_concept_value] = set()
-                        for slim_value in sorted( slim_map[current_concept_value] ):
-                            slims_used[current_concept_value].add( slim_value )
+                    if current_concept_value not in null_values:
+                        concept_values_seen.add( current_concept_value )
+                        if current_concept_value in slim_map:
+                            concept_display_name[current_concept_value] = target['icd_o_3_preferred_name']
+                            if current_concept_value not in slims_used:
+                                slims_used[current_concept_value] = set()
+                            for slim_value in sorted( slim_map[current_concept_value] ):
+                                slims_used[current_concept_value].add( slim_value )
 
             elif concept_name == 'anatomic_site':
                 

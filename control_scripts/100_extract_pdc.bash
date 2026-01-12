@@ -59,6 +59,9 @@ chmod 755 ./package_root/extract/pdc/scripts/*py
 ( echo ./package_root/extract/pdc/scripts/060_workflowMetadata.py && \
   ( ( sleep 10; ./package_root/extract/pdc/scripts/060_workflowMetadata.py ) || \
       echo "FAILED: ./package_root/extract/pdc/scripts/060_workflowMetadata.py\n\nTry rerunning the failed script: that often works. Sometimes waiting a few minutes helps." ) ) && \
+( echo sleep 360 && \
+  ( ( sleep 360 ) || \
+      echo "FAILED: sleep 360\n\n...not even sure what to suggest. Fix it." ) ) && \
 ( echo ./package_root/extract/pdc/scripts/061_experimentalMetadata.py && \
   ( ( sleep 90; ./package_root/extract/pdc/scripts/061_experimentalMetadata.py ) || \
       echo "FAILED: ./package_root/extract/pdc/scripts/061_experimentalMetadata.py\n\nTry rerunning the failed script: that often works. Sometimes waiting a few minutes helps." ) ) && \

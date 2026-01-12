@@ -5,6 +5,12 @@
 
 number_of_field_list_chunks = 1
 
+# Number of partitions into which we need to split data groups we're
+# requesting by name via the API's 'expand' parameter. Too many groups
+# in one query string makes the server vomit.
+
+number_of_expand_group_chunks = 3
+
 # Number of results we want the API to return per page of output.
 
 result_page_size = 500
@@ -20,6 +26,7 @@ result_page_size = 500
 
 groups_to_expand = {
     
+    'demographic',
     'diagnoses',
     'diagnoses.pathology_details',
     'diagnoses.treatments',
@@ -27,13 +34,15 @@ groups_to_expand = {
     'family_histories',
     'follow_ups',
     'follow_ups.molecular_tests',
+    'follow_ups.other_clinical_attributes',
     'samples',
     'samples.portions',
     'samples.portions.center',
     'samples.portions.analytes',
     'samples.portions.analytes.aliquots',
     'samples.portions.analytes.aliquots.center',
-    'samples.portions.slides'
+    'samples.portions.slides',
+    'tissue_source_site'
 }
 
 # Fields we don't want.
@@ -170,6 +179,7 @@ association_maps = {
     'family_history_of_case' : dict(),
     'follow_up_of_case' : dict(),
     'molecular_test_from_follow_up' : dict(),
+    'other_clinical_attribute_from_follow_up' : dict(),
     'pathology_detail_of_diagnosis' : dict(),
     'treatment_of_diagnosis' : dict(),
     'tissue_source_site_of_case' : dict(),

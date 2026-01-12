@@ -104,6 +104,12 @@ class GDC_extractor:
 
         self.number_of_field_list_chunks = endpoint_config.number_of_field_list_chunks
 
+        # Number of partitions into which we need to split data groups we're
+        # requesting by name via the API's 'expand' parameter. Too many groups
+        # in one query string makes the server vomit.
+
+        self.number_of_expand_group_chunks = endpoint_config.number_of_expand_group_chunks
+
         # Number of results we want the API to return per page of output.
 
         self.result_page_size = endpoint_config.result_page_size
@@ -278,6 +284,7 @@ class GDC_extractor:
 
         try:
             result = requests.get( self.endpoint_url, params=parameters )
+            #print( parameters, end='\n\n\n' )
         except Exception as e:
             try:
                 print( f"WARNING: call to API /{self.endpoint_url} endpoint with parameters {parameters} generated an error: {e}", file=sys.stderr )
@@ -346,7 +353,7 @@ class GDC_extractor:
             list: returns list of lists (chunks) [ [field1, field2], [field3, field4]...]
         """
 
-        fields = self.fields_to_use
+        fields = sorted( self.fields_to_use )
 
         number_of_chunks = self.number_of_field_list_chunks
 
@@ -364,9 +371,9 @@ class GDC_extractor:
 
         # Split `fields` into chunks.
 
-        for field_group in field_groups_by_prefix.values():
+        for field_group in sorted( field_groups_by_prefix ):
             
-            field_list_chunks[chunk_index].extend(field_group)
+            field_list_chunks[chunk_index].extend(field_groups_by_prefix[field_group])
 
             if len(field_list_chunks[chunk_index]) > len(fields) / number_of_chunks:
                 
@@ -378,13 +385,74 @@ class GDC_extractor:
             
             # Make sure there's a key to merge on, downstream.
 
-            if "id" not in list_chunk:
+            if f"{self.endpoint_singular}_id" not in list_chunk:
                 
-                list_chunk.append("id")
+                list_chunk.append(f"{self.endpoint_singular}_id")
+
+            # If we're asking for multi-level stuff, make sure ancestry IDs are requested -- e.g. samples.portions.analytes.aliquots.annotations.annotation_id may not always be requested at the same time as 'expand=samples', etc.
+
+            ids_to_add = set()
+
+            for field in list_chunk:
+                if re.search( r'\.', field ) is not None:
+                    ancestry_search = re.sub( r'[^\.]+$', r'', field )
+                    next_ancestor_match = re.search( r'([^\.]+)\.$', ancestry_search )
+                    while next_ancestor_match is not None:
+                        ids_to_add.add( f"{ancestry_search}{singularize( next_ancestor_match.group(1) )}_id" )
+                        ancestry_search = re.sub( r'[^\.]+\.$', r'', ancestry_search )
+                        next_ancestor_match = re.search( r'([^\.]+)\.$', ancestry_search )
+
+            for id_field in ids_to_add:
+                if id_field not in list_chunk:
+                    list_chunk.append( id_field )
 
         # Send back the list of list-chunks (sub-lists).
 
-        return [ list_chunk for list_chunk in field_list_chunks if len(list_chunk) > 1 ]
+        return [ list_chunk for list_chunk in field_list_chunks if len(list_chunk) > 0 ]
+
+    def __partition_expand_groups_into_chunks( self ):
+        
+        """
+        Split self.groups_to_expand into self.number_of_expand_group_chunks chunks,
+        keeping groups with the same top-level prefix together in the same chunk
+        to avoid merging headaches later on.
+
+        Returns:
+            list: returns list of lists (chunks) [ [field1, field2], [field3, field4]...]
+        """
+
+        expands = sorted( self.groups_to_expand )
+
+        number_of_chunks = self.number_of_expand_group_chunks
+
+        expand_group_collections_by_prefix = defaultdict(list)
+
+        expand_group_chunks = [ [] for i in range(number_of_chunks) ]
+
+        # Keep groups together by top-level prefix so merging is easier later on.
+
+        for expand_group in expands:
+            
+            expand_group_collections_by_prefix[expand_group.split(".")[0]].append(expand_group)
+
+        chunk_index = 0
+
+        # Split expand_group data into chunks.
+
+        for expand_group_collection in sorted( expand_group_collections_by_prefix ):
+            
+            expand_group_chunks[chunk_index].extend(expand_group_collections_by_prefix[expand_group_collection])
+
+            if len(expand_group_chunks[chunk_index]) > len(expands) / number_of_chunks:
+                
+                # This chunk's big enough. Start a new one.
+
+                chunk_index += 1
+
+        # Send back the list of list-chunks (sub-lists).
+
+        return [ expand_group_chunk for expand_group_chunk in expand_group_chunks if len(expand_group_chunk) > 0 ]
+
 
     def __paginate_endpoint_calls( self ):
         
@@ -398,17 +466,15 @@ class GDC_extractor:
             One dictionary representing one record from the given endpoint.
         """
 
-        fields = self.fields_to_use
-
         expands = self.groups_to_expand
 
         url = self.endpoint_url
 
         page_size = self.result_page_size
 
-        number_of_chunks = self.number_of_field_list_chunks
-
         field_chunks = self.__partition_field_list_into_chunks()
+
+        expand_chunks = self.__partition_expand_groups_into_chunks()
 
         # Track the current page number. This'll be populated from API result data after it's used once;
         # these are seed values so the loop invariant for the first iteration of the while loop is true and
@@ -444,27 +510,59 @@ class GDC_extractor:
                     "from": record_offset,
                 }
 
-                expand_parameters= ",".join(expands)
-
-                if len(expands) > 0:
+                if len(expand_chunks) == 0:
                     
-                    expand_parameters= ",".join(expands)
+                    # No expand_group parameters to worry about.
+                    result = self.__get_endpoint_JSON( parameters )
+                    resultJSON = result.json()
 
-                    parameters["expand"] = expand_parameters
+                    for result_chunk in resultJSON["data"]["hits"]:
+                        record_chunks[result_chunk["id"]].append(result_chunk)
 
-                result = self.__get_endpoint_JSON( parameters )
+                    page_number = resultJSON["data"]["pagination"]["page"]
+                    total_pages = resultJSON["data"]["pagination"]["pages"]
 
-                resultJSON = result.json()
-
-                for result_chunk in resultJSON["data"]["hits"]:
+                else:
                     
-                    record_chunks[result_chunk["id"]].append(result_chunk)
+                    for expand_chunk in expand_chunks:
+                        # If this field_chunk is requesting individual fields subject to the assumption that
+                        # a needed ancestral ID will be present in a corresponding 'expand' group, then we
+                        # need to make sure that we're only requesting those individual fields when we
+                        # are also requesting the necessary 'expand' group.
+                        # 
+                        # Example: if we're asking (fieldwise) for diagnoses.annotations.annotation_id, we'd
+                        # best not do so unless we're also in the expand group that is expanding 'diagnoses',
+                        # or when we go to merge that annotation_id in later, we won't know which 'diagnosis'
+                        # record it belongs to.
 
-                page_number = resultJSON["data"]["pagination"]["page"]
+                        filtered_field_parameters = set()
 
-                total_pages = resultJSON["data"]["pagination"]["pages"]
+                        for field_name in field_chunk:
+                            failed = False
+                            if re.search( r'\.', field_name ) is not None:
+                                next_ancestor = re.sub( r'\.[^\.]+$', r'', field_name )
+                                while next_ancestor != '':
+                                    if next_ancestor in self.groups_to_expand and next_ancestor not in expand_chunk:
+                                        failed = True
+                                    next_ancestor = re.sub( r'[^\.]+$', r'', next_ancestor )
+                                    next_ancestor = re.sub( r'\.$', r'', next_ancestor )
+                            if not failed:
+                                filtered_field_parameters.add( field_name )
 
-            # Merge chunks of the same record.
+                        parameters["fields"] = ','.join( filtered_field_parameters )
+
+                        parameters['expand'] = ','.join( expand_chunk )
+
+                        result = self.__get_endpoint_JSON( parameters )
+                        resultJSON = result.json()
+
+                        for result_chunk in resultJSON["data"]["hits"]:
+                            record_chunks[result_chunk["id"]].append(result_chunk)
+
+                        page_number = resultJSON["data"]["pagination"]["page"]
+                        total_pages = resultJSON["data"]["pagination"]["pages"]
+
+            # Merge chunks of the same record into a dictionary.
 
             result_list = [ { key: value for record in record_chunk for key, value in record.items() } for record_chunk in record_chunks.values() ]
 
@@ -902,7 +1000,7 @@ class GDC_extractor:
 
             else:
                 
-                sys.exit(f"FATAL: Couldn't find expected id field '{id_field}' in {entity_type} substructure; aborting.")
+                sys.exit(f"FATAL [__scan_and_save]: Couldn't find expected id field '{id_field}' in {entity_type} substructure; aborting.\n\nentity_data: {entity_data}")
 
     def make_substructure_tables( self ):
         
@@ -1252,6 +1350,12 @@ class GDC_extractor:
 
                         add_to_map( association_maps['molecular_test_from_follow_up'], current_id, parent_id )
 
+                elif record_type == 'other_clinical_attributes':
+                    
+                    if 'other_clinical_attribute_from_follow_up' in association_maps:
+                        
+                        add_to_map( association_maps['other_clinical_attribute_from_follow_up'], current_id, parent_id )
+
                 elif record_type == 'analysis':
                     
                     if 'analysis_produced_file' in association_maps:
@@ -1302,7 +1406,7 @@ class GDC_extractor:
 
             else:
                 
-                sys.exit(f"FATAL: Couldn't find expected id field '{id_field}' in {record_type} substructure; aborting.")
+                sys.exit(f"FATAL [__scan_for_containment]: Couldn't find expected id field '{id_field}' in {record_type} substructure; aborting.")
 
     def make_association_tables( self ):
         
@@ -1716,6 +1820,10 @@ class GDC_extractor:
 
             if 'molecular_test_from_follow_up' in association_maps:
                 write_association_pairs( association_maps['molecular_test_from_follow_up'], f"{self.TSV_DIR}/molecular_test_from_follow_up.tsv", 'molecular_test_id', 'follow_up_id' )
+
+
+            if 'other_clinical_attribute_from_follow_up' in association_maps:
+                write_association_pairs( association_maps['other_clinical_attribute_from_follow_up'], f"{self.TSV_DIR}/other_clinical_attribute_from_follow_up.tsv", 'other_clinical_attribute_id', 'follow_up_id' )
 
 
             if 'pathology_detail_of_diagnosis' in association_maps:
