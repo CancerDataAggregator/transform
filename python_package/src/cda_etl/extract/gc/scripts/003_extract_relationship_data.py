@@ -41,6 +41,11 @@ relationship_table_name = {
             'sample' : 'file_from_sample'
         }
     },
+    'of_consent_group' : {
+        'participant' : {
+            'consent_group' : 'participant_in_consent_group'
+        }
+    },
     'of_file' : {
         'genomic_info' : {
             'file' : 'genomic_info_of_file'
@@ -82,8 +87,14 @@ relationship_table_name = {
         }
     },
     'of_study' : {
+        'consent_group' : {
+            'study' : 'consent_group_in_study'
+        },
         'file' : {
             'study' : 'file_from_study'
+        },
+        'investigator' : {
+            'study' : 'investigator_from_study'
         },
         'participant' : {
             'study' : 'participant_in_study'

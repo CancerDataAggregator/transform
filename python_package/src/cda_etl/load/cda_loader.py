@@ -2,9 +2,9 @@ import gzip
 import re
 import sys
 
-from cda_etl.lib import get_unique_values_from_tsv_column
+from cda_etl.lib import get_column_metadata, get_unique_values_from_tsv_column
 
-from os import listdir, makedirs, path
+from os import listdir, makedirs, path, rename
 
 class CDA_loader:
     
@@ -24,11 +24,33 @@ class CDA_loader:
 
         self.index_and_constraint_def_file = 'indexes_and_constraints.txt'
 
-        for target_dir in [ self.sql_output_dir ]:
-            
-            if not path.isdir( target_dir ):
-                
-                makedirs( target_dir )
+        # Postgres configuration to invoke when parsing language blocks into lexeme vectors (tsvectors).
+
+        self.default_text_search_config = 'english'
+
+    def complete_file_describes_subject( self, input_dir ):
+        file_tsv = path.join( input_dir, 'file.tsv' )
+        subject_tsv = path.join( input_dir, 'subject.tsv' )
+        file_describes_subject_tsv = path.join( input_dir, 'file_describes_subject.tsv' )
+        temp_tsv = path.join( input_dir, 'file_describes_subject.temp.tsv' )
+
+        unseen_file_aliases = set( get_unique_values_from_tsv_column( file_tsv, 'id_alias' ) )
+        unseen_subject_aliases = set( get_unique_values_from_tsv_column( subject_tsv, 'id_alias' ) )
+
+        with open( file_describes_subject_tsv ) as IN, open( temp_tsv, 'w' ) as OUT:
+            column_names = next( IN ).rstrip( '\n' ).split( '\t' )
+            print( *column_names, sep='\t', file=OUT )
+            for next_line in IN:
+                current_record = dict( zip( column_names, next_line.rstrip( '\n' ).split( '\t' ) ) )
+                unseen_file_aliases.discard( current_record['file_alias'] )
+                unseen_subject_aliases.discard( current_record['subject_alias'] )
+                print( *[ current_record['file_alias'], current_record['subject_alias'] ], sep='\t', file=OUT )
+            for file_alias in sorted( unseen_file_aliases ):
+                print( *[ file_alias, '' ], sep='\t', file=OUT )
+            for subject_alias in sorted( unseen_subject_aliases ):
+                print( *[ '', subject_alias ], sep='\t', file=OUT )
+
+        rename( temp_tsv, file_describes_subject_tsv )
 
     def make_null_TSV( self, input_dir, input_table ):
         
@@ -109,9 +131,236 @@ class CDA_loader:
 
         print( 'done.', file=sys.stderr )
 
+    def __flatten_ancestry( self, ancestry_map, target_id ):
+        # Return a set of all ancestors, allowing for multiple parents (i.e. processing ancestry as a DAG, not a tree).
+        if target_id not in ancestry_map:
+            # A root node (assuming we haven't been passed meaningless junk,
+            # which is a question that cannot be resolved within the scope of
+            # this function).
+            return set()
+        else:
+            return_set = set( ancestry_map[target_id] )
+            for target_parent in ancestry_map[target_id]:
+                return_set = return_set | self.__flatten_ancestry( ancestry_map, target_parent )
+            return return_set
+
+    def collect_keyword_data( self, input_dir, text_fields, exact_match_fields ):
+        
+        # Find out which columns are harmonized.
+        column_metadata = get_column_metadata()
+        harmonized_fields = dict()
+
+        for table_name in sorted( column_metadata ):
+            # Python 3 preserves insert order for dicts. That means column data will be displayed
+            # in the order in which columns are listed in the definition (in lib.py) of
+            # get_column_metadata(). Handy. Also worth noting because it's not obvious.
+            for column_name in column_metadata[table_name]:
+                current_record = column_metadata[table_name][column_name]
+                if 'concept' in current_record and current_record['concept'] is not None and current_record['concept'] != '':
+                    if table_name not in harmonized_fields:
+                        harmonized_fields[table_name] = dict()
+                    harmonized_fields[table_name][column_name] = current_record['concept']
+
+        # Load controlled-term data.
+        controlled_term_tsv = path.join( input_dir, 'controlled_term.tsv' )
+        containing_term_tsv = path.join( input_dir, 'containing_term.tsv' )
+        slim_term_tsv = path.join( input_dir, 'slim_term.tsv' )
+        synonym_term_tsv = path.join( input_dir, 'synonym_term.tsv' )
+
+        alias_to_id = dict()
+        alias_to_name = dict()
+        containing_terms = dict()
+        slim_terms = dict()
+        synonym_terms = dict()
+
+        with open( controlled_term_tsv ) as IN:
+            column_names = next( IN ).rstrip( '\n' ).split( '\t' )
+
+            for next_line in IN:
+                record = dict( zip( column_names, next_line.rstrip( '\n' ).split( '\t' ) ) )
+
+                # Initialize upcoming data structures for each term.
+                containing_terms[record['id_alias']] = set()
+                slim_terms[record['id_alias']] = set()
+                synonym_terms[record['id_alias']] = set()
+
+                if record['id'] is not None and record['id'] != '':
+                    alias_to_id[record['id_alias']] = record['id']
+                if record['name'] is not None and record['name'] != '':
+                    alias_to_name[record['id_alias']] = record['name']
+
+        with open( containing_term_tsv ) as IN:
+            column_names = next( IN ).rstrip( '\n' ).split( '\t' )
+            for next_line in IN:
+                record = dict( zip( column_names, next_line.rstrip( '\n' ).split( '\t' ) ) )
+                containing_terms[record['specific_term_alias']].add( record['general_term_alias'] )
+
+        with open( slim_term_tsv ) as IN:
+            column_names = next( IN ).rstrip( '\n' ).split( '\t' )
+            for next_line in IN:
+                record = dict( zip( column_names, next_line.rstrip( '\n' ).split( '\t' ) ) )
+                slim_terms[record['specific_term_alias']].add( record['general_term_alias'] )
+
+        # Yes, these are directional and paired (as opposed to clustered into groups of more than two).
+        # All of that's often up to upstream ontology curators, and we're not going to presume
+        # bidirectionality (or, worse, transitivity) in cases when it could be expressed but isn't.
+        with open( synonym_term_tsv ) as IN:
+            column_names = next( IN ).rstrip( '\n' ).split( '\t' )
+            for next_line in IN:
+                record = dict( zip( column_names, next_line.rstrip( '\n' ).split( '\t' ) ) )
+                synonym_terms[record['synonym_one_alias']].add( record['synonym_two_alias'] )
+
+        for entity_to_describe in sorted( exact_match_fields ):
+            
+            print( f"Collating {entity_to_describe}-associated keyword literals including synonyms and containers for controlled terms...", end='', file=sys.stderr )
+
+            target_tables = set()
+
+            for target_field in sorted( exact_match_fields[entity_to_describe] ):
+                match_result = re.search( r'^([^\.]+)\.', target_field )
+                if match_result is None:
+                    sys.exit( f"FATAL: Cannot parse table name from received `exact_match_fields[{entity_to_describe}]` parameter '{target_field}'; cannot continue. Please reconfigure and retry." )
+                else:
+                    target_table = match_result.group(1)
+                    target_tables.add( target_table )
+
+            # This may require caching if the data we're collating gets prohibitively large, but for the foreseeable future, we should be good. (Jan 2026)
+            keyword_list = set()
+            associated_keyword_data = dict()
+
+            for target_table in sorted( target_tables ):
+                if target_table in [ 'mutation' ]:
+                    IN = gzip.open( path.join( input_dir, f"{target_table}.tsv.gz" ), 'rt' )
+                else:
+                    IN = open( path.join( input_dir, f"{target_table}.tsv" ) )
+                column_names = next( IN ).rstrip( '\n' ).split( '\t' )
+                for next_line in IN:
+                    record = dict( zip( column_names, next_line.rstrip( '\n' ).split( '\t' ) ) )
+                    current_id = None
+                    if f"{entity_to_describe}_alias" in column_names:
+                        current_id = record[f"{entity_to_describe}_alias"]
+                    else:
+                        # We want this to break if there's an access error: one or more key assumptions isn't correct if that happens.
+                        current_id = record['id_alias']
+                    for column_name in column_names:
+                        if record[column_name] != '' and f"{target_table}.{column_name}" in exact_match_fields[entity_to_describe]:
+                            if current_id not in associated_keyword_data:
+                                associated_keyword_data[current_id] = set()
+                            # harmonized_fields[table_name][column_name] = current_record['concept']
+                            if target_table not in harmonized_fields or column_name not in harmonized_fields[target_table]:
+                                associated_keyword_data[current_id].add( record[column_name] )
+                                keyword_list.add( record[column_name] )
+                            else:
+                                # This column is harmonized. Resolve indirection and add in containing terms, slims and synonyms.
+                                base_term_alias = record[column_name]
+                                terms_to_scan = { base_term_alias } | self.__flatten_ancestry( containing_terms, base_term_alias ) | slim_terms[base_term_alias] | synonym_terms[base_term_alias]
+                                for term_to_scan in sorted( terms_to_scan ):
+                                    if term_to_scan not in alias_to_id and term_to_scan not in alias_to_name:
+                                        sys.exit( f"FATAL: Controlled term ID {term_to_scan} has neither an ID nor a name. Please handle." )
+                                    if term_to_scan in alias_to_id:
+                                        associated_keyword_data[current_id].add( alias_to_id[term_to_scan] )
+                                        keyword_list.add( alias_to_id[term_to_scan] )
+                                    if term_to_scan in alias_to_name:
+                                        associated_keyword_data[current_id].add( alias_to_name[term_to_scan] )
+                                        keyword_list.add( alias_to_name[term_to_scan] )
+
+            keyword_list_file = path.join( input_dir, f"{entity_to_describe}_keywords.tsv" )
+
+            print( f"done.\nWriting {keyword_list_file}...", end='', file=sys.stderr )
+
+            keyword_id_alias = dict()
+
+            with open( keyword_list_file, 'w' ) as OUT:
+                print( *[ 'id_alias', 'keyword' ], sep='\t', file=OUT )
+                current_id_alias = 1
+                for keyword in sorted( keyword_list ):
+                    keyword_id_alias[keyword] = current_id_alias
+                    print( *[ current_id_alias, keyword ], sep='\t', file=OUT )
+                    current_id_alias = current_id_alias + 1
+
+            keyword_association_file = path.join( input_dir, f"keyword_describes_{entity_to_describe}.tsv" )
+
+            print( f"done.\nWriting {keyword_association_file}...", end='', file=sys.stderr )
+
+            with open( keyword_association_file, 'w' ) as OUT:
+                print( *[ 'keyword_alias', f"{entity_to_describe}_alias" ], sep='\t', file=OUT )
+                for current_id in sorted( associated_keyword_data ):
+                    for keyword in sorted( associated_keyword_data[current_id] ):
+                        print( *[ keyword_id_alias[keyword], current_id ], sep='\t', file=OUT )
+
+            print( 'done.', file=sys.stderr )
+
+        for entity_to_describe in sorted( text_fields ):
+            
+            print( f"Collating {entity_to_describe}-associated lexeme blocks...", end='', file=sys.stderr )
+
+            target_tables = set()
+
+            for target_field in sorted( text_fields[entity_to_describe] ):
+                match_result = re.search( r'^([^\.]+)\.', target_field )
+                if match_result is None:
+                    sys.exit( f"FATAL: Cannot parse table name from received `text_fields[{entity_to_describe}]` parameter '{target_field}'; cannot continue. Please reconfigure and retry." )
+                else:
+                    target_table = match_result.group(1)
+                    target_tables.add( target_table )
+
+            # This may require caching if the data we're collating gets prohibitively large, but for the foreseeable future, we should be good. (Jan 2026)
+
+            associated_text_data = dict()
+
+            for target_table in sorted( target_tables ):
+                if target_table in [ 'mutation' ]:
+                    IN = gzip.open( path.join( input_dir, f"{target_table}.tsv.gz" ), 'rt' )
+                else:
+                    IN = open( path.join( input_dir, f"{target_table}.tsv" ) )
+                column_names = next( IN ).rstrip( '\n' ).split( '\t' )
+                for next_line in IN:
+                    record = dict( zip( column_names, next_line.rstrip( '\n' ).split( '\t' ) ) )
+                    current_id = None
+                    if f"{entity_to_describe}_alias" in column_names:
+                        current_id = record[f"{entity_to_describe}_alias"]
+                    else:
+                        # We want this to break if there's an access error: one or more key assumptions isn't correct if that happens.
+                        current_id = record['id_alias']
+                    for column_name in column_names:
+                        if record[column_name] != '' and f"{target_table}.{column_name}" in text_fields[entity_to_describe]:
+                            # harmonized_fields[table_name][column_name] = current_record['concept']
+                            if target_table not in harmonized_fields or column_name not in harmonized_fields[target_table]:
+                                if current_id not in associated_text_data:
+                                    associated_text_data[current_id] = record[column_name]
+                                else:
+                                    associated_text_data[current_id] = f"{associated_text_data[current_id]} {record[column_name]}"
+                            else:
+                                # This column is harmonized. Resolve indirection and add in containing terms, slims and synonyms.
+                                base_term_alias = record[column_name]
+                                terms_to_scan = { base_term_alias } | self.__flatten_ancestry( containing_terms, base_term_alias ) | slim_terms[base_term_alias] | synonym_terms[base_term_alias]
+                                for term_to_scan in sorted( terms_to_scan ):
+                                    # (Only load lexemes from term names, not term IDs.)
+                                    if term_to_scan in alias_to_name:
+                                        if current_id not in associated_text_data:
+                                            associated_text_data[current_id] = alias_to_name[term_to_scan]
+                                        else:
+                                            associated_text_data[current_id] = f"{associated_text_data[current_id]} {alias_to_name[term_to_scan]}"
+
+            output_file = path.join( input_dir, f"{entity_to_describe}_text_search_inputs.tsv" )
+
+            print( f"done.\nWriting {output_file}...", end='', file=sys.stderr )
+
+            with open( output_file, 'w' ) as OUT:
+                print( *[ f"{entity_to_describe}_alias", 'search_vector_input' ], sep='\t', file=OUT )
+                for current_id in sorted( associated_text_data ):
+                    print( *[ current_id, associated_text_data[current_id] ], sep='\t', file=OUT )
+
+            print( 'done.', file=sys.stderr )
+
     def transform_dir_to_SQL( self, input_dir ):
         
+        # THIS FUNCTION IS OBSOLETE AND OUT OF SYNC AS OF THE ADDITION OF text_search SUPPORT
         print( 'Transforming CDA TSVs to SQL...', file=sys.stderr )
+
+        for target_dir in [ self.sql_output_dir ]:
+            if not path.isdir( target_dir ):
+                makedirs( target_dir )
 
         preprocess_command_file = path.join( self.sql_output_dir, 'clear_table_data_indices_and_constraints.sql' )
 
@@ -231,8 +480,6 @@ class CDA_loader:
 
                 with gzip.open( output_file, 'wt' ) as OUT:
                     
-                    colnames = next( IN ).rstrip( '\n' ).split( '\t' )
-
                     # COPY diagnosis (id, primary_diagnosis, age_at_diagnosis, morphology, stage, grade, method_of_diagnosis) FROM stdin;
 
                     print( f"COPY {target_table} (" + ', '.join( colnames ) + ') FROM stdin;', end='\n', file=OUT )
@@ -367,6 +614,10 @@ class CDA_loader:
 
     def transform_dir_to_SQL_dump_file( self, input_dir ):
         
+        for target_dir in [ self.sql_output_dir ]:
+            if not path.isdir( target_dir ):
+                makedirs( target_dir )
+
         output_dump_file = path.join( self.sql_output_dir, 'cda_release.sql.gz' )
 
         print( f"Transforming CDA TSVs to SQL dump file at {output_dump_file}...", file=sys.stderr )
@@ -376,6 +627,9 @@ class CDA_loader:
 
         with gzip.open( output_dump_file, 'wt' ) as OUT, open( self.ddl_schema_file ) as SCHEMA:
             
+            # Before constructing constraints and indexes, convert bare strings to
+            # tsvector data where needed.
+            dump_file_conversion_segment = ''
             # Cache the schema DDL directives starting at the first instance of a
             # primary key assignment, so we can load in table data via COPY before
             # assigning constraints and building indexes and thus avoid update overhead
@@ -403,6 +657,12 @@ class CDA_loader:
                 if re.search( r'\.tsv(\.gz)?$', input_file_basename ) is not None:
                     input_file = path.join( input_dir, input_file_basename )
                     target_table = re.sub( r'\.tsv(\.gz)?$', '', input_file_basename )
+                    # Will we need to translate this data to tsvector after initial load?
+                    tsvector_input_data_match = re.search( r'^(\S+)(_text_search)_inputs\.tsv', input_file_basename )
+                    if tsvector_input_data_match is not None:
+                        target_entity = tsvector_input_data_match.group(1)
+                        destination_table = f"{target_entity}{tsvector_input_data_match.group(2)}"
+                        dump_file_conversion_segment = dump_file_conversion_segment + f"INSERT INTO public.{destination_table} SELECT {target_entity}_alias, to_tsvector( '{self.default_text_search_config}', search_vector_input ) FROM public.{destination_table}_inputs ;\n\nTRUNCATE public.{destination_table}_inputs ;\n\n"
                     # Transcode TSV rows into the body of a prepared SQL COPY statement,
                     # to populate the postgres table corresponding to the TSV being scanned.
                     print( f"      ...{input_file_basename} -> {target_table}...", file=sys.stderr )
@@ -417,6 +677,9 @@ class CDA_loader:
                         record = dict( zip( colnames, [ value for value in next_line.rstrip( '\n' ).split( '\t' ) ] ) )
                         print( '\t'.join( [ r'\N' if len( record[colname] ) == 0 else record[colname] for colname in colnames ] ), end='\n', file=OUT )
                     print( r'\.', end='\n\n', file=OUT )
+
+            # Perform any designated data conversions.
+            print( dump_file_conversion_segment, end='', file=OUT )
 
             # Now paste in the constraint and index construction commands.
             print( dump_file_final_segment, end='', file=OUT )

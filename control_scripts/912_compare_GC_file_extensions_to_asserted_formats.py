@@ -36,6 +36,7 @@ safe_stoppers = {
     'cram',
     'csv',
     'dict',
+    'dta',
     'fastq',
     'fq',
     'fasta',
@@ -59,6 +60,9 @@ safe_stoppers = {
     'png',
     'rds',
     'results',
+    'sas',
+    'sas7bdat',
+    'sav',
     'seg',
     'sf',
     'svg',
@@ -89,7 +93,8 @@ for file_name in file_table_column_map:
             or re.search( r'_msisensor$', suffix_component, re.IGNORECASE ) is not None \
             or re.search( r'_filtered_feature_bc_matrix$', suffix_component, re.IGNORECASE ) is not None \
             or re.search( r'_filtered_gene_bc_matrices_', suffix_component, re.IGNORECASE ) is not None \
-            or re.search( r'^[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}$', suffix_component ) is not None:
+            or re.search( r'^[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}$', suffix_component ) is not None \
+            or ( re.search( r'^[0-9]+$', suffix_component ) is not None and len( suffix_component ) > 10 and file_extension == 'zip' ):
             
             break
 

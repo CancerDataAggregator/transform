@@ -1941,6 +1941,12 @@ def get_column_metadata( table_name=None, column_name=None ):
                 'summary_returns': False,
                 'data_returns': False
             },
+            'concept': {
+                
+                'column_type': 'categorical',
+                'summary_returns': False,
+                'data_returns': False
+            },
             'summary_returns': {
                 
                 'column_type': 'categorical',
@@ -2139,6 +2145,7 @@ def get_column_metadata( table_name=None, column_name=None ):
             'access': {
                 
                 'column_type': 'categorical',
+                'concept': 'access',
                 'summary_returns': True,
                 'data_returns': True
             },
@@ -2151,6 +2158,7 @@ def get_column_metadata( table_name=None, column_name=None ):
             'format': {
                 
                 'column_type': 'categorical',
+                'concept': 'file_format',
                 'summary_returns': True,
                 'data_returns': True
             },
@@ -2232,6 +2240,7 @@ def get_column_metadata( table_name=None, column_name=None ):
             'species': {
                 
                 'column_type': 'categorical',
+                'concept': 'species',
                 'summary_returns': True,
                 'data_returns': True
             },
@@ -2250,18 +2259,21 @@ def get_column_metadata( table_name=None, column_name=None ):
             'cause_of_death': {
                 
                 'column_type': 'categorical',
+                'concept': 'cause_of_death',
                 'summary_returns': True,
                 'data_returns': True
             },
             'race': {
                 
                 'column_type': 'categorical',
+                'concept': 'race',
                 'summary_returns': True,
                 'data_returns': True
             },
             'ethnicity': {
                 
                 'column_type': 'categorical',
+                'concept': 'ethnicity',
                 'summary_returns': True,
                 'data_returns': True
             },
@@ -2325,12 +2337,14 @@ def get_column_metadata( table_name=None, column_name=None ):
             'vital_status': {
                 
                 'column_type': 'categorical',
+                'concept': 'vital_status',
                 'summary_returns': True,
                 'data_returns': True
             },
             'sex': {
                 
                 'column_type': 'categorical',
+                'concept': 'sex',
                 'summary_returns': True,
                 'data_returns': True
             },
@@ -2349,18 +2363,21 @@ def get_column_metadata( table_name=None, column_name=None ):
             'diagnosis': {
                 
                 'column_type': 'categorical',
+                'concept': 'disease',
                 'summary_returns': True,
                 'data_returns': True
             },
             'morphology': {
                 
                 'column_type': 'categorical',
+                'concept': 'disease',
                 'summary_returns': True,
                 'data_returns': True
             },
             'grade': {
                 
                 'column_type': 'categorical',
+                'concept': 'grade',
                 'summary_returns': True,
                 'data_returns': True
             },
@@ -2373,12 +2390,14 @@ def get_column_metadata( table_name=None, column_name=None ):
             'observed_anatomic_site': {
                 
                 'column_type': 'categorical',
+                'concept': 'anatomic_site',
                 'summary_returns': True,
                 'data_returns': True
             },
             'resection_anatomic_site': {
                 
                 'column_type': 'categorical',
+                'concept': 'anatomic_site',
                 'summary_returns': True,
                 'data_returns': True
             },
@@ -2442,6 +2461,7 @@ def get_column_metadata( table_name=None, column_name=None ):
             'anatomic_site': {
                 
                 'column_type': 'categorical',
+                'concept': 'anatomic_site',
                 'summary_returns': True,
                 'data_returns': True
             },
@@ -2607,6 +2627,7 @@ def get_column_metadata( table_name=None, column_name=None ):
             'primary_site': {
                 
                 'column_type': 'categorical',
+                'concept': 'anatomic_site',
                 'summary_returns': True,
                 'data_returns': True
             },
@@ -2837,6 +2858,7 @@ def get_column_metadata( table_name=None, column_name=None ):
             'anatomic_site': {
                 
                 'column_type': 'categorical',
+                'concept': 'anatomic_site',
                 'summary_returns': True,
                 'data_returns': True,
                 'virtual_table': 'file'
@@ -2853,6 +2875,7 @@ def get_column_metadata( table_name=None, column_name=None ):
             'tumor_vs_normal': {
                 
                 'column_type': 'categorical',
+                'concept': 'tumor_vs_normal',
                 'summary_returns': True,
                 'data_returns': True,
                 'virtual_table': 'file'
@@ -3286,7 +3309,8 @@ def load_obo_file( input_file ):
                     
                     property_name = match_result.group(1)
 
-                    property_value = match_result.group(2)
+                    # Strip trailing whitespace. We never ever want trailing whitespace.
+                    property_value = re.sub( r'\s+$', r'', match_result.group(2) )
 
                     if property_name == 'id':
                         

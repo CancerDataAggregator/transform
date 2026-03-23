@@ -92,8 +92,11 @@ with gzip.open( input_file ) as IN:
                         # New 2025-08-25: Some sample.sample_anatomic_site values are coming in as e.g. "Cervix"; others as "[]" (always an empty array).
                         # The following sets up a parse hack in a subsequent extraction script to force treatment of these values as arrays, assuming proper downstream format case checking. Ech.
                         # New 2025-10-21: Apparently the same thing is happening now for pdx.implantation_type.
+                        # New 2026-02-17: And now for participant.ethnicity, which only ever has one value.
+                        #                 And now also for participant.race, which sometimes now has multiple values.
                         if ( record_type == 'sample' and key == 'sample_anatomic_site' ) or \
-                            ( record_type == 'pdx' and key == 'implantation_type' ):
+                            ( record_type == 'pdx' and key == 'implantation_type' ) or \
+                            ( record_type == 'participant' and key in { 'ethnicity', 'race' } ):
                             fields[record_type][key] = 'array'
                         else:
                             sys.exit( f"[line {current_line}]: Eek! [record_type={record_type}; key={key}] ( fields[record_type][key] == {fields[record_type][key]} ) != ( prop_type == {prop_type} )" )

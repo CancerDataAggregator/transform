@@ -19,15 +19,10 @@ upstream_data_source = 'PDC'
 tsv_input_root = path.join( 'extracted_data', 'pdc_postprocessed' )
 
 case_input_tsv = path.join( tsv_input_root, 'Case', 'Case.tsv' )
-
 case_sample_input_tsv = path.join( tsv_input_root, 'Case', 'Case.sample_id.tsv' )
-
 sample_input_tsv = path.join( tsv_input_root, 'Sample', 'Sample.tsv' )
-
 case_demographic_input_tsv = path.join( tsv_input_root, 'Case', 'Case.demographic_id.tsv' )
-
 demographic_input_tsv = path.join( tsv_input_root, 'Demographic', 'Demographic.tsv' )
-
 case_study_input_tsv = path.join( tsv_input_root, 'Case', 'Case.study_id.tsv' )
 
 # CDA TSVs.
@@ -35,13 +30,9 @@ case_study_input_tsv = path.join( tsv_input_root, 'Case', 'Case.study_id.tsv' )
 tsv_output_root = path.join( 'cda_tsvs', f"{upstream_data_source.lower()}_000_unharmonized" )
 
 upstream_identifiers_tsv = path.join( tsv_output_root, 'upstream_identifiers.tsv' )
-
 project_tsv = path.join( tsv_output_root, 'project.tsv' )
-
 project_in_project_tsv = path.join( tsv_output_root, 'project_in_project.tsv' )
-
 subject_output_tsv = path.join( tsv_output_root, 'subject.tsv' )
-
 subject_in_project_output_tsv = path.join( tsv_output_root, 'subject_in_project.tsv' )
 
 # ETL metadata.
@@ -55,7 +46,6 @@ subject_case_merge_log = path.join( aux_subject_output_dir, f"{upstream_data_sou
 aux_value_output_dir = path.join( aux_output_root, 'values' )
 
 demographic_data_clash_log = path.join( aux_value_output_dir, f"{upstream_data_source}_same_subject_Demographic_clashes.year_of_birth.year_of_death.cause_of_death.race.ethnicity.tsv" )
-
 sample_data_clash_log = path.join( aux_value_output_dir, f"{upstream_data_source}_same_subject_Sample_clashes.taxon.tsv" )
 
 # Table header sequences.
@@ -312,9 +302,7 @@ for case_id in case_in_project:
         
         # This case_id gets (the default) a project-based CDA subject ID. Make sure it's in just one project.
 
-        project_count = 0
-
-        last_project_short_name = ''
+        project_short_names = set()
 
         for project_id in case_in_project[case_id]:
             
@@ -322,17 +310,23 @@ for case_id in case_in_project:
 
             if current_type == 'project':
                 
-                project_count = project_count + 1
+                project_short_names.add( project[project_id]['short_name'] )
 
-                last_project_short_name = project[project_id]['short_name']
+        project_count = len( project_short_names )
+
+        # Don't count "CPTAC3 Discovery and Confirmatory", which reprocesses data from other (otherwise unrelated) projects, as extra.
+        if project_count == 2 and 'CPTAC3 Discovery and Confirmatory' in project_short_names:
+            
+            project_short_names.remove( 'CPTAC3 Discovery and Confirmatory' )
+            project_count = 1
 
         if project_count != 1:
             
-            sys.exit( f"FATAL: case_id {case_id} not in exactly one project as expected (project count: {project_count}). Last observed was short_name '{last_project_short_name}'; cannot continue, please investigate." )
+            sys.exit( f"FATAL: case_id {case_id} not in exactly one project as expected (project count: {project_count}). Observed short_name values are '{sorted( project_short_names )}'; cannot continue, please investigate." )
 
         else:
             
-            new_cda_id = f"{last_project_short_name}.{case_submitter_id}"
+            new_cda_id = f"{list(project_short_names)[0]}.{case_submitter_id}"
 
             if case_id in cda_subject_id and cda_subject_id[case_id] != new_cda_id:
                 

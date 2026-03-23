@@ -1,6 +1,6 @@
 #!/usr/bin/env python3 -u
 
-import re, sys
+import json, re, sys
 
 from os import makedirs, path
 
@@ -357,19 +357,23 @@ for subject_id in sorted( original_participant_uuid ):
         
         for field_name in [ 'race', 'ethnicity' ]:
             
-            if participant[participant_uuid][field_name] != '':
+            if participant[participant_uuid][field_name] not in { '', '[]' }:
                 
+                # These come through as arrays. Flatten them.
+
+                current_value = ' and '.join( sorted( json.loads( participant[participant_uuid][field_name] ) ) )
+
                 if cda_subject_records[subject_id][field_name] == '':
                     
-                    cda_subject_records[subject_id][field_name] = participant[participant_uuid][field_name]
+                    cda_subject_records[subject_id][field_name] = current_value
 
-                elif cda_subject_records[subject_id][field_name] != participant[participant_uuid][field_name]:
+                elif cda_subject_records[subject_id][field_name] != current_value:
                     
                     # Set up comparison and clash-tracking data structures.
 
                     original_value = cda_subject_records[subject_id][field_name]
 
-                    new_value = participant[participant_uuid][field_name]
+                    new_value = current_value
 
                     if subject_id not in subject_demographic_data_clashes:
                         

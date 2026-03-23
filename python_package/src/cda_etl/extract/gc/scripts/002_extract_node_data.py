@@ -90,6 +90,7 @@ with gzip.open( dump_file ) as IN:
 
                         if re.search( r'^\[', array_string ) is None:
                             # Some (2025-08-25) sample.sample_anatomic_site and (2025-10-21) pdx.implantation_type values are coming in as e.g. "Cervix"; others as "[]" (always an empty array). Handle the former as one-element arrays.
+                            # New 2026-02-17: Add participant.ethnicity and participant.race (the latter of which now sometimes has multiple elements, while the former does not) to this list.
                             array_string = f'["{array_string}"]'
 
                         my_array = sorted( json.loads( array_string ) )

@@ -31,4 +31,11 @@ loader = CDA_loader()
 for target_table in target_tables:
     loader.make_null_TSV( tsv_dir, target_table )
 
+# Ensure that files associated with no subjects and subjects associated with
+# no files are all represented (as associated with <null>) in the
+# file_describes_subject table. Query construction logic in the API
+# relies on the assumption that all files and subjects are represented
+# in file_describes_subject (2026-03-20).
+loader.complete_file_describes_subject( tsv_dir )
+
 

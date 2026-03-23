@@ -6,7 +6,7 @@ import sys
 
 from os import listdir, makedirs, path
 
-from cda_etl.lib import get_column_metadata, get_current_timestamp
+from cda_etl.lib import get_current_timestamp
 
 # ARGUMENT
 
