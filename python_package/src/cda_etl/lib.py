@@ -3264,64 +3264,44 @@ def get_universal_value_deletion_patterns( ):
     return delete_everywhere
 
 def load_obo_file( input_file ):
-    
     obo_data = dict()
 
     with open( input_file ) as IN:
-        
         in_term = False
-
         current_term = dict()
 
         for next_line in IN:
-            
             line = next_line.rstrip( '\n' )
 
             if line == '':
                 
+                # If there's a record in the hopper...
                 if len( current_term ) > 0:
-                    
-                    # Ignore terms without names. At time of writing there are two of these, both intra-third-party-ontology aliases.
-
+                    # ...save it...
                     if 'name' in current_term:
-                        
+                        # Ignore terms without names: at time of writing (2026-01) there are two of these, both intra-third-party-ontology aliases.
                         obo_data[current_term['id']] = dict()
-
                         for property_name in current_term:
-                            
                             if property_name != 'id':
-                                
                                 obo_data[current_term['id']][property_name] = current_term[property_name]
-
+                    # ...and reinitialize the loader structure and current parse state.
                     current_term = dict()
-
                     in_term = False
 
             elif line == r'[Term]':
-                
                 in_term = True
 
             elif in_term:
-                
                 match_result = re.search( r'^([^:]+):\s*(\S.*)\s*$', line )
-
                 if match_result is not None:
-                    
                     property_name = match_result.group(1)
-
                     # Strip trailing whitespace. We never ever want trailing whitespace.
                     property_value = re.sub( r'\s+$', r'', match_result.group(2) )
-
                     if property_name == 'id':
-                        
                         current_term[property_name] = property_value
-
                     else:
-                        
                         if property_name not in current_term:
-                            
                             current_term[property_name] = set()
-
                         current_term[property_name].add( property_value )
 
     return obo_data

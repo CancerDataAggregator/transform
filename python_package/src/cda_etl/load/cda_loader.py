@@ -327,9 +327,9 @@ class CDA_loader:
                             # harmonized_fields[table_name][column_name] = current_record['concept']
                             if target_table not in harmonized_fields or column_name not in harmonized_fields[target_table]:
                                 if current_id not in associated_text_data:
-                                    associated_text_data[current_id] = record[column_name]
+                                    associated_text_data[current_id] = { record[column_name].lower() }
                                 else:
-                                    associated_text_data[current_id] = f"{associated_text_data[current_id]} {record[column_name]}"
+                                    associated_text_data[current_id].add( record[column_name].lower() )
                             else:
                                 # This column is harmonized. Resolve indirection and add in containing terms, slims and synonyms.
                                 base_term_alias = record[column_name]
@@ -338,9 +338,9 @@ class CDA_loader:
                                     # (Only load lexemes from term names, not term IDs.)
                                     if term_to_scan in alias_to_name:
                                         if current_id not in associated_text_data:
-                                            associated_text_data[current_id] = alias_to_name[term_to_scan]
+                                            associated_text_data[current_id] = { alias_to_name[term_to_scan].lower() }
                                         else:
-                                            associated_text_data[current_id] = f"{associated_text_data[current_id]} {alias_to_name[term_to_scan]}"
+                                            associated_text_data[current_id].add( alias_to_name[term_to_scan].lower() )
 
             output_file = path.join( input_dir, f"{entity_to_describe}_text_search_inputs.tsv" )
 
@@ -349,7 +349,7 @@ class CDA_loader:
             with open( output_file, 'w' ) as OUT:
                 print( *[ f"{entity_to_describe}_alias", 'search_vector_input' ], sep='\t', file=OUT )
                 for current_id in sorted( associated_text_data ):
-                    print( *[ current_id, associated_text_data[current_id] ], sep='\t', file=OUT )
+                    print( *[ current_id, ' '.join( sorted( associated_text_data[current_id] ) ) ], sep='\t', file=OUT )
 
             print( 'done.', file=sys.stderr )
 
