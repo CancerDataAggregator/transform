@@ -43,10 +43,10 @@ text_fields = {
         'observation.morphology',
         'observation.observed_anatomic_site',
         'observation.resection_anatomic_site',
+        'mutation.primary_site',
         'treatment.anatomic_site',
         'treatment.type',
-        'treatment.therapeutic_agent',
-        'mutation.primary_site'
+        'treatment.therapeutic_agent'
     }
 }
 

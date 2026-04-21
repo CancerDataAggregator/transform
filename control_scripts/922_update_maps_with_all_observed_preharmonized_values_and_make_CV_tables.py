@@ -78,7 +78,7 @@ for uberon_id in uberon_terms:
         uberon_name_to_id[uberon_name] = uberon_id
         uberon_terms[uberon_id]['url'] = r'http://purl.obolibrary.org/obo/' + re.sub( r':', r'_', uberon_id )
 
-# Now that we have name maps for the canonical UBERON terms, document all relationships and metadata.
+# Now that we have name maps for the canonical UBERON terms, document all relevant relationships and metadata.
 for uberon_id in uberon_terms:
     uberon_name = uberon_id_to_name[uberon_id]
 
@@ -96,6 +96,7 @@ for uberon_id in uberon_terms:
     # ...leading to two distinct 'containing' entries where there should be just one.
 
     if 'is_a' in uberon_terms[uberon_id]:
+        # is_a: UBERON:0004923 ! organ component layer
         current_term_containers = sorted( uberon_terms[uberon_id]['is_a'] )
 
         for container_record in current_term_containers:
@@ -126,7 +127,37 @@ for uberon_id in uberon_terms:
                             sys.exit( f"FATAL: UBERON metadata: Clash on name for foreign ID '{containing_id}': {foreign_id_to_name[containing_id]} (old) vs {containing_name} (new): please resolve and handle." )
                         foreign_id_to_name[containing_id] = containing_name
 
+    if 'relationship' in uberon_terms[uberon_id]:
+        # relationship: part_of UBERON:0001894 {source="MA", source="ZFA"} ! diencephalon
+        current_term_relationships = sorted( uberon_terms[uberon_id]['relationship'] )
+
+        for relationship_record in current_term_relationships:
+            # NB: Trailing whitespace on all values is removed in load_obo_file().
+            match_result = re.search( r'^\s*(\S[^\!]*)\s+\!\s+(\S[^\!]*)$', relationship_record )
+            if match_result is not None:
+                relationship_prefix = match_result.group(1)
+                relationship_target_name = match_result.group(2)
+                prefix_result = re.search( r'^(\S+)\s+(\S.*)$', relationship_prefix )
+                if prefix_result is None:
+                    print( f"NON-FATAL WARNING: Malformed relationship record encountered in UBERON OBO metadata (doesn't match /<rel_name> <thing> ! <thing/): skipping. Offending record: \"{relationship_record}\"", file=sys.stderr )
+                else:
+                    relationship_type = prefix_result.group(1)
+                    if relationship_type == 'part_of':
+                        # Remove unstructured annotations attached to the target ID by UBERON.
+                        relationship_target_id = re.sub( r'\s+\{.*\}\s*$', r'', prefix_result.group(2) )
+                        if uberon_id not in containing_terms['UBERON']:
+                            containing_terms['UBERON'][uberon_id] = set()
+                        if relationship_target_id in uberon_terms:
+                            if relationship_target_name not in uberon_name_to_id:
+                                print( "WARNING: Name '{relationship_target_name}' specified for term {relationship_target_id} as target of part_of relationship for term {uberon_id} is not in our name map; unexpected, please investigate.", file=sys.stderr )
+                            if relationship_target_id != uberon_id:
+                                containing_terms['UBERON'][uberon_id].add( relationship_target_id )
+                        else:
+                            print( f"NON-FATAL WARNING: UBERON term {uberon_id} listed as part_of non-UBERON term {relationship_target_id}; skipping relationship due to extra-ontology xref.", file=sys.stderr )
+
     if 'synonym' in uberon_terms[uberon_id]:
+        # synonym: "pars peripherica" EXACT OMO:0003011 [FMA:9903, FMA:TA, Wikipedia:Peripheral_nervous_system]
+        # synonym: "PNS" BROAD OMO:0003000 []
         current_term_synonyms = sorted( uberon_terms[uberon_id]['synonym'] )
 
         for synonym_record in current_term_synonyms:
@@ -374,6 +405,11 @@ for concept in sorted( observed_values ):
                         if harmonized_value not in slim_map[concept]:
                             slim_map[concept][harmonized_value] = set()
                         slim_map[concept][harmonized_value].add( slim_value )
+                        if concept == 'disease':
+                            # Make sure we catch names for slim terms that aren't harmonization targets.
+                            if slim_value not in icd_o_3_name:
+                                print( f"WARNING: ICD-O-3 code '{slim_value}' not found in ICD-O-3 reference data. Leaving name as '{current_record[slim_name_header]}' -- if this seems wrong, investigate.", file=sys.stderr )
+                                icd_o_3_name[slim_value] = current_record[slim_name_header]
 
     harmonized_values_seen = set()
     slims_used = dict()
@@ -523,71 +559,6 @@ for concept in sorted( observed_values ):
                     print( f"YARRRGH! ({value}:{target}) does not match loaded map data ({lc_value}:{old_map[concept][lc_value]})!!!", file=sys.stderr )
                 old_map[concept][lc_value] = target
 
-    # Make sure we've assigned a concept_display_name value to everything that will need one.
-    if concept == 'anatomic_site':
-        for harmonized_value in sorted( slim_map[concept].keys() ):
-            concept_display_name[harmonized_value] = uberon_id_to_name[harmonized_value]
-            for slim_value in sorted( slim_map[concept][harmonized_value] ):
-                concept_display_name[slim_value] = uberon_id_to_name[slim_value]
-    elif concept == 'disease':
-        for harmonized_value in sorted( slim_map[concept].keys() ):
-            concept_display_name[harmonized_value] = icd_o_3_name[harmonized_value]
-            # (Slim values here are bare strings: no map needed.)
-
-    # If we're slimming this concept, update the slim map with new (harmonized) input values seen.
-    if target_concept_field != '':
-        new_slim_map_file = path.join( new_slim_dir, f"{concept}_slim.tsv" )
-
-        with open( new_slim_map_file, 'w' ) as OUT:
-            harmonized_term_id_header = f"harmonized_{concept}_term_id"
-            harmonized_term_name_header = f"harmonized_{concept}_term_name"
-            slim_id_header = f"slim_{concept}_term_id"
-            slim_name_header = f"slim_{concept}_term_name"
-            print( *[ harmonized_term_id_header, harmonized_term_name_header, slim_id_header, slim_name_header, 'most_recent_count_in_CDA_data' ], sep='\t', file=OUT )
-
-            for harmonized_value in sorted( harmonized_values_seen | slim_map[concept].keys() ):
-                if harmonized_value in slim_map[concept]:
-                    for target_value in sorted( slim_map[concept][harmonized_value] ):
-                        target_count = 0
-                        if target_value in slim_observation_count:
-                            target_count = slim_observation_count[target_value]
-                        harmonized_id = ''
-                        harmonized_name = ''
-                        if harmonized_term_header_to_load == harmonized_term_id_header:
-                            harmonized_id = harmonized_value
-                            harmonized_name = concept_display_name[harmonized_value]
-                        elif harmonized_term_header_to_load == harmonized_term_name_header:
-                            harmonized_id = ''
-                            harmonized_name = harmonized_value
-                        else:
-                            sys.exit( f"FATAL: Something (1) has gone horribly wrong processing harmonized id/name key configuration for '{concept}'; please fix." )
-                        slim_id = ''
-                        slim_name = ''
-                        if slim_header_to_load == slim_id_header:
-                            slim_id = target_value
-                            slim_name = concept_display_name[target_value]
-                        elif slim_header_to_load == slim_name_header:
-                            slim_id = ''
-                            slim_name = target_value
-                        else:
-                            sys.exit( f"FATAL: Something has gone horribly wrong processing slim id/name key configuration for '{concept}'; please fix." )
-                        print( *[ harmonized_id, harmonized_name, slim_id, slim_name, target_count ], sep='\t', file=OUT )
-                else:
-                    target_count = 0
-                    if '' in slim_observation_count:
-                        target_count = slim_observation_count['']
-                    harmonized_id = ''
-                    harmonized_name = ''
-                    if harmonized_term_header_to_load == harmonized_term_id_header:
-                        harmonized_id = harmonized_value
-                        harmonized_name = concept_display_name[harmonized_value]
-                    elif harmonized_term_header_to_load == harmonized_term_name_header:
-                        harmonized_id = ''
-                        harmonized_name = harmonized_value
-                    else:
-                        sys.exit( f"FATAL: Something (2) has gone horribly wrong processing harmonized id/name key configuration for '{concept}'; please fix." )
-                    print( *[ harmonized_id, harmonized_name, '', '', target_count ], sep='\t', file=OUT )
-
     # Make an updated harmonization map for `concept` including all newly observed values.
     output_file = path.join( output_dir, f"{concept}.tsv" )
 
@@ -607,23 +578,30 @@ for concept in sorted( observed_values ):
             if observed_value is not None and observed_value.strip() != '' and re.sub( r'\s', r'', observed_value.strip().lower() ) not in delete_everywhere:
                 target_value = '__CDA_UNASSIGNED__'
                 printed = False
+                observed_value_count = 0
+                if observed_value in observed_values[concept]:
+                    observed_value_count = observed_values[concept][observed_value]
 
                 if observed_value in old_map[concept]:
                     # Track harmonized values associated with observed inputs.
                     if concept not in observed_harmonized_terms:
-                        observed_harmonized_terms[concept] = set()
+                        observed_harmonized_terms[concept] = dict()
 
                     if concept == 'species':
                         target_dict = old_map[concept][observed_value]
                         print( *[ observed_value, target_dict['ncbi_tax_id'], target_dict['scientific_name'], target_dict['cda_common_name'] ], sep='\t', file=OUT )
                         printed = True
                         # Track harmonized values associated with observed inputs.
-                        if target_dict['ncbi_tax_id'] not in null_values and re.sub( r'\s', r'', target_dict['ncbi_tax_id'].strip().lower() ) not in delete_everywhere:
-                            observed_harmonized_terms[concept].add( target_dict['ncbi_tax_id'] )
+                        harmonized_value = target_dict['ncbi_tax_id']
+                        if harmonized_value not in null_values and re.sub( r'\s', r'', harmonized_value.strip().lower() ) not in delete_everywhere:
+                            if harmonized_value not in observed_harmonized_terms[concept]:
+                                observed_harmonized_terms[concept][harmonized_value] = observed_value_count
+                            else:
+                                observed_harmonized_terms[concept][harmonized_value] = observed_harmonized_terms[concept][harmonized_value] + observed_value_count
+
                     elif concept == 'disease':
                         target_dict = old_map[concept][observed_value]
                         ncit_codes = '__CDA_UNASSIGNED__'
-
                         if target_dict['icd_o_3_code'] == '__CDA_UNASSIGNED__':
                             # We've seen this unharmonized value before, but it hasn't yet been connected
                             # with an ICD-O-3 term. Is this value itself an ICD-O-3 term (code) we know about?
@@ -633,49 +611,54 @@ for concept in sorted( observed_values ):
                                 icd_o_3_preferred_name = icd_o_3_name[icd_o_3_code]
                                 do_id = '__CDA_UNASSIGNED__'
                                 do_name = '__CDA_UNASSIGNED__'
-
                                 if icd_o_3_code in icd_code_to_do_id and icd_o_3_code not in skip_do_map:
                                     do_id = icd_code_to_do_id[icd_o_3_code]
-
                                     if do_id not in do_id_to_name:
                                         sys.exit( f"FATAL: DO term ID '{do_id}' not found in DO reference data. Please investigate." )
                                     do_name = do_id_to_name[do_id]
-
                                     if do_id in do_id_to_ncit_code:
                                         ncit_codes = ';'.join( sorted( do_id_to_ncit_code[do_id] ) )
-
                                 # NB: The following is modifying old_map['disease'][observed_value], not just some local variable. Intended here,
                                 # but worth drawing attention to.
                                 target_dict['icd_o_3_code'] = icd_o_3_code
                                 target_dict['icd_o_3_preferred_name'] = icd_o_3_preferred_name
                                 target_dict['do_id'] = do_id
                                 target_dict['do_name'] = do_name
-
                         elif target_dict['icd_o_3_code'] == 'null':
                             ncit_codes = 'null'
-
                         elif target_dict['do_id'] not in null_values and target_dict['do_id'] in do_id_to_ncit_code:
                             ncit_codes = ';'.join( sorted( do_id_to_ncit_code[target_dict['do_id']] ) )
-
                         print( *[ observed_value, target_dict['icd_o_3_code'], target_dict['icd_o_3_preferred_name'], target_dict['do_id'], target_dict['do_name'], ncit_codes ], sep='\t', file=OUT )
                         printed = True
                         # Track harmonized values associated with observed inputs.
-                        if target_dict['icd_o_3_code'] not in null_values and re.sub( r'\s', r'', target_dict['icd_o_3_code'].strip().lower() ) not in delete_everywhere:
-                            observed_harmonized_terms[concept].add( target_dict['icd_o_3_code'] )
+                        harmonized_value = target_dict['icd_o_3_code']
+                        if harmonized_value not in null_values and re.sub( r'\s', r'', harmonized_value.strip().lower() ) not in delete_everywhere:
+                            if harmonized_value not in observed_harmonized_terms[concept]:
+                                observed_harmonized_terms[concept][harmonized_value] = observed_value_count
+                            else:
+                                observed_harmonized_terms[concept][harmonized_value] = observed_harmonized_terms[concept][harmonized_value] + observed_value_count
 
                     elif concept == 'anatomic_site':
                         target_dict = old_map[concept][observed_value]
                         print( *[ observed_value, target_dict['UBERON id'], target_dict['UBERON name'] ], sep='\t', file=OUT )
                         printed = True
                         # Track harmonized values associated with observed inputs.
-                        if re.sub( r'\s', r'', target_dict['UBERON id'].strip().lower() ) not in delete_everywhere:
-                            observed_harmonized_terms[concept].add( target_dict['UBERON id'] )
+                        harmonized_value = target_dict['UBERON id']
+                        if re.sub( r'\s', r'', harmonized_value.strip().lower() ) not in delete_everywhere:
+                            if harmonized_value not in observed_harmonized_terms[concept]:
+                                observed_harmonized_terms[concept][harmonized_value] = observed_value_count
+                            else:
+                                observed_harmonized_terms[concept][harmonized_value] = observed_harmonized_terms[concept][harmonized_value] + observed_value_count
 
                     else:
                         target_value = old_map[concept][observed_value]
                         # Track harmonized values associated with observed inputs.
-                        if target_value not in null_values:
-                            observed_harmonized_terms[concept].add( target_value )
+                        harmonized_value = target_value
+                        if harmonized_value not in null_values:
+                            if harmonized_value not in observed_harmonized_terms[concept]:
+                                observed_harmonized_terms[concept][harmonized_value] = observed_value_count
+                            else:
+                                observed_harmonized_terms[concept][harmonized_value] = observed_harmonized_terms[concept][harmonized_value] + observed_value_count
 
                 elif concept == 'anatomic_site':
                     # Newly-seen term, not mapped yet. Add with null harmonization targets.
@@ -717,8 +700,11 @@ for concept in sorted( observed_values ):
                         old_map[concept][observed_value] = new_entry
                         # Track harmonized values associated with observed inputs.
                         if concept not in observed_harmonized_terms:
-                            observed_harmonized_terms[concept] = set()
-                        observed_harmonized_terms[concept].add( icd_o_3_code )
+                            observed_harmonized_terms[concept] = dict()
+                        if icd_o_3_code not in observed_harmonized_terms[concept]:
+                            observed_harmonized_terms[concept][icd_o_3_code] = observed_value_count
+                        else:
+                            observed_harmonized_terms[concept][icd_o_3_code] = observed_harmonized_terms[concept][icd_o_3_code] + observed_value_count
                     else:
                         print( *[ observed_value, target_value, target_value, target_value, target_value, target_value ], sep='\t', file=OUT )
                     printed = True
@@ -756,6 +742,77 @@ for concept in sorted( observed_values ):
 
         for ncbi_tax_id in records_to_add:
             old_map[concept][ncbi_tax_id] = records_to_add[ncbi_tax_id]
+
+    # Make sure we've assigned a concept_display_name value to everything that will need one.
+    if concept == 'anatomic_site':
+        for harmonized_value in sorted( slim_map[concept].keys() ):
+            concept_display_name[harmonized_value] = uberon_id_to_name[harmonized_value]
+            for slim_value in sorted( slim_map[concept][harmonized_value] ):
+                concept_display_name[slim_value] = uberon_id_to_name[slim_value]
+    elif concept == 'disease':
+        for harmonized_value in sorted( slim_map[concept].keys() ):
+            concept_display_name[harmonized_value] = icd_o_3_name[harmonized_value]
+            for slim_value in sorted( slim_map[concept][harmonized_value] ):
+                concept_display_name[slim_value] = icd_o_3_name[slim_value]
+
+    # If we're slimming this concept, update the slim map with new (harmonized) input values seen.
+    if target_concept_field != '':
+        new_slim_map_file = path.join( new_slim_dir, f"{concept}_slim.tsv" )
+
+        with open( new_slim_map_file, 'w' ) as OUT:
+            harmonized_term_id_header = f"harmonized_{concept}_term_id"
+            harmonized_term_name_header = f"harmonized_{concept}_term_name"
+            harmonized_term_count_header = f"harmonized_{concept}_term_count_in_last_CDA_release"
+            slim_id_header = f"slim_{concept}_term_id"
+            slim_name_header = f"slim_{concept}_term_name"
+            slim_term_count_header = f"slim_{concept}_term_count_in_last_CDA_release"
+            print( *[ harmonized_term_id_header, harmonized_term_name_header, harmonized_term_count_header, slim_id_header, slim_name_header, slim_term_count_header ], sep='\t', file=OUT )
+
+            for harmonized_value in sorted( harmonized_values_seen | slim_map[concept].keys() ):
+                harmonized_term_count = 0
+                if harmonized_value in observed_harmonized_terms[concept]:
+                    harmonized_term_count = observed_harmonized_terms[concept][harmonized_value]
+                if harmonized_value in slim_map[concept]:
+                    for target_value in sorted( slim_map[concept][harmonized_value] ):
+                        target_count = 0
+                        if target_value in slim_observation_count:
+                            target_count = slim_observation_count[target_value]
+                        harmonized_id = ''
+                        harmonized_name = ''
+                        if harmonized_term_header_to_load == harmonized_term_id_header:
+                            harmonized_id = harmonized_value
+                            harmonized_name = concept_display_name[harmonized_value]
+                        elif harmonized_term_header_to_load == harmonized_term_name_header:
+                            harmonized_id = ''
+                            harmonized_name = harmonized_value
+                        else:
+                            sys.exit( f"FATAL: Something (1) has gone horribly wrong processing harmonized id/name key configuration for '{concept}'; please fix." )
+                        slim_id = ''
+                        slim_name = ''
+                        if slim_header_to_load == slim_id_header:
+                            slim_id = target_value
+                            slim_name = concept_display_name[target_value]
+                        elif slim_header_to_load == slim_name_header:
+                            slim_id = ''
+                            slim_name = target_value
+                        else:
+                            sys.exit( f"FATAL: Something has gone horribly wrong processing slim id/name key configuration for '{concept}'; please fix." )
+                        print( *[ harmonized_id, harmonized_name, harmonized_term_count, slim_id, slim_name, target_count ], sep='\t', file=OUT )
+                else:
+                    target_count = 0
+                    if '' in slim_observation_count:
+                        target_count = slim_observation_count['']
+                    harmonized_id = ''
+                    harmonized_name = ''
+                    if harmonized_term_header_to_load == harmonized_term_id_header:
+                        harmonized_id = harmonized_value
+                        harmonized_name = concept_display_name[harmonized_value]
+                    elif harmonized_term_header_to_load == harmonized_term_name_header:
+                        harmonized_id = ''
+                        harmonized_name = harmonized_value
+                    else:
+                        sys.exit( f"FATAL: Something (2) has gone horribly wrong processing harmonized id/name key configuration for '{concept}'; please fix." )
+                    print( *[ harmonized_id, harmonized_name, harmonized_term_count, '', '', target_count ], sep='\t', file=OUT )
 
 controlled_term_columns = [ 'id_alias', 'id', 'name', 'url', 'definition', 'data_source', 'concept' ]
 
@@ -831,8 +888,8 @@ with open( controlled_term_tsv, 'w' ) as CONTROLLED_TERM, \
                             next_term_alias = next_term_alias + 1
                             new_record = {
                                 'id_alias': alias_of_term[slim_value],
-                                'id': '',
-                                'name': slim_value,
+                                'id': slim_value,
+                                'name': icd_o_3_name[slim_value],
                                 'url': '',
                                 'definition': '',
                                 'data_source': 'CDA',

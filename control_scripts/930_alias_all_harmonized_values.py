@@ -33,7 +33,25 @@ core_ontology_sources = {
     'NCBI'
 }
 
+offensive_suffixes = {
+    r',\s+nos$',
+    r',\s+not\s+otherwise\s+specified$',
+    r'-\s+not\s+otherwise\s+specified\s+\(nos\)$'
+}
+
 # EXECUTION
+
+# Hack the controlled_term dictionary for the current build: remove offensive suffixes from harmonized terms.
+temp_tsv = path.join( output_dir, 'temp.tsv' )
+with open( controlled_term_tsv ) as IN, open( temp_tsv, 'w' ) as OUT:
+    columns = next( IN ).rstrip( '\n' ).split( '\t' )
+    print( *columns, sep='\t', file=OUT )
+    for next_line in IN:
+        current_record = dict( zip( columns, next_line.rstrip( '\n' ).split( '\t' ) ) )
+        for offensive_suffix in offensive_suffixes:
+            current_record['name'] = re.sub( offensive_suffix, r'', current_record['name'], flags=re.IGNORECASE )
+        print( *[ current_record[column] for column in columns ], sep='\t', file=OUT )
+shutil.move( temp_tsv, controlled_term_tsv )
 
 # Find out which columns are harmonized.
 column_metadata = get_column_metadata()
@@ -98,6 +116,9 @@ for file_name in listdir( input_dir ):
                 for column_name in harmonized_fields[table_name]:
 
                     if record[column_name] is not None and record[column_name] != '':
+                        # Leverage the hack to the controlled_term dictionary for the current build: remove offensive suffixes from harmonized terms.
+                        for offensive_suffix in offensive_suffixes:
+                            record[column_name] = re.sub( offensive_suffix, r'', record[column_name], flags=re.IGNORECASE )
                         if record[column_name] not in name_to_alias[harmonized_fields[table_name][column_name]]:
                             print( f"WARNING: {record[column_name]} not found in '{harmonized_fields[table_name][column_name]}' term dictionary; skipping and nulling.", file=sys.stderr )
                             record[column_name] = ''
@@ -110,6 +131,5 @@ for file_name in listdir( input_dir ):
             OUT.close()
 
         print( 'done.', file=sys.stderr )
-
 
 
