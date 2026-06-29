@@ -8,7 +8,7 @@ if [[ $# -eq 0 ]]
 then
     script_name=$(basename "$0")
     echo
-    echo "   ERROR: Usage: $script_name <ICDC version name, e.g. \"2023-10-16\"> ( hint: https://caninecommons.cancer.gov/#/news )"
+    echo "   ERROR: Usage: $script_name <ICDC version name, e.g. \"2023-10-16\"> ( hint: Slack announcements and/or https://caninecommons.cancer.gov/#/news )"
     echo
     exit 0
 fi

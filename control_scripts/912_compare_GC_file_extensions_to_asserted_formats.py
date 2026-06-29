@@ -25,39 +25,57 @@ global_extension_count = dict()
 
 safe_stoppers = {
     
+    'avi',
     'baf',
     'bai',
     'bam',
     'bed',
     'bedgraph',
     'bw',
+    'cnn',
     'cns',
     'crai',
     'cram',
     'csv',
     'dict',
+    'doc',
+    'docx',
     'dta',
+    'emf',
     'fastq',
     'fq',
     'fasta',
     'fa',
+    'gb',
     'gct',
+    'gif',
     'gvcf',
     'hic',
     'html',
     'idat',
     'interval_list',
+    'jpg',
     'json',
     'log',
     'lrr',
     'maf',
+    'mcd',
     'mtx',
+    'ndpi',
     'nii',
+    'ods',
+    'odt',
     'ome',
     'out',
+    'parquet',
     'pdf',
     'ped',
     'png',
+    'ppt',
+    'pptx',
+    'prism',
+    'pzfx',
+    'qptiff',
     'rds',
     'results',
     'sas',
@@ -74,6 +92,7 @@ safe_stoppers = {
     'tsv',
     'txt',
     'vcf',
+    'xls',
     'xlsx'
 }
 
@@ -91,6 +110,7 @@ for file_name in file_table_column_map:
         if ( ( re.search( r'^tiff?$', file_extension, re.IGNORECASE ) is not None or re.search( r'^tiff?\.', file_extension, re.IGNORECASE ) is not None ) and suffix_component.lower() != 'ome' ) \
             or re.search( r'_fastqc$', suffix_component, re.IGNORECASE ) is not None \
             or re.search( r'_msisensor$', suffix_component, re.IGNORECASE ) is not None \
+            or re.search( r'_metrics$', suffix_component, re.IGNORECASE ) is not None \
             or re.search( r'_filtered_feature_bc_matrix$', suffix_component, re.IGNORECASE ) is not None \
             or re.search( r'_filtered_gene_bc_matrices_', suffix_component, re.IGNORECASE ) is not None \
             or re.search( r'^[a-zA-Z0-9]{8}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{4}-[a-zA-Z0-9]{12}$', suffix_component ) is not None \

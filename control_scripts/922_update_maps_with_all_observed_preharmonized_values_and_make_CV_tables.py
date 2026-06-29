@@ -41,6 +41,24 @@ custom_concept_id_field_names = {
     'species': 'NCBI Taxonomy ID'
 }
 
+# SUBROUTINE
+
+def get_term_ancestors( containing_term_map, term_id, scanned_already ):
+    ancestor_terms = set()
+
+    if term_id not in scanned_already:
+        scanned_already.add( term_id )
+
+        if term_id in containing_term_map:
+            for ancestor_term_id in containing_term_map[term_id]:
+                ancestor_terms.add( ancestor_term_id )
+
+                if ancestor_term_id in containing_term_map:
+                    # There should never be cycles in the term hierarchy, but if there are, this will never terminate.
+                    ancestor_terms = ancestor_terms | get_term_ancestors( containing_term_map, ancestor_term_id, scanned_already )
+
+    return ancestor_terms
+
 # EXECUTION
 
 for target_subdir in [ output_dir, slim_dir, new_slim_dir, term_table_dir ]:
@@ -64,21 +82,33 @@ uberon_terms = load_obo_file( uberon_obo_file )
 uberon_id_to_name = dict()
 uberon_name_to_id = dict()
 
-foreign_id_to_name = dict()
+uberon_terms_to_remove = set()
 
 # First, scan to match display names with IDs for later reverse lookup.
 for uberon_id in uberon_terms:
-    uberon_names = list( uberon_terms[uberon_id]['name'] )
+    if re.search( r'^NCBITaxon:', uberon_id ) is None:
+        uberon_names = list( uberon_terms[uberon_id]['name'] )
 
-    if len( uberon_names ) != 1:
-        sys.exit( f"FATAL: UBERON term '{uberon_id}' has {len( uberon_names )} distinct values for 'name' -- please handle." )
+        if len( uberon_names ) != 1:
+            sys.exit( f"FATAL: UBERON term '{uberon_id}' has {len( uberon_names )} distinct values for 'name' -- please handle." )
+        else:
+            uberon_name = uberon_names[0]
+            uberon_id_to_name[uberon_id] = uberon_name
+            uberon_name_to_id[uberon_name] = uberon_id
+            uberon_terms[uberon_id]['url'] = r'http://purl.obolibrary.org/obo/' + re.sub( r':', r'_', uberon_id )
+
     else:
-        uberon_name = uberon_names[0]
-        uberon_id_to_name[uberon_id] = uberon_name
-        uberon_name_to_id[uberon_name] = uberon_id
-        uberon_terms[uberon_id]['url'] = r'http://purl.obolibrary.org/obo/' + re.sub( r':', r'_', uberon_id )
+        uberon_terms_to_remove.add( uberon_id )
+
+# Remove UBERON terms we don't want in our anatomy CV, e.g. NCBI Taxonomy records.
+for target_id in sorted( uberon_terms_to_remove ):
+    del uberon_terms[target_id]
 
 # Now that we have name maps for the canonical UBERON terms, document all relevant relationships and metadata.
+# 
+# Note that throughout, we will be limiting containing_terms sets to include
+# only UBERON-native terms to confine anatomy concept management to anatomy per se and
+# not adjacent concepts like taxonomy or protein motifs.
 for uberon_id in uberon_terms:
     uberon_name = uberon_id_to_name[uberon_id]
 
@@ -114,18 +144,9 @@ for uberon_id in uberon_terms:
                 if uberon_id not in containing_terms['UBERON']:
                     containing_terms['UBERON'][uberon_id] = set()
 
-                if containing_id in uberon_terms:
+                if containing_id in uberon_terms and re.search( r'^UBERON:', containing_id ) is not None:
                     if containing_id != uberon_id:
                         containing_terms['UBERON'][uberon_id].add( containing_id )
-                else:
-                    # Bare names are not safe.
-                    containing_name = json.dumps( containing_name ).strip( '"' )
-                    # Don't load associations to non-Uberon things with identical names to Uberon terms.
-                    if containing_name not in uberon_name_to_id:
-                        containing_terms['UBERON'][uberon_id].add( containing_id )
-                        if containing_id in foreign_id_to_name and foreign_id_to_name[containing_id] != containing_name:
-                            sys.exit( f"FATAL: UBERON metadata: Clash on name for foreign ID '{containing_id}': {foreign_id_to_name[containing_id]} (old) vs {containing_name} (new): please resolve and handle." )
-                        foreign_id_to_name[containing_id] = containing_name
 
     if 'relationship' in uberon_terms[uberon_id]:
         # relationship: part_of UBERON:0001894 {source="MA", source="ZFA"} ! diencephalon
@@ -147,13 +168,11 @@ for uberon_id in uberon_terms:
                         relationship_target_id = re.sub( r'\s+\{.*\}\s*$', r'', prefix_result.group(2) )
                         if uberon_id not in containing_terms['UBERON']:
                             containing_terms['UBERON'][uberon_id] = set()
-                        if relationship_target_id in uberon_terms:
+                        if relationship_target_id in uberon_terms and re.search( r'^UBERON:', relationship_target_id ) is not None:
                             if relationship_target_name not in uberon_name_to_id:
                                 print( "WARNING: Name '{relationship_target_name}' specified for term {relationship_target_id} as target of part_of relationship for term {uberon_id} is not in our name map; unexpected, please investigate.", file=sys.stderr )
                             if relationship_target_id != uberon_id:
                                 containing_terms['UBERON'][uberon_id].add( relationship_target_id )
-                        else:
-                            print( f"NON-FATAL WARNING: UBERON term {uberon_id} listed as part_of non-UBERON term {relationship_target_id}; skipping relationship due to extra-ontology xref.", file=sys.stderr )
 
     if 'synonym' in uberon_terms[uberon_id]:
         # synonym: "pars peripherica" EXACT OMO:0003011 [FMA:9903, FMA:TA, Wikipedia:Peripheral_nervous_system]
@@ -187,10 +206,6 @@ for uberon_id in uberon_terms:
                             containing_terms['UBERON'][uberon_id] = set()
                         if synonym_uberon_id != uberon_id:
                             containing_terms['UBERON'][uberon_id].add( synonym_uberon_id )
-                        elif synonym_name != uberon_name:
-                            # Bare non-canonical names are not safe.
-                            synonym_name = json.dumps( synonym_name ).strip( '"' )
-                            containing_terms['UBERON'][uberon_id].add( synonym_name )
                     elif synonym_type == 'RELATED':
                         if uberon_id not in related_terms['UBERON']:
                             related_terms['UBERON'][uberon_id] = set()
@@ -212,16 +227,19 @@ for uberon_id in uberon_terms:
                             if uberon_id not in synonym_terms['UBERON']:
                                 synonym_terms['UBERON'][uberon_id] = set()
                             synonym_terms['UBERON'][uberon_id].add( synonym_name )
-                        elif synonym_type == 'BROAD':
-                            if uberon_id not in containing_terms['UBERON']:
-                                containing_terms['UBERON'][uberon_id] = set()
-                            containing_terms['UBERON'][uberon_id].add( synonym_name )
                         elif synonym_type == 'RELATED':
                             if uberon_id not in related_terms['UBERON']:
                                 related_terms['UBERON'][uberon_id] = set()
                             related_terms['UBERON'][uberon_id].add( synonym_name )
-                        elif synonym_type not in { 'NARROW' }:
+                        elif synonym_type not in { 'BROAD', 'NARROW' }:
                             sys.exit( f"WARNING: Unexpected UBERON synonym type encountered: {synonym_type}; please investigate & handle." )
+
+# Flatten containment hierarchy per term. Otherwise we only get proximate ancestors made available to the search system.
+for uberon_id in uberon_terms:
+    # containing_terms['UBERON'][uberon_id].add( thing_that_contains_uberon_id )
+    seen_already = set()
+    full_ancestor_set = get_term_ancestors( containing_terms['UBERON'], uberon_id, seen_already )
+    containing_terms['UBERON'][uberon_id] = full_ancestor_set
 
 # ICD-O-3.
 icd_o_3_name = dict()
@@ -826,9 +844,9 @@ with open( controlled_term_tsv, 'w' ) as CONTROLLED_TERM, \
     next_term_alias = 0
 
     print( *controlled_term_columns, sep='\t', file=CONTROLLED_TERM )
-    print( *[ 'synonym_one_alias', 'synonym_two_alias' ], sep='\t', file=SYNONYM_TERM )
+    print( *[ 'term_alias', 'synonym_term_alias' ], sep='\t', file=SYNONYM_TERM )
     print( *[ 'general_term_alias', 'specific_term_alias' ], sep='\t', file=SLIM_TERM )
-    print( *[ 'related_term_one_alias', 'related_term_two_alias' ], sep='\t', file=RELATED_TERM )
+    print( *[ 'term_alias', 'related_term_alias' ], sep='\t', file=RELATED_TERM )
     print( *[ 'general_term_alias', 'specific_term_alias' ], sep='\t', file=CONTAINING_TERM )
 
     for concept in sorted( observed_harmonized_terms ):
@@ -1086,17 +1104,6 @@ with open( controlled_term_tsv, 'w' ) as CONTROLLED_TERM, \
                                     'url': uberon_terms[containing_term]['url'],
                                     'definition': '',
                                     'data_source': 'UBERON',
-                                    'concept': concept
-                                }
-
-                            elif containing_term in foreign_id_to_name:
-                                containing_record = {
-                                    'id_alias': containing_alias,
-                                    'id': containing_term,
-                                    'name': foreign_id_to_name[containing_term],
-                                    'url': '',
-                                    'definition': '',
-                                    'data_source': '',
                                     'concept': concept
                                 }
 

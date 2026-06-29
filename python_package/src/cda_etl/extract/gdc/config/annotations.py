@@ -80,6 +80,8 @@ statistical_summary_substructures = set()
 # 
 # Handle arrays buried deeper than the top-level entity by prepending their parent
 # entity names (e.g. 'diagnosis.sites_of_involvement').
+# 
+# In all cases, add an entry for each map to association_maps, below.
 
 array_entities = dict()
 

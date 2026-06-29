@@ -208,7 +208,7 @@ class CDA_loader:
             column_names = next( IN ).rstrip( '\n' ).split( '\t' )
             for next_line in IN:
                 record = dict( zip( column_names, next_line.rstrip( '\n' ).split( '\t' ) ) )
-                synonym_terms[record['synonym_one_alias']].add( record['synonym_two_alias'] )
+                synonym_terms[record['term_alias']].add( record['synonym_term_alias'] )
 
         for entity_to_describe in sorted( exact_match_fields ):
             

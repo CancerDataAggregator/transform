@@ -3036,7 +3036,7 @@ def get_dbgap_study_metadata( dbgap_study_id ):
 
     else:
         
-        sys.exit( f"FATAL: Could not load study_name for accession '{phs_accession}' from dbGaP page {dbgap_full_web_url}; aborting." )
+        sys.exit( f"FATAL: Could not load study_name for study ID '{dbgap_study_id}' from dbGaP page {dbgap_full_web_url}; aborting." )
 
 def get_idc_extraction_fields( ):
     
@@ -3515,9 +3515,13 @@ def singularize( name ):
                  'projects',
                  'read_groups',
                  'read_group_qcs',
+                 'risk_factors',
                  'samples',
                  'slides',
-                 'treatments' ]:
+                 'treatment_anatomic_sites',
+                 'treatments',
+                 'viral_hepatitis_serology_tests',
+                 'weiss_assessment_findings' ]:
         
         return re.sub(r's$', r'', name)
 
@@ -3525,19 +3529,16 @@ def singularize( name ):
         
         return 'diagnosis'
 
-    elif name in [ 'data_categories',
-                   'family_histories',
-                   'experimental_strategies' ]:
+    elif name in [  'comorbidities',
+                    'data_categories',
+                    'family_histories',
+                    'experimental_strategies' ]:
         
         return re.sub(r'ies$', r'y', name)
 
     elif name == 'sites_of_involvement':
         
         return 'site_of_involvement'
-
-    elif name == 'weiss_assessment_findings':
-        
-        return 'weiss_assessment_finding'
 
     else:
         

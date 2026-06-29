@@ -196,93 +196,101 @@ for study_uuid in study:
         
         upstream_identifiers[cda_id]['study.phs_accession'] = phs_accession
 
-        # Create separate CDA project records for all dbGaP studies listed as cross-references.
+        # Junk has begun to creep into this field, e.g. '10.17917' for study with (March 2026) uuid '67dbfb5c-b649-51c7-96ce-678884d7930f'.
 
-        dbgap_study_accession = re.sub( r'^.*(phs[0-9]+)([^0-9].*)?$', r'\1', phs_accession )
-
-        hit_dbgap = False
-
-        cda_dbgap_id = f"dbGaP.study_accession.{dbgap_study_accession}"
-
-        # Model studies as subprojects of the dbGaP studies which which they have been directly associated:
-
-        if cda_id not in cda_project_in_project:
+        if re.search( r'^.*phs[0-9]+', phs_accession ) is None:
             
-            cda_project_in_project[cda_id] = set()
+            print( f"WARNING: 'study.phs_accession' field for study uuid '{study_uuid}' is '{phs_accession}', which is not a valid phs_accession. Skipping CDA project table update (but logging bad value in upstream_identifiers)." )
 
-        cda_project_in_project[cda_id].add( cda_dbgap_id )
-
-        if cda_dbgap_id not in cda_project_records:
+        else:
             
-            cda_dbgap_project_record = dict()
+            # Create separate CDA project records for all dbGaP studies listed as cross-references.
 
-            cda_dbgap_project_record['id'] = cda_dbgap_id
+            dbgap_study_accession = re.sub( r'^.*(phs[0-9]+)([^0-9].*)?$', r'\1', phs_accession )
 
-            # Until/unless CRDC mints its own IDs for dbGaP studies, this field should remain blank when documenting them.
+            hit_dbgap = False
 
-            cda_dbgap_project_record['crdc_id'] = ''
+            cda_dbgap_id = f"dbGaP.study_accession.{dbgap_study_accession}"
 
-            cda_dbgap_project_record['type'] = 'dbgap_study'
+            # Model studies as subprojects of the dbGaP studies which which they have been directly associated:
 
-            if dbgap_study_accession in cached_dbgap_data and not refresh_dbgap_metadata:
+            if cda_id not in cda_project_in_project:
                 
+                cda_project_in_project[cda_id] = set()
+
+            cda_project_in_project[cda_id].add( cda_dbgap_id )
+
+            if cda_dbgap_id not in cda_project_records:
+                
+                cda_dbgap_project_record = dict()
+
+                cda_dbgap_project_record['id'] = cda_dbgap_id
+
+                # Until/unless CRDC mints its own IDs for dbGaP studies, this field should remain blank when documenting them.
+
+                cda_dbgap_project_record['crdc_id'] = ''
+
+                cda_dbgap_project_record['type'] = 'dbgap_study'
+
+                if dbgap_study_accession in cached_dbgap_data and not refresh_dbgap_metadata:
+                    
+                    if debug:
+                        
+                        print( f"[{upstream_data_source} study '{study_uuid}']: Loading cached dbGaP metadata for {dbgap_study_accession}...", end='', file=sys.stderr )
+
+                    cda_dbgap_project_record['name'] = cached_dbgap_data[dbgap_study_accession]['name']
+
+                else:
+                    
+                    if debug:
+                        
+                        print( f"[{upstream_data_source} study '{study_uuid}']: Importing dbGaP metadata for {dbgap_study_accession}...", end='', file=sys.stderr )
+
+                    dbgap_study_metadata = get_dbgap_study_metadata( dbgap_study_accession )
+
+                    hit_dbgap = True
+
+                    cda_dbgap_project_record['name'] = dbgap_study_metadata['study_name']
+
+                    # Save anything new to add to the cache file when we're finished.
+
+                    if dbgap_study_accession not in cached_dbgap_data:
+                        
+                        cached_dbgap_data[dbgap_study_accession] = dict()
+
+                        cached_dbgap_data[dbgap_study_accession]['study_id'] = dbgap_study_accession
+
+                        if 'parent_study_id' in dbgap_study_metadata:
+                            
+                            cached_dbgap_data[dbgap_study_accession]['parent_study_id'] = dbgap_study_metadata['parent_study_id']
+
+                        if 'substudy_ids' in dbgap_study_metadata:
+                            
+                            cached_dbgap_data[dbgap_study_accession]['substudy_ids'] = repr( sorted( dbgap_study_metadata['substudy_ids'] ) )
+
+                        cached_dbgap_data[dbgap_study_accession]['name'] = dbgap_study_metadata['study_name']
+
+                if cda_dbgap_id not in upstream_identifiers:
+                    
+                    upstream_identifiers[cda_dbgap_id] = dict()
+
+                upstream_identifiers[cda_dbgap_id]['study_accession'] = dbgap_study_accession
+
+                upstream_identifiers[cda_dbgap_id]['study_name'] = cda_dbgap_project_record['name']
+
                 if debug:
                     
-                    print( f"[{upstream_data_source} study '{study_uuid}']: Loading cached dbGaP metadata for {dbgap_study_accession}...", end='', file=sys.stderr )
+                    print( 'done.', file=sys.stderr )
 
-                cda_dbgap_project_record['name'] = cached_dbgap_data[dbgap_study_accession]['name']
+                cda_dbgap_project_record['short_name'] = dbgap_study_accession
 
-            else:
+                cda_project_records[cda_dbgap_id] = cda_dbgap_project_record
+
+            # REMOVE ME IF POSSIBLE
+
+            if hit_dbgap:
                 
-                if debug:
-                    
-                    print( f"[{upstream_data_source} study '{study_uuid}']: Importing dbGaP metadata for {dbgap_study_accession}...", end='', file=sys.stderr )
-
-                dbgap_study_metadata = get_dbgap_study_metadata( dbgap_study_accession )
-
-                hit_dbgap = True
-
-                cda_dbgap_project_record['name'] = dbgap_study_metadata['study_name']
-
-                # Save anything new to add to the cache file when we're finished.
-
-                if dbgap_study_accession not in cached_dbgap_data:
-                    
-                    cached_dbgap_data[dbgap_study_accession] = dict()
-
-                    cached_dbgap_data[dbgap_study_accession]['study_id'] = dbgap_study_accession
-
-                    if 'parent_study_id' in dbgap_study_metadata:
-                        
-                        cached_dbgap_data[dbgap_study_accession]['parent_study_id'] = dbgap_study_metadata['parent_study_id']
-
-                    if 'substudy_ids' in dbgap_study_metadata:
-                        
-                        cached_dbgap_data[dbgap_study_accession]['substudy_ids'] = repr( sorted( dbgap_study_metadata['substudy_ids'] ) )
-
-                    cached_dbgap_data[dbgap_study_accession]['name'] = dbgap_study_metadata['study_name']
-
-            if cda_dbgap_id not in upstream_identifiers:
-                
-                upstream_identifiers[cda_dbgap_id] = dict()
-
-            upstream_identifiers[cda_dbgap_id]['study_accession'] = dbgap_study_accession
-
-            upstream_identifiers[cda_dbgap_id]['study_name'] = cda_dbgap_project_record['name']
-
-            if debug:
-                
-                print( 'done.', file=sys.stderr )
-
-            cda_dbgap_project_record['short_name'] = dbgap_study_accession
-
-            cda_project_records[cda_dbgap_id] = cda_dbgap_project_record
-
-        # REMOVE ME IF POSSIBLE
-
-        if hit_dbgap:
-            
-            sleep( 3 )
+                sleep( 3 )
 
 # Load study-substudy containment metadata as scraped from dbGaP for all study IDs modeled as CDA projects.
 

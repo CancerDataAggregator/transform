@@ -8,7 +8,7 @@ if [[ $# -eq 0 ]]
 then
     script_name=$(basename "$0")
     echo
-    echo "   ERROR: Usage: $script_name <IDC version label e.g. v23>"
+    echo "   ERROR: Usage: $script_name <IDC version label e.g. v24>"
     echo
     exit 0
 fi

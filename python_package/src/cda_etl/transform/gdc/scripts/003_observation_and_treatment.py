@@ -24,6 +24,8 @@ diagnosis_input_tsv = path.join( tsv_input_root, 'diagnosis.tsv' )
 
 diagnosis_input_tsv = path.join( tsv_input_root, 'diagnosis.tsv' )
 
+treatment_of_treatment_anatomic_site_input_tsv = path.join( tsv_input_root, 'treatment_of_treatment_anatomic_site.tsv' )
+
 treatment_of_diagnosis_input_tsv = path.join( tsv_input_root, 'treatment_of_diagnosis.tsv' )
 
 treatment_input_tsv = path.join( tsv_input_root, 'treatment.tsv' )
@@ -255,28 +257,54 @@ for subject_id in subject_has_diagnosis:
 
 cda_treatment_records = dict()
 
+treatment_of_treatment_anatomic_site = map_columns_one_to_many( treatment_of_treatment_anatomic_site_input_tsv, 'treatment_id', 'treatment_anatomic_site_id' )
+
 for subject_id in subject_has_treatment:
     
     for treatment_id in subject_has_treatment[subject_id]:
-        
-        anatomic_site = treatment[treatment_id]['treatment_anatomic_site']
-
         t_type = treatment[treatment_id]['treatment_type']
-
         therapeutic_agent = treatment[treatment_id]['therapeutic_agents']
 
-        # Are all fields empty? If not, save as a treatment record for this subject_id.
+        # Are all the fields we consume empty? If not, save as a treatment record for this subject_id.
+        if treatment_id in treatment_of_treatment_anatomic_site:
+            anatomic_site_count = len( treatment_of_treatment_anatomic_site[treatment_id] )
 
-        if anatomic_site != '' or t_type != '' or therapeutic_agent != '':
-            
-            # (Safe) assumption: no treatment_id corresponds to multiple subjects, so
+            if anatomic_site_count == 1:
+                anatomic_site = list( treatment_of_treatment_anatomic_site[treatment_id] )[0]
+                # (Safe) assumption in this case: no treatment_id corresponds to multiple subjects, so
+                # we will not have seen this treatment_id before.
+                cda_treatment_records[f"{upstream_data_source}.treatment_id.{treatment_id}"] = {
+                    'id': f"{upstream_data_source}.treatment_id.{treatment_id}",
+                    'subject_id': subject_id,
+                    'anatomic_site': anatomic_site,
+                    'type': t_type,
+                    'therapeutic_agent': therapeutic_agent
+                }
+
+            elif anatomic_site_count > 1:
+                # For the moment, we make multiple CDA treatment records for any GDC treatment record associated
+                # with multiple sites. There are currently less than 50 of these (2026-05-04).
+                treatment_record_disambiguator = 0
+                for anatomic_site in sorted( treatment_of_treatment_anatomic_site[treatment_id] ):
+                    cda_treatment_records[f"{upstream_data_source}.treatment_id.{treatment_id}.{treatment_record_disambiguator}"] = {
+                        'id': f"{upstream_data_source}.treatment_id.{treatment_id}.{treatment_record_disambiguator}",
+                        'subject_id': subject_id,
+                        'anatomic_site': anatomic_site,
+                        'type': t_type,
+                        'therapeutic_agent': therapeutic_agent
+                    }
+                    treatment_record_disambiguator = treatment_record_disambiguator + 1
+
+            else:
+                sys.exit( 'Something has gone impossibly wrong! Please investigate anatomic_site_count logic.' )
+
+        elif t_type != '' or therapeutic_agent != '':
+            # (Safe) assumption in this case: no treatment_id corresponds to multiple subjects, so
             # we will not have seen this treatment_id before.
-
             cda_treatment_records[f"{upstream_data_source}.treatment_id.{treatment_id}"] = {
-                
                 'id': f"{upstream_data_source}.treatment_id.{treatment_id}",
                 'subject_id': subject_id,
-                'anatomic_site': anatomic_site,
+                'anatomic_site': '',
                 'type': t_type,
                 'therapeutic_agent': therapeutic_agent
             }

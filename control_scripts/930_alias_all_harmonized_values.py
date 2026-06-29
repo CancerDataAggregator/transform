@@ -84,6 +84,9 @@ with open( controlled_term_tsv ) as IN:
                 sys.exit( f"FATAL: No name for canonical '{record['concept']}' term with alias {record['id_alias']}; cannot continue, please handle." )
             name_to_alias[record['concept']][record['name']] = record['id_alias']
 
+# Track unknown input values so we don't spam the error stream with more than one warning per value.
+unknown_term_values = set()
+
 # Transcode, aliasing as we go.
 for file_name in listdir( input_dir ):
     file_match = re.search( r'^(\S+)\.tsv', file_name )
@@ -120,7 +123,11 @@ for file_name in listdir( input_dir ):
                         for offensive_suffix in offensive_suffixes:
                             record[column_name] = re.sub( offensive_suffix, r'', record[column_name], flags=re.IGNORECASE )
                         if record[column_name] not in name_to_alias[harmonized_fields[table_name][column_name]]:
-                            print( f"WARNING: {record[column_name]} not found in '{harmonized_fields[table_name][column_name]}' term dictionary; skipping and nulling.", file=sys.stderr )
+                            # Print one warning to stderr for each unknown value.
+                            if record[column_name] not in unknown_term_values:
+                                unknown_term_values.add( record[column_name] )
+                                print( f"WARNING: {record[column_name]} not found in '{harmonized_fields[table_name][column_name]}' term dictionary; skipping and nulling.", file=sys.stderr )
+                            # Null unknown values.
                             record[column_name] = ''
                         else:
                             record[column_name] = name_to_alias[harmonized_fields[table_name][column_name]][record[column_name]]

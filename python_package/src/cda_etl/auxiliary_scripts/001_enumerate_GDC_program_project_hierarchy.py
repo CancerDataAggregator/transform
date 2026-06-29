@@ -15,8 +15,8 @@ input_data = {
     'program' : load_tsv_as_dict( path.join( input_dir, 'program.tsv' ) ),
     'project' : load_tsv_as_dict( path.join( input_dir, 'project.tsv' ) ),
     'project_in_program' : map_columns_one_to_many( path.join( input_dir, 'project_in_program.tsv' ), 'program_id', 'project_id' ),
-    'project_studies_disease_type' : map_columns_one_to_many( path.join( input_dir, 'project_studies_disease_type.tsv' ), 'project_id', 'disease_type' ),
-    'project_studies_primary_site' : map_columns_one_to_many( path.join( input_dir, 'project_studies_primary_site.tsv' ), 'project_id', 'primary_site' )
+    'project_studies_disease_type' : map_columns_one_to_many( path.join( input_dir, 'project_studies_disease_type.tsv' ), 'project_id', 'disease_type_id' ),
+    'project_studies_primary_site' : map_columns_one_to_many( path.join( input_dir, 'project_studies_primary_site.tsv' ), 'project_id', 'primary_site_id' )
 }
 
 output_dir = path.join( 'auxiliary_metadata', '__GDC_supplemental_metadata' )

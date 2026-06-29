@@ -139,11 +139,22 @@ statistical_summary_substructures = set()
 # 
 # Handle arrays buried deeper than the top-level entity by prepending their parent
 # entity names (e.g. 'diagnosis.sites_of_involvement').
+# 
+# In all cases, add an entry for each map to association_maps, below.
 
 array_entities = {
     
     'diagnosis.sites_of_involvement' : 'diagnosis_has_site_of_involvement',
-    'diagnosis.weiss_assessment_findings' : 'diagnosis_has_weiss_assessment_finding'
+    'diagnosis.weiss_assessment_findings' : 'diagnosis_has_weiss_assessment_finding',
+    'exposure.chemical_exposure_type' : 'exposure_has_chemical_exposure_type',
+    'exposure.occupation_type' : 'exposure_has_occupation_type',
+    'follow_up.imaging_anatomic_site' : 'follow_up_has_imaging_anatomic_site',
+    'other_clinical_attribute.comorbidities' : 'other_clinical_attribute_has_comorbidity',
+    'other_clinical_attribute.risk_factors' : 'other_clinical_attribute_has_risk_factor',
+    'other_clinical_attribute.viral_hepatitis_serology_tests' : 'other_clinical_attribute_has_viral_hepatitis_serology_test',
+    'pathology_detail.tumor_level_prostate' : 'pathology_detail_has_tumor_level_prostate',
+    'treatment.route_of_administration' : 'treatment_has_route_of_administration',
+    'treatment.treatment_anatomic_sites' : 'treatment_of_treatment_anatomic_site'
 }
 
 # Once in a while we need to save a thing with one name as a thing with
@@ -156,37 +167,46 @@ save_entity_list_as = dict()
 
 association_maps = {
     
+    'aliquot_from_case' : dict(),
+    'aliquot_from_center' : dict(),
+    'aliquot_has_annotation' : dict(),
+    'aliquot_of_analyte' : dict(),
+    'analyte_from_case' : dict(),
+    'analyte_from_portion' : dict(),
+    'analyte_has_annotation' : dict(),
     'case_has_annotation' : dict(),
+    'case_in_project' : dict(),
+    'demographic_of_case' : dict(),
     'diagnosis_has_annotation' : dict(),
     'diagnosis_has_site_of_involvement' : dict(),
     'diagnosis_has_weiss_assessment_finding' : dict(),
-    'sample_has_annotation' : dict(),
-    'portion_has_annotation' : dict(),
-    'analyte_has_annotation' : dict(),
-    'aliquot_has_annotation' : dict(),
-    'slide_has_annotation' : dict(),
-    'case_in_project' : dict(),
-    'aliquot_of_analyte' : dict(),
-    'aliquot_from_center' : dict(),
-    'analyte_from_portion' : dict(),
-    'slide_from_portion' : dict(),
-    'portion_from_sample' : dict(),
-    'portion_from_center' : dict(),
-    'sample_from_case' : dict(),
-    'demographic_of_case' : dict(),
     'diagnosis_of_case' : dict(),
+    'exposure_has_chemical_exposure_type' : dict(),
+    'exposure_has_occupation_type' : dict(),
     'exposure_of_case' : dict(),
     'family_history_of_case' : dict(),
     'follow_up_of_case' : dict(),
+    'follow_up_has_imaging_anatomic_site' : dict(),
     'molecular_test_from_follow_up' : dict(),
     'other_clinical_attribute_from_follow_up' : dict(),
+    'other_clinical_attribute_has_comorbidity' : dict(),
+    'other_clinical_attribute_has_risk_factor' : dict(),
+    'other_clinical_attribute_has_viral_hepatitis_serology_test' : dict(),
+    'pathology_detail_has_tumor_level_prostate' : dict(),
     'pathology_detail_of_diagnosis' : dict(),
-    'treatment_of_diagnosis' : dict(),
-    'tissue_source_site_of_case' : dict(),
-    'aliquot_from_case' : dict(),
-    'analyte_from_case' : dict(),
     'portion_from_case' : dict(),
-    'slide_from_case' : dict()
+    'portion_from_center' : dict(),
+    'portion_from_sample' : dict(),
+    'portion_has_annotation' : dict(),
+    'sample_from_case' : dict(),
+    'sample_has_annotation' : dict(),
+    'slide_from_case' : dict(),
+    'slide_from_portion' : dict(),
+    'slide_has_annotation' : dict(),
+    'tissue_source_site_of_case' : dict(),
+    'treatment_has_route_of_administration' : dict(),
+    'treatment_of_treatment_anatomic_site' : dict(),
+    'treatment_of_diagnosis' : dict()
 }
 
 # Do we need to load association data by recursively scanning substructures

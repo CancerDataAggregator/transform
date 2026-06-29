@@ -74,7 +74,6 @@ upstream_identifiers_fields = [
 # Enumerate (case-insensitive, space-collapsed) values (as regular expressions) that
 # should be deleted wherever they are found in search metadata, to guide value
 # replacement decisions in the event of clashes.
-
 delete_everywhere = get_universal_value_deletion_patterns()
 
 # EXECUTION
@@ -82,7 +81,6 @@ delete_everywhere = get_universal_value_deletion_patterns()
 print( f"[{get_current_timestamp()}] Computing subject identifier metadata and loading case<->study_id associations, CDA project IDs and crossrefs, and CDA project hierarchy...", end='', file=sys.stderr )
 
 # Get submitter IDs.
-
 case_id_to_case_submitter_id = map_columns_one_to_one( case_input_tsv, 'case_id', 'case_submitter_id' )
 
 # Load CDA IDs for studies, projects and programs. Don't use any of the canned loader
@@ -91,84 +89,95 @@ case_id_to_case_submitter_id = map_columns_one_to_one( case_input_tsv, 'case_id'
 # subject can have multiple case_id values from the same data source, rendering any attempt
 # to key this information on the first X columns incorrect or so cumbersome as to
 # be pointless).
-
 upstream_identifiers = dict()
 
 with open( upstream_identifiers_tsv ) as IN:
-    
     column_names = next( IN ).rstrip( '\n' ).split( '\t' )
 
     for line in [ next_line.rstrip( '\n' ) for next_line in IN ]:
-        
         [ cda_table, entity_id, data_source, source_field, value ] = line.split( '\t' )
 
         if cda_table not in upstream_identifiers:
-            
             upstream_identifiers[cda_table] = dict()
 
         if entity_id not in upstream_identifiers[cda_table]:
-            
             upstream_identifiers[cda_table][entity_id] = dict()
 
         if data_source not in upstream_identifiers[cda_table][entity_id]:
-            
             upstream_identifiers[cda_table][entity_id][data_source] = dict()
 
         if source_field not in upstream_identifiers[cda_table][entity_id][data_source]:
-            
             upstream_identifiers[cda_table][entity_id][data_source][source_field] = set()
 
         upstream_identifiers[cda_table][entity_id][data_source][source_field].add( value )
 
 cda_project_id = dict()
 
+# We'll need these later.
+# Program.name == 'Clinical Proteomic Tumor Analysis Consortium'
+cptac_program_level_cda_project_id = ''
+# Project.project_submitter_id =~ '*CPTAC3*'
+cptac3_projects = set()
+
 for project_id in upstream_identifiers['project']:
     
     # Some of these are from dbGaP; we won't need to translate those, just IDs from {upstream_data_source}.
-
     if upstream_data_source in upstream_identifiers['project'][project_id]:
         
         if 'Study.study_id' in upstream_identifiers['project'][project_id][upstream_data_source]:
-            
             for value in upstream_identifiers['project'][project_id][upstream_data_source]['Study.study_id']:
-                
                 if value not in cda_project_id:
-                    
                     cda_project_id[value] = project_id
-
                 elif cda_project_id[value] != project_id:
-                    
                     sys.exit( f"FATAL: {upstream_data_source} study_id '{value}' unexpectedly assigned to both {cda_project_id[value]} and {project_id}; cannot continue, aborting." )
 
         elif 'Project.project_id' in upstream_identifiers['project'][project_id][upstream_data_source]:
-            
+            for value in upstream_identifiers['project'][project_id][upstream_data_source]['Project.project_submitter_id']:
+                if re.search( r'cptac3', value, re.IGNORECASE ) is not None:
+                    cptac3_projects.add( project_id )
             for value in upstream_identifiers['project'][project_id][upstream_data_source]['Project.project_id']:
-                
                 if value not in cda_project_id:
-                    
                     cda_project_id[value] = project_id
-
                 elif cda_project_id[value] != project_id:
-                    
                     sys.exit( f"FATAL: {upstream_data_source} project_id '{value}' unexpectedly assigned to both {cda_project_id[value]} and {project_id}; cannot continue, aborting." )
 
         elif 'Program.program_id' in upstream_identifiers['project'][project_id][upstream_data_source]:
-            
+            for value in upstream_identifiers['project'][project_id][upstream_data_source]['Program.name']:
+                if value == 'Clinical Proteomic Tumor Analysis Consortium':
+                    cptac_program_level_cda_project_id = project_id
             for value in upstream_identifiers['project'][project_id][upstream_data_source]['Program.program_id']:
-                
                 if value not in cda_project_id:
-                    
                     cda_project_id[value] = project_id
-
                 elif cda_project_id[value] != project_id:
-                    
                     sys.exit( f"FATAL: {upstream_data_source} program_id '{value}' unexpectedly assigned to both {cda_project_id[value]} and {project_id}; cannot continue, aborting." )
 
 # Load CDA project record metadata and inter-project containment.
-
 project = load_tsv_as_dict( project_tsv )
-
 cda_project_in_project = map_columns_one_to_many( project_in_project_tsv, 'child_project_id', 'parent_project_id' )
+
+# CPTAC3 reprocesses existing data and adds a (potentially) new program-level ancestor to everything it touches,
+# which messes with the simplicity of the ID construction scheme below. Track participation in CPTAC3 projects
+# and use that data to enhance decisions about program "uniqueness" downstream.
+# 
+# Everything in CPTAC3 is under the CPTAC program, so we have to distinguish CPTAC3 data from other
+# CPTAC data at a lower level. For projects, right now (2026-05-28) we have
+# 
+# 267d6671-0e78-11e9-a064-0a9c39d33490	CPTAC3 Discovery and Confirmatory	CPTAC3 Discovery and Confirmatory
+# 9c3e6e3f-ab9c-483d-9ac0-d13677e12331	CPTAC3-Other	CPTAC3-Other
+
+# Scan cda_project_in_project and annotate all CPTAC studies not descended from CPTAC3 projects.
+# Note that if Studies are ever connected directly to Programs without intervening Project entities,
+# those studies will be caught here; such cases are checked below.
+non_cptac3_cptac_projects = set()
+for project_id in cda_project_in_project:
+    if cptac_program_level_cda_project_id in cda_project_in_project[project_id] and project_id not in cptac3_projects:
+        non_cptac3_cptac_projects.add( project_id )
+
+non_cptac3_cptac_studies = set()
+for project_id in cda_project_in_project:
+    # & is the set intersection operator.
+    if len( cda_project_in_project[project_id] & non_cptac3_cptac_projects ) > 0:
+        non_cptac3_cptac_studies.add( project_id )
 
 # Any case_submitter_id values matching certain patterns (like /^[0-9]+$/) will not
 # be merged across multiple projects (into unified CDA subject records), even
@@ -178,47 +187,46 @@ cda_project_in_project = map_columns_one_to_many( project_in_project_tsv, 'child
 # The spurious nature of these matches should be checked constantly: it's not
 # impossible that some valid matches may turn up in the future, in which case
 # we'd have to handle those differently.
-
 submitter_id_patterns_not_to_merge_across_projects = get_submitter_id_patterns_not_to_merge_across_projects()
 
 # Decide which case_ids go with which CDA subjects.
-
 case_study = map_columns_one_to_many( case_study_input_tsv, 'case_id', 'study_id' )
 
-case_submitter_id_in_project = dict()
-
-case_in_project = dict()
-
 # First, load all ancestor projects grouped by case_submitter_id.
+case_submitter_id_in_project = dict()
+case_in_project = dict()
+case_submitter_id_in_non_cptac3_cptac_study = dict()
+case_submitter_id_in_any_non_cptac_study = dict()
 
 for case_id in case_study:
-    
     case_submitter_id = case_id_to_case_submitter_id[case_id]
-
     containing_projects = set()
+    if case_submitter_id not in case_submitter_id_in_non_cptac3_cptac_study:
+        case_submitter_id_in_non_cptac3_cptac_study[case_submitter_id] = False
+    if case_submitter_id not in case_submitter_id_in_any_non_cptac_study:
+        case_submitter_id_in_any_non_cptac_study[case_submitter_id] = False
 
     for study_id in case_study[case_id]:
-        
         if study_id not in cda_project_id:
-            
             sys.exit( f"FATAL: Case {case_id} associated with study_id {study_id}, which is not represented in {upstream_identifiers_tsv}; cannot continue, aborting." )
-
-        containing_projects.add( cda_project_id[study_id] )
-
+        current_study_containing_projects = { cda_project_id[study_id] }
         # The | here is a set-union operator.
-
-        containing_projects = containing_projects | get_cda_project_ancestors( cda_project_in_project, cda_project_id[study_id] )
+        current_study_containing_projects = current_study_containing_projects | get_cda_project_ancestors( cda_project_in_project, cda_project_id[study_id] )
+        # Should we count CPTAC as an actual program, later, or is it just there because the case's original data
+        # was reprocessed by CPTAC3?
+        if cda_project_id[study_id] in non_cptac3_cptac_studies or cda_project_id[study_id] in non_cptac3_cptac_projects:
+            case_submitter_id_in_non_cptac3_cptac_study[case_submitter_id] = True
+        # Is this case CPTAC-exclusive? We need this later to avoid orphaning CPTAC3-only cases (sigh).
+        if cptac_program_level_cda_project_id not in current_study_containing_projects:
+            case_submitter_id_in_any_non_cptac_study[case_submitter_id] = True
+        containing_projects = current_study_containing_projects | containing_projects
 
     if case_id not in case_in_project:
-        
         case_in_project[case_id] = set()
-
     case_in_project[case_id] = case_in_project[case_id] | containing_projects
 
     if case_submitter_id not in case_submitter_id_in_project:
-        
         case_submitter_id_in_project[case_submitter_id] = set()
-
     case_submitter_id_in_project[case_submitter_id] = case_submitter_id_in_project[case_submitter_id] | containing_projects
 
 # Now, assign CDA IDs to case_ids:
@@ -229,155 +237,122 @@ for case_id in case_study:
 # 
 #    case_submitter_id doesn't match (case-insensitive) /^ref$/, /^P?\d+$/, /^\d+$/, /pooled sample/
 #    AND
-#    case_submitter_id is in multiple projects in the same program,
+#    case_submitter_id is in multiple projects in the same program*,
 #    IN WHICH CASE:
 # 
 #    {program_submitter_id}.{case_submitter_id}
+# 
+# *Not counting CPTAC if it's only present because of CPTAC3 reprocessing projects.
 
 cda_subject_id = dict()
-
 original_case_id = dict()
-
 cda_subject_in_project = dict()
 
 for case_id in case_in_project:
-    
     case_submitter_id = case_id_to_case_submitter_id[case_id]
-
     counts_by_type = dict()
-
     # print( case_id )
 
-    # Save the last program seen. If it's unique, we may use it to build a CDA subject ID.
-
+    # Save one ancestor program short_name in the hopes it will be unique. We'll check a little later.
     last_program_short_name = ''
 
     for project_id in case_submitter_id_in_project[case_submitter_id]:
-        
         current_type = project[project_id]['type']
+        # Don't count CPTAC as a program-level ancestor if it's only there because of CPTAC3 reprocessing projects of data represented elsewhere.
+        if current_type != 'program' or project_id != cptac_program_level_cda_project_id or case_submitter_id_in_non_cptac3_cptac_study[case_submitter_id] == True or case_submitter_id_in_any_non_cptac_study[case_submitter_id] == False:
 
-        if current_type == 'program':
-            
-            last_program_short_name = project[project_id]['short_name']
+            if current_type == 'program':
+                last_program_short_name = project[project_id]['short_name']
 
-        # print( *[ project_id, current_type ], sep='\t', file=sys.stderr )
+            # print( *[ case_submitter_id, project_id, current_type, case_submitter_id_in_non_cptac3_cptac_study[case_submitter_id], case_submitter_id_in_any_non_cptac_study[case_submitter_id] ], sep='\t', file=sys.stderr )
 
-        if current_type not in counts_by_type:
-            
-            counts_by_type[current_type] = 1
-
-        else:
-            
-            counts_by_type[current_type] = counts_by_type[current_type] + 1
+            if current_type not in counts_by_type:
+                counts_by_type[current_type] = 1
+            else:
+                counts_by_type[current_type] = counts_by_type[current_type] + 1
 
     submitter_id_passed = True
 
     for submitter_id_pattern in submitter_id_patterns_not_to_merge_across_projects:
-        
         if re.search( submitter_id_pattern, case_submitter_id, re.IGNORECASE ) is not None:
-            
             submitter_id_passed = False
 
     if submitter_id_passed and counts_by_type['project'] > 1:
         
         if counts_by_type['program'] > 1:
-            
-            sys.exit( f"FATAL: Multiple programs detected for case_submitter_id {case_submitter_id}; cannot create well-defined CDA subject ID, aborting. Probably need to add logic to block aggregation in cases like this." )
+            sys.exit( f"FATAL: Multiple programs detected for case_submitter_id {case_submitter_id}; cannot create well-defined CDA subject ID, aborting." )
 
         else:
-            
             # This case_id gets a program-based CDA subject ID.
-
             new_cda_id = f"{last_program_short_name}.{case_submitter_id}"
 
             if case_id in cda_subject_id and cda_subject_id[case_id] != new_cda_id:
-                
                 sys.exit( f"FATAL: case_id {case_id} receieved multiple CDA subject IDs: {cda_subject_id[case_id]} and {new_cda_id}. Cannot continue, aborting." )
-
             else:
-                
                 cda_subject_id[case_id] = new_cda_id
 
     else:
-        
         # This case_id gets (the default) a project-based CDA subject ID. Make sure it's in just one project.
-
         project_short_names = set()
 
         for project_id in case_in_project[case_id]:
-            
             current_type = project[project_id]['type']
 
             if current_type == 'project':
-                
                 project_short_names.add( project[project_id]['short_name'] )
 
         project_count = len( project_short_names )
 
+        # 2026-05-28: Note: this fix is older than the above, which explicitly tracks CPTAC3 membership. If the CPTAC3-Other project
+        # starts interfering, this may need to be reworked to use the data collected above instead of what it's doing now.
+        # 
         # Don't count "CPTAC3 Discovery and Confirmatory", which reprocesses data from other (otherwise unrelated) projects, as extra.
         if project_count == 2 and 'CPTAC3 Discovery and Confirmatory' in project_short_names:
-            
             project_short_names.remove( 'CPTAC3 Discovery and Confirmatory' )
             project_count = 1
 
         if project_count != 1:
-            
             sys.exit( f"FATAL: case_id {case_id} not in exactly one project as expected (project count: {project_count}). Observed short_name values are '{sorted( project_short_names )}'; cannot continue, please investigate." )
 
         else:
-            
             new_cda_id = f"{list(project_short_names)[0]}.{case_submitter_id}"
 
             if case_id in cda_subject_id and cda_subject_id[case_id] != new_cda_id:
-                
                 sys.exit( f"FATAL: case_id {case_id} receieved multiple CDA subject IDs: {cda_subject_id[case_id]} and {new_cda_id}. Cannot continue, aborting." )
 
             else:
-                
                 cda_subject_id[case_id] = new_cda_id
 
     # Save the reverse ID map so we can recover case_ids later for each subject ID.
-
     if cda_subject_id[case_id] not in original_case_id:
-        
         original_case_id[cda_subject_id[case_id]] = set()
 
     original_case_id[cda_subject_id[case_id]].add( case_id )
 
     # Record upstream case_id and case_submitter_id values for CDA subjects.
-
     if 'subject' not in upstream_identifiers:
-        
         upstream_identifiers['subject'] = dict()
 
     if cda_subject_id[case_id] not in upstream_identifiers['subject']:
-        
         upstream_identifiers['subject'][cda_subject_id[case_id]] = dict()
 
     if upstream_data_source not in upstream_identifiers['subject'][cda_subject_id[case_id]]:
-        
         upstream_identifiers['subject'][cda_subject_id[case_id]][upstream_data_source] = dict()
 
     if 'Case.case_id' not in upstream_identifiers['subject'][cda_subject_id[case_id]][upstream_data_source]:
-        
         upstream_identifiers['subject'][cda_subject_id[case_id]][upstream_data_source]['Case.case_id'] = set()
 
     if 'Case.case_submitter_id' not in upstream_identifiers['subject'][cda_subject_id[case_id]][upstream_data_source]:
-        
         upstream_identifiers['subject'][cda_subject_id[case_id]][upstream_data_source]['Case.case_submitter_id'] = set()
 
     upstream_identifiers['subject'][cda_subject_id[case_id]][upstream_data_source]['Case.case_id'].add( case_id )
-
     upstream_identifiers['subject'][cda_subject_id[case_id]][upstream_data_source]['Case.case_submitter_id'].add( case_submitter_id )
 
     # Populate the CDA subject_in_project relationship.
-
     for project_id in case_in_project[case_id]:
-        
-        # cda_subject_in_project
 
+        # cda_subject_in_project
         if cda_subject_id[case_id] not in cda_subject_in_project:
-            
             cda_subject_in_project[cda_subject_id[case_id]] = set()
 
         cda_subject_in_project[cda_subject_id[case_id]].add( project_id )

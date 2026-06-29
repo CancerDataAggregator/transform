@@ -79,8 +79,14 @@ statistical_summary_substructures = {
 # 
 # Handle arrays buried deeper than the top-level entity by prepending their parent
 # entity names (e.g. 'diagnosis.sites_of_involvement').
+# 
+# In all cases, add an entry for each map to association_maps, below.
 
-array_entities = dict()
+array_entities = {
+    
+    'disease_type' : 'project_studies_disease_type',
+    'primary_site' : 'project_studies_primary_site'
+}
 
 # Once in a while we need to save a thing with one name as a thing with
 # a different name. The elements of the file.downstream_analyses list,
@@ -92,18 +98,18 @@ save_entity_list_as = dict()
 
 association_maps = {
     
-    'project_in_program' : dict(),
-    'project_summary_data' : dict(),
     'project_data_category_summary_data' : dict(),
     'project_experimental_strategy_summary_data' : dict(),
+    'project_in_program' : dict(),
+    'project_studies_disease_type' : dict(),
     'project_studies_primary_site' : dict(),
-    'project_studies_disease_type' : dict()
+    'project_summary_data' : dict()
 }
 
 # Do we need to load association data by recursively scanning substructures
 # of records at this endpoint? (If not, we'll scrape all needed association
 # data from the top level without recursion.)
 
-scan_substructures_for_association_relationships = False
+scan_substructures_for_association_relationships = True
 
 

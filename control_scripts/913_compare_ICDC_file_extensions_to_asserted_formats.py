@@ -33,6 +33,7 @@ safe_stoppers = {
     'fastq',
     'h5',
     'pdf',
+    'rcc',
     'rtf',
     'tbi',
     'tif',

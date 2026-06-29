@@ -830,7 +830,7 @@ class GDC_extractor:
 
                 sys.stderr.write("done.\n")
 
-    def __traverse_substructure( self, entity_type, record, output_files, seen_ids, field_lists ):
+    def __traverse_substructure( self, entity_type, record, output_files, seen_ids, field_lists, unused_list_fields ):
         
         """
         Recursively explore substructures of endpoint records looking for sub-entities
@@ -846,6 +846,8 @@ class GDC_extractor:
 
         if isinstance( record, list ):
             
+            processed_list_data = False
+
             for item in record:
                 
                 # Assumptions are great, but let's not make any if we don't
@@ -853,6 +855,8 @@ class GDC_extractor:
 
                 if isinstance(item, list) or isinstance(item, dict):
                     
+                    processed_list_data = True
+
                     if entity_type in self.save_entity_list_as:
                         
                         # Aliases to top-level entity records (that is: records of the entity type
@@ -863,17 +867,20 @@ class GDC_extractor:
                             
                             # Process these as the designated entity type.
 
-                            self.__traverse_substructure( self.save_entity_list_as[entity_type], item, output_files, seen_ids, field_lists )
+                            self.__traverse_substructure( self.save_entity_list_as[entity_type], item, output_files, seen_ids, field_lists, unused_list_fields )
 
                     else:
                         
-                        self.__traverse_substructure( entity_type, item, output_files, seen_ids, field_lists )
+                        self.__traverse_substructure( entity_type, item, output_files, seen_ids, field_lists, unused_list_fields )
+
+            if not processed_list_data:
+                unused_list_fields.add( entity_type )
 
         elif entity_type in output_files:
             
             # This is a dict that we want to scan & save. Pass it to the function that does that.
 
-            self.__scan_and_save( entity_type, record, output_files, seen_ids, field_lists )
+            self.__scan_and_save( entity_type, record, output_files, seen_ids, field_lists, unused_list_fields )
 
         else:
             
@@ -888,12 +895,13 @@ class GDC_extractor:
                         
                         # This is a thing we want to save.
 
-                        self.__scan_and_save( field_name, record[field_name], output_files, seen_ids, field_lists )
+                        self.__scan_and_save( field_name, record[field_name], output_files, seen_ids, field_lists, unused_list_fields )
 
                     elif entity_type == self.endpoint_singular and field_name in self.array_entities:
                         
                         # This is a list of IDs hanging off of an endpoint record, and we want to save them
-                        # as sub-entities. Save in seen_ids.
+                        # as sub-entities. Save in seen_ids. Note we are not saving the
+                        # (entity)->(array value) map here, just a list of seen array values.
 
                         for array_entity_id in record[field_name]:
                             
@@ -904,9 +912,9 @@ class GDC_extractor:
                         # We don't want this thing itself, but might want some of its
                         # nested children. Check them out.
                     
-                        self.__traverse_substructure( field_name, record[field_name], output_files, seen_ids, field_lists )
+                        self.__traverse_substructure( field_name, record[field_name], output_files, seen_ids, field_lists, unused_list_fields )
 
-    def __scan_and_save( self, entity_type, entity_data, output_files, seen_ids, field_lists ):
+    def __scan_and_save( self, entity_type, entity_data, output_files, seen_ids, field_lists, unused_list_fields ):
         
         """
         Save a record for a sub-entity of interest to its own TSV table.
@@ -927,7 +935,7 @@ class GDC_extractor:
 
                 if isinstance(item, list) or isinstance(item, dict):
                     
-                    self.__scan_and_save( entity_type, item, output_files, seen_ids, field_lists )
+                    self.__scan_and_save( entity_type, item, output_files, seen_ids, field_lists, unused_list_fields )
 
         else:
 
@@ -962,7 +970,8 @@ class GDC_extractor:
                         if singularize(entity_type) != self.endpoint_singular and isinstance( entity_data[key], list ) and f"{singularize(entity_type)}.{key}" in self.array_entities:
 
                             # This is a list of values, and we want to save them in their own table
-                            # as sub-entity IDs. Save in seen_ids.
+                            # as sub-entity IDs. Save in seen_ids. Note we are not saving the
+                            # (entity)->(array value) map here, just a list of seen array values.
 
                             for array_entity_id in entity_data[key]:
                                 
@@ -972,7 +981,7 @@ class GDC_extractor:
                             
                             # Send this sub-object back for further recursion. We're only looking for atomic fields here.
 
-                            self.__traverse_substructure( key, entity_data[key], output_files, seen_ids, field_lists )
+                            self.__traverse_substructure( key, entity_data[key], output_files, seen_ids, field_lists, unused_list_fields )
 
                         else:
                             
@@ -1014,6 +1023,8 @@ class GDC_extractor:
         output_files = dict()
 
         seen_ids = dict()
+
+        unused_list_fields = set()
 
         # Configure field lists for sub-entity records for TSV output.
 
@@ -1100,7 +1111,21 @@ class GDC_extractor:
                         
                         sys.exit(f"FATAL (and strange): This '{self.endpoint_singular}' record doesn't have any '{id_field}' ID field. Aborting after dump. {record}")
 
-                    self.__traverse_substructure( self.endpoint_singular, record, output_files, seen_ids, output_field_lists )
+                    self.__traverse_substructure( self.endpoint_singular, record, output_files, seen_ids, output_field_lists, unused_list_fields )
+
+        # Report array data not consumed (either by loading values or by traversing down into substructures).
+
+        if len( unused_list_fields ) > 0:
+            
+            print( "Unused list fields:", file=sys.stderr )
+
+            for unused_list_field in sorted( unused_list_fields ):
+                
+                print( f"   {unused_list_field}", file=sys.stderr )
+
+        else:
+            
+            print( "Unused list fields: <none detected>", file=sys.stderr )
 
         # Close TSV output files.
 
@@ -1227,7 +1252,11 @@ class GDC_extractor:
 
             # Now it's safe to assume record is a dict.
 
-            if id_field in record:
+            if id_field not in record:
+                
+                sys.exit( f"FATAL [__scan_for_containment]: Couldn't find expected id field '{id_field}' in {record_type} substructure; aborting." )
+
+            else:
                 
                 # Save the ID of this record, record associative links, and check if we've seen it before.
                 # If we haven't, recurse on its substructures as needed.
@@ -1240,7 +1269,35 @@ class GDC_extractor:
                 # It's also totally unnecessary and a giant pain in the butt, so I'm skipping it until
                 # I get a free week.
 
-                if record_type == 'diagnoses':
+                if record_type == 'follow_ups':
+                    
+                    if 'follow_up_has_imaging_anatomic_site' in association_maps:
+                        
+                        if 'imaging_anatomic_site' in record and record['imaging_anatomic_site'] is not None:
+                            
+                            for anatomic_site in record['imaging_anatomic_site']:
+                                
+                                add_to_map( association_maps['follow_up_has_imaging_anatomic_site'], current_id, anatomic_site )
+
+                elif record_type == 'exposures':
+                    
+                    if 'exposure_has_chemical_exposure_type' in association_maps:
+                        
+                        if 'chemical_exposure_type' in record and record['chemical_exposure_type'] is not None:
+                            
+                            for chemical_exposure_type in record['chemical_exposure_type']:
+                                
+                                add_to_map( association_maps['exposure_has_chemical_exposure_type'], current_id, chemical_exposure_type )
+
+                    if 'exposure_has_occupation_type' in association_maps:
+                        
+                        if 'occupation_type' in record and record['occupation_type'] is not None:
+                            
+                            for occupation_type in record['occupation_type']:
+                                
+                                add_to_map( association_maps['exposure_has_occupation_type'], current_id, occupation_type )
+
+                elif record_type == 'diagnoses':
                     
                     if 'diagnosis_has_annotation' in association_maps:
 
@@ -1334,6 +1391,14 @@ class GDC_extractor:
 
                 elif record_type == 'pathology_details':
                     
+                    if 'pathology_detail_has_tumor_level_prostate' in association_maps:
+                        
+                        if 'tumor_level_prostate' in record and record['tumor_level_prostate'] is not None:
+                            
+                            for tumor_level_prostate in record['tumor_level_prostate']:
+                                
+                                add_to_map( association_maps['pathology_detail_has_tumor_level_prostate'], current_id, tumor_level_prostate )
+
                     if 'pathology_detail_of_diagnosis' in association_maps:
 
                         add_to_map( association_maps['pathology_detail_of_diagnosis'], current_id, parent_id )
@@ -1343,6 +1408,22 @@ class GDC_extractor:
                     if 'treatment_of_diagnosis' in association_maps:
 
                         add_to_map( association_maps['treatment_of_diagnosis'], current_id, parent_id )
+
+                    if 'treatment_has_route_of_administration' in association_maps:
+                        
+                        if 'route_of_administration' in record and record['route_of_administration'] is not None:
+                            
+                            for route_of_administration in record['route_of_administration']:
+                                
+                                add_to_map( association_maps['treatment_has_route_of_administration'], current_id, route_of_administration )
+
+                    if 'treatment_of_treatment_anatomic_site' in association_maps:
+                        
+                        if 'treatment_anatomic_sites' in record and record['treatment_anatomic_sites'] is not None:
+                            
+                            for treatment_anatomic_site in record['treatment_anatomic_sites']:
+                                
+                                add_to_map( association_maps['treatment_of_treatment_anatomic_site'], current_id, treatment_anatomic_site )
 
                 elif record_type == 'molecular_tests':
                     
@@ -1355,6 +1436,30 @@ class GDC_extractor:
                     if 'other_clinical_attribute_from_follow_up' in association_maps:
                         
                         add_to_map( association_maps['other_clinical_attribute_from_follow_up'], current_id, parent_id )
+
+                    if 'other_clinical_attribute_has_comorbidity' in association_maps:
+                        
+                        if 'comorbidities' in record and record['comorbidities'] is not None:
+                            
+                            for comorbidity in record['comorbidities']:
+                                
+                                add_to_map( association_maps['other_clinical_attribute_has_comorbidity'], current_id, comorbidity )
+
+                    if 'other_clinical_attribute_has_risk_factor' in association_maps:
+                        
+                        if 'risk_factors' in record and record['risk_factors'] is not None:
+                            
+                            for risk_factor in record['risk_factors']:
+                                
+                                add_to_map( association_maps['other_clinical_attribute_has_risk_factor'], current_id, risk_factor )
+
+                    if 'other_clinical_attribute_has_viral_hepatitis_serology_test' in association_maps:
+                        
+                        if 'viral_hepatitis_serology_tests' in record and record['viral_hepatitis_serology_tests'] is not None:
+                            
+                            for viral_hepatitis_serology_test in record['viral_hepatitis_serology_tests']:
+                                
+                                add_to_map( association_maps['other_clinical_attribute_has_viral_hepatitis_serology_test'], current_id, viral_hepatitis_serology_test )
 
                 elif record_type == 'analysis':
                     
@@ -1403,10 +1508,6 @@ class GDC_extractor:
                             # Update parent_id to the ID of the immediately containing object.
 
                             self.__explore_substructure_for_association_data( root_id, current_id, key, record[key], target_record_types, seen_ids, association_maps )
-
-            else:
-                
-                sys.exit(f"FATAL [__scan_for_containment]: Couldn't find expected id field '{id_field}' in {record_type} substructure; aborting.")
 
     def make_association_tables( self ):
         
@@ -1630,26 +1731,6 @@ class GDC_extractor:
                             
                             add_to_map( association_maps['project_in_program'], self_id, get_safe_value( record['program'], 'program_id' ) )
 
-                        # project_studies_primary_site
-                        
-                        if 'primary_site' in record and 'project_studies_primary_site' in association_maps:
-                            
-                            # This is a flat list.
-
-                            for primary_site in record['primary_site']:
-                                
-                                add_to_map( association_maps['project_studies_primary_site'], self_id, primary_site )
-
-                        # project_studies_disease_type
-                        
-                        if 'disease_type' in record and 'project_studies_disease_type' in association_maps:
-                            
-                            # This is a flat list.
-
-                            for disease_type in record['disease_type']:
-                                
-                                add_to_map( association_maps['project_studies_disease_type'], self_id, disease_type )
-
                         # project_summary_data
 
                         if 'summary' in record and 'project_summary_data' in association_maps:
@@ -1806,12 +1887,24 @@ class GDC_extractor:
                 write_association_pairs( association_maps['diagnosis_of_case'], f"{self.TSV_DIR}/diagnosis_of_case.tsv", 'diagnosis_id', 'case_id' )
 
 
+            if 'exposure_has_chemical_exposure_type' in association_maps:
+                write_association_pairs( association_maps['exposure_has_chemical_exposure_type'], f"{self.TSV_DIR}/exposure_has_chemical_exposure_type.tsv", 'exposure_id', 'chemical_exposure_type_id' )
+
+
+            if 'exposure_has_occupation_type' in association_maps:
+                write_association_pairs( association_maps['exposure_has_occupation_type'], f"{self.TSV_DIR}/exposure_has_occupation_type.tsv", 'exposure_id', 'occupation_type_id' )
+
+
             if 'exposure_of_case' in association_maps:
                 write_association_pairs( association_maps['exposure_of_case'], f"{self.TSV_DIR}/exposure_of_case.tsv", 'exposure_id', 'case_id' )
 
 
             if 'family_history_of_case' in association_maps:
                 write_association_pairs( association_maps['family_history_of_case'], f"{self.TSV_DIR}/family_history_of_case.tsv", 'family_history_id', 'case_id' )
+
+
+            if 'follow_up_has_imaging_anatomic_site' in association_maps:
+                write_association_pairs( association_maps['follow_up_has_imaging_anatomic_site'], f"{self.TSV_DIR}/follow_up_has_imaging_anatomic_site.tsv", 'follow_up_id', 'imaging_anatomic_site_id' )
 
 
             if 'follow_up_of_case' in association_maps:
@@ -1826,12 +1919,36 @@ class GDC_extractor:
                 write_association_pairs( association_maps['other_clinical_attribute_from_follow_up'], f"{self.TSV_DIR}/other_clinical_attribute_from_follow_up.tsv", 'other_clinical_attribute_id', 'follow_up_id' )
 
 
+            if 'other_clinical_attribute_has_comorbidity' in association_maps:
+                write_association_pairs( association_maps['other_clinical_attribute_has_comorbidity'], f"{self.TSV_DIR}/other_clinical_attribute_has_comorbidity.tsv", 'other_clinical_attribute_id', 'comorbidity_id' )
+
+
+            if 'other_clinical_attribute_has_risk_factor' in association_maps:
+                write_association_pairs( association_maps['other_clinical_attribute_has_risk_factor'], f"{self.TSV_DIR}/other_clinical_attribute_has_risk_factor.tsv", 'other_clinical_attribute_id', 'risk_factor_id' )
+
+
+            if 'other_clinical_attribute_has_viral_hepatitis_serology_test' in association_maps:
+                write_association_pairs( association_maps['other_clinical_attribute_has_viral_hepatitis_serology_test'], f"{self.TSV_DIR}/other_clinical_attribute_has_viral_hepatitis_serology_test.tsv", 'other_clinical_attribute_id', 'viral_hepatitis_serology_test_id' )
+
+
+            if 'pathology_detail_has_tumor_level_prostate' in association_maps:
+                write_association_pairs( association_maps['pathology_detail_has_tumor_level_prostate'], f"{self.TSV_DIR}/pathology_detail_has_tumor_level_prostate.tsv", 'pathology_detail_id', 'tumor_level_prostate_id' )
+
+
             if 'pathology_detail_of_diagnosis' in association_maps:
                 write_association_pairs( association_maps['pathology_detail_of_diagnosis'], f"{self.TSV_DIR}/pathology_detail_of_diagnosis.tsv", 'pathology_detail_id', 'diagnosis_id' )
 
 
             if 'treatment_of_diagnosis' in association_maps:
                 write_association_pairs( association_maps['treatment_of_diagnosis'], f"{self.TSV_DIR}/treatment_of_diagnosis.tsv", 'treatment_id', 'diagnosis_id' )
+
+
+            if 'treatment_has_route_of_administration' in association_maps:
+                write_association_pairs( association_maps['treatment_has_route_of_administration'], f"{self.TSV_DIR}/treatment_has_route_of_administration.tsv", 'treatment_id', 'route_of_administration_id' )
+
+
+            if 'treatment_of_treatment_anatomic_site' in association_maps:
+                write_association_pairs( association_maps['treatment_of_treatment_anatomic_site'], f"{self.TSV_DIR}/treatment_of_treatment_anatomic_site.tsv", 'treatment_id', 'treatment_anatomic_site_id' )
 
 
             if 'tissue_source_site_of_case' in association_maps:
@@ -1936,11 +2053,11 @@ class GDC_extractor:
 
 
             if 'project_studies_primary_site' in association_maps:
-                write_association_pairs( association_maps['project_studies_primary_site'], f"{self.TSV_DIR}/project_studies_primary_site.tsv", 'project_id', 'primary_site' )
+                write_association_pairs( association_maps['project_studies_primary_site'], f"{self.TSV_DIR}/project_studies_primary_site.tsv", 'project_id', 'primary_site_id' )
 
 
             if 'project_studies_disease_type' in association_maps:
-                write_association_pairs( association_maps['project_studies_disease_type'], f"{self.TSV_DIR}/project_studies_disease_type.tsv", 'project_id', 'disease_type' )
+                write_association_pairs( association_maps['project_studies_disease_type'], f"{self.TSV_DIR}/project_studies_disease_type.tsv", 'project_id', 'disease_type_id' )
 
 
             if 'project_summary_data' in association_maps:
