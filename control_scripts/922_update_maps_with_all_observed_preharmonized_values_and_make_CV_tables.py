@@ -16,12 +16,13 @@ harmonization_root = path.join( 'harmonization_maps' )
 column_concept_map_file = path.join( harmonization_root, '000_cda_column_targets.tsv' )
 output_dir = path.join( harmonization_root, 'zz01_maps_updated_with_all_observed_values' )
 slim_dir = path.join( harmonization_root, '001_slims' )
+banned_containing_term_dir = path.join( harmonization_root, '002_banned_containing_terms' )
+banned_uberon_containing_term_tsv = path.join( banned_containing_term_dir, 'anatomic_site_banned_containing_terms.tsv' )
 new_slim_dir = path.join( harmonization_root, 'zz02_slims_updated_with_all_observed_values' )
 term_table_dir = path.join( harmonization_root, 'zz03_term_tables' )
 controlled_term_tsv = path.join( term_table_dir, 'controlled_term.tsv' )
 synonym_term_tsv = path.join( term_table_dir, 'synonym_term.tsv' )
 slim_term_tsv = path.join( term_table_dir, 'slim_term.tsv' )
-related_term_tsv = path.join( term_table_dir, 'related_term.tsv' )
 containing_term_tsv = path.join( term_table_dir, 'containing_term.tsv' )
 
 ontology_reference_root = path.join( 'auxiliary_metadata', '__ontology_reference' )
@@ -66,14 +67,11 @@ for target_subdir in [ output_dir, slim_dir, new_slim_dir, term_table_dir ]:
         makedirs( target_subdir )
 
 # Load ontology reference data.
-
 synonym_terms = dict()
-related_terms = dict()
 containing_terms = dict()
 
 for term_set in { 'UBERON' }:
     synonym_terms[term_set] = dict()
-    related_terms[term_set] = dict()
     containing_terms[term_set] = dict()
 
 # UBERON.
@@ -103,6 +101,9 @@ for uberon_id in uberon_terms:
 # Remove UBERON terms we don't want in our anatomy CV, e.g. NCBI Taxonomy records.
 for target_id in sorted( uberon_terms_to_remove ):
     del uberon_terms[target_id]
+
+# Load the list of banned UBERON-native containing terms. These are too general to be of any use and most of them are ubiquitous unless removed.
+banned_uberon_containing_terms = set( load_tsv_as_dict( banned_uberon_containing_term_tsv ).keys() )
 
 # Now that we have name maps for the canonical UBERON terms, document all relevant relationships and metadata.
 # 
@@ -145,7 +146,7 @@ for uberon_id in uberon_terms:
                     containing_terms['UBERON'][uberon_id] = set()
 
                 if containing_id in uberon_terms and re.search( r'^UBERON:', containing_id ) is not None:
-                    if containing_id != uberon_id:
+                    if containing_id != uberon_id and containing_id not in banned_uberon_containing_terms:
                         containing_terms['UBERON'][uberon_id].add( containing_id )
 
     if 'relationship' in uberon_terms[uberon_id]:
@@ -171,7 +172,7 @@ for uberon_id in uberon_terms:
                         if relationship_target_id in uberon_terms and re.search( r'^UBERON:', relationship_target_id ) is not None:
                             if relationship_target_name not in uberon_name_to_id:
                                 print( "WARNING: Name '{relationship_target_name}' specified for term {relationship_target_id} as target of part_of relationship for term {uberon_id} is not in our name map; unexpected, please investigate.", file=sys.stderr )
-                            if relationship_target_id != uberon_id:
+                            if relationship_target_id != uberon_id and relationship_target_id not in banned_uberon_containing_terms:
                                 containing_terms['UBERON'][uberon_id].add( relationship_target_id )
 
     if 'synonym' in uberon_terms[uberon_id]:
@@ -204,18 +205,9 @@ for uberon_id in uberon_terms:
                     elif synonym_type == 'BROAD':
                         if uberon_id not in containing_terms['UBERON']:
                             containing_terms['UBERON'][uberon_id] = set()
-                        if synonym_uberon_id != uberon_id:
+                        if synonym_uberon_id != uberon_id and synonym_uberon_id not in banned_uberon_containing_terms:
                             containing_terms['UBERON'][uberon_id].add( synonym_uberon_id )
-                    elif synonym_type == 'RELATED':
-                        if uberon_id not in related_terms['UBERON']:
-                            related_terms['UBERON'][uberon_id] = set()
-                        if synonym_uberon_id != uberon_id:
-                            related_terms['UBERON'][uberon_id].add( synonym_uberon_id )
-                        elif synonym_name != uberon_name:
-                            # Bare non-canonical names are not safe.
-                            synonym_name = json.dumps( synonym_name ).strip( '"' )
-                            related_terms['UBERON'][uberon_id].add( synonym_name )
-                    elif synonym_type not in { 'NARROW' }:
+                    elif synonym_type not in { 'NARROW', 'RELATED' }:
                         sys.exit( f"WARNING: Unexpected UBERON synonym type encountered: {synonym_type}; please investigate & handle." )
                 else:
                     # Bare names are not safe.
@@ -227,11 +219,7 @@ for uberon_id in uberon_terms:
                             if uberon_id not in synonym_terms['UBERON']:
                                 synonym_terms['UBERON'][uberon_id] = set()
                             synonym_terms['UBERON'][uberon_id].add( synonym_name )
-                        elif synonym_type == 'RELATED':
-                            if uberon_id not in related_terms['UBERON']:
-                                related_terms['UBERON'][uberon_id] = set()
-                            related_terms['UBERON'][uberon_id].add( synonym_name )
-                        elif synonym_type not in { 'BROAD', 'NARROW' }:
+                        elif synonym_type not in { 'BROAD', 'NARROW', 'RELATED' }:
                             sys.exit( f"WARNING: Unexpected UBERON synonym type encountered: {synonym_type}; please investigate & handle." )
 
 # Flatten containment hierarchy per term. Otherwise we only get proximate ancestors made available to the search system.
@@ -838,7 +826,6 @@ controlled_term_columns = [ 'id_alias', 'id', 'name', 'url', 'definition', 'data
 with open( controlled_term_tsv, 'w' ) as CONTROLLED_TERM, \
     open( synonym_term_tsv, 'w' ) as SYNONYM_TERM, \
     open( slim_term_tsv, 'w' ) as SLIM_TERM, \
-    open( related_term_tsv, 'w' ) as RELATED_TERM, \
     open( containing_term_tsv, 'w' ) as CONTAINING_TERM:
 
     next_term_alias = 0
@@ -846,7 +833,6 @@ with open( controlled_term_tsv, 'w' ) as CONTROLLED_TERM, \
     print( *controlled_term_columns, sep='\t', file=CONTROLLED_TERM )
     print( *[ 'term_alias', 'synonym_term_alias' ], sep='\t', file=SYNONYM_TERM )
     print( *[ 'general_term_alias', 'specific_term_alias' ], sep='\t', file=SLIM_TERM )
-    print( *[ 'term_alias', 'related_term_alias' ], sep='\t', file=RELATED_TERM )
     print( *[ 'general_term_alias', 'specific_term_alias' ], sep='\t', file=CONTAINING_TERM )
 
     for concept in sorted( observed_harmonized_terms ):
@@ -1045,44 +1031,6 @@ with open( controlled_term_tsv, 'w' ) as CONTROLLED_TERM, \
                             print( *[ synonym_record[column_name] for column_name in controlled_term_columns ], sep='\t', file=CONTROLLED_TERM )
 
                         print( *[ alias_of_term[observed_term], alias_of_term[synonym_term] ], sep='\t', file=SYNONYM_TERM )
-
-                if observed_term in related_terms['UBERON']:
-                    related_list = sorted( related_terms['UBERON'][observed_term] )
-
-                    for related_term in related_list:
-                        
-                        if related_term not in alias_of_term:
-                            related_alias = next_term_alias
-                            next_term_alias = next_term_alias + 1
-                            alias_of_term[related_term] = related_alias
-
-                            related_record = dict()
-
-                            if related_term in uberon_terms:
-                                related_record = {
-                                    'id_alias': related_alias,
-                                    'id': related_term,
-                                    'name': uberon_id_to_name[related_term],
-                                    'url': uberon_terms[related_term]['url'],
-                                    'definition': '',
-                                    'data_source': 'UBERON',
-                                    'concept': concept
-                                }
-
-                            else:
-                                related_record = {
-                                    'id_alias': related_alias,
-                                    'id': '',
-                                    'name': related_term,
-                                    'url': '',
-                                    'definition': '',
-                                    'data_source': '',
-                                    'concept': concept
-                                }
-
-                            print( *[ related_record[column_name] for column_name in controlled_term_columns ], sep='\t', file=CONTROLLED_TERM )
-
-                        print( *[ alias_of_term[observed_term], alias_of_term[related_term] ], sep='\t', file=RELATED_TERM )
 
                 if observed_term in containing_terms['UBERON']:
                     containing_list = sorted( containing_terms['UBERON'][observed_term] )
