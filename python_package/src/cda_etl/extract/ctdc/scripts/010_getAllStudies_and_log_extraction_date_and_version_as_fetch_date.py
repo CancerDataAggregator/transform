@@ -16,6 +16,7 @@ ctdc_api_url = 'https://clinical.datacommons.cancer.gov/v1/graphql/'
 output_root = path.join( 'extracted_data', 'ctdc' )
 
 extraction_date_file = path.join( output_root, 'extraction_date.txt' )
+version_file = path.join( output_root, 'data_version_as_fetch_date.txt' )
 
 study_out_dir = path.join( output_root, 'Study' )
 study_tsv = path.join( study_out_dir, 'Study.tsv' )
@@ -355,6 +356,9 @@ for output_dir in [ json_out_dir, study_out_dir, participant_out_dir, demographi
         makedirs( output_dir )
 
 with open( extraction_date_file, 'w' ) as OUT:
+    print( get_current_date(), file=OUT )
+
+with open( version_file, 'w' ) as OUT:
     print( get_current_date(), file=OUT )
 
 # Send the getAllStudies() query to the API server.

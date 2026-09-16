@@ -17,4 +17,7 @@ echo ./package_root/transform/ctdc/scripts/phase_001_collate_and_filter/004_Part
 echo cp ./extracted_data/ctdc/extraction_date.txt ./extracted_data/ctdc_postprocessed/extraction_date.txt
 cp ./extracted_data/ctdc/extraction_date.txt ./extracted_data/ctdc_postprocessed/extraction_date.txt
 
+echo cp ./extracted_data/ctdc/data_version_as_fetch_date.txt ./extracted_data/ctdc_postprocessed/data_version_as_fetch_date.txt
+cp ./extracted_data/ctdc/data_version_as_fetch_date.txt ./extracted_data/ctdc_postprocessed/data_version_as_fetch_date.txt
+
 
