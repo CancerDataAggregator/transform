@@ -88,8 +88,8 @@ scalar_clinical_non_targeted_therapy_fields = [
 # Non-scalar ClinicalRadiotherapy fields:
 #     <none>
 scalar_clinical_radiotherapy_fields = [
-    'uuid', # String
     'radiological_procedure_record_id', # String
+    'uuid', # String
     'participant_ids', # String
     'radiation_dose', # String
     'radiation_extent', # String

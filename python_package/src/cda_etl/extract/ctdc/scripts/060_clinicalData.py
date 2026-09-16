@@ -76,8 +76,8 @@ scalar_clinical_data_fields = [
 # Non-scalar ClinicalDiagnosis fields:
 #     <none>
 scalar_clinical_diagnosis_fields = [
-    'UUID', # String
     'diagnosis_record_id', # String
+    'UUID', # String
     'participant_ids', # String (?!)
     'ctep_disease_term', # String
     'date_of_diagnosis', # String
@@ -95,8 +95,8 @@ scalar_clinical_diagnosis_fields = [
 # Non-scalar ClinicalDemographic fields:
 #     <none>
 scalar_clinical_demographic_fields = [
-    'uuid', # String
     'demographic_record_id', # String
+    'uuid', # String
     'participant_ids', # String
     'age_at_enrollment', # String
     'age_at_enrollment_original', # String

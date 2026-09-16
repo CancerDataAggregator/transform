@@ -5,8 +5,8 @@ chmod 755 package_root/extract/ctdc/scripts/*py
 echo ./package_root/extract/ctdc/scripts/000_get_CTDC_schema_via_introspection.py
 ./package_root/extract/ctdc/scripts/000_get_CTDC_schema_via_introspection.py
 
-echo ./package_root/extract/ctdc/scripts/010_getAllStudies.py
-./package_root/extract/ctdc/scripts/010_getAllStudies.py
+echo ./package_root/extract/ctdc/scripts/010_getAllStudies_and_log_extraction_date.py
+./package_root/extract/ctdc/scripts/010_getAllStudies_and_log_extraction_date.py
 
 echo ./package_root/extract/ctdc/scripts/011_studyDiagnosisByStudyShortName.py
 ./package_root/extract/ctdc/scripts/011_studyDiagnosisByStudyShortName.py

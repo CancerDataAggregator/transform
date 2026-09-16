@@ -7,13 +7,15 @@ import sys
 
 from os import makedirs, path, rename
 
-from cda_etl.lib import sort_file_with_header
+from cda_etl.lib import get_current_date, sort_file_with_header
 
 # PARAMETERS
 
 ctdc_api_url = 'https://clinical.datacommons.cancer.gov/v1/graphql/'
 
 output_root = path.join( 'extracted_data', 'ctdc' )
+
+extraction_date_file = path.join( output_root, 'extraction_date.txt' )
 
 study_out_dir = path.join( output_root, 'Study' )
 study_tsv = path.join( study_out_dir, 'Study.tsv' )
@@ -157,12 +159,13 @@ scalar_principal_investigator_fields = [
 # Non-scalar Publication fields:
 #     <none>
 scalar_publication_fields = [
+    # I'm guessing this first one is the field most likely to be both unique and ubiquitous, so it's the key/ID for now until proven otherwise.
+    'journal_citation',
     'digital_object_id',
     'pubmed_id',
     'publication_title',
     'authorship',
-    'year_of_publication',
-    'journal_citation'
+    'year_of_publication'
 ]
 
 # Non-scalar ConsentGroup fields:
@@ -350,6 +353,9 @@ query search {
 for output_dir in [ json_out_dir, study_out_dir, participant_out_dir, demographic_out_dir, exposure_out_dir, diagnosis_out_dir, targeted_therapy_out_dir, non_targeted_therapy_out_dir, surgery_out_dir, radiotherapy_out_dir, participant_status_out_dir, specimen_out_dir, associated_link_out_dir, image_collection_out_dir, principal_investigator_out_dir, publication_out_dir, consent_group_out_dir ]:
     if not path.exists( output_dir ):
         makedirs( output_dir )
+
+with open( extraction_date_file, 'w' ) as OUT:
+    print( get_current_date(), file=OUT )
 
 # Send the getAllStudies() query to the API server.
 response = requests.post(

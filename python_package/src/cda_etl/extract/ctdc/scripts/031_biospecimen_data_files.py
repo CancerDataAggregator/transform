@@ -36,8 +36,8 @@ biospecimen_data_files_json_output_file = path.join( json_out_dir, 'biospecimen_
 scalar_file_overview_fields = [
     'data_file_uuid',
     'participant_id',
-    'specimen_id',
     'specimen_record_id',
+    'specimen_id', # This can be null.
     'data_file_name',
     'data_file_format',
     'data_file_type',

@@ -154,7 +154,6 @@ with open( participant_data_files_json_output_file, 'w' ) as JSON:
 
         # Parse the returned data and save to TSV.
         for file_participant in result['data']['participant_data_files']:
-            # This endpoint will give us FileOverview records for files not associated with any specimen. We don't need those in this context.
             if 'participant_id' in file_participant and file_participant['participant_id'] is not None:
                 participant_id = file_participant['participant_id']
                 if file_participant['data_file_uuid'] is not None and file_participant['data_file_uuid'] != '':

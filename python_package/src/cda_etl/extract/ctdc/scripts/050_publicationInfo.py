@@ -28,12 +28,13 @@ publicationInfo_json_output_file = path.join( json_out_dir, 'publicationInfo.jso
 # Non-scalar Publication fields:
 #     <none>
 scalar_publication_fields = [
+    # I'm guessing this first one is the field most likely to be both unique and ubiquitous, so it's the key/ID for now until proven otherwise.
+    'journal_citation',
     'digital_object_id',
     'pubmed_id',
     'publication_title',
     'authorship',
-    'year_of_publication',
-    'journal_citation'
+    'year_of_publication'
 ]
 
 publicationInfo_query = '''

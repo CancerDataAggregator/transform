@@ -13,19 +13,19 @@ from cda_etl.lib import sort_file_with_header
 
 ctdc_api_url = 'https://clinical.datacommons.cancer.gov/v1/graphql/'
 
-output_root = 'extracted_data/ctdc'
+output_root = path.join( 'extracted_data', 'ctdc' )
 
-participant_overview_out_dir = f"{output_root}/ParticipantOverview"
-participant_overview_tsv = f"{participant_overview_out_dir}/ParticipantOverview.tsv"
+participant_overview_out_dir = path.join( output_root, 'ParticipantOverview' )
+participant_overview_tsv = path.join( participant_overview_out_dir, 'ParticipantOverview.tsv' )
 
-participant_out_dir = f"{output_root}/Participant"
-participant_data_file_uuid_tsv = f"{participant_out_dir}/Participant.data_file_uuid.from_participantOverview.tsv"
+participant_out_dir = path.join( output_root, 'Participant' )
+participant_data_file_uuid_tsv = path.join( participant_out_dir, 'Participant.data_file_uuid.from_participantOverview.tsv' )
 
-data_file_out_dir = f"{output_root}/DataFile"
-data_file_tsv = f"{data_file_out_dir}/DataFile.from_participantOverview.tsv"
+data_file_out_dir = path.join( output_root, 'DataFile' )
+data_file_tsv = path.join( data_file_out_dir, 'DataFile.from_participantOverview.tsv' )
 
-json_out_dir = f"{output_root}/__API_result_json"
-participantOverview_json_output_file = f"{json_out_dir}/participantOverview.json"
+json_out_dir = path.join( output_root, '__API_result_json' )
+participantOverview_json_output_file = path.join( json_out_dir, 'participantOverview.json' )
 
 # Non-scalar ParticipantOverview fields:
 #     data_files: [DataFile]
@@ -37,14 +37,14 @@ scalar_participant_overview_fields = [
     'study_name',
     'study_type',
     'study_description',
-    'best_response_to_targeted_therapy',
-    'surgical_procedure',
-    'surgical_procedure_anatomical_location',
-    'surgical_procedure_date',
-    'surgical_procedure_findings',
-    'surgical_procedure_id',
-    'surgical_procedure_therapeutic',
-    'extent_of_residual_disease',
+    'best_response_to_targeted_therapy', # string encoding an array
+    'surgical_procedure', # string encoding an array
+    'surgical_procedure_anatomical_location', # string encoding an array
+    'surgical_procedure_date', # string encoding an array
+    'surgical_procedure_findings', # string encoding an array
+    'surgical_procedure_id', # string encoding an array
+    'surgical_procedure_therapeutic', # string encoding an array
+    'extent_of_residual_disease', # string encoding an array
     'dates_of_conduct',
     'ctep_disease_term',
     'primary_diagnosis_disease_group',
@@ -57,14 +57,14 @@ scalar_participant_overview_fields = [
     'race',
     'ethnicity',
     'carcinogen_exposure',
-    'targeted_therapy',
+    'targeted_therapy', # string encoding an array
     'targeted_therapy_string',
-    'specimen_id',
-    'anatomical_collection_site',
+    'specimen_id', # string encoding an array
+    'anatomical_collection_site', # string encoding an array
     'parent_specimen_id',
     'parent_specimen_type',
-    'tissue_category',
-    'assessment_timepoint',
+    'tissue_category', # string encoding an array
+    'assessment_timepoint', # string encoding an array
     'data_file_uuid' # string encoding an array
 ]
 

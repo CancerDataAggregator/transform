@@ -13,27 +13,28 @@ from cda_etl.lib import sort_file_with_header
 
 ctdc_api_url = 'https://clinical.datacommons.cancer.gov/v1/graphql/'
 
-output_root = 'extracted_data/ctdc'
+output_root = path.join( 'extracted_data', 'ctdc' )
 
-biospecimen_overview_out_dir = f"{output_root}/BiospecimenOverview"
-biospecimen_overview_tsv = f"{biospecimen_overview_out_dir}/BiospecimenOverview.tsv"
+biospecimen_overview_out_dir = path.join( output_root, 'BiospecimenOverview' )
+biospecimen_overview_tsv = path.join( biospecimen_overview_out_dir, 'BiospecimenOverview.tsv' )
 
-specimen_out_dir = f"{output_root}/Specimen"
-specimen_data_file_uuid_tsv = f"{specimen_out_dir}/Specimen.data_file_uuid.from_biospecimenOverview.tsv"
-specimen_participant_id_tsv = f"{specimen_out_dir}/Specimen.participant_id.from_biospecimenOverview.tsv"
+specimen_out_dir = path.join( output_root, 'Specimen' )
+specimen_data_file_uuid_tsv = path.join( specimen_out_dir, 'Specimen.data_file_uuid.from_biospecimenOverview.tsv' )
+specimen_participant_id_tsv = path.join( specimen_out_dir, 'Specimen.participant_id.from_biospecimenOverview.tsv' )
 
-data_file_out_dir = f"{output_root}/DataFile"
-data_file_tsv = f"{data_file_out_dir}/DataFile.from_biospecimenOverview.tsv"
+data_file_out_dir = path.join( output_root, 'DataFile' )
+data_file_tsv = path.join( data_file_out_dir, 'DataFile.from_biospecimenOverview.tsv' )
+data_file_study_id_tsv = path.join( data_file_out_dir, 'DataFile.study_id.from_biospecimenOverview.tsv' )
 
-json_out_dir = f"{output_root}/__API_result_json"
-biospecimenOverview_json_output_file = f"{json_out_dir}/biospecimenOverview.json"
+json_out_dir = path.join( output_root, '__API_result_json' )
+biospecimenOverview_json_output_file = path.join( json_out_dir, 'biospecimenOverview.json' )
 
 # Non-scalar BiospecimenOverview fields:
 #     data_file_uuid: [String]
 #     data_files: [DataFile]
 scalar_biospecimen_overview_fields = [
     'specimen_record_id',
-    'specimen_id',
+    'specimen_id', # This can be null.
     'participant_id',
     'study_short_name',
     'study_id',
@@ -155,14 +156,16 @@ output_tsv_keywords = [
     'BIOSPECIMEN_OVERVIEW',
     'BIOSPECIMEN_DATA_FILE',
     'BIOSPECIMEN_PARTICIPANT',
-    'DATA_FILE'
+    'DATA_FILE',
+    'DATA_FILE_STUDY_ID'
 ]
 
 output_tsv_filenames = [
     biospecimen_overview_tsv,
     specimen_data_file_uuid_tsv,
     specimen_participant_id_tsv,
-    data_file_tsv
+    data_file_tsv,
+    data_file_study_id_tsv
 ]
 
 output_tsvs = dict( zip( output_tsv_keywords, [ open( file_name, 'w' ) for file_name in output_tsv_filenames ] ) )
@@ -172,6 +175,7 @@ print( *scalar_biospecimen_overview_fields, sep='\t', end='\n', file=output_tsvs
 print( *[ 'specimen_record_id', 'data_file_uuid' ], sep='\t', end='\n', file=output_tsvs['BIOSPECIMEN_DATA_FILE'] )
 print( *[ 'specimen_record_id', 'participant_id' ], sep='\t', end='\n', file=output_tsvs['BIOSPECIMEN_PARTICIPANT'] )
 print( *scalar_data_file_fields, sep='\t', end='\n', file=output_tsvs['DATA_FILE'] )
+print( *[ 'data_file_uuid', 'study_id' ], sep='\t', end='\n', file=output_tsvs['DATA_FILE_STUDY_ID'] )
 
 # Don't print duplicate records.
 seen = {
@@ -195,7 +199,6 @@ for biospecimen_overview in result['data']['biospecimenOverview']:
 
     # BiospecimenOverview.data_files [array of DataFile records].
     if biospecimen_overview['data_files'] is not None and len( biospecimen_overview['data_files'] ) > 0:
-        
         for data_file in biospecimen_overview['data_files']:
             # This can happen.
             if data_file['data_file_uuid'] is not None and data_file['data_file_uuid'] != '':
@@ -209,6 +212,7 @@ for biospecimen_overview in result['data']['biospecimenOverview']:
                 # Don't print duplicate DataFile records. This should break with a KeyError if data_file_uuid isn't present.
                 if data_file['data_file_uuid'] not in seen['data_file']:
                     print( *data_file_row, sep='\t', end='\n', file=output_tsvs['DATA_FILE'] )
+                    print( *[ data_file['data_file_uuid'], biospecimen_overview['study_id'] ], sep='\t', end='\n', file=output_tsvs['DATA_FILE_STUDY_ID'] )
                     seen['data_file'].add( data_file['data_file_uuid'] )
                 print( *[ biospecimen_overview['specimen_record_id'], data_file['data_file_uuid'] ], sep='\t', end='\n', file=output_tsvs['BIOSPECIMEN_DATA_FILE'] )
 
