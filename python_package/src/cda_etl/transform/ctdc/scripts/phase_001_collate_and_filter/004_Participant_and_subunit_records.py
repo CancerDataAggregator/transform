@@ -148,6 +148,7 @@ with open( participant_participant_status_output_tsv, 'w' ) as OUT:
 ################################################################################
 # Collate and save ParticipantStatus records. Verify as feasible.
 clinical_participant_status = load_tsv_as_dict( clinical_participant_status_input_tsv )
+# This one has a column we need ('primary_cause_of_death') that isn't in ClinicalParticipantStatus. Add it manually to the columns list below.
 participant_status = load_tsv_as_dict( participant_status_input_tsv )
 participant_status_columns = list()
 
@@ -157,15 +158,19 @@ with open( participant_status_output_tsv, 'w' ) as OUT:
         if len( participant_status_columns ) == 0:
             participant_status_columns = list( clinical_participant_status[participant_status_record_id].keys() ).copy()
             participant_status_columns.remove( 'participant_ids' )
+            participant_status_columns.append( 'primary_cause_of_death' )
             print( *participant_status_columns, sep='\t', end='\n', file=OUT )
         for participant_status_column in participant_status_columns:
-            # Break with a KeyError if this access goes awry.
-            if clinical_participant_status[participant_status_record_id][participant_status_column] is not None:
+            if participant_status_column in clinical_participant_status[participant_status_record_id] and clinical_participant_status[participant_status_record_id][participant_status_column] is not None:
+                # This should KeyError if participant_status_column isn't found in the ParticipantStatus record.
+                if participant_status_record_id in participant_status and participant_status[participant_status_record_id][participant_status_column] is not None and participant_status[participant_status_record_id][participant_status_column] != '' and participant_status[participant_status_record_id][participant_status_column] != clinical_participant_status[participant_status_record_id][participant_status_column]:
+                    sys.exit( f"FATAL: Loaded ClinicalParticipantStatus record '{participant_status_record_id}' with '{participant_status_column}' == '{clinical_participant_status[participant_status_record_id][participant_status_column]}'; but ParticipantStatus table has value '{participant_status[participant_status_record_id][participant_status_column]}' instead, please investigate." )
                 participant_status_row.append( clinical_participant_status[participant_status_record_id][participant_status_column] )
+            elif participant_status_column not in clinical_participant_status[participant_status_record_id] and participant_status_record_id in participant_status and participant_status[participant_status_record_id][participant_status_column] is not None and participant_status[participant_status_record_id][participant_status_column] != '':
+                # This should KeyError if participant_status_column isn't found in the matching ParticipantStatus record.
+                participant_status_row.append( participant_status[participant_status_record_id][participant_status_column] )
             else:
                 participant_status_row.append( '' )
-            if participant_status_record_id in participant_status and participant_status[participant_status_record_id][participant_status_column] is not None and participant_status[participant_status_record_id][participant_status_column] != '' and participant_status[participant_status_record_id][participant_status_column] != clinical_participant_status[participant_status_record_id][participant_status_column]:
-                sys.exit( f"FATAL: Loaded ClinicalParticipantStatus record '{participant_status_record_id}' with '{participant_status_column}' == '{clinical_participant_status[participant_status_record_id][participant_status_column]}'; but ParticipantStatus table has value '{participant_status[participant_status_record_id][participant_status_column]}' instead, please investigate." )
         print( *participant_status_row, sep='\t', end='\n', file=OUT )
 
 ################################################################################
@@ -264,29 +269,35 @@ with open( participant_diagnosis_record_id_output_tsv, 'w' ) as OUT:
 
 ################################################################################
 # Collate and save Diagnosis records. Verify as feasible.
-clinical_diagnosis = load_tsv_as_dict( clinical_diagnosis_input_tsv )
 diagnosis = dict()
+# WEIRD NOTE: These have fields tumor_grade and stage_of_disease, both missing in ClinicalDiagnosis.
 for input_map in diagnosis_input_tsvs:
     diagnosis[input_map] = load_tsv_as_dict( input_map )
+clinical_diagnosis = load_tsv_as_dict( clinical_diagnosis_input_tsv )
 diagnosis_columns = list()
+diagnosis_records_printed = set()
 
 with open( diagnosis_output_tsv, 'w' ) as OUT:
+    # Use ClinicalDiagnosis as a master ID map, but load columns from the (more complete) Diagnosis entity tables.
     for diagnosis_record_id in sorted( clinical_diagnosis ):
         diagnosis_row = list()
-        if len( diagnosis_columns ) == 0:
-            diagnosis_columns = list( clinical_diagnosis[diagnosis_record_id].keys() ).copy()
-            diagnosis_columns.remove( 'participant_ids' )
-            print( *diagnosis_columns, sep='\t', end='\n', file=OUT )
-        for diagnosis_column in diagnosis_columns:
-            # Break with a KeyError if this access goes awry.
-            if clinical_diagnosis[diagnosis_record_id][diagnosis_column] is not None:
-                diagnosis_row.append( clinical_diagnosis[diagnosis_record_id][diagnosis_column] )
-            else:
-                diagnosis_row.append( '' )
-            for input_map in diagnosis:
-                if diagnosis_record_id in diagnosis[input_map] and diagnosis_column in diagnosis[input_map][diagnosis_record_id] and diagnosis[input_map][diagnosis_record_id][diagnosis_column] is not None and diagnosis[input_map][diagnosis_record_id][diagnosis_column] != '' and diagnosis[input_map][diagnosis_record_id][diagnosis_column] != clinical_diagnosis[diagnosis_record_id][diagnosis_column]:
-                    sys.exit( f"FATAL: Loaded ClinicalDiagnosis record '{diagnosis_record_id}' with '{diagnosis_column}' == '{clinical_diagnosis[diagnosis_record_id][diagnosis_column]}'; but Diagnosis table {input_map} has value '{diagnosis[input_map][diagnosis_record_id][diagnosis_column]}' instead, please investigate." )
-        print( *diagnosis_row, sep='\t', end='\n', file=OUT )
+        for input_map in diagnosis:
+            if diagnosis_record_id in diagnosis[input_map]:
+                if len( diagnosis_columns ) == 0:
+                    diagnosis_columns = list( diagnosis[input_map][diagnosis_record_id].keys() ).copy()
+                    print( *diagnosis_columns, sep='\t', end='\n', file=OUT )
+                if diagnosis_record_id not in diagnosis_records_printed:
+                    for diagnosis_column in diagnosis_columns:
+                        # Break with a KeyError if this access goes awry.
+                        if diagnosis[input_map][diagnosis_record_id][diagnosis_column] is not None:
+                            diagnosis_row.append( diagnosis[input_map][diagnosis_record_id][diagnosis_column] )
+                        else:
+                            diagnosis_row.append( '' )
+                        # Verify data with ClinicalDiagnosis where available.
+                        if diagnosis_column in clinical_diagnosis[diagnosis_record_id] and clinical_diagnosis[diagnosis_record_id][diagnosis_column] is not None and clinical_diagnosis[diagnosis_record_id][diagnosis_column] != '' and clinical_diagnosis[diagnosis_record_id][diagnosis_column] != diagnosis[input_map][diagnosis_record_id][diagnosis_column]:
+                            sys.exit( f"FATAL: Loaded ClinicalDiagnosis record '{diagnosis_record_id}' with '{diagnosis_column}' == '{clinical_diagnosis[diagnosis_record_id][diagnosis_column]}'; but Diagnosis table {input_map} has value '{diagnosis[input_map][diagnosis_record_id][diagnosis_column]}' instead, please investigate." )
+                    print( *diagnosis_row, sep='\t', end='\n', file=OUT )
+                    diagnosis_records_printed.add( diagnosis_record_id )
 
 ################################################################################
 # Aggregate and save the map from Participant to Exposure.
@@ -309,6 +320,8 @@ with open( participant_exposure_record_id_output_tsv, 'w' ) as OUT:
 ################################################################################
 # Collate and save Exposure records. Verify as feasible.
 clinical_exposure = load_tsv_as_dict( clinical_exposure_input_tsv )
+# WEIRD NOTE: This has the 'environmental_exposure_type' field, missing in ClinicalExposure.
+# Unfortunately at time of writing is is also an empty table (2026-09). Adding by hand as a result. Yuck.
 exposure = load_tsv_as_dict( exposure_input_tsv )
 exposure_columns = list()
 
@@ -318,15 +331,18 @@ with open( exposure_output_tsv, 'w' ) as OUT:
         if len( exposure_columns ) == 0:
             exposure_columns = list( clinical_exposure[exposure_record_id].keys() ).copy()
             exposure_columns.remove( 'participant_ids' )
+            exposure_columns.append( 'environmental_exposure_type' )
             print( *exposure_columns, sep='\t', end='\n', file=OUT )
         for exposure_column in exposure_columns:
-            # Break with a KeyError if this access goes awry.
-            if clinical_exposure[exposure_record_id][exposure_column] is not None:
+            if exposure_column in clinical_exposure[exposure_record_id] and clinical_exposure[exposure_record_id][exposure_column] is not None:
+                # Break here with a KeyError if exposure_column isn't found in this table.
+                if exposure_record_id in exposure and exposure[exposure_record_id][exposure_column] is not None and exposure[exposure_record_id][exposure_column] != '' and exposure[exposure_record_id][exposure_column] != clinical_exposure[exposure_record_id][exposure_column]:
+                    sys.exit( f"FATAL: Loaded ClinicalExposure record '{exposure_record_id}' with '{exposure_column}' == '{clinical_exposure[exposure_record_id][exposure_column]}'; but Exposure table has value '{exposure[exposure_record_id][exposure_column]}' instead, please investigate." )
                 exposure_row.append( clinical_exposure[exposure_record_id][exposure_column] )
+            elif exposure_column not in clinical_exposure[exposure_record_id] and exposure_record_id in exposure and exposure[exposure_record_id][exposure_column] is not None and exposure[exposure_record_id][exposure_column] != '':
+                exposure_row.append( exposure[exposure_record_id][exposure_column] )
             else:
                 exposure_row.append( '' )
-            if exposure_record_id in exposure and exposure[exposure_record_id][exposure_column] is not None and exposure[exposure_record_id][exposure_column] != '' and exposure[exposure_record_id][exposure_column] != clinical_exposure[exposure_record_id][exposure_column]:
-                sys.exit( f"FATAL: Loaded ClinicalExposure record '{exposure_record_id}' with '{exposure_column}' == '{clinical_exposure[exposure_record_id][exposure_column]}'; but Exposure table has value '{exposure[exposure_record_id][exposure_column]}' instead, please investigate." )
         print( *exposure_row, sep='\t', end='\n', file=OUT )
 
 ################################################################################

@@ -39,7 +39,7 @@ specimen = dict()
 specimen_columns = list()
 
 ################################################################################
-# Collate all ClinicalSpecimen records to start. This entity contains a strict superset of the data offered by the Specimen entity.
+# Collate all ClinicalSpecimen records to start. This entity contains a strict superset of the data offered by the Specimen entity EXCEPT for the specimen_type field (2026-09).
 clinical_specimen = load_tsv_as_dict( clinical_specimen_input_tsv )
 
 # ASSUMPTION:
@@ -53,17 +53,22 @@ for specimen_record_id in clinical_specimen.keys():
         specimen_columns = list( clinical_specimen[specimen_record_id].keys() ).copy()
         # This needs to go.
         specimen_columns.remove( 'participant_ids' )
+        # This needs filling in from elswhere because it's missing.
+        specimen_columns.append( 'specimen_type' )
     for column_name in specimen_columns:
-        specimen[specimen_record_id][column_name] = clinical_specimen[specimen_record_id][column_name]
+        if column_name in clinical_specimen[specimen_record_id]:
+            specimen[specimen_record_id][column_name] = clinical_specimen[specimen_record_id][column_name]
 
-# Verify with other data sources and report conflicts.
+# Verify with other data sources and report conflicts; paste in specimen_type.
 for input_map_file in [ map_file for sub_list in [ specimen_input_tsvs, [ biospecimen_overview_input_tsv ] ] for map_file in sub_list ]:
     # ASSUMPTION: All of these files have a first-column primary key called 'specimen_record_id'.
     current_table = load_tsv_as_dict( input_map_file )
     for specimen_record_id in current_table:
         for specimen_column in specimen_columns:
-            # Ignore nulls. Ignore case... there are differences. (*EYEROLL*) Complain about any other clashes. Break with a KeyError if an unloaded Specimen is encountered.
-            if specimen_column in current_table[specimen_record_id] and current_table[specimen_record_id][specimen_column] is not None and current_table[specimen_record_id][specimen_column] != '' and current_table[specimen_record_id][specimen_column].lower() != specimen[specimen_record_id][specimen_column].lower():
+            if specimen_column == 'specimen_type' and current_table[specimen_record_id][specimen_column] is not None and current_table[specimen_record_id][specimen_column] != '':
+                specimen[specimen_record_id][specimen_column] = current_table[specimen_record_id][specimen_column]
+            elif specimen_column in current_table[specimen_record_id] and current_table[specimen_record_id][specimen_column] is not None and current_table[specimen_record_id][specimen_column] != '' and current_table[specimen_record_id][specimen_column].lower() != specimen[specimen_record_id][specimen_column].lower():
+                # Ignore nulls. Ignore case... there are differences. (*EYEROLL*) Complain about any other clashes. Break with a KeyError if an unloaded Specimen is encountered.
                 sys.exit( f"FATAL: Specimen mismatch in {input_map_file}: already loaded {specimen_record_id}->{specimen_column} == {specimen[specimen_record_id][specimen_column]}; now seeing '{current_table[specimen_record_id][specimen_column]}'" )
 
 # Write aggregated Specimen records to output TSV.
