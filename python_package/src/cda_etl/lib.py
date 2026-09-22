@@ -1687,6 +1687,15 @@ def columns_to_count( data_source ):
 
         # end enumerable_columns['idc']
 
+        'ctdc': {
+            
+            'DataFile/DataFile': [
+                'data_file_type'
+            ]
+        },
+
+        # end enumerable_columns['ctdc']
+
         'cda': {
             
             'file': [
@@ -1766,153 +1775,96 @@ def columns_to_count( data_source ):
         sys.exit( f"FATAL: data_source '{data_source}' not recognized; cannot provide list of enumerable columns." )
 
 def deduplicate_sorted_file_with_header( file_path, gzipped=False ):
-    
     IN = open( path.join( file_path ) )
-
     OUT = open( path.join( file_path + '.tmp' ), 'w' )
 
     if gzipped:
-        
         IN.close()
-
         OUT.close()
-
         IN = gzip.open( path.join( file_path ), 'rt' )
-
         OUT = gzip.open( path.join( file_path + '.tmp' ), 'wt' )
 
     header = next( IN ).rstrip( '\n' )
-
     print( header, file=OUT )
-
     last_line = ''
-
     line_count = 0
 
     for next_line in [ line.rstrip( '\n' ) for line in IN ]:
-        
         line_count = line_count + 1
-
         if next_line != last_line:
-            
             print( next_line, file=OUT )
-
         last_line = next_line
 
     IN.close()
-
     OUT.close()
-
     rename( file_path + '.tmp', file_path )
 
 def deduplicate_and_sort_unsorted_file_with_header( file_path, gzipped=False, ignore_primary_id_field=False ):
-    
     IN = open( path.join( file_path ) )
-
     OUT = open( path.join( file_path + '.tmp' ), 'w' )
 
     if gzipped:
-        
         IN.close()
-
         OUT.close()
-
         IN = gzip.open( path.join( file_path ), 'rt' )
-
         OUT = gzip.open( path.join( file_path + '.tmp' ), 'wt' )
 
     header = next( IN ).rstrip( '\n' )
-
     print( header, file=OUT )
 
     if not ignore_primary_id_field:
-        
         # Sort the set of lines (as unparsed strings) and make sure we don't repeat identical adjacent lines.
-
         last_line = ''
-
         line_count = 0
 
         for next_line in sorted( [ line.rstrip( '\n' ) for line in IN ] ):
-            
             line_count = line_count + 1
-
             if next_line != last_line:
-                
                 print( next_line, file=OUT )
-
             last_line = next_line
 
     else:
-        
         # Find the id field.
-
         column_names = header.split( '\t' )
-
         alias_index = None
-
         numeric_sort = False
 
         if 'id' in column_names:
-            
             alias_index = column_names.index( 'id' )
-
         elif 'id_alias' in column_names:
-            
             alias_index = column_names.index( 'id_alias' )
-
             numeric_sort = True
-
         else:
-            
             sys.exit( f"\n   FATAL: deduplicate_and_sort_unsorted_file_with_header(): Parameter 'ignore_primary_id_field' was set to True, but the table encoded in '{file_path}' has neither 'id' nor 'id_alias' fields. Cannot continue.\n" )
 
         record_data = set()
-
         output_lines = set()
 
         for next_line in [ line.rstrip( '\n' ) for line in IN ]:
-            
             record_string = '\t'.join( [ value for index, value in enumerate( next_line.split( '\t' ) ) if index != alias_index ] )
-
             if record_string not in record_data:
-                
                 output_lines.add( next_line )
-
             record_data.add( record_string )
 
         if not numeric_sort:
-            
             for next_line in sorted( output_lines ):
-                
                 print( next_line, file=OUT )
-
         else:
-            
             for next_line in sorted( output_lines, key=lambda line_with_alias : int( line_with_alias.split( '\t' )[0] ) ):
-                
                 print( next_line, file=OUT )
 
     IN.close()
-
     OUT.close()
-
     rename( file_path + '.tmp', file_path )
 
 def get_cda_project_ancestors( project_in_project_map, project_id ):
-    
     ancestor_projects = set()
 
     if project_id in project_in_project_map:
-        
         for ancestor_project_id in project_in_project_map[project_id]:
-            
             ancestor_projects.add( ancestor_project_id )
-
             if ancestor_project_id in project_in_project_map:
-                
                 # There should never be cycles in the project hierarchy, but if there are, this will never terminate.
-
                 ancestor_projects = ancestor_projects | get_cda_project_ancestors( project_in_project_map, ancestor_project_id )
 
     return ancestor_projects
@@ -2061,11 +2013,18 @@ def get_column_metadata( table_name=None, column_name=None ):
                 'summary_returns': False,
                 'data_returns': True
             },
+            'data_at_ctdc': {
+                
+                'column_type': 'categorical',
+                'summary_returns': True,
+                'data_returns': True,
+                'process_before_display': 'data_source'
+            },
             'data_at_gc': {
                 
                 'column_type': 'categorical',
                 'summary_returns': True,
-                'data_returns': False,
+                'data_returns': True,
                 'process_before_display': 'data_source'
             },
             'data_at_gdc': {
@@ -2174,6 +2133,13 @@ def get_column_metadata( table_name=None, column_name=None ):
                 'summary_returns': True,
                 'data_returns': True
             },
+            'data_at_ctdc': {
+                
+                'column_type': 'categorical',
+                'summary_returns': True,
+                'data_returns': True,
+                'process_before_display': 'data_source'
+            },
             'data_at_gc': {
                 
                 'column_type': 'categorical',
@@ -2276,6 +2242,13 @@ def get_column_metadata( table_name=None, column_name=None ):
                 'concept': 'ethnicity',
                 'summary_returns': True,
                 'data_returns': True
+            },
+            'data_at_ctdc': {
+                
+                'column_type': 'categorical',
+                'summary_returns': True,
+                'data_returns': True,
+                'process_before_display': 'data_source'
             },
             'data_at_gc': {
                 
@@ -2401,6 +2374,13 @@ def get_column_metadata( table_name=None, column_name=None ):
                 'summary_returns': True,
                 'data_returns': True
             },
+            'data_at_ctdc': {
+                
+                'column_type': 'categorical',
+                'summary_returns': True,
+                'data_returns': True,
+                'process_before_display': 'data_source'
+            },
             'data_at_gc': {
                 
                 'column_type': 'categorical',
@@ -2476,6 +2456,13 @@ def get_column_metadata( table_name=None, column_name=None ):
                 'column_type': 'categorical',
                 'summary_returns': True,
                 'data_returns': True
+            },
+            'data_at_ctdc': {
+                
+                'column_type': 'categorical',
+                'summary_returns': True,
+                'data_returns': True,
+                'process_before_display': 'data_source'
             },
             'data_at_gc': {
                 
@@ -2690,6 +2677,13 @@ def get_column_metadata( table_name=None, column_name=None ):
                 'column_type': 'unbounded',
                 'summary_returns': False,
                 'data_returns': True
+            },
+            'data_at_ctdc': {
+                
+                'column_type': 'categorical',
+                'summary_returns': True,
+                'data_returns': True,
+                'process_before_display': 'data_source'
             },
             'data_at_gc': {
                 
