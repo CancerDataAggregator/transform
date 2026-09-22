@@ -76,8 +76,8 @@ for subject_id in original_participant_ids:
             for non_targeted_therapy_record_id in sorted( participant_non_targeted_therapy[participant_id] ):
                 if non_targeted_therapy[non_targeted_therapy_record_id]['non_targeted_therapy'] is not None and non_targeted_therapy[non_targeted_therapy_record_id]['non_targeted_therapy'] != '':
                     # Make a new treatment record with just this info.
-                    cda_treatment_records[f"{upstream_data_source}.{subject_id}.non_targeted_therapy_obs.{non_targeted_therapy_disambiguator}"] = {
-                        'id': f"{upstream_data_source}.{subject_id}.non_targeted_therapy_obs.{non_targeted_therapy_disambiguator}",
+                    cda_treatment_records[f"{upstream_data_source}.{subject_id}.non_targeted_therapy_tmt.{non_targeted_therapy_disambiguator}"] = {
+                        'id': f"{upstream_data_source}.{subject_id}.non_targeted_therapy_tmt.{non_targeted_therapy_disambiguator}",
                         'subject_id': subject_id,
                         'anatomic_site': '',
                         'type': 'non-targeted drug therapy',
@@ -101,8 +101,8 @@ for subject_id in original_participant_ids:
             for targeted_therapy_record_id in sorted( participant_targeted_therapy[participant_id] ):
                 if targeted_therapy[targeted_therapy_record_id]['targeted_therapy'] is not None and targeted_therapy[targeted_therapy_record_id]['targeted_therapy'] != '':
                     # Make a new treatment record with just this info.
-                    cda_treatment_records[f"{upstream_data_source}.{subject_id}.targeted_therapy_obs.{targeted_therapy_disambiguator}"] = {
-                        'id': f"{upstream_data_source}.{subject_id}.targeted_therapy_obs.{targeted_therapy_disambiguator}",
+                    cda_treatment_records[f"{upstream_data_source}.{subject_id}.targeted_therapy_tmt.{targeted_therapy_disambiguator}"] = {
+                        'id': f"{upstream_data_source}.{subject_id}.targeted_therapy_tmt.{targeted_therapy_disambiguator}",
                         'subject_id': subject_id,
                         'anatomic_site': '',
                         'type': 'targeted drug therapy',
@@ -134,8 +134,8 @@ for subject_id in original_participant_ids:
                     radiological_procedure_value = ''
                     if radiotherapy[radiological_procedure_record_id]['radiological_procedure'] is not None and radiotherapy[radiological_procedure_record_id]['radiological_procedure'] != '':
                         radiological_procedure_value = radiotherapy[radiological_procedure_record_id]['radiological_procedure']
-                    cda_treatment_records[f"{upstream_data_source}.{subject_id}.radiotherapy_obs.{radiotherapy_disambiguator}"] = {
-                        'id': f"{upstream_data_source}.{subject_id}.radiotherapy_obs.{radiotherapy_disambiguator}",
+                    cda_treatment_records[f"{upstream_data_source}.{subject_id}.radiotherapy_tmt.{radiotherapy_disambiguator}"] = {
+                        'id': f"{upstream_data_source}.{subject_id}.radiotherapy_tmt.{radiotherapy_disambiguator}",
                         'subject_id': subject_id,
                         'anatomic_site': radiological_procedure_anatomical_location_value,
                         'type': radiological_procedure_value,
@@ -169,8 +169,8 @@ for subject_id in original_participant_ids:
                         surgical_procedure_value = surgery[surgical_procedure_record_id]['surgical_procedure']
                     # Don't record Surgery records as 'treatments' if `surgical_procedure_therapeutic` is not 'Yes'. Biopsies should be excluded from the treatment table.
                     if surgery[surgical_procedure_record_id]['surgical_procedure_therapeutic'] is not None and surgery[surgical_procedure_record_id]['surgical_procedure_therapeutic'] == 'Yes':
-                        cda_treatment_records[f"{upstream_data_source}.{subject_id}.surgery_obs.{surgery_disambiguator}"] = {
-                            'id': f"{upstream_data_source}.{subject_id}.surgery_obs.{surgery_disambiguator}",
+                        cda_treatment_records[f"{upstream_data_source}.{subject_id}.surgery_tmt.{surgery_disambiguator}"] = {
+                            'id': f"{upstream_data_source}.{subject_id}.surgery_tmt.{surgery_disambiguator}",
                             'subject_id': subject_id,
                             'anatomic_site': surgical_procedure_anatomical_location_value,
                             'type': surgical_procedure_value,
