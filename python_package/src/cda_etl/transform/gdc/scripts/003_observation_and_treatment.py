@@ -129,7 +129,7 @@ for subject_id in subject_has_demographic:
         
         vital_status = demographic[demographic_id]['vital_status']
 
-        sex = demographic[demographic_id]['gender']
+        sex = demographic[demographic_id]['sex_at_birth']
 
         if vital_status not in seen_demographic_combos:
             
