@@ -30,10 +30,7 @@ echo ./package_root/auxiliary_scripts/990_harmonize_cda_tsvs.py $input_root $out
 ./package_root/auxiliary_scripts/990_harmonize_cda_tsvs.py $input_root $output_root $log_dir
 
 # Compute aliases; replace ids with aliases wherever needed; create and populate data_at_* and data_source_count columns
-
-##################  CCCCCHHHHHHHHAAAAAAAAANNNNNNNNGGGGGGGGEEEEEEE MMMMEEEEEEEEEEEEEEEEEEEEEEEEEEE  ####################
-
-last_merge_dir=./zz25_june_2026_release_may_GC_data/cda_tsvs/merged_gdc_pdc_gc_icdc_and_idc_002_decorated_harmonized
+last_merge_dir=./cda_tsvs/merged_gdc_pdc_gc_icdc_and_idc_002_decorated_harmonized
 input_root=./cda_tsvs/ctdc_001_harmonized
 output_root=./cda_tsvs/ctdc_002_decorated_harmonized
 echo ./package_root/auxiliary_scripts/991_decorate_harmonized_cda_tsvs_with_aliases_and_provenance.py CTDC $last_merge_dir $input_root $output_root
