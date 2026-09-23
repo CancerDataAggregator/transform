@@ -18,35 +18,23 @@ cda_version_string=$1
 chmod 755 ./package_root/auxiliary_scripts/*py
 
 gdc_extraction_root="./extracted_data/gdc/all_TSV_output"
-
 gdc_extraction_date_file="${gdc_extraction_root}/extraction_date.txt"
-
 gdc_extraction_date_string=`cat ${gdc_extraction_date_file}`
-
 gdc_version_string=`cat ${gdc_extraction_root}/API_version_metadata.files_endpoint_extraction.json | grep data_release | grep -v data_release_version | sed -E 's/^ +"data_release": "(.*)",?$/\1/' | sed -E 's/"//g'`
 
 pdc_extraction_root="./extracted_data/pdc"
-
 pdc_extraction_date_file="${pdc_extraction_root}/extraction_date.txt"
-
 pdc_extraction_date_string=`cat ${pdc_extraction_date_file}`
-
 pdc_version_string=`cat ${pdc_extraction_root}/__version_metadata/uiDataVersionSoftwareVersion.json | grep data_release | grep -v data_release_version | sed -E 's/^ +"data_release": "(.*)",?$/Data Release \1/' | sed -E 's/"//g'`
 
 gc_extraction_date_file=./extracted_data/gc_initial_database_dump/gc_extraction_date.txt
-
 gc_extraction_date_string=`cat $gc_extraction_date_file`
-
 gc_version_file=./extracted_data/gc_initial_database_dump/gc_version.txt
-
 gc_version_string=`cat $gc_version_file`
 
 input_root=./cda_tsvs/merged_gdc_pdc_and_gc_002_decorated_harmonized
-
 summary_output_dir=./auxiliary_metadata/__column_value_statistics/merged_CDA_data/GDC_${gdc_extraction_date_string}_plus_PDC_${pdc_extraction_date_string}_plus_GC_${gc_extraction_date_string}/dataset_summaries
-
 summary_file="${summary_output_dir}/GDC_plus_PDC_plus_GC.converted_to_CDA.harmonized.merged.counts_by_upstream_data_source.tsv"
-
 current_date=$(date '+%Y-%m-%d')
 
 echo ./package_root/auxiliary_scripts/901_summarize_distinct_values_by_table_and_column.source_aware.py $input_root $summary_file "${cda_version_string}" $current_date print_CDA_rows gdc $gdc_extraction_date_string "${gdc_version_string}" pdc $pdc_extraction_date_string "${pdc_version_string}" gc $gc_extraction_date_string "${gc_version_string}"

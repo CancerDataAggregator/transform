@@ -12,9 +12,7 @@ echo ./package_root/auxiliary_scripts/110_draft_PDC_GDC_project_links_using_subm
 ./package_root/auxiliary_scripts/110_draft_PDC_GDC_project_links_using_submitter_IDs.pl
 
 >&2 echo
-
 >&2 echo "Don't forget to create 'naive_GDC_PDC_project_id_map.hand_edited_to_remove_false_positives.tsv' before proceeding!"
-
 >&2 echo
 
 

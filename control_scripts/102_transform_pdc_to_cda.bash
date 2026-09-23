@@ -23,12 +23,10 @@ echo ./package_root/transform/pdc/scripts/phase_002_convert_to_cda/006_treatment
 # Harmonize values according to (a) universal 'delete everywhere' maps (nullifying
 # values like 'other' and 'not reported') and (b) anything present
 # in ./harmonization_maps/ and indexed in 000_cda_column_targets.tsv in that directory.
-
 echo ./package_root/auxiliary_scripts/990_harmonize_cda_tsvs.py ./cda_tsvs/pdc_000_unharmonized ./cda_tsvs/pdc_001_harmonized ./auxiliary_metadata/__harmonization_logs/pdc
 ./package_root/auxiliary_scripts/990_harmonize_cda_tsvs.py ./cda_tsvs/pdc_000_unharmonized ./cda_tsvs/pdc_001_harmonized ./auxiliary_metadata/__harmonization_logs/pdc
 
 # Compute aliases; replace ids with aliases wherever needed; create and populate data_at_* and data_source_count columns
-
 echo ./package_root/auxiliary_scripts/991_decorate_harmonized_cda_tsvs_with_aliases_and_provenance.py PDC ./cda_tsvs/gdc_002_decorated_harmonized ./cda_tsvs/pdc_001_harmonized ./cda_tsvs/pdc_002_decorated_harmonized
 ./package_root/auxiliary_scripts/991_decorate_harmonized_cda_tsvs_with_aliases_and_provenance.py PDC ./cda_tsvs/gdc_002_decorated_harmonized ./cda_tsvs/pdc_001_harmonized ./cda_tsvs/pdc_002_decorated_harmonized
 
