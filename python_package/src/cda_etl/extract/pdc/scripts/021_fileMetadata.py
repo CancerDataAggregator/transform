@@ -7,7 +7,7 @@ import time
 
 from os import makedirs, path, rename
 
-from cda_etl.lib import sort_file_with_header
+from cda_etl.lib import get_current_timestamp, sort_file_with_header
 
 # PARAMETERS
 
@@ -145,7 +145,7 @@ while not returned_nothing:
 
     # Help a bored user out.
 
-    print( f"Running `fileMetadata( offset: {offset}, limit: {offset_increment}, acceptDUA: true )`...", file=sys.stderr )
+    print( f"[{get_current_timestamp()}] Running `fileMetadata( offset: {offset}, limit: {offset_increment}, acceptDUA: true )`...", file=sys.stderr )
 
     # Send the fileMetadata() query to the API server.
 
