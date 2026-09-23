@@ -4,7 +4,7 @@ import gzip
 import re
 import sys
 
-from os import listdir, makedirs, path, remove
+from os import listdir, makedirs, path
 
 from cda_etl.lib import get_current_timestamp, get_universal_value_deletion_patterns, deduplicate_and_sort_unsorted_file_with_header
 
@@ -20,9 +20,7 @@ substitution_log_dir = sys.argv[3]
 # PARAMETERS
 
 debug=False
-
 harmonization_map_dir = 'harmonization_maps'
-
 harmonization_field_map_file = path.join( harmonization_map_dir, '000_cda_column_targets.tsv' )
 
 # Enumerate (case-insensitive, space-collapsed) values (as regular expressions) that

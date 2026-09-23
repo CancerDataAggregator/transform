@@ -3234,6 +3234,7 @@ def get_universal_value_deletion_patterns( ):
         r'invalidvalues',
         r'mixedhistology(pleasespecify)',
         r'n/a',
+        r'na',
         r'notallowedtocollect',
         r'notapplicable',
         r'notdetermined',

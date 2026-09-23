@@ -24,6 +24,7 @@ debug=False
 
 # New fields.
 new_suffix_column_names = [
+    'data_at_ctdc',
     'data_at_gc',
     'data_at_gdc',
     'data_at_icdc',
