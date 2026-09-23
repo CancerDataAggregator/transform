@@ -26,6 +26,9 @@ chmod 755 ./package_root/extract/pdc/scripts/*py
 ( echo ./package_root/extract/pdc/scripts/020_getPaginatedFiles.py && \
   ( ( sleep 10; ./package_root/extract/pdc/scripts/020_getPaginatedFiles.py ) || \
       echo "FAILED: ./package_root/extract/pdc/scripts/020_getPaginatedFiles.py\n\nTry rerunning the failed script: that often works. Sometimes waiting a few minutes helps." ) ) && \
+( echo sleep 360 && \
+  ( ( sleep 360 ) || \
+      echo "FAILED: sleep 360\n\n...not even sure what to suggest. Fix it." ) ) && \
 ( echo ./package_root/extract/pdc/scripts/021_fileMetadata.py && \
   ( ( sleep 10; ./package_root/extract/pdc/scripts/021_fileMetadata.py ) || \
       echo "FAILED: ./package_root/extract/pdc/scripts/021_fileMetadata.py\n\nTry rerunning the failed script: that often works. Sometimes waiting a few minutes helps." ) ) && \
