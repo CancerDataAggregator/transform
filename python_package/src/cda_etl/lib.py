@@ -1690,8 +1690,106 @@ def columns_to_count( data_source ):
         'ctdc': {
             
             'DataFile/DataFile': [
-                'data_file_type'
-            ]
+                'data_file_type',
+                'data_file_description',
+                'data_file_format',
+                'data_file_checksum_type',
+                'data_file_compression_status'
+            ],
+            'Demographic/Demographic': [
+                'age_at_enrollment',
+                'age_at_enrollment_original',
+                'age_at_enrollment_original_unit',
+                'age_at_enrollment_unit',
+                'body_surface_area_original_unit',
+                'body_surface_area_unit',
+                'ethnicity',
+                'height_original_unit',
+                'height_unit',
+                'ncbi_taxonomy_id',
+                'ncbi_taxonomy_name',
+                'race',
+                'sex',
+                'weight_original_unit',
+                'weight_unit',
+                'income',
+                'occupation',
+                'highest_level_of_education'
+            ],
+            'Diagnosis/Diagnosis': [
+                'primary_diagnosis_disease_group',
+                'ctep_disease_term',
+                'meddra_disease_code',
+                'snomed_disease_term',
+                'snomed_disease_code',
+                'primary_disease_site',
+                'histology',
+                'histological_subtype',
+                'stage_of_disease',
+                'tumor_grade'
+            ],
+            'Exposure/Exposure': [
+                'carcinogen_exposure',
+                'environmental_exposure_type'
+            ],
+            'NonTargetedTherapy/NonTargetedTherapy': [
+                'best_response_to_non_targeted_therapy',
+                'non_targeted_therapy',
+                'non_targeted_therapy_frequency'
+            ],
+            'Participant/Participant': [
+                'biomarker_results_available',
+                'histology_images_available',
+                'radiology_images_available',
+                'radiology_report_available'
+            ],
+            'ParticipantStatus/ParticipantStatus': [
+                'off_study',
+                'off_study_reason',
+                'survival_status',
+                'primary_cause_of_death'
+            ],
+            'Radiotherapy/Radiotherapy': [
+                'radiation_dose',
+                'radiation_extent',
+                'radiation_frequency',
+                'radiological_procedure',
+                'radiological_procedure_anatomical_location'
+            ],
+            'Specimen/Specimen': [
+                'specimen_category',
+                'specimen_type_concept_code',
+                'anatomical_collection_site',
+                'assessment_timepoint',
+                'collection_date_original_unit',
+                'collection_date_unit',
+                'tissue_category',
+                'specimen_type'
+            ],
+            'Study/Study': [
+                'study_short_name',
+                'study_accession',
+                'study_name',
+                'study_description',
+                'study_type',
+                'dates_of_conduct',
+                'participant_count',
+                'image_collection_count',
+                'study_file_count',
+                'participant_file_count'
+            ],
+            'Surgery/Surgery': [
+                'extent_of_residual_disease',
+                'surgical_procedure',
+                'surgical_procedure_anatomical_location',
+                'surgical_procedure_date',
+                'surgical_procedure_findings',
+                'surgical_procedure_therapeutic'
+            ],
+            'TargetedTherapy/TargetedTherapy': [
+                'targeted_therapy',
+                'targeted_therapy_frequency'
+            ],
         },
 
         # end enumerable_columns['ctdc']
