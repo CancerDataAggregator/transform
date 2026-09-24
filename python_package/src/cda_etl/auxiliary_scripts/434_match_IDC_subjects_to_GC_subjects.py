@@ -41,7 +41,6 @@ output_file = path.join( agg_subject_dir, 'IDC_CDA_subjects_linked_to_GC_CDA_sub
 # cda_table	id_alias	upstream_source	upstream_field	upstream_id
 # subject	48470	GC	participant.participant_id	00301d78915737fa100f
 
-# WARNING: This implicitly matches only GC records because only they have `participant.uuid` values in this table, but this should be made safer. (Assumption safe when last tested, 2026-03-03.)
 gc_participant_uuid_to_cda_subject_alias = map_columns_one_to_one( gc_upstream_identifiers_tsv, 'upstream_id', 'id_alias', where_field='upstream_field', where_value='participant.uuid' )
 gc_subject_alias_to_subject_id = map_columns_one_to_one( gc_subject_tsv, 'id_alias', 'id' )
 gc_study_id_and_participant_id_to_cda_subject_alias = dict()

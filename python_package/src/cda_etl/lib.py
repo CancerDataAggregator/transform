@@ -3231,6 +3231,7 @@ def get_submitter_id_patterns_not_to_merge_across_projects( ):
     
     return [
         
+        r'^[Ii]nternal [Rr]eference',
         r'^[Rr][Ee][Ff]$',
         r'^P?[0-9]+$',
         r'[Pp]ooled [Ss]ample',

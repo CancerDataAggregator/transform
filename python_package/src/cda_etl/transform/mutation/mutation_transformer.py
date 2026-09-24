@@ -27,7 +27,9 @@ class mutation_transformer:
             
             makedirs( self.substitution_log_dir )
 
+        # I officially hate that this is here.
         self.cda_data_sources = [
+            'CTDC',
             'GC',
             'GDC',
             'ICDC',

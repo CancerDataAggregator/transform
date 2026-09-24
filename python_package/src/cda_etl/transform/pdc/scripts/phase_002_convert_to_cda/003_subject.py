@@ -116,6 +116,10 @@ cda_project_id = dict()
 # We'll need these later.
 # Program.name == 'Clinical Proteomic Tumor Analysis Consortium'
 cptac_program_level_cda_project_id = ''
+# Program.name == 'CPTAC-Kids First-Childhood Cancer Data Initiative'
+cptac_kf_ccdi_program_level_cda_project_id = ''
+# Program.name == 'Pediatric Brain Tumor Atlas - CBTN'
+cbtn_program_level_cda_project_id = ''
 # Project.project_submitter_id =~ '*CPTAC3*'
 cptac3_projects = set()
 
@@ -145,6 +149,10 @@ for project_id in upstream_identifiers['project']:
             for value in upstream_identifiers['project'][project_id][upstream_data_source]['Program.name']:
                 if value == 'Clinical Proteomic Tumor Analysis Consortium':
                     cptac_program_level_cda_project_id = project_id
+                elif value == 'CPTAC-Kids First-Childhood Cancer Data Initiative':
+                    cptac_kf_ccdi_program_level_cda_project_id = project_id
+                elif value == 'Pediatric Brain Tumor Atlas - CBTN':
+                    cbtn_program_level_cda_project_id = project_id
             for value in upstream_identifiers['project'][project_id][upstream_data_source]['Program.program_id']:
                 if value not in cda_project_id:
                     cda_project_id[value] = project_id
@@ -197,6 +205,7 @@ case_submitter_id_in_project = dict()
 case_in_project = dict()
 case_submitter_id_in_non_cptac3_cptac_study = dict()
 case_submitter_id_in_any_non_cptac_study = dict()
+case_submitter_id_in_cbtn = dict()
 
 for case_id in case_study:
     case_submitter_id = case_id_to_case_submitter_id[case_id]
@@ -229,13 +238,18 @@ for case_id in case_study:
         case_submitter_id_in_project[case_submitter_id] = set()
     case_submitter_id_in_project[case_submitter_id] = case_submitter_id_in_project[case_submitter_id] | containing_projects
 
+    if cbtn_program_level_cda_project_id in case_submitter_id_in_project[case_submitter_id]:
+        # This case is in "Pediatric Brain Tumor Atlas - CBTN". Save for later.
+        case_submitter_id_in_cbtn[case_submitter_id] = True
+    else:
+        case_submitter_id_in_cbtn[case_submitter_id] = False
 # Now, assign CDA IDs to case_ids:
 # 
 #    {project_submitter_id}.{case_submitter_id}
 # 
 #    UNLESS
 # 
-#    case_submitter_id doesn't match (case-insensitive) /^ref$/, /^P?\d+$/, /^\d+$/, /pooled sample/
+#    case_submitter_id doesn't match banned patterns (see lib.py for list)
 #    AND
 #    case_submitter_id is in multiple projects in the same program*,
 #    IN WHICH CASE:
@@ -258,8 +272,22 @@ for case_id in case_in_project:
 
     for project_id in case_submitter_id_in_project[case_submitter_id]:
         current_type = project[project_id]['type']
+        program_passed = False
         # Don't count CPTAC as a program-level ancestor if it's only there because of CPTAC3 reprocessing projects of data represented elsewhere.
-        if current_type != 'program' or project_id != cptac_program_level_cda_project_id or case_submitter_id_in_non_cptac3_cptac_study[case_submitter_id] == True or case_submitter_id_in_any_non_cptac_study[case_submitter_id] == False:
+        # (2026-09-23) Don't count "CPTAC-Kids First-Childhood Cancer Data Initiative" as a program-level ancestor if it's only there because of CPTAC-reprocessed data from "Pediatric Brain Tumor Atlas - CBTN".
+        if current_type == 'program':
+            if project_id != cptac_program_level_cda_project_id and project_id != cptac_kf_ccdi_program_level_cda_project_id:
+                # Not CPTAC or "CPTAC-Kids First-Childhood Cancer Data Initiative". Pass.
+                program_passed = True
+            elif project_id == cptac_program_level_cda_project_id and ( case_submitter_id_in_non_cptac3_cptac_study[case_submitter_id] == True or case_submitter_id_in_any_non_cptac_study[case_submitter_id] == False ):
+                # This is CPTAC but (a) the case submitter ID appears in any non-CPTAC3 subproject OR (b) the case submitter ID is exclusive to CPTAC3 across the entire ecosystem: we're good. Add CPTAC as a program-level ancestor.
+                program_passed = True
+            elif project_id == cptac_kf_ccdi_program_level_cda_project_id and ( case_submitter_id_in_cbtn[case_submitter_id] == False ):
+                ##########################################################/\ /\ /\ /\ /\ populate this next and then hopefully we're done
+                # This is "CPTAC-Kids First-Childhood Cancer Data Initiative" but this case submitter ID wasn't seen in "Pediatric Brain Tumor Atlas - CBTN". Proceed.
+                program_passed = True
+
+        if current_type != 'program' or program_passed:
 
             if current_type == 'program':
                 last_program_short_name = project[project_id]['short_name']
