@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# A n ISB-CGC-issued data release version label is required.
+# An ISB-CGC-issued data release version label is required.
 # 
 # If the length of our argument list is zero, fail.
 
