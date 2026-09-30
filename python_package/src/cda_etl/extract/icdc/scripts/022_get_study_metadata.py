@@ -422,7 +422,8 @@ with open( study_output_json, 'w' ) as JSON, \
                         
                         sanity_check_passed = True
 
-                    if not sanity_check_passed:
+                    # Bypass a known issue -- COTC021 cites papers produced by COTC022, so they appear in COTC021['publications'] but don't offer reciprocal citations because they only list their primary study (COTC022) in that field.
+                    if not sanity_check_passed and clinical_study_designation != 'COTC021':
                         
                         print( f"WARNING: publication \"{publication['publication_title']}\" doesn't have a study sub-object with an ID matching \"{clinical_study_designation}\" -- please investigate", file=sys.stderr )
 

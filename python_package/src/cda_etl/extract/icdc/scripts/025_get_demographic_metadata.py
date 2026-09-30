@@ -11,7 +11,8 @@ from os import makedirs, path, rename
 
 # PARAMETERS
 
-page_size = 1000
+# CRITICAL: This needs to be bigger than the dataset returned, or `orderBy: demographic_id_asc` will mess up due to null IDs. Alternate sort attempts (like on (sub-case).case_id) generated errors.
+page_size = 1500
 
 api_url = 'https://caninecommons.cancer.gov/v1/graphql/'
 
@@ -65,6 +66,7 @@ scalar_demographic_fields = [
 ]
 
 # demographic(demographic_id: String, breed: String, additional_breed_detail: String, patient_age_at_enrollment: Float, patient_age_at_enrollment_unit: String, patient_age_at_enrollment_original: Float, patient_age_at_enrollment_original_unit: String, date_of_birth: String, sex: String, weight: Float, weight_unit: String, weight_original: Float, weight_original_unit: String, neutered_indicator: String, filter: _demographicFilter, first: Int, offset: Int, orderBy: [_demographicOrdering!]): [demographic!]!
+
 
 demographic_api_query_json_template = f'''    {{
         
